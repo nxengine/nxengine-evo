@@ -19,55 +19,35 @@ bool input_init(void)
 	memset(mappings, 0xff, sizeof(mappings));
 	
 	// default mappings
-	#ifdef __SDLSHIM__
-	{
-		mappings[SDLK_LEFT] = LEFTKEY;
-		mappings[SDLK_RIGHT] = RIGHTKEY;
-		mappings[SDLK_UP] = UPKEY;
-		mappings[SDLK_DOWN] = DOWNKEY;
+	mappings[SDLK_LEFT] = LEFTKEY;
+	mappings[SDLK_RIGHT] = RIGHTKEY;
+	mappings[SDLK_UP] = UPKEY;
+	mappings[SDLK_DOWN] = DOWNKEY;
+	mappings[SDLK_z] = JUMPKEY;
+	mappings[SDLK_x] = FIREKEY;
+	mappings[SDLK_a] = PREVWPNKEY;
+	mappings[SDLK_s] = NEXTWPNKEY;
+	mappings[SDLK_q] = INVENTORYKEY;
+	mappings[SDLK_w] = MAPSYSTEMKEY;
 		
-		mappings[SDLK_BTN3] = JUMPKEY;
-		mappings[SDLK_BTN4] = FIREKEY;
+	mappings[SDLK_ESCAPE] = ESCKEY;
+	
+	mappings[SDLK_F1] = F1KEY;
+	mappings[SDLK_F2] = F2KEY;
+	mappings[SDLK_F3] = F3KEY;
+	mappings[SDLK_F4] = F4KEY;
+	mappings[SDLK_F5] = F5KEY;
+	mappings[SDLK_F6] = F6KEY;
+	mappings[SDLK_F7] = F7KEY;
+	mappings[SDLK_F8] = F8KEY;
+	mappings[SDLK_F9] = F9KEY;
+	mappings[SDLK_F10] = F10KEY;
+	mappings[SDLK_F11] = F11KEY;
+	mappings[SDLK_F12] = F12KEY;
 		
-		mappings[SDLK_BTN1] = INVENTORYKEY;
-		mappings[SDLK_BTN2] = MAPSYSTEMKEY;
-		
-		mappings[SDLK_JOGDIAL_UP] = PREVWPNKEY;
-		mappings[SDLK_JOGDIAL_DOWN] = NEXTWPNKEY;
-	}
-	#else
-	{
-		mappings[SDLK_LEFT] = LEFTKEY;
-		mappings[SDLK_RIGHT] = RIGHTKEY;
-		mappings[SDLK_UP] = UPKEY;
-		mappings[SDLK_DOWN] = DOWNKEY;
-		mappings[SDLK_z] = JUMPKEY;
-		mappings[SDLK_x] = FIREKEY;
-		mappings[SDLK_a] = PREVWPNKEY;
-		mappings[SDLK_s] = NEXTWPNKEY;
-		mappings[SDLK_q] = INVENTORYKEY;
-		mappings[SDLK_w] = MAPSYSTEMKEY;
-		
-		mappings[SDLK_ESCAPE] = ESCKEY;
-		
-		mappings[SDLK_F1] = F1KEY;
-		mappings[SDLK_F2] = F2KEY;
-		mappings[SDLK_F3] = F3KEY;
-		mappings[SDLK_F4] = F4KEY;
-		mappings[SDLK_F5] = F5KEY;
-		mappings[SDLK_F6] = F6KEY;
-		mappings[SDLK_F7] = F7KEY;
-		mappings[SDLK_F8] = F8KEY;
-		mappings[SDLK_F9] = F9KEY;
-		mappings[SDLK_F10] = F10KEY;
-		mappings[SDLK_F11] = F11KEY;
-		mappings[SDLK_F12] = F12KEY;
-		
-		mappings[SDLK_SPACE] = FREEZE_FRAME_KEY;
-		mappings[SDLK_c] = FRAME_ADVANCE_KEY;
-		mappings[SDLK_v] = DEBUG_FLY_KEY;
-	}
-	#endif
+	mappings[SDLK_SPACE] = FREEZE_FRAME_KEY;
+	mappings[SDLK_c] = FRAME_ADVANCE_KEY;
+	mappings[SDLK_v] = DEBUG_FLY_KEY;
 	
 	return 0;
 }
@@ -141,7 +121,6 @@ int ino, key;
 			{
 				key = evt.key.keysym.sym;
 				
-				#ifndef __SDLSHIM__
 				static uint8_t shiftstates = 0;
 				extern bool freezeframe;
 				
@@ -180,7 +159,6 @@ int ino, key;
 					}
 				}
 				else
-				#endif	// __SDLSHIM__
 				{
 					ino = mappings[key];
 					if (ino != 0xff)
@@ -188,7 +166,6 @@ int ino, key;
 					
 					if (evt.type == SDL_KEYDOWN)
 					{
-						#ifndef __SDLSHIM__
 						if (key == '`')		// bring up console
 						{
 							if (!freezeframe)
@@ -198,7 +175,6 @@ int ino, key;
 							}
 						}
 						else
-						#endif
 						{
 							last_sdl_key = key;
 						}
