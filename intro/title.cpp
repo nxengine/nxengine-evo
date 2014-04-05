@@ -219,7 +219,8 @@ static void handle_input()
 		else
 		{
 			title.selchoice = choice;
-			title.seldelay = SELECT_DELAY;
+			if (choice==0) title.seldelay = SELECT_DELAY;
+			else title.seldelay = 1;
 //			music(0);
 		}
 	}
