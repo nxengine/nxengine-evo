@@ -110,14 +110,13 @@ FocusHolder *fh;
 		{
 			opt.dismiss_on_focus = NULL;
 			delete fh;
-			optionstack.erase(optionstack.begin()+(optionstack.size() - 1));
+//			optionstack.erase(optionstack.begin()+(optionstack.size() - 1));
 		}
 	}
 	
 	for(i=0;i<optionstack.size();i++)
 	{
 		fh = (FocusHolder *)optionstack.at(i);
-		
 		fh->Draw();
 	}
 	

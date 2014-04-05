@@ -47,8 +47,8 @@ Message::Message(const char *msg, const char *msg2)
 Message::~Message()
 {
 //    for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
-  //      if (*it==this)
-    //        optionstack.erase(it);
+//        if (*it==this)
+            optionstack.erase(optionstack.end()-1);
 	free(fMsg);
 	free(fMsg2);
 }
