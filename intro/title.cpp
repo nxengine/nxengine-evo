@@ -9,6 +9,7 @@
 #include "../graphics/font.h"
 #include "../sound/sound.h"
 #include "../common/stat.h"
+#include "../TextBox/TextBox.h"
 
 #include "../settings.h"
 #include "../graphics/graphics.h"
@@ -63,8 +64,34 @@ static void draw_title()
 	draw_sprite(tx, 40, SPR_TITLE);
 	
 	// draw menu
+
+
+#define NEWMENU
+#ifdef NEWMENU
+
+	int cx = (SCREEN_WIDTH / 2) - 32;
+	int cy = (SCREEN_HEIGHT / 2) + 8;
+
+    const char* mymenus[] = {"New game","Load Game", "Options", "Quit"};
+
+	TextBox::DrawFrame(cx-32,cy-16,128,80);
+
+	for(int i=0;i<=3;i++)
+	{
+	    font_draw(cx+10,cy,mymenus[i],0);
+		if (i == title.cursel)
+		{
+			draw_sprite(cx - 16, cy - 1, title.sprite, title.selframe);
+		}
+		
+		cy += 12;
+	}
+
+#else
+
 	int cx = (SCREEN_WIDTH / 2) - (sprites[SPR_MENU].w / 2) - 8;
 	int cy = (SCREEN_HEIGHT / 2) + 8;
+
 	for(int i=0;i<sprites[SPR_MENU].nframes;i++)
 	{
 		draw_sprite(cx, cy, SPR_MENU, i);
@@ -75,7 +102,9 @@ static void draw_title()
 		
 		cy += (sprites[SPR_MENU].h + 4);
 	}
-	
+
+#endif
+
 	// animate character
 	if (++title.seltimer > 8)
 	{
@@ -131,17 +160,27 @@ static void handle_input()
 	if (justpushed(DOWNKEY))
 	{
 		sound(SND_MENU_MOVE);
+		#ifdef NEWMENU
+		if (++title.cursel >= 4)
+			title.cursel = 0;
+		#else
 		if (++title.cursel >= sprites[SPR_MENU].nframes)
 			title.cursel = 0;
+		#endif
 	}
 	else if (justpushed(UPKEY))
 	{
 		sound(SND_MENU_MOVE);
+		#ifdef NEWMENU
 		if (--title.cursel < 0)
-			title.cursel = sprites[SPR_MENU].nframes - 1;
+			title.cursel = 3;
+		#else
+		if (--title.cursel < 0)
+			title.cursel = 3;
+		#endif
 	}
 	
-	if (buttonjustpushed())
+	if (buttonjustpushed() || justpushed(ENTERKEY))
 	{
 		sound(SND_MENU_SELECT);
 		int choice = title.cursel;
@@ -174,14 +213,14 @@ static void handle_input()
 		
 		if (choice == 1 && settings->multisave)
 		{
-			title.selchoice = 2;
+			title.selchoice = 10;
 			title.seldelay = SELECT_MENU_DELAY;
 		}
 		else
 		{
 			title.selchoice = choice;
 			title.seldelay = SELECT_DELAY;
-			music(0);
+//			music(0);
 		}
 	}
 	
@@ -209,8 +248,21 @@ static void selectoption(int index)
 			game.setmode(GM_NORMAL);
 		}
 		break;
-		
-		case 2:		// Load Menu (multisave)
+#ifdef NEWMENU
+		case 2:		// Options
+		{
+//			music(0);
+			game.pause(GP_OPTIONS);
+		}
+		break;
+		case 3:		// Quit
+		{
+			music(0);
+			game.running = false;
+		}
+		break;
+#endif
+		case 10:		// Load Menu (multisave)
 		{
 			textbox.SetVisible(true);
 			textbox.SaveSelect.SetVisible(true, SS_LOADING);
