@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "config.h"
+#include "version.h"
 #include "common/basics.h"
 
 #define CSF				9 // eh, okay. seems like it for more smooth per-pixel moving. fuck if i know, really. go ask Kate

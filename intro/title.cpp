@@ -90,11 +90,10 @@ static void draw_title()
 	draw_sprite(cx, acc_y, SPR_PIXEL_FOREVER);
 	
 	// version
-	static const char *VERSION = "NXEngine v. 1.0.0.4";
 	static const int SPACING = 5;
-	int wd = GetFontWidth(VERSION, SPACING);
+	int wd = GetFontWidth(NXVERSION, SPACING);
 	cx = (SCREEN_WIDTH / 2) - (wd / 2);
-	font_draw(cx, acc_y + sprites[SPR_PIXEL_FOREVER].h + 4, VERSION, SPACING);
+	font_draw(cx, acc_y + sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, SPACING);
 	
 	// draw Nikumaru display
 	if (title.besttime != 0xffffffff)
