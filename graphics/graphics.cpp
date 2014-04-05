@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include "../config.h"
+#include "../version.h"
 #include "graphics.h"
 #include "tileset.h"
 #include "sprites.h"
@@ -126,7 +127,7 @@ bool Graphics::InitVideo()
 		exit(1);
 	}
 	
-	SDL_WM_SetCaption("NXEngine", NULL);
+	SDL_WM_SetCaption(NXVERSION, NULL);
 	SDL_ShowCursor(is_fullscreen == false);
 	
 	screen = new NXSurface(sdl_screen, false);
