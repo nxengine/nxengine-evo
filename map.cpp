@@ -76,7 +76,6 @@ char fname[MAXPATHLEN];
 	
 	sprintf(fname, "%s.tsc", stage);
 	if (tsc_load(fname, SP_MAP) == -1) return 1;
-	
 	map_set_backdrop(stages[stage_no].bg_no);
 	map.scrolltype = stages[stage_no].scroll_type;
 	map.motionpos = 0;
@@ -315,6 +314,10 @@ FILE *fp;
 	num_stages = fgetc(fp);
 	for(int i=0;i<num_stages;i++)
 		fread(&stages[i], sizeof(MapRecord), 1, fp);
+		
+	//hack to show nice backdrop in menu, like nicalis
+	stages[0].bg_no=9;
+	stages[0].scroll_type=BK_FASTLEFT_LAYERS;
 	
 	return 0;
 }
@@ -360,7 +363,6 @@ void map_set_backdrop(int backdrop_no)
 void map_draw_backdrop(void)
 {
 int x, y;
-
 	if (!backdrop[map.backdrop])
 	{
 		LoadBackdropIfNeeded(map.backdrop);
