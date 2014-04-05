@@ -48,6 +48,10 @@ bool input_init(void)
 	mappings[SDLK_SPACE] = FREEZE_FRAME_KEY;
 	mappings[SDLK_c] = FRAME_ADVANCE_KEY;
 	mappings[SDLK_v] = DEBUG_FLY_KEY;
+
+	mappings[SDLK_HOME] = HOMEKEY;
+	mappings[SDLK_END] = ENDKEY;
+	mappings[SDLK_RETURN] = ENTERKEY;
 	
 	return 0;
 }

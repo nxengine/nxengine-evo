@@ -207,10 +207,20 @@ void Dialog::RunInput()
 	}
 	else fRepeatTimer = 0;
 	
-	
-	if (buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(LEFTKEY))
+	if (inputs[HOMEKEY])
 	{
-		int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY)) ? 1 : -1;
+	  fCurSel = 0;
+	}
+
+	if (inputs[ENDKEY])
+	{
+	  fCurSel = fItems.size()-1;
+	}
+
+	
+	if (buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
+	{
+		int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(ENTERKEY)) ? 1 : -1;
 		
 		ODItem *item = NULL;
 		if (fCurSel>=0 && fCurSel<fItems.size())
@@ -236,11 +246,14 @@ void Dialog::RunInput()
 		}
 	}
 	
-	/*if (justpushed(ESCKEY))
+	if (justpushed(ESCKEY))
 	{
-		Dismiss();
+		sound(SND_MENU_MOVE);
+		if (ondismiss) (*ondismiss)();
 		return;
-	}*/
+//		Dismiss();
+//		return;
+	}
 }
 
 void Dialog::SetSelection(int sel)
