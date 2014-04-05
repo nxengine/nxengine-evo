@@ -18,6 +18,7 @@
 using namespace Sprites;
 #include "settings.h"
 #include "screeneffect.h"
+#include "inventory.h"
 
 
 Player *player = NULL;
@@ -324,7 +325,7 @@ int i;
 		}
 		
 		// Map System
-		if (justpushed(MAPSYSTEMKEY))
+		if (justpushed(MAPSYSTEMKEY) && (FindInventory(ITEM_MAP_SYSTEM)!=-1))
 		{
 			if (!game.frozen && !player->dead && GetCurrentScript() == -1)
 			{
