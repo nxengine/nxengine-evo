@@ -68,7 +68,7 @@ bool freshstart;
 		return 1;
 	}
 	
-	//Graphics::ShowLoadingScreen();
+	Graphics::ShowLoadingScreen();
 	if (sound_init()) { fatal("Failed to initialize sound."); return 1; }
 	if (trig_init()) { fatal("Failed trig module init."); return 1; }
 	
