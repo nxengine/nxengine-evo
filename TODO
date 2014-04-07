@@ -12,3 +12,4 @@
 * rewrite c code in c++
 * replace all with stl when possible
 * c++11
+* add support for joystick
