@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <unistd.h>
 #include "graphics/safemode.h"
-#include "main.h"
+//#include "main.h"
 #include "game.h"
 #include "map.h"
 #include "profile.h"
@@ -37,6 +37,255 @@ static uint32_t fpstimer = 0;
 int framecount = 0;
 bool freezeframe = false;
 int flipacceltime = 0;
+
+static void fatal(const char *str)
+{
+	staterr("fatal: '%s'", str);
+	
+	if (!safemode::init())
+	{
+		safemode::moveto(SM_UPPER_THIRD);
+		safemode::print("Fatal Error");
+		
+		safemode::moveto(SM_CENTER);
+		safemode::print("%s", str);
+		
+		safemode::run_until_key();
+		safemode::close();
+	}
+}
+
+static bool check_data_exists()
+{
+char fname[MAXPATHLEN];
+
+	sprintf(fname, "%s/npc.tbl", data_dir);
+	if (file_exists(fname)) return 0;
+	
+	if (!safemode::init())
+	{
+		safemode::moveto(SM_UPPER_THIRD);
+		safemode::print("Fatal Error");
+		
+		safemode::moveto(SM_CENTER);
+		safemode::print("Missing \"%s\" directory.", data_dir);
+		safemode::print("Please copy it over from a Doukutsu installation.");
+		
+		safemode::run_until_key();
+		safemode::close();
+	}
+	
+	return 1;
+}
+
+void update_fps()
+{
+	fps_so_far++;
+	
+	if ((SDL_GetTicks() - fpstimer) >= 500)
+	{
+		fpstimer = SDL_GetTicks();
+		fps = (fps_so_far << 1);
+		fps_so_far = 0;
+	}
+	
+	char fpstext[64];
+	sprintf(fpstext, "%d fps", fps);
+	
+	int x = (SCREEN_WIDTH - 4) - GetFontWidth(fpstext, 0, true);
+	font_draw_shaded(x, 4, fpstext, 0, &greenfont);
+}
+
+static inline void run_tick()
+{
+static bool can_tick = true;
+static bool last_freezekey = false;
+static bool last_framekey = false;
+static int frameskip = 0;
+
+	input_poll();
+	
+	// input handling for a few global things
+	if (justpushed(ESCKEY))
+	{
+		if (settings->instant_quit)
+		{
+			game.running = false;
+		}
+		else if (!game.paused)		// no pause from Options
+		{
+			game.pause(GP_PAUSED);
+		}
+	}
+	else if (justpushed(F3KEY))
+	{
+		game.pause(GP_OPTIONS);
+	}
+	
+	// freeze frame
+	if (settings->enable_debug_keys)
+	{
+		if (inputs[FREEZE_FRAME_KEY] && !last_freezekey)
+		{
+			can_tick = true;
+			freezeframe ^= 1;
+			framecount = 0;
+		}
+		
+		if (inputs[FRAME_ADVANCE_KEY] && !last_framekey)
+		{
+			can_tick = true;
+			if (!freezeframe)
+			{
+				freezeframe = 1;
+				framecount = 0;
+			}
+		}
+		
+		last_freezekey = inputs[FREEZE_FRAME_KEY];
+		last_framekey = inputs[FRAME_ADVANCE_KEY];
+	}
+	
+	// fast-forward key (F5)
+	if (inputs[FFWDKEY] && settings->enable_debug_keys)
+	{
+		game.ffwdtime = 2;
+	}
+	
+	if (can_tick)
+	{
+		game.tick();
+		
+		if (freezeframe)
+		{
+			char buf[1024];
+			sprintf(buf, "[] Tick %d", framecount++);
+			font_draw_shaded(4, (SCREEN_HEIGHT-GetFontHeight()-4), buf, 0, &greenfont);
+			can_tick = false;
+		}
+		
+		if (settings->show_fps)
+		{
+			update_fps();
+		}
+		
+		if (!flipacceltime)
+		{
+			screen->Flip();
+		}
+		else
+		{
+			flipacceltime--;
+			if (--frameskip < 0)
+			{
+				screen->Flip();
+				frameskip = 256;
+			}
+		}
+		
+		memcpy(lastinputs, inputs, sizeof(lastinputs));
+	}
+	else
+	{	// frame is frozen; don't hog CPU
+		SDL_Delay(20);
+	}
+	
+	// immediately after a game tick is when we have the most amount of time before
+	// the game needs to run again. so now's as good a time as any for some
+	// BGM audio processing, wouldn't you say?
+	org_run();
+}
+
+void AppMinimized(void)
+{
+	stat("Game minimized or lost focus--pausing...");
+	SDL_PauseAudio(1);
+	
+	for(;;)
+	{
+		if ((SDL_GetAppState() & VISFLAGS) == VISFLAGS)
+		{
+			break;
+		}
+		
+		input_poll();
+		SDL_Delay(20);
+	}
+	
+	SDL_PauseAudio(0);
+	stat("Focus regained, resuming play...");
+}
+
+void gameloop(void)
+{
+int32_t nexttick = 0;
+
+	game.switchstage.mapno = -1;
+	
+	while(game.running && game.switchstage.mapno < 0)
+	{
+		// get time until next tick
+		int32_t curtime = SDL_GetTicks();
+		int32_t timeRemaining = nexttick - curtime;
+		
+		if (timeRemaining <= 0 || game.ffwdtime)
+		{
+			run_tick();
+			
+			// try to "catch up" if something else on the system bogs us down for a moment.
+			// but if we get really far behind, it's ok to start dropping frames
+			if (game.ffwdtime)
+				game.ffwdtime--;
+			
+			nexttick = curtime + GAME_WAIT;
+			
+			// pause game if window minimized
+			if ((SDL_GetAppState() & VISFLAGS) != VISFLAGS)
+			{
+				AppMinimized();
+				nexttick = 0;
+			}
+		}
+		else
+		{
+			// don't needlessly hog CPU, but don't sleep for entire
+			// time left, some CPU's/kernels will fall asleep for
+			// too long and cause us to run slower than we should
+			timeRemaining /= 2;
+			if (timeRemaining)
+				SDL_Delay(timeRemaining);
+		}
+	}
+}
+
+void InitNewGame(bool with_intro)
+{
+	stat("= Beginning new game =");
+	
+	memset(game.flags, 0, sizeof(game.flags));
+	memset(game.skipflags, 0, sizeof(game.skipflags));
+	textbox.StageSelect.ClearSlots();
+	
+	game.quaketime = game.megaquaketime = 0;
+	game.showmapnametime = 0;
+	game.debug.god = 0;
+	game.running = true;
+	game.frozen = false;
+	
+	// fully re-init the player object
+	Objects::DestroyAll(true);
+	game.createplayer();
+	
+	player->maxHealth = 3;
+	player->hp = player->maxHealth;
+	
+	game.switchstage.mapno = STAGE_START_POINT;
+	game.switchstage.playerx = 10;
+	game.switchstage.playery = 8;
+	game.switchstage.eventonentry = (with_intro) ? 200 : 91;
+	
+	fade.set_full(FADE_OUT);
+}
 
 int main(int argc, char *argv[])
 {
@@ -177,276 +426,6 @@ ingame_error: ;
 	error = true;
 	goto shutdown;
 }
-
-
-void gameloop(void)
-{
-int32_t nexttick = 0;
-
-	game.switchstage.mapno = -1;
-	
-	while(game.running && game.switchstage.mapno < 0)
-	{
-		// get time until next tick
-		int32_t curtime = SDL_GetTicks();
-		int32_t timeRemaining = nexttick - curtime;
-		
-		if (timeRemaining <= 0 || game.ffwdtime)
-		{
-			run_tick();
-			
-			// try to "catch up" if something else on the system bogs us down for a moment.
-			// but if we get really far behind, it's ok to start dropping frames
-			if (game.ffwdtime)
-				game.ffwdtime--;
-			
-			nexttick = curtime + GAME_WAIT;
-			
-			// pause game if window minimized
-			if ((SDL_GetAppState() & VISFLAGS) != VISFLAGS)
-			{
-				AppMinimized();
-				nexttick = 0;
-			}
-		}
-		else
-		{
-			// don't needlessly hog CPU, but don't sleep for entire
-			// time left, some CPU's/kernels will fall asleep for
-			// too long and cause us to run slower than we should
-			timeRemaining /= 2;
-			if (timeRemaining)
-				SDL_Delay(timeRemaining);
-		}
-	}
-}
-
-static inline void run_tick()
-{
-static bool can_tick = true;
-static bool last_freezekey = false;
-static bool last_framekey = false;
-static int frameskip = 0;
-
-	input_poll();
-	
-	// input handling for a few global things
-	if (justpushed(ESCKEY))
-	{
-		if (settings->instant_quit)
-		{
-			game.running = false;
-		}
-		else if (!game.paused)		// no pause from Options
-		{
-			game.pause(GP_PAUSED);
-		}
-	}
-	else if (justpushed(F3KEY))
-	{
-		game.pause(GP_OPTIONS);
-	}
-	
-	// freeze frame
-	if (settings->enable_debug_keys)
-	{
-		if (inputs[FREEZE_FRAME_KEY] && !last_freezekey)
-		{
-			can_tick = true;
-			freezeframe ^= 1;
-			framecount = 0;
-		}
-		
-		if (inputs[FRAME_ADVANCE_KEY] && !last_framekey)
-		{
-			can_tick = true;
-			if (!freezeframe)
-			{
-				freezeframe = 1;
-				framecount = 0;
-			}
-		}
-		
-		last_freezekey = inputs[FREEZE_FRAME_KEY];
-		last_framekey = inputs[FRAME_ADVANCE_KEY];
-	}
-	
-	// fast-forward key (F5)
-	if (inputs[FFWDKEY] && settings->enable_debug_keys)
-	{
-		game.ffwdtime = 2;
-	}
-	
-	if (can_tick)
-	{
-		game.tick();
-		
-		if (freezeframe)
-		{
-			char buf[1024];
-			sprintf(buf, "[] Tick %d", framecount++);
-			font_draw_shaded(4, (SCREEN_HEIGHT-GetFontHeight()-4), buf, 0, &greenfont);
-			can_tick = false;
-		}
-		
-		if (settings->show_fps)
-		{
-			update_fps();
-		}
-		
-		if (!flipacceltime)
-		{
-			screen->Flip();
-		}
-		else
-		{
-			flipacceltime--;
-			if (--frameskip < 0)
-			{
-				screen->Flip();
-				frameskip = 256;
-			}
-		}
-		
-		memcpy(lastinputs, inputs, sizeof(lastinputs));
-	}
-	else
-	{	// frame is frozen; don't hog CPU
-		SDL_Delay(20);
-	}
-	
-	// immediately after a game tick is when we have the most amount of time before
-	// the game needs to run again. so now's as good a time as any for some
-	// BGM audio processing, wouldn't you say?
-	org_run();
-}
-
-void update_fps()
-{
-	fps_so_far++;
-	
-	if ((SDL_GetTicks() - fpstimer) >= 500)
-	{
-		fpstimer = SDL_GetTicks();
-		fps = (fps_so_far << 1);
-		fps_so_far = 0;
-	}
-	
-	char fpstext[64];
-	sprintf(fpstext, "%d fps", fps);
-	
-	int x = (SCREEN_WIDTH - 4) - GetFontWidth(fpstext, 0, true);
-	font_draw_shaded(x, 4, fpstext, 0, &greenfont);
-}
-
-
-void InitNewGame(bool with_intro)
-{
-	stat("= Beginning new game =");
-	
-	memset(game.flags, 0, sizeof(game.flags));
-	memset(game.skipflags, 0, sizeof(game.skipflags));
-	textbox.StageSelect.ClearSlots();
-	
-	game.quaketime = game.megaquaketime = 0;
-	game.showmapnametime = 0;
-	game.debug.god = 0;
-	game.running = true;
-	game.frozen = false;
-	
-	// fully re-init the player object
-	Objects::DestroyAll(true);
-	game.createplayer();
-	
-	player->maxHealth = 3;
-	player->hp = player->maxHealth;
-	
-	game.switchstage.mapno = STAGE_START_POINT;
-	game.switchstage.playerx = 10;
-	game.switchstage.playery = 8;
-	game.switchstage.eventonentry = (with_intro) ? 200 : 91;
-	
-	fade.set_full(FADE_OUT);
-}
-
-
-void AppMinimized(void)
-{
-	stat("Game minimized or lost focus--pausing...");
-	SDL_PauseAudio(1);
-	
-	for(;;)
-	{
-		if ((SDL_GetAppState() & VISFLAGS) == VISFLAGS)
-		{
-			break;
-		}
-		
-		input_poll();
-		SDL_Delay(20);
-	}
-	
-	SDL_PauseAudio(0);
-	stat("Focus regained, resuming play...");
-}
-
-
-/*
-void c------------------------------() {}
-*/
-
-static void fatal(const char *str)
-{
-	staterr("fatal: '%s'", str);
-	
-	if (!safemode::init())
-	{
-		safemode::moveto(SM_UPPER_THIRD);
-		safemode::print("Fatal Error");
-		
-		safemode::moveto(SM_CENTER);
-		safemode::print("%s", str);
-		
-		safemode::run_until_key();
-		safemode::close();
-	}
-}
-
-static bool check_data_exists()
-{
-char fname[MAXPATHLEN];
-
-	sprintf(fname, "%s/npc.tbl", data_dir);
-	if (file_exists(fname)) return 0;
-	
-	if (!safemode::init())
-	{
-		safemode::moveto(SM_UPPER_THIRD);
-		safemode::print("Fatal Error");
-		
-		safemode::moveto(SM_CENTER);
-		safemode::print("Missing \"%s\" directory.", data_dir);
-		safemode::print("Please copy it over from a Doukutsu installation.");
-		
-		safemode::run_until_key();
-		safemode::close();
-	}
-	
-	return 1;
-}
-
-void visible_warning(const char *fmt, ...)
-{
-va_list ar;
-char buffer[80];
-
-	va_start(ar, fmt);
-	vsnprintf(buffer, sizeof(buffer), fmt, ar);
-	va_end(ar);
-	
-	console.Print(buffer);
-}
-
 
 
 
