@@ -25,14 +25,7 @@ public:
 	DBuffer();
 	~DBuffer();
 	
-	void SetTo(const uint8_t *data, int length);
-	void SetTo(const char *string);
-	void SetTo(DBuffer *other);
-	void SetTo(DBuffer &other);
-	
 	void AppendData(const uint8_t *data, int length);
-	void AppendString(const char *str);
-	void AppendStringNoNull(const char *str);
 	
 	void AppendBool(bool value);
 	void AppendChar(uint8_t ch);
@@ -41,19 +34,13 @@ public:
 	void Append24(uint32_t value);
 	void Append32(uint32_t value);
 	
-	bool ReadTo(DBuffer *line, uint8_t ch, bool add_null=true);
 	void EnsureAlloc(int min_required);
-	
-	void ReplaceUnprintableChars();
-	
-	DBuffer &operator= (const DBuffer &other);
 	
 	// ---------------------------------------
 	
 	void Clear();
 	uint8_t *Data();
 	uint8_t *TakeData();
-	char *String();
 	int Length();
 
 private:
@@ -102,39 +89,6 @@ inline void DBuffer::Clear()
 	
 	fLength = 0;
 }
-
-inline void DBuffer::SetTo(const uint8_t *data, int length)
-{
-	// SetTo from a portion of ourselves
-	if (data >= fData && data <= fData + (fLength - 1))
-	{
-		uint8_t *tempBuffer = (uint8_t *)malloc(length);
-		memcpy(tempBuffer, data, length);
-		SetTo(tempBuffer, length);
-		free(tempBuffer);
-		return;
-	}
-	
-	if (fAllocdExternal && length < DBUFFER_BUILTIN_SIZE)
-	{
-		free(fData);
-		fData = &fBuiltInData[0];
-		fAllocSize = DBUFFER_BUILTIN_SIZE;
-		fAllocdExternal = false;
-	}
-	else if (length > fAllocSize)
-	{	// we are growing, so allocate more memory
-		if (fAllocdExternal) free(fData);
-		fAllocdExternal = true;
-		
-		fAllocSize = (length + 16);	// arbitrary, is just space for growing
-		fData = (uint8_t *)malloc(fAllocSize);
-	}
-	
-	if (length) memcpy(fData, data, length);
-	fLength = length;
-}
-
 
 inline void DBuffer::AppendChar(uint8_t ch)
 {

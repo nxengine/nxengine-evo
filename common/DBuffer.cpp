@@ -34,19 +34,6 @@ void DBuffer::AppendData(const uint8_t *data, int length)
 	fLength += length;
 }
 
-// append a string, along with it's null-terminator.
-void DBuffer::AppendString(const char *str)
-{
-	AppendData((uint8_t *)str, strlen(str) + 1);
-}
-
-// append a string, without it's null-terminator.
-void DBuffer::AppendStringNoNull(const char *str)
-{
-	AppendData((uint8_t *)str, strlen(str));
-}
-
-
 void DBuffer::AppendBool(bool value)
 {
 uint8_t ch = (uint8_t)value;
@@ -69,59 +56,10 @@ void DBuffer::Append24(uint32_t value)
 	Append8(value >> 16);
 }
 
-/*
-void c------------------------------() {}
-*/
-
-// real SetTo code is in DBuffer.h
-
-void DBuffer::SetTo(const char *string)
-{
-	SetTo((const uint8_t *)string, strlen(string) + 1);
-}
-
-void DBuffer::SetTo(DBuffer *other)
-{
-	SetTo(other->Data(), other->Length());
-}
-
-void DBuffer::SetTo(DBuffer &other)
-{
-	SetTo(other.Data(), other.Length());
-}
 
 /*
 void c------------------------------() {}
 */
-
-void DBuffer::ReplaceUnprintableChars()
-{
-char *data = (char *)fData;
-int length = fLength;
-int i;
-
-	for(i=0;i<length;i++)
-	{
-		if (data[i] == '\n' || data[i] == '\r')
-		{
-			data[i] = '+';
-		}
-		else if (((uint8_t)data[i] < 32 || (uint8_t)data[i] > 127) && data[i] != 0)
-		{
-			data[i] = '`';
-		}
-	}
-}
-
-/*
-void c------------------------------() {}
-*/
-
-DBuffer& DBuffer::operator= (const DBuffer &other)
-{
-	SetTo((DBuffer *)&other);
-	return *this;
-}
 
 // return the data contained in the buffer
 uint8_t *DBuffer::Data()
@@ -149,19 +87,6 @@ uint8_t *DBuffer::TakeData()
 	fAllocdExternal = false;		// revert to internal data buffer
 	
 	return data;
-}
-
-// return the data, along with a trailing null-terminator
-char *DBuffer::String()
-{
-	// ensure the data returned is null-terminated
-	if (fLength == 0 || fData[fLength - 1] != 0)
-	{
-		EnsureAlloc(fLength + 1);
-		fData[fLength] = '\0';
-	}
-	
-	return (char *)fData;
 }
 
 // return the length of the buffer. note that this will include
