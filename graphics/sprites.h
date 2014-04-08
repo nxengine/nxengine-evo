@@ -8,11 +8,11 @@
 #include "../siflib/sif.h"
 #include "nxsurface.h"
 extern SIFSprite sprites[MAX_SPRITES];
-static bool load_sif(const char *fname);
+/*static bool load_sif(const char *fname);
 static void create_slope_boxes();
 static void offset_by_draw_points();
 static void expand_single_dir_sprites();
-
+*/
 namespace Sprites
 {
 	bool Init();
