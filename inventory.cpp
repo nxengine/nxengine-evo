@@ -22,52 +22,6 @@
 
 static stInventory inv;
 
-// can't enter Inven if
-//  * script is running
-//  * fade is in progress
-//  * player is dead
-
-// param is passed as 1 when returning from Map System.
-bool inventory_init(int param)
-{
-	memset(&inv, 0, sizeof(inv));
-	
-	inv.curselector = &inv.armssel;
-	inv.armssel.cursel = RefreshInventoryScreen();
-	inv.curselector->lastsel = -9999;		// run the script first time
-	
-	// returning from map system?
-	if (param == 1)
-	{
-		inv.curselector = &inv.itemsel;
-		
-		// highlight Map System
-		for(int i=0;i<inv.itemsel.nitems;i++)
-		{
-			if (inv.itemsel.items[i] == 2)
-			{
-				inv.curselector->cursel = i;
-				// textbox NOT up until they move the selector
-				inv.curselector->lastsel = i;
-				break;
-			}
-		}
-	}
-	
-	return 0;
-}
-
-
-void inventory_tick(void)
-{
-	// run the selectors
-	RunSelector(inv.curselector);
-	
-	// draw
-	DrawScene();
-	DrawInventory();
-	textbox.Draw();
-}
 
 /*
 void c------------------------------() {}
@@ -139,6 +93,39 @@ void c------------------------------() {}
 */
 
 
+static void DrawSelector(stSelector *selector, int x, int y)
+{
+int selx, sely;
+int xsel, ysel;
+
+	if (selector == inv.curselector)
+	{
+		// flash the box
+		if (++selector->animtimer > 1)
+		{
+			selector->animtimer = 0;
+			selector->flashstate ^= 1;
+		}
+	}
+	else
+	{	// permanently dim
+		selector->flashstate = 1;
+		selector->animtimer = 99;		// light up immediately upon becoming active
+	}
+	
+	if (selector->rowlen)
+	{
+		xsel = (selector->cursel % selector->rowlen);
+		ysel = (selector->cursel / selector->rowlen);
+	}
+	else xsel = ysel = 0;
+	
+	selx = x + (xsel * selector->spacing_x);
+	sely = y + (ysel * selector->spacing_y);
+	Sprites::draw_sprite(selx, sely, selector->sprite, selector->flashstate, 0);
+}
+
+
 static void DrawInventory(void)
 {
 int x, y, w, i, c;
@@ -188,6 +175,13 @@ int x, y, w, i, c;
 			c = 0;
 		}
 	}
+}
+
+static void ExitInventory(void)
+{
+	StopScripts();
+	game.setmode(GM_NORMAL);
+	memset(inputs, 0, sizeof(inputs));
 }
 
 static void RunSelector(stSelector *selector)
@@ -315,44 +309,52 @@ char toggle = 0;
 	}
 }
 
-static void ExitInventory(void)
+
+
+
+// can't enter Inven if
+//  * script is running
+//  * fade is in progress
+//  * player is dead
+
+// param is passed as 1 when returning from Map System.
+bool inventory_init(int param)
 {
-	StopScripts();
-	game.setmode(GM_NORMAL);
-	memset(inputs, 0, sizeof(inputs));
-}
-
-
-
-static void DrawSelector(stSelector *selector, int x, int y)
-{
-int selx, sely;
-int xsel, ysel;
-
-	if (selector == inv.curselector)
+	memset(&inv, 0, sizeof(inv));
+	
+	inv.curselector = &inv.armssel;
+	inv.armssel.cursel = RefreshInventoryScreen();
+	inv.curselector->lastsel = -9999;		// run the script first time
+	
+	// returning from map system?
+	if (param == 1)
 	{
-		// flash the box
-		if (++selector->animtimer > 1)
+		inv.curselector = &inv.itemsel;
+		
+		// highlight Map System
+		for(int i=0;i<inv.itemsel.nitems;i++)
 		{
-			selector->animtimer = 0;
-			selector->flashstate ^= 1;
+			if (inv.itemsel.items[i] == 2)
+			{
+				inv.curselector->cursel = i;
+				// textbox NOT up until they move the selector
+				inv.curselector->lastsel = i;
+				break;
+			}
 		}
 	}
-	else
-	{	// permanently dim
-		selector->flashstate = 1;
-		selector->animtimer = 99;		// light up immediately upon becoming active
-	}
 	
-	if (selector->rowlen)
-	{
-		xsel = (selector->cursel % selector->rowlen);
-		ysel = (selector->cursel / selector->rowlen);
-	}
-	else xsel = ysel = 0;
-	
-	selx = x + (xsel * selector->spacing_x);
-	sely = y + (ysel * selector->spacing_y);
-	Sprites::draw_sprite(selx, sely, selector->sprite, selector->flashstate, 0);
+	return 0;
 }
 
+
+void inventory_tick(void)
+{
+	// run the selectors
+	RunSelector(inv.curselector);
+	
+	// draw
+	DrawScene();
+	DrawInventory();
+	textbox.Draw();
+}

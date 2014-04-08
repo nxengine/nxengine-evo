@@ -35,10 +35,6 @@ bool inventory_init(int param);
 void inventory_tick(void);
 int RefreshInventoryScreen(void);
 void UnlockInventoryInput(void);
-static void DrawInventory(void);
-static void RunSelector(stSelector *selector);
-static void ExitInventory(void);
-static void DrawSelector(stSelector *selector, int x, int y);
 
 enum INVENTORY
 {
