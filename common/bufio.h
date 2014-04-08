@@ -14,17 +14,5 @@ void write_F32(DBuffer *buffer, float data);
 void write_F64(DBuffer *buffer, double data);
 uint32_t read_U24(const uint8_t **data, const uint8_t *data_end);
 void write_U24(DBuffer *buffer, uint32_t data);
-char read_char(const char **data, const char *data_end);
-char read_nonblank_char(const char **data, const char *data_end);
-char *read_string(const uint8_t **data, const uint8_t *data_end);
-void read_Variable(DBuffer *out, const uint8_t **data, const uint8_t *data_end);
-void write_Variable(DBuffer *out, DBuffer *in);
-void write_Variable(DBuffer *out, const uint8_t *data, int len);
-void read_Variable16(DBuffer *out, const uint8_t **data, const uint8_t *data_end);
-void write_Variable16(DBuffer *out, DBuffer *in);
-void write_Variable(DBuffer *out, const uint8_t *data, int len);
-void write_Variable(DBuffer *out, DBuffer *in);
-
-
 
 #endif
