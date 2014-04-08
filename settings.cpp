@@ -15,6 +15,30 @@ const uint16_t SETTINGS_VERSION = 0x1602;		// serves as both a version and magic
 Settings normal_settings;
 Settings *settings = &normal_settings;
 
+static bool tryload(Settings *setfile)
+{
+FILE *fp;
+
+	stat("Loading settings...");
+	
+	fp = fopen(setfilename, "rb");
+	if (!fp)
+	{
+		stat("Couldn't open file %s.", setfilename);
+		return 1;
+	}
+	
+	setfile->version = 0;
+	fread(setfile, sizeof(Settings), 1, fp);
+	if (setfile->version != SETTINGS_VERSION)
+	{
+		stat("Wrong settings version %04x.", setfile->version);
+		return 1;
+	}
+	
+	fclose(fp);
+	return 0;
+}
 
 bool settings_load(Settings *setfile)
 {
@@ -64,31 +88,6 @@ bool settings_load(Settings *setfile)
 /*
 void c------------------------------() {}
 */
-
-static bool tryload(Settings *setfile)
-{
-FILE *fp;
-
-	stat("Loading settings...");
-	
-	fp = fopen(setfilename, "rb");
-	if (!fp)
-	{
-		stat("Couldn't open file %s.", setfilename);
-		return 1;
-	}
-	
-	setfile->version = 0;
-	fread(setfile, sizeof(Settings), 1, fp);
-	if (setfile->version != SETTINGS_VERSION)
-	{
-		stat("Wrong settings version %04x.", setfile->version);
-		return 1;
-	}
-	
-	fclose(fp);
-	return 0;
-}
 
 
 bool settings_save(Settings *setfile)

@@ -31,7 +31,6 @@ struct Settings
 
 bool settings_load(Settings *settings=NULL);
 bool settings_save(Settings *settings=NULL);
-static bool tryload(Settings *setfile);
 
 extern Settings *settings;
 extern Settings normal_settings;
