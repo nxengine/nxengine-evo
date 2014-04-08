@@ -9,13 +9,10 @@
 #define DM_BOX				4
 
 #include <stdint.h>
-#include "siflib/sif.h"
-#include "object.h"
 
 void DrawDebug(void);
 void DrawBoundingBoxes();
 void DrawAttrPoints();
-static void draw_pointlist(Object *o, SIFPointList *points);
 void debug(const char *fmt, ...);
 void debug_draw(void);
 void debug_clear();

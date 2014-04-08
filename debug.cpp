@@ -21,6 +21,8 @@ using namespace Sprites;
 #include "settings.h"
 #include "console.h"
 #include "map.h"
+#include "object.h"
+#include "siflib/sif.h"
 
 #define MAX_DEBUG_MARKS		80
 static struct
@@ -149,6 +151,18 @@ void DrawBoundingBoxes()
 	}
 }
 
+static void draw_pointlist(Object *o, SIFPointList *points)
+{
+	int xoff = (o->x >> CSF);
+	int yoff = (o->y >> CSF);
+	
+	for(int i=0;i<points->count;i++)
+	{
+		DebugPixel((xoff + points->point[i].x) << CSF, \
+			(yoff + points->point[i].y) << CSF, 255, 0, 255);
+	}
+}
+
 void DrawAttrPoints()
 {
 	Object *o;
@@ -161,17 +175,6 @@ void DrawAttrPoints()
 	}
 }
 
-static void draw_pointlist(Object *o, SIFPointList *points)
-{
-	int xoff = (o->x >> CSF);
-	int yoff = (o->y >> CSF);
-	
-	for(int i=0;i<points->count;i++)
-	{
-		DebugPixel((xoff + points->point[i].x) << CSF, \
-			(yoff + points->point[i].y) << CSF, 255, 0, 255);
-	}
-}
 
 /*
 void c------------------------------() {}
