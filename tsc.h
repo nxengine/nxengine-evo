@@ -42,17 +42,11 @@ void StopScript(ScriptInstance *s);
 bool JumpScript(int newscriptno, int pageno=-1);
 
 void Clear();
-static void GenLTC(void);
-static int MnemonicToIndex(const char *str);
-static int MnemonicToOpcode(char *str);
 bool tsc_init(void);
 void tsc_close(void);
 bool tsc_load(const char *fname, int pageno);
 char *tsc_decrypt(const char *fname, int *fsize_out);
 bool tsc_compile(const char *buf, int bufsize, int pageno);
-static char nextchar(const char **buf, const char *buf_end);
-static int ReadNumber(const char **buf, const char *buf_end);
-static void ReadText(DBuffer *script, const char **buf, const char *buf_end);
 void RunScripts(void);
 void StopScripts(void);
 int GetCurrentScript(void);

@@ -158,6 +158,18 @@ unsigned char letter_to_code[256];
 unsigned char mnemonic_lookup[32*32*32];
 
 
+static int MnemonicToIndex(const char *str)
+{
+int l1, l2, l3;
+
+	l1 = letter_to_code[(uint8_t)str[0]];
+	l2 = letter_to_code[(uint8_t)str[1]];
+	l3 = letter_to_code[(uint8_t)str[2]];
+	if (l1==0xff || l2==0xff || l3==0xff) return -1;
+	
+	return (l1 << 10) | (l2 << 5) | l3;
+}
+
 static void GenLTC(void)
 {
 int i;
@@ -175,18 +187,6 @@ uint8_t ch;
 	{
 		mnemonic_lookup[MnemonicToIndex(cmd_table[i].mnemonic)] = i;
 	}
-}
-
-static int MnemonicToIndex(const char *str)
-{
-int l1, l2, l3;
-
-	l1 = letter_to_code[(uint8_t)str[0]];
-	l2 = letter_to_code[(uint8_t)str[1]];
-	l3 = letter_to_code[(uint8_t)str[2]];
-	if (l1==0xff || l2==0xff || l3==0xff) return -1;
-	
-	return (l1 << 10) | (l2 << 5) | l3;
 }
 
 static int MnemonicToOpcode(char *str)
@@ -305,6 +305,52 @@ int fsize, i;
 void c------------------------------() {}
 */
 
+static char nextchar(const char **buf, const char *buf_end)
+{
+	if (*buf <= buf_end)
+		return *(*buf)++;
+	
+	return 0;
+}
+
+static int ReadNumber(const char **buf, const char *buf_end)
+{
+static char num[5] = { 0 };
+int i = 0;
+	
+	while(i < 4)
+	{
+		num[i] = nextchar(buf, buf_end);
+		if (!isdigit(num[i]))
+		{
+			(*buf)--;
+			break;
+		}
+		
+		i++;
+	}
+	
+	return atoi(num);
+}
+
+static void ReadText(DBuffer *script, const char **buf, const char *buf_end)
+{
+	while(*buf <= buf_end)
+	{
+		char ch = nextchar(buf, buf_end);
+		if (ch == '<' || ch == '#')
+		{
+			(*buf)--;
+			break;
+		}
+		
+		if (ch != 10)
+			script->Append8(ch);
+	}
+	
+	script->Append8('\0');
+}
+
 // compile a tsc file--a set of scripts in raw text format--into 'bytecode',
 // and place the finished scripts into the given page.
 bool tsc_compile(const char *buf, int bufsize, int pageno)
@@ -396,51 +442,6 @@ char cmdbuf[4] = { 0 };
 	return 0;
 }
 
-static char nextchar(const char **buf, const char *buf_end)
-{
-	if (*buf <= buf_end)
-		return *(*buf)++;
-	
-	return 0;
-}
-
-static int ReadNumber(const char **buf, const char *buf_end)
-{
-static char num[5] = { 0 };
-int i = 0;
-	
-	while(i < 4)
-	{
-		num[i] = nextchar(buf, buf_end);
-		if (!isdigit(num[i]))
-		{
-			(*buf)--;
-			break;
-		}
-		
-		i++;
-	}
-	
-	return atoi(num);
-}
-
-static void ReadText(DBuffer *script, const char **buf, const char *buf_end)
-{
-	while(*buf <= buf_end)
-	{
-		char ch = nextchar(buf, buf_end);
-		if (ch == '<' || ch == '#')
-		{
-			(*buf)--;
-			break;
-		}
-		
-		if (ch != 10)
-			script->Append8(ch);
-	}
-	
-	script->Append8('\0');
-}
 
 /*
 void c------------------------------() {}
