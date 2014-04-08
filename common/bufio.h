@@ -1,7 +1,6 @@
-
 #ifndef _BUFIO_H
 #define _BUFIO_H
-#include "DBuffer.h"
+#include <stdint.h>
 
 uint8_t read_U8(const uint8_t **data, const uint8_t *data_end);
 uint16_t read_U16(const uint8_t **data, const uint8_t *data_end);

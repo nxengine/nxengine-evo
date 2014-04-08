@@ -1,7 +1,5 @@
-
 #ifndef _TSC_H
 #define _TSC_H
-#include "common/DBuffer.h"
 #include "object.h"
 // TSC running script instance; there is only ever one running at once
 // but I generalized it as if there might be more just for good style.
