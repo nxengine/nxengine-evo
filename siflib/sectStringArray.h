@@ -12,10 +12,7 @@ class SIFStringArraySect
 {
 public:
 	static bool Decode(const uint8_t *data, int datalen, std::vector<std::string> *out);
-	static uint8_t *Encode(std::vector<std::string> *strings, int *datalen_out);
-	
 	static void ReadPascalString(const uint8_t **data, const uint8_t *data_end, std::string *out);
-	static void WritePascalString(const char *str, DBuffer *out);
 };
 
 

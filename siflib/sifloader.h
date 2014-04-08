@@ -62,22 +62,6 @@ public:
 	uint8_t *FindSection(int type, int *length_out);
 
 //	---------------------------------------
-//	SIF-saving functions. You shouldn't use the same object for saving
-//	as currently has a file loaded, just construct a new one.
-//  But it is safe to save over the same file you are referencing data
-//  from using the "Load" object; because the changes are finalized to disk
-//  until you call EndSave().
-
-	// allocate memory etc to save a new file from provided data.
-	bool BeginSave();
-	
-	// add a section to the SIF of the given type, containing the given data.
-	bool AddSection(int type, uint8_t *data, int datalen);
-	
-	// finalize the changes and write them to disk in the given file.
-	bool EndSave(const char *filename);
-	
-//	---------------------------------------
 
 	// free any temporary memory and close the file handle.
 	void CloseFile();

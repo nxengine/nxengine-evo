@@ -34,35 +34,6 @@ int i, nstrings;
 	return 0;
 }
 
-
-
-uint8_t *SIFStringArraySect::Encode(std::vector<std::string> *strings, int *datalen_out)
-{
-DBuffer buf;
-
-	if (strings->size() > 65535)
-	{
-		staterr("SIFStringArraySect::Encode: too many strings in list");
-		return NULL;
-	}
-	
-	buf.Append16(strings->size());
-	for(int i=0;;i++)
-	{
-		const char *str = strings->at(i).c_str();
-		if (!str) break;
-		
-		WritePascalString(str, &buf);
-	}
-	
-	if (datalen_out) *datalen_out = buf.Length();
-	return buf.TakeData();
-}
-
-/*
-void c------------------------------() {}
-*/
-
 void SIFStringArraySect::ReadPascalString(const uint8_t **data, const uint8_t *data_end, std::string *out)
 {
 	int len = read_U8(data, data_end);
@@ -74,26 +45,4 @@ void SIFStringArraySect::ReadPascalString(const uint8_t **data, const uint8_t *d
 		*out+=read_U8(data, data_end);
 	}
 }
-
-void SIFStringArraySect::WritePascalString(const char *str, DBuffer *out)
-{
-	int len = strlen(str);
-	if (len > 65535) len = 65535;
-	
-	if (len < 255)
-	{
-		out->Append8(len);
-	}
-	else
-	{
-		out->Append8(0xff);
-		out->Append16(len);
-	}
-	
-	for(int j=0;j<len;j++)
-		out->Append8(str[j]);
-}
-
-
-
 
