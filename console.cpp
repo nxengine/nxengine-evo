@@ -22,406 +22,6 @@
 #include <vector>
 #include <string>
 
-static CommandEntry commands[] =
-{
-	"god", __god, 0, 1,
-	"script", __script, 1, 1,
-	"warp", __warp, 1, 999,
-	"sound", __sound, 1, 1,
-	"music", __music, 1, 1,
-	"giveweapon", __giveweapon, 1, 1,
-	"dropweapon", __dropweapon, 0, 1,
-	"level", __level, 1, 1,
-	"ammo", __ammo, 1, 1,
-	"maxammo", __maxammo, 1, 1,
-	"hp", __hp, 1, 1,
-	"maxhp", __maxhp, 1, 1,
-	"xp", __xp, 1, 1,
-	"spawn", __spawn, 1, 999,
-	"animate", __animate, 1, 2,
-	"infinitedamage", __infinitedamage, 0, 1,
-	"killall", __killall, 0, 0,
-	"movemode", __movemode, 1, 1,
-	"flag", __flag, 1, 1,
-	"clearflags", __clearflags, 0, 0,
-	"equip", __equip, 1, 2,
-	"giveitem", __giveitem, 1, 1,
-	"takeitem", __takeitem, 1, 1,
-	"qua", __qua, 0, 1,
-	"boa", __boa, 1, 1,
-	"cre", __cre, 0, 0,
-	"reset", __reset, 0, 0,
-	"fps", __fps, 0, 1,
-	
-	"instant-quit", __set_iquit, 1, 1,
-	"no-quake-in-hell", __set_noquake, 1, 1,
-	"inhibit-fullscreen", __inhibit_fullscreen, 1, 1,
-	"emulate-bugs", __emulate_bugs, 1, 1,
-	"displayformat", __displayformat, 1, 1,
-	"skip-intro", __skip_intro, 1, 1,
-	
-	"player->hide", __player_hide, 1, 1,
-	"player->inputs_locked", __player_inputs_locked, 1, 1,
-	"game.frozen", __game_frozen, 1, 1,
-	"textbox.SetVisible", __textbox_setvisible, 1, 1,
-	
-	"hello", __hello, 0, 0,
-	"hi", __hello, 0, 0,
-	
-	NULL, NULL
-};
-
-
-DebugConsole::DebugConsole()
-{
-	fVisible = false;
-	fLineLen = 0;
-	fCursorTimer = 0;
-	fResponseTimer = 0;
-	
-	fLine[0] = 0;
-	fResponse[0] = 0;
-	
-	fKeyDown = 0;
-	fRepeatTimer = 0;
-}
-
-/*
-void c------------------------------() {}
-*/
-
-void DebugConsole::SetVisible(bool newstate)
-{
-	//stat("DebugConsole::SetVisible(%s)", newstate?"true":"false");
-	
-	if (fVisible != newstate)
-	{
-		fVisible = newstate;
-		fKeyDown = 0;
-		fRepeatTimer = 0;
-		
-		if (newstate)
-		{
-			fLine[0] = 0;
-			fLineLen = 0;
-			fBrowsingExpansion = false;
-			fBackIndex = fBackBuffer.size()-1;
-			
-			fResponse[0] = 0;
-			fCursorTimer = 0;
-		}
-	}
-}
-
-bool DebugConsole::IsVisible()
-{
-	return fVisible;
-}
-
-bool DebugConsole::HandleKey(int key)
-{
-	if (!fVisible) return 0;
-	if (key != 9) fBrowsingExpansion = false;
-	
-	if (key != fKeyDown)
-	{
-		fKeyDown = key;
-		fRepeatTimer = 25;
-	}
-	else
-	{
-		fRepeatTimer = 1;
-	}
-	
-	fCursorTimer = 0;
-
-	switch(key)
-	{
-		case 27:
-		case '`':
-		{
-			SetVisible(false);
-		}
-		break;
-		
-		case 13:
-		case 271:	// numeric enter
-		{
-			SetVisible(false);
-			
-			fLine[fLineLen] = 0;
-			Execute(fLine);
-			fLineLen = 0;
-		}
-		break;
-		
-		case 10: break;
-		
-		case 8:
-		{
-			if (fLineLen > 0)
-				fLineLen--;
-		}
-		break;
-		
-		case 9:		// command completion
-		{
-			fLine[fLineLen] = 0;
-			ExpandCommand();
-			
-			fBrowsingExpansion = true;
-			fExpandIndex++;
-		}
-		break;
-		
-		// command backbuffer
-		case SDLK_UP:
-		case SDLK_DOWN:
-		{
-			if (fBackBuffer.size() > 0)
-			{
-				fBackIndex += (key == SDLK_UP) ? -1 : 1;
-				if (fBackIndex < 0) fBackIndex = (fBackBuffer.size() - 1);
-				else fBackIndex %= fBackBuffer.size();
-				
-				const char *str = fBackBuffer.at(fBackIndex).c_str();
-				
-				maxcpy(fLine, str, sizeof(fLine) - 1);
-				fLineLen = strlen(str);
-			}
-		}
-		break;
-		
-		default:
-		{
-			if (fLineLen < (sizeof(fLine) - 1))
-				fLine[fLineLen++] = key;
-		}
-		break;
-	}
-	
-	return 1;
-}
-
-void DebugConsole::HandleKeyRelease(int key)
-{
-	if (key == fKeyDown)
-	{
-		fKeyDown = 0;
-		fRepeatTimer = 0;
-	}
-}
-
-/*
-void c------------------------------() {}
-*/
-
-void DebugConsole::Draw()
-{
-	if (fResponse[0])
-	{
-		this->DrawText(fResponse);
-		
-		if (--fResponseTimer <= 0)
-			fResponse[0] = 0;
-	}
-	else if (fVisible)
-	{
-		// key-repeat
-		if (fKeyDown)
-		{
-			if (--fRepeatTimer < 0)
-				HandleKey(fKeyDown);
-		}
-		
-		char buffer[CONSOLE_MAXCMDLEN + 10];
-		fLine[fLineLen] = 0;
-		
-		sprintf(buffer, "-> %s%c",
-			fLine, (fCursorTimer < 20) ? '_' : ' ');
-		
-		this->DrawText(buffer);
-		
-		if (++fCursorTimer > 30)
-			fCursorTimer = 0;
-	}
-}
-
-void DebugConsole::DrawText(const char *text)
-{
-	font_draw_shaded(4, (SCREEN_HEIGHT - 16), text);
-}
-
-/*
-void c------------------------------() {}
-*/
-
-void DebugConsole::Print(const char *fmt, ...)
-{
-va_list ar;
-
-	va_start(ar, fmt);
-	vsnprintf(fResponse, sizeof(fResponse), fmt, ar);
-	va_end(ar);
-	
-	stat("%s", fResponse);
-	fResponseTimer = 60;
-}
-
-/*
-void c------------------------------() {}
-*/
-
-bool DebugConsole::Execute(const char *line)
-{
-	stat("DebugConsole::Execute('%s')", line);
-	
-	// record command in backbuffer
-	if (fBackBuffer.size() >= CONSOLE_MAX_BACK)
-		fBackBuffer.erase(fBackBuffer.begin());
-	fBackBuffer.push_back(std::string(line));
-	
-	// split command into arguments
-	std::vector<std::string> args;
-	char *cmd = SplitCommand(line, &args);
-	
-	if (cmd)
-	{
-		std::vector<void*> matches;
-		MatchCommand(cmd, &matches);
-		free(cmd);
-		
-		if (matches.size() == 1)
-		{
-			CommandEntry *command = (CommandEntry *)matches.at(0);
-			
-			if (args.size() < command->minArgs || \
-				args.size() > command->maxArgs)
-			{
-				if (command->minArgs == command->maxArgs)
-				{
-					Print("'%s' requires %d argument%s", \
-						command->name, command->minArgs, \
-						(command->minArgs == 1) ? "":"s");
-				}
-				else if (args.size() < command->minArgs)
-				{
-					Print("'%s' requires at least %d argument%s",
-						command->name, command->minArgs,
-						(command->minArgs == 1) ? "":"s");
-				}
-				else
-				{
-					Print("'%s' requires no more than %d arguments",
-						command->name, command->maxArgs);
-				}
-			}
-			else
-			{
-				void (*handler)(std::vector<std::string> *, int) = command->handler;
-				int num = (args.size() > 0) ? atoi(args.at(0).c_str()) : 0;
-				
-				(*handler)(&args, num);
-				return 1;
-			}
-		}
-		else if (matches.size() == 0)
-		{
-			Print("I don't understand");
-		}
-		else
-		{
-			Print("Ambiguous command");
-		}
-	}
-	
-	return 0;
-}
-
-void DebugConsole::MatchCommand(const char *cmd, std::vector<void*> *matches)
-{
-	for(int i=0; commands[i].name; i++)
-	{
-		if (strcasebegin(commands[i].name, cmd))
-			matches->push_back(&commands[i]);
-	}
-}
-
-// split an input line into command and arguments
-// returns the command portion of the line. you must free this buffer.
-char *DebugConsole::SplitCommand(const char *line_in, std::vector<std::string> *args)
-{
-	while(*line_in == ' ' || *line_in == '\t') line_in++;
-	char *line = strdup(line_in);
-	
-	char *cmd = strtok(line, " \t");
-	if (cmd && cmd[0])
-	{
-		while(const char *arg = strtok(NULL, " \t"))
-		{
-			args->push_back(std::string(arg));
-		}
-		
-		return line;
-	}
-	
-	free(line);
-	return NULL;
-}
-
-// tab-expand the current command
-void DebugConsole::ExpandCommand()
-{
-std::vector<std::string> args;
-std::vector<void*> matches;
-char *cmd;
-
-	fLine[fLineLen] = 0;
-	
-	if (!fBrowsingExpansion)
-	{
-		maxcpy(fLineToExpand, fLine, sizeof(fLineToExpand));
-		fExpandIndex = 0;
-	}
-	
-	cmd = SplitCommand(fLineToExpand, &args);
-	if (cmd)
-	{
-		MatchCommand(cmd, &matches);
-		free(cmd);
-		
-		if (matches.size() > 0)
-		{
-			if (fExpandIndex >= matches.size())
-				fExpandIndex = 0;
-			
-			CommandEntry *command = (CommandEntry *)matches.at(fExpandIndex);
-			std::string newCommand(command->name);
-			
-			for(int i=0;i<args.size();i++)
-			{
-				const char *arg = args.at(i).c_str();
-				
-				newCommand.append(" ");
-				newCommand.append(arg);
-			}
-			
-			if (args.size() < command->minArgs)
-				newCommand.append(" ");
-			
-			maxcpy(fLine, newCommand.c_str(), sizeof(fLine));
-			fLineLen = strlen(fLine);
-		}
-	}
-	
-	if (matches.size() != 1)
-		sound(SND_TINK);
-}
-
-/*
-void c------------------------------() {}
-*/
-
 #define Respond		console.Print
 
 
@@ -968,4 +568,405 @@ static void __textbox_setvisible(std::vector<std::string> *args, int num)
 {
 	textbox.SetVisible(num);
 }
+
+static CommandEntry commands[] =
+{
+	"god", __god, 0, 1,
+	"script", __script, 1, 1,
+	"warp", __warp, 1, 999,
+	"sound", __sound, 1, 1,
+	"music", __music, 1, 1,
+	"giveweapon", __giveweapon, 1, 1,
+	"dropweapon", __dropweapon, 0, 1,
+	"level", __level, 1, 1,
+	"ammo", __ammo, 1, 1,
+	"maxammo", __maxammo, 1, 1,
+	"hp", __hp, 1, 1,
+	"maxhp", __maxhp, 1, 1,
+	"xp", __xp, 1, 1,
+	"spawn", __spawn, 1, 999,
+	"animate", __animate, 1, 2,
+	"infinitedamage", __infinitedamage, 0, 1,
+	"killall", __killall, 0, 0,
+	"movemode", __movemode, 1, 1,
+	"flag", __flag, 1, 1,
+	"clearflags", __clearflags, 0, 0,
+	"equip", __equip, 1, 2,
+	"giveitem", __giveitem, 1, 1,
+	"takeitem", __takeitem, 1, 1,
+	"qua", __qua, 0, 1,
+	"boa", __boa, 1, 1,
+	"cre", __cre, 0, 0,
+	"reset", __reset, 0, 0,
+	"fps", __fps, 0, 1,
+	
+	"instant-quit", __set_iquit, 1, 1,
+	"no-quake-in-hell", __set_noquake, 1, 1,
+	"inhibit-fullscreen", __inhibit_fullscreen, 1, 1,
+	"emulate-bugs", __emulate_bugs, 1, 1,
+	"displayformat", __displayformat, 1, 1,
+	"skip-intro", __skip_intro, 1, 1,
+	
+	"player->hide", __player_hide, 1, 1,
+	"player->inputs_locked", __player_inputs_locked, 1, 1,
+	"game.frozen", __game_frozen, 1, 1,
+	"textbox.SetVisible", __textbox_setvisible, 1, 1,
+	
+	"hello", __hello, 0, 0,
+	"hi", __hello, 0, 0,
+	
+	NULL, NULL
+};
+
+
+DebugConsole::DebugConsole()
+{
+	fVisible = false;
+	fLineLen = 0;
+	fCursorTimer = 0;
+	fResponseTimer = 0;
+	
+	fLine[0] = 0;
+	fResponse[0] = 0;
+	
+	fKeyDown = 0;
+	fRepeatTimer = 0;
+}
+
+/*
+void c------------------------------() {}
+*/
+
+void DebugConsole::SetVisible(bool newstate)
+{
+	//stat("DebugConsole::SetVisible(%s)", newstate?"true":"false");
+	
+	if (fVisible != newstate)
+	{
+		fVisible = newstate;
+		fKeyDown = 0;
+		fRepeatTimer = 0;
+		
+		if (newstate)
+		{
+			fLine[0] = 0;
+			fLineLen = 0;
+			fBrowsingExpansion = false;
+			fBackIndex = fBackBuffer.size()-1;
+			
+			fResponse[0] = 0;
+			fCursorTimer = 0;
+		}
+	}
+}
+
+bool DebugConsole::IsVisible()
+{
+	return fVisible;
+}
+
+bool DebugConsole::HandleKey(int key)
+{
+	if (!fVisible) return 0;
+	if (key != 9) fBrowsingExpansion = false;
+	
+	if (key != fKeyDown)
+	{
+		fKeyDown = key;
+		fRepeatTimer = 25;
+	}
+	else
+	{
+		fRepeatTimer = 1;
+	}
+	
+	fCursorTimer = 0;
+
+	switch(key)
+	{
+		case 27:
+		case '`':
+		{
+			SetVisible(false);
+		}
+		break;
+		
+		case 13:
+		case 271:	// numeric enter
+		{
+			SetVisible(false);
+			
+			fLine[fLineLen] = 0;
+			Execute(fLine);
+			fLineLen = 0;
+		}
+		break;
+		
+		case 10: break;
+		
+		case 8:
+		{
+			if (fLineLen > 0)
+				fLineLen--;
+		}
+		break;
+		
+		case 9:		// command completion
+		{
+			fLine[fLineLen] = 0;
+			ExpandCommand();
+			
+			fBrowsingExpansion = true;
+			fExpandIndex++;
+		}
+		break;
+		
+		// command backbuffer
+		case SDLK_UP:
+		case SDLK_DOWN:
+		{
+			if (fBackBuffer.size() > 0)
+			{
+				fBackIndex += (key == SDLK_UP) ? -1 : 1;
+				if (fBackIndex < 0) fBackIndex = (fBackBuffer.size() - 1);
+				else fBackIndex %= fBackBuffer.size();
+				
+				const char *str = fBackBuffer.at(fBackIndex).c_str();
+				
+				maxcpy(fLine, str, sizeof(fLine) - 1);
+				fLineLen = strlen(str);
+			}
+		}
+		break;
+		
+		default:
+		{
+			if (fLineLen < (sizeof(fLine) - 1))
+				fLine[fLineLen++] = key;
+		}
+		break;
+	}
+	
+	return 1;
+}
+
+void DebugConsole::HandleKeyRelease(int key)
+{
+	if (key == fKeyDown)
+	{
+		fKeyDown = 0;
+		fRepeatTimer = 0;
+	}
+}
+
+/*
+void c------------------------------() {}
+*/
+
+void DebugConsole::Draw()
+{
+	if (fResponse[0])
+	{
+		this->DrawText(fResponse);
+		
+		if (--fResponseTimer <= 0)
+			fResponse[0] = 0;
+	}
+	else if (fVisible)
+	{
+		// key-repeat
+		if (fKeyDown)
+		{
+			if (--fRepeatTimer < 0)
+				HandleKey(fKeyDown);
+		}
+		
+		char buffer[CONSOLE_MAXCMDLEN + 10];
+		fLine[fLineLen] = 0;
+		
+		sprintf(buffer, "-> %s%c",
+			fLine, (fCursorTimer < 20) ? '_' : ' ');
+		
+		this->DrawText(buffer);
+		
+		if (++fCursorTimer > 30)
+			fCursorTimer = 0;
+	}
+}
+
+void DebugConsole::DrawText(const char *text)
+{
+	font_draw_shaded(4, (SCREEN_HEIGHT - 16), text);
+}
+
+/*
+void c------------------------------() {}
+*/
+
+void DebugConsole::Print(const char *fmt, ...)
+{
+va_list ar;
+
+	va_start(ar, fmt);
+	vsnprintf(fResponse, sizeof(fResponse), fmt, ar);
+	va_end(ar);
+	
+	stat("%s", fResponse);
+	fResponseTimer = 60;
+}
+
+/*
+void c------------------------------() {}
+*/
+
+bool DebugConsole::Execute(const char *line)
+{
+	stat("DebugConsole::Execute('%s')", line);
+	
+	// record command in backbuffer
+	if (fBackBuffer.size() >= CONSOLE_MAX_BACK)
+		fBackBuffer.erase(fBackBuffer.begin());
+	fBackBuffer.push_back(std::string(line));
+	
+	// split command into arguments
+	std::vector<std::string> args;
+	char *cmd = SplitCommand(line, &args);
+	
+	if (cmd)
+	{
+		std::vector<void*> matches;
+		MatchCommand(cmd, &matches);
+		free(cmd);
+		
+		if (matches.size() == 1)
+		{
+			CommandEntry *command = (CommandEntry *)matches.at(0);
+			
+			if (args.size() < command->minArgs || \
+				args.size() > command->maxArgs)
+			{
+				if (command->minArgs == command->maxArgs)
+				{
+					Print("'%s' requires %d argument%s", \
+						command->name, command->minArgs, \
+						(command->minArgs == 1) ? "":"s");
+				}
+				else if (args.size() < command->minArgs)
+				{
+					Print("'%s' requires at least %d argument%s",
+						command->name, command->minArgs,
+						(command->minArgs == 1) ? "":"s");
+				}
+				else
+				{
+					Print("'%s' requires no more than %d arguments",
+						command->name, command->maxArgs);
+				}
+			}
+			else
+			{
+				void (*handler)(std::vector<std::string> *, int) = command->handler;
+				int num = (args.size() > 0) ? atoi(args.at(0).c_str()) : 0;
+				
+				(*handler)(&args, num);
+				return 1;
+			}
+		}
+		else if (matches.size() == 0)
+		{
+			Print("I don't understand");
+		}
+		else
+		{
+			Print("Ambiguous command");
+		}
+	}
+	
+	return 0;
+}
+
+void DebugConsole::MatchCommand(const char *cmd, std::vector<void*> *matches)
+{
+	for(int i=0; commands[i].name; i++)
+	{
+		if (strcasebegin(commands[i].name, cmd))
+			matches->push_back(&commands[i]);
+	}
+}
+
+// split an input line into command and arguments
+// returns the command portion of the line. you must free this buffer.
+char *DebugConsole::SplitCommand(const char *line_in, std::vector<std::string> *args)
+{
+	while(*line_in == ' ' || *line_in == '\t') line_in++;
+	char *line = strdup(line_in);
+	
+	char *cmd = strtok(line, " \t");
+	if (cmd && cmd[0])
+	{
+		while(const char *arg = strtok(NULL, " \t"))
+		{
+			args->push_back(std::string(arg));
+		}
+		
+		return line;
+	}
+	
+	free(line);
+	return NULL;
+}
+
+// tab-expand the current command
+void DebugConsole::ExpandCommand()
+{
+std::vector<std::string> args;
+std::vector<void*> matches;
+char *cmd;
+
+	fLine[fLineLen] = 0;
+	
+	if (!fBrowsingExpansion)
+	{
+		maxcpy(fLineToExpand, fLine, sizeof(fLineToExpand));
+		fExpandIndex = 0;
+	}
+	
+	cmd = SplitCommand(fLineToExpand, &args);
+	if (cmd)
+	{
+		MatchCommand(cmd, &matches);
+		free(cmd);
+		
+		if (matches.size() > 0)
+		{
+			if (fExpandIndex >= matches.size())
+				fExpandIndex = 0;
+			
+			CommandEntry *command = (CommandEntry *)matches.at(fExpandIndex);
+			std::string newCommand(command->name);
+			
+			for(int i=0;i<args.size();i++)
+			{
+				const char *arg = args.at(i).c_str();
+				
+				newCommand.append(" ");
+				newCommand.append(arg);
+			}
+			
+			if (args.size() < command->minArgs)
+				newCommand.append(" ");
+			
+			maxcpy(fLine, newCommand.c_str(), sizeof(fLine));
+			fLineLen = strlen(fLine);
+		}
+	}
+	
+	if (matches.size() != 1)
+		sound(SND_TINK);
+}
+
+/*
+void c------------------------------() {}
+*/
+
 
