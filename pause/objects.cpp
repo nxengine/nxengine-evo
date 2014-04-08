@@ -23,74 +23,6 @@ Object *firstobj, *lastobj;
 #define OC_QUOTE			1
 #define OC_IKACHAN			2
 
-void Options::init_objects()
-{
-	firstobj = NULL;
-	lastobj = NULL;
-	create_object(0, 0, OC_CONTROLLER);
-}
-
-void Options::close_objects()
-{
-	Object *o = firstobj;
-	while(o)
-	{
-		Object *next = o->next;
-		delete o;
-		o = next;
-	}
-	
-	firstobj = lastobj = NULL;
-}
-
-void Options::run_and_draw_objects(void)
-{
-void (*ai_routine[])(Object *) = {
-	ai_oc_controller,
-	ai_oc_quote,
-	ai_oc_ikachan
-};
-
-	// draw character
-	Object *o = firstobj;
-	while(o)
-	{
-		(*ai_routine[o->type])(o);
-		Object *next = o->next;
-		
-		// cull deleted
-		if (o->deleted)
-		{
-			LL_REMOVE(o, prev, next, firstobj, lastobj);
-			delete o;
-		}
-		else if (o->sprite != SPR_NULL)
-		{
-			o->x += o->xinertia;
-			o->y += o->yinertia;
-			
-			draw_sprite(o->x >> CSF, o->y >> CSF, o->sprite, o->frame, o->dir);
-		}
-		
-		o = next;
-	}
-}
-
-Object *Options::create_object(int x, int y, int type)
-{
-static Object ZERO;
-
-	Object *o = new Object;
-	*o = ZERO;
-	
-	o->x = x;
-	o->y = y;
-	o->type = type;
-	LL_ADD_END(o, prev, next, firstobj, lastobj);
-	
-	return o;
-}
-
 
 /*
 void c------------------------------() {}
@@ -292,5 +224,76 @@ static void ai_oc_current(Object *o)
 		o->deleted = true;
 }
 */
+
+
+void Options::init_objects()
+{
+	firstobj = NULL;
+	lastobj = NULL;
+	create_object(0, 0, OC_CONTROLLER);
+}
+
+void Options::close_objects()
+{
+	Object *o = firstobj;
+	while(o)
+	{
+		Object *next = o->next;
+		delete o;
+		o = next;
+	}
+	
+	firstobj = lastobj = NULL;
+}
+
+void Options::run_and_draw_objects(void)
+{
+void (*ai_routine[])(Object *) = {
+	ai_oc_controller,
+	ai_oc_quote,
+	ai_oc_ikachan
+};
+
+	// draw character
+	Object *o = firstobj;
+	while(o)
+	{
+		(*ai_routine[o->type])(o);
+		Object *next = o->next;
+		
+		// cull deleted
+		if (o->deleted)
+		{
+			LL_REMOVE(o, prev, next, firstobj, lastobj);
+			delete o;
+		}
+		else if (o->sprite != SPR_NULL)
+		{
+			o->x += o->xinertia;
+			o->y += o->yinertia;
+			
+			draw_sprite(o->x >> CSF, o->y >> CSF, o->sprite, o->frame, o->dir);
+		}
+		
+		o = next;
+	}
+}
+
+Object *Options::create_object(int x, int y, int type)
+{
+static Object ZERO;
+
+	Object *o = new Object;
+	*o = ZERO;
+	
+	o->x = x;
+	o->y = y;
+	o->type = type;
+	LL_ADD_END(o, prev, next, firstobj, lastobj);
+	
+	return o;
+}
+
+
 
 
