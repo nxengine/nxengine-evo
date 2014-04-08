@@ -428,6 +428,7 @@ int output;
 		e >>= 1;
 		buffer[j++] = e;
 	}
+	free(tempbuffer);
 }
 
 
@@ -580,6 +581,7 @@ double env_acc, env_inc;
 		e >>= 1;
 		outbuffer[j++] = e;
 	}
+	free(buffer);
 }
 
 
