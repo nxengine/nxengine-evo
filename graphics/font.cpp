@@ -246,6 +246,9 @@ SDL_Rect dstrect;
 		dstrect.x = 0;
 		dstrect.y = 0;
 		SDL_BlitSurface(top, NULL, letters[i], &dstrect);
+		
+		SDL_FreeSurface(top);
+		SDL_FreeSurface(bottom);
 	}
 	
 	return 0;
