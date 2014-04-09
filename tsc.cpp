@@ -212,7 +212,7 @@ char fname[MAXPATHLEN];
 
 	GenLTC();
 	curscript.running = false;
-	for(int i=0;i<NUM_SCRIPT_PAGES;i++)
+	//for(int i=0;i<NUM_SCRIPT_PAGES;i++)
 	
 	// load the "common" TSC scripts available to all maps
 	sprintf(fname, "%s/Head.tsc", data_dir);
