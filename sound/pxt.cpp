@@ -6,7 +6,7 @@
 #include <math.h>			// for sin()
 #include <stdlib.h>
 #include <string.h>
-#include <endian.h>
+#include "portable_endian.h"
 
 #include "../config.h"
 #include "pxt.h"

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <endian.h>
+#include "portable_endian.h"
 
 #include "../common/basics.h"
 #include "org.h"
