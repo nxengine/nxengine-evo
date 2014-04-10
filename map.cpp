@@ -75,7 +75,7 @@ char fname[MAXPATHLEN];
 	if (load_entities(fname)) return 1;
 	
 	sprintf(fname, "%s.tsc", stage);
-	if (tsc_load(fname, SP_MAP) == -1) return 1;
+	if (tsc_load(fname, SP_MAP) == 1) return 1;
 	map_set_backdrop(stages[stage_no].bg_no);
 	map.scrolltype = stages[stage_no].scroll_type;
 	map.motionpos = 0;
