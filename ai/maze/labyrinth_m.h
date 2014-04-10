@@ -1,5 +1,5 @@
 #ifndef __AILABY_H_
-#define __AILABY_H
+#define __AILABY_H_
 #include "../../object.h"
 
 void ai_firewhirr(Object *o);
