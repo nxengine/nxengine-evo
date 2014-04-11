@@ -538,19 +538,6 @@ bool org_is_playing(void)
 	return song.playing;
 }
 
-// resume a song paused with org_stop
-/*void org_resume(void)
-{
-	if (!song.playing)
-	{
-/*		lprintf("restarting buffer %d\n", last_played_buffer);
-		//StartOrgBuffer(last_played_buffer, &final_buffer[last_played_buffer].chunk);
-		song.playing = 1;
-		song.volume = ORG_VOLUME;*/
-/*	}
-}*/
-
-
 void org_fade(void)
 {
 	stat("org_fade");
