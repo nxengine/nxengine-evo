@@ -136,7 +136,7 @@ int start;
 		fPicXOffset = -24;
 	}
 	
-	if (buttonjustpushed())
+	if (buttonjustpushed() || justpushed(ENTERKEY))
 	{
 		if (fSaving)
 			game_save(fCurSel);
