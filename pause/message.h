@@ -14,7 +14,7 @@ public:
 	void Draw();
 	void RunInput();
 	
-	int *rawKeyReturn;
+	int32_t *rawKeyReturn;
 	void (*on_dismiss)(Message *msg);
 	
 private:

@@ -1,6 +1,7 @@
 
 #ifndef _INPUT_H
 #define _INPUT_H
+//#include <SDL.h>
 
 enum INPUTS
 {
@@ -42,13 +43,13 @@ enum INPUTS
 
 extern bool inputs[INPUT_COUNT];
 extern bool lastinputs[INPUT_COUNT];
-extern int last_sdl_key;
+extern int32_t last_sdl_key;
 
 bool input_init(void);
-void input_remap(int keyindex, int sdl_key);
-int input_get_mapping(int keyindex);
+void input_remap(int keyindex, int32_t sdl_key);
+int32_t input_get_mapping(int keyindex);
 const char *input_get_name(int index);
-void input_set_mappings(int *array);
+void input_set_mappings(int32_t *array);
 void input_poll(void);
 void input_close(void);
 bool buttondown(void);

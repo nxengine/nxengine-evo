@@ -47,7 +47,7 @@ static struct
 	bool InMainMenu;
 	int xoffset;
 	
-	int remapping_key, new_sdl_key;
+	int32_t remapping_key, new_sdl_key;
 } opt;
 
 
@@ -341,7 +341,7 @@ Message *msg;
 static void _finish_control_edit(Message *msg)
 {
 int inputno = opt.remapping_key;
-int new_sdl_key = opt.new_sdl_key;
+int32_t new_sdl_key = opt.new_sdl_key;
 int i;
 
 	if (input_get_mapping(inputno) == new_sdl_key)
