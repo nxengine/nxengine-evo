@@ -1,9 +1,9 @@
 
 #include "../config.h"
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #ifdef CONFIG_ENABLE_TTF
-	#include <SDL/SDL_ttf.h>
+	#include <SDL_ttf.h>
 #endif
 
 #include "../nx.h"

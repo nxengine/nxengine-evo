@@ -2,7 +2,7 @@
 // Sound System
 // more or less, my own version of SDL_mixer
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
