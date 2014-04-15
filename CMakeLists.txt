@@ -6,18 +6,18 @@ include(CheckCXXCompilerFlag)
 project(nx)
 
 set (nx_VERSION_MAJOR 2)
-set (nx_VERSION_MINOR 0)
+set (nx_VERSION_MINOR 1)
 
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 #include(${CMAKE_SOURCE_DIR}/cmake/Modules/misc.cmake)
 
-find_package(SDL)
-find_package(SDL_ttf)
+find_package(SDL2)
+find_package(SDL2_ttf)
 #find_package(SDL2_mixer)
 
-include_directories(${SDL_INCLUDE_DIR})
-include_directories(${SDLTTF_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL2TTF_INCLUDE_DIR})
 
 file(GLOB APP_SOURCES "[a-zA-Z]*.cpp")
 file(GLOB TB_SOURCES "TextBox/[a-zA-Z]*.cpp")
@@ -57,6 +57,6 @@ set(SOURCES
 )
 
 add_executable(nx ${SOURCES})
-target_link_libraries(nx ${SDL_LIBRARY} ${SDLTTF_LIBRARY})
+target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY})
 #target_link_libraries(rde ${SDL_LIBRARY} ${SDL_IMAGE_LIBRARY} ${SDL_MIXER_LIBRARY} ${LUA_LIBRARY} ${PHYSFS_LIBRARY} ${FREETYPE_LIBRARY} ${PNG_LIBRARY})
 

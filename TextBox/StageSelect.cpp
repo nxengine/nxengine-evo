@@ -12,6 +12,7 @@
 #include "../common/stat.h"
 #include "../game.h"
 #include "../graphics/graphics.h"
+using namespace Graphics;
 #include "../graphics/sprites.h"
 #include "../autogen/sprites.h"
 using namespace Sprites;

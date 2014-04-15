@@ -2,8 +2,10 @@
 #include "../nx.h"
 #include "dialog.h"
 #include "../graphics/graphics.h"
+using namespace Graphics;
 #include "../graphics/font.h"
 #include "../graphics/sprites.h"
+
 using namespace Sprites;
 #include "../TextBox/TextBox.h"
 #include "../sound/sound.h"

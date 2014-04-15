@@ -4,6 +4,7 @@
 #include "nx.h"
 #include "inventory.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "p_arms.h"
 #include "player.h"
 #include "graphics/sprites.h"

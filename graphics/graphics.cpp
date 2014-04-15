@@ -1,22 +1,26 @@
-
+#include <cassert>
+#include <algorithm>
 // graphics routines
 #include <SDL.h>
-#ifndef __SDLSHIM__
-	#include <SDL_getenv.h>
-#endif
 
 #include <stdlib.h>
 #include "../config.h"
-#include "../version.h"
 #include "graphics.h"
 #include "tileset.h"
 #include "sprites.h"
+#include "font.h"
 #include "palette.h"
 #include "../dirnames.h"
-#include "font.h"
-#include "../common/stat.h"
 #include "../map.h"
-#include "nx_icon.h"
+
+SDL_Window * window = NULL;
+SDL_Renderer * renderer = NULL;
+
+
+// (unscaled) screen size/video mode
+int Graphics::SCREEN_WIDTH = 320;
+int Graphics::SCREEN_HEIGHT = 240;
+
 
 NXSurface *screen = NULL;				// created from SDL's screen
 static NXSurface *drawtarget = NULL;	// target of DrawRect etc; almost always screen
@@ -25,10 +29,12 @@ int screen_bpp;
 
 const NXColor DK_BLUE(0, 0, 0x21);		// the popular dk blue backdrop color
 const NXColor BLACK(0, 0, 0);			// pure black, only works if no colorkey
-const NXColor CLEAR(0, 0, 0);			// the transparent/colorkey color
+//const NXColor CLEAR(0, 0, 0);			// the transparent/colorkey color
 
 static bool is_fullscreen = false;
 static int current_res = -1;
+
+static NXSurface const* current_batch_drawtarget = NULL;
 
 bool Graphics::init(int resolution)
 {
@@ -40,18 +46,18 @@ bool Graphics::init(int resolution)
 	{
 		screen_bpp = 16;	// the default
 		
-		#ifndef __SDLSHIM__
-		const SDL_VideoInfo *info;
+		// #ifndef __SDLSHIM__
+		// const SDL_VideoInfo *info;
 		
-		// it's faster if we create the SDL screen at the bpp of the real screen.
-		// max fps went from 120 to 160 on my X11 system this way.
-		if ((info = SDL_GetVideoInfo()))
-		{
-			stat("videoinfo: desktop bpp %d", info->vfmt->BitsPerPixel);
-			if (info->vfmt->BitsPerPixel > 8)
-				screen_bpp = info->vfmt->BitsPerPixel;
-		}
-		#endif
+		// // it's faster if we create the SDL screen at the bpp of the real screen.
+		// // max fps went from 120 to 160 on my X11 system this way.
+		// if ((info = SDL_GetVideoInfo()))
+		// {
+		// 	stat("videoinfo: desktop bpp %d", info->vfmt->BitsPerPixel);
+		// 	if (info->vfmt->BitsPerPixel > 8)
+		// 		screen_bpp = info->vfmt->BitsPerPixel;
+		// }
+		// #endif
 	}
 	
 	palette_reset();
@@ -72,65 +78,183 @@ void Graphics::close()
 {
 	stat("Graphics::Close()");
 	SDL_ShowCursor(true);
+	SDL_DestroyWindow(window); window = NULL;
+}
+
+bool Graphics::WindowVisible()
+{
+	Uint32 flags = SDL_GetWindowFlags(window);
+
+	return (flags & SDL_WINDOW_SHOWN) && !(flags & SDL_WINDOW_MINIMIZED) // SDL_APPACTIVE
+		&& (flags & SDL_WINDOW_INPUT_FOCUS);                              // SDL_APPINPUTFOCUS 
 }
 
 /*
 void c------------------------------() {}
 */
 
+bool Graphics::SelectResolution()
+{
+	SDL_DisplayMode curr, close;
+
+	curr.w = 320;
+	curr.h = 240;
+	curr.driverdata = NULL;
+	curr.refresh_rate = 0;
+	curr.format = 0;
+	
+	// Getting biggest display mode
+	// On iPhone 4S (retina device) there is two set of resolutions.
+	// On iPad 2 - only one set.
+	
+	int displayModes = SDL_GetNumDisplayModes(0);
+	
+	if (displayModes <= 0)
+	{
+		staterr("SDL_GetNumDisplayModes modes count = %d, %s", displayModes, SDL_GetError());
+		return true;
+	}
+	
+	int maxw = 0;
+	int maxi = 0;
+	for (int i = 0; i < displayModes; ++i)
+	{
+		if (SDL_GetDisplayMode(0, i, &close))
+		{
+			staterr("SDL_GetDisplayMode %s", SDL_GetError());
+			return true;
+		}
+		
+		int w = close.w > close.h ? close.w : close.h;
+		if (w > maxw)
+		{
+			maxw = w;
+			maxi = i;
+		}
+	}
+	
+	if (SDL_GetDisplayMode(0, maxi, &close))
+	{
+		staterr("SDL_GetDisplayMode %s", SDL_GetError());
+		return true;
+	}
+	
+	if (close.w < close.h)
+		std::swap(close.w, close.h);
+
+	stat("closest w = %d, h = %d, dm = %u", close.w, close.h, close.format);	
+
+	// Scale will be set by the width. Width will be changed to be best possible
+	// Height will be set by scale.
+	// Both width and height will be made even.
+
+	// iPad 1/2
+	// 1024/320 = 3.2 = 3; 1024/3 = 341.3 = 341 = 340
+	// 768/3 = 256
+
+	// iPad 3/4
+	// 2048/320 = 6.4 = 6; 2048/6 = 341.3 = 341 = 340
+	// 1536/6 = 256
+
+	// iPhone 4/4s
+	// 960/320 = 3; 960 / 3 = 320
+	// 640/3 = 213.3 = 213 = 212
+
+	// iPhone 5
+	// 1136/320 = 3.55 = 3; 1136/3 = 378.6 = 378
+	// 640/3 = 213.3 = 213 = 212
+
+	// TODO something with former versions of iPhone. 
+	// Scale factor must be 1.5 on them.
+
+	int wf = close.w / 320;
+	Graphics::SCREEN_WIDTH = int((close.w / wf) & 0xfffffffe);
+	Graphics::SCREEN_HEIGHT = int((close.h / wf) & 0xfffffffe);
+
+	NXSurface::SetScale(wf);
+	
+	return false;
+}
+
 bool Graphics::InitVideo()
 {
-    SDL_Surface *sdl_screen;
-
-    SDL_Surface *icon;
-    icon = SDL_CreateRGBSurfaceFrom((void *)WINDOW_TITLE_ICON.pixel_data,
-                                    WINDOW_TITLE_ICON.width,
-                                    WINDOW_TITLE_ICON.height,
-                                    WINDOW_TITLE_ICON.bytes_per_pixel * 8,
-                                    WINDOW_TITLE_ICON.bytes_per_pixel * WINDOW_TITLE_ICON.width,
-                                #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
-                                    0xff000000, /* Red bit mask. */
-                                    0x00ff0000, /* Green bit mask. */
-                                    0x0000ff00, /* Blue bit mask. */
-                                    0x000000ff  /* Alpha bit mask. */
-                                #else
-                                    0x000000ff, /* Red bit mask. */
-                                    0x0000ff00, /* Green bit mask. */
-                                    0x00ff0000, /* Blue bit mask. */
-                                    0xff000000  /* Alpha bit mask. */
-                                #endif
-                                    );
-    SDL_WM_SetIcon(icon, NULL);
-    SDL_FreeSurface(icon);
-
 	if (drawtarget == screen) drawtarget = NULL;
 	if (screen) delete screen;
 	
-	uint32_t flags = SDL_SWSURFACE | SDL_HWPALETTE;
-	if (is_fullscreen) flags |= SDL_FULLSCREEN;
+	uint32_t window_flags = SDL_WINDOW_SHOWN;
+	if (is_fullscreen) window_flags |= SDL_WINDOW_FULLSCREEN;
 	
-	#ifndef __SDLSHIM__
-	putenv((char *)"SDL_VIDEO_CENTERED=1");
-	#endif
-	
-	stat("SDL_SetVideoMode: %dx%d @ %dbpp", SCREEN_WIDTH*SCALE, SCREEN_HEIGHT*SCALE, screen_bpp);
-	sdl_screen = SDL_SetVideoMode(SCREEN_WIDTH*SCALE, SCREEN_HEIGHT*SCALE, screen_bpp, flags);
-	if (!sdl_screen)
+	if (window)
 	{
-		staterr("Graphics::InitVideo: error setting video mode");
+		stat("second call to Graphics::InitVideo()");
+		abort();
+	}
+	
+	stat("SDL_CreateWindow: %dx%d @ %dbpp", Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE, screen_bpp);
+	window = SDL_CreateWindow("NXEngine", 
+		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE,
+		window_flags);
+
+	if (!window)
+	{
+		staterr("Graphics::InitVideo: error setting video mode (SDL_CreateWindow: %s)", SDL_GetError());
 		return 1;
 	}
-	
-	if (use_palette && !(sdl_screen->flags & SDL_HWPALETTE))
+
+	int drv_index = -1;
+#if 0
 	{
-		staterr("Graphics::InitVideo: failed to obtain exclusive access to hardware palette");
-		exit(1);
+		int drivers = SDL_GetNumRenderDrivers();
+		SDL_RendererInfo info;
+		for (int i = 0; i < drivers; ++i)
+		{
+			if (SDL_GetRenderDriverInfo(i, &info))
+			{
+				staterr("Graphics::InitVideo: SDL_GetRenderDriverInfo() failed: %s", SDL_GetError());
+			}
+
+			if (strcmp("opengl", info.name) == 0)
+			{
+				drv_index = i;
+				break;
+			}
+		}
 	}
+#endif
 	
-	SDL_WM_SetCaption(NXVERSION, NULL);
+	renderer = SDL_CreateRenderer(window, drv_index, /*SDL_RENDERER_SOFTWARE | */SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	if (!renderer)
+	{
+		staterr("Graphics::InitVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
+		return 1;
+	}
+
+	SDL_RendererInfo info;
+	if (SDL_GetRendererInfo(renderer, &info))
+	{
+		staterr("Graphics::InitVideo: SDL_GetRendererInfo failed: %s", SDL_GetError());
+		return 1;
+	}
+
+	if (!(info.flags & SDL_RENDERER_TARGETTEXTURE))
+	{
+		staterr("Graphics::InitVideo: SDL_RENDERER_TARGETTEXTURE is not supported");
+		return 1;
+	}
+
+	
 	SDL_ShowCursor(is_fullscreen == false);
-	
-	screen = new NXSurface(sdl_screen, false);
+
+	screen = NXSurface::createScreen(Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE, 
+		info.texture_formats[0]);
+    
+    if (!screen)
+    {
+        staterr("Graphics::InitVideo: no screen has been created");
+        return 1;
+    }
+
 	if (!drawtarget) drawtarget = screen;
 	return 0;
 }
@@ -167,6 +291,19 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 		return 0;
 	
 	int old_res = current_res;
+
+#ifdef IPHONE
+	
+	restoreOnFailure = false;
+	
+	if (SelectResolution())
+	{
+		staterr("SelectResolution() failed!");
+		return 1;
+	}
+
+#else
+
 	int factor;
 	
 	if (r == 0)
@@ -182,7 +319,8 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	
 	stat("Setting scaling %d and fullscreen=%s", factor, is_fullscreen ? "yes":"no");
 	NXSurface::SetScale(factor);
-	
+#endif
+
 	if (Graphics::InitVideo())
 	{
 		staterr("Switch to resolution %d failed!", r);
@@ -209,7 +347,7 @@ const char **Graphics::GetResolutions()
 static const char *res_str[]   =
 {
 	"Fullscreen",
-	"320x240", "640x480", "960x720", "1280x960",
+	"320x240", "640x480", "960x720",
 	NULL
 };
 
@@ -243,7 +381,7 @@ NXRect srcrect, dstrect;
 	if (tileset && spritesheet)
 	{
 		// blank out the old tile data with clear
-		tileset->FillRect(&dstrect, CLEAR);
+		tileset->ClearRect(&dstrect);
 		
 		// copy the sprite over
 		BlitSurface(spritesheet, &srcrect, tileset, &dstrect);
@@ -260,8 +398,8 @@ char fname[MAXPATHLEN];
 	if (loading.LoadImage(fname))
 		return;
 	
-	int x = (SCREEN_WIDTH / 2) - (loading.Width() / 2);
-	int y = (SCREEN_HEIGHT / 2) - loading.Height();
+	int x = (Graphics::SCREEN_WIDTH / 2) - (loading.Width() / 2);
+	int y = (Graphics::SCREEN_HEIGHT / 2) - loading.Height();
 	
 	ClearScreen(BLACK);
 	DrawSurface(&loading, x, y);
@@ -304,9 +442,60 @@ void Graphics::BlitPatternAcross(NXSurface *sfc, int x_dst, int y_dst, int y_src
 	drawtarget->BlitPatternAcross(sfc, x_dst, y_dst, y_src, height);
 }
 
+
+void Graphics::DrawBatchBegin(size_t max_count)
+{
+	if (NULL != current_batch_drawtarget)
+		assert(false && "batch operation already begun");
+
+	current_batch_drawtarget = drawtarget;
+
+	drawtarget->DrawBatchBegin(max_count);
+}
+
+void Graphics::DrawBatchAdd(NXSurface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht)
+{
+	if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+
+	drawtarget->DrawBatchAdd(src, dstx, dsty, srcx, srcy, wd, ht);
+}
+
+void Graphics::DrawBatchAdd(NXSurface *src, int x, int y)
+{
+	if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+
+	drawtarget->DrawBatchAdd(src, x, y);
+}
+
+void Graphics::DrawBatchAddPatternAcross(NXSurface *sfc, int x_dst, int y_dst, int y_src, int height)
+{
+    if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+    
+	drawtarget->DrawBatchAddPatternAcross(sfc, x_dst, y_dst, y_src, height);
+}
+
+void Graphics::DrawBatchEnd()
+{
+	if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+
+	current_batch_drawtarget = NULL;
+
+	drawtarget->DrawBatchEnd();
+}
+
+
 /*
 void c------------------------------() {}
 */
+
+void Graphics::DrawLine(int x1, int y1, int x2, int y2, NXColor color)
+{
+	drawtarget->DrawLine(x1, y1, x2, y2, color);
+}
 
 void Graphics::DrawRect(int x1, int y1, int x2, int y2, NXColor color)
 {
@@ -371,6 +560,16 @@ void Graphics::clear_clip_rect()
 	drawtarget->clear_clip_rect();
 }
 
+bool Graphics::is_set_clip()
+{
+	return drawtarget->is_set_clip();
+}
+
+void Graphics::clip(SDL_Rect& srcrect, SDL_Rect& dstrect)
+{
+	drawtarget->clip(srcrect, dstrect);
+}
+
 /*
 void c------------------------------() {}
 */
@@ -379,6 +578,7 @@ void c------------------------------() {}
 // other than the screen.
 void Graphics::SetDrawTarget(NXSurface *surface)
 {
+	surface->SetAsTarget(surface != screen);
 	drawtarget = surface;
 }
 

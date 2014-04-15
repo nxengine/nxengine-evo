@@ -2,7 +2,6 @@
 #include "../nx.h"
 #include "palette.h"
 #include "graphics.h"
-#include "../common/stat.h"
 
 #define MAX_COLORS		256
 static SDL_Color screenpal[MAX_COLORS];
@@ -38,7 +37,7 @@ int x, y, i;
 			return sfc;
 	}
 	
-	SDL_SetColors(screen->GetSDLSurface(), screenpal, 0, ncolors);
+	SDL_SetPaletteColors(screen->Format()->palette, screenpal, 0, ncolors);
 	return sfc;
 /*
 	// remap indexes in surface

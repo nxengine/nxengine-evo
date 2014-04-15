@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../graphics/graphics.h"
+using namespace Graphics;
 #include "../TextBox/TextBox.h"
 
 

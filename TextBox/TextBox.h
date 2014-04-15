@@ -6,6 +6,8 @@
 #include "ItemImage.h"
 #include "StageSelect.h"
 #include "SaveSelect.h"
+#include "../graphics/graphics.h"
+using namespace Graphics;
 
 #define MSG_W				244
 #define MSG_H				64

@@ -9,17 +9,17 @@
 #ifdef CONFIG_MUTABLE_SCALE
 	extern int SCALE;
 #else
-	#define SCALE		1
+	#define SCALE		3
 #endif
 
-SDL_Surface *palette_add(SDL_Surface *sfc);
-
-struct NXSurface;
+class NXSurface;
 extern NXSurface *screen;
 
 struct NXColor
 {
 	uint8_t r, g, b;
+    
+    NXColor() : r(0), g(0), b(0) {}
 	
 	NXColor(uint8_t rr, uint8_t gg, uint8_t bb)
 		: r(rr), g(gg), b(bb)
@@ -62,7 +62,9 @@ class NXSurface
 public:
 	NXSurface();
 	NXSurface(int wd, int ht, NXFormat *format = screen->Format());
-	NXSurface(SDL_Surface *from_sfc, bool freesurface=true);
+	static NXSurface* createScreen(int wd, int ht, Uint32 pixel_format);
+	//NXSurface(SDL_Surface *from_sfc, bool freesurface=true);
+	// NXSurface(SDL_Renderer *renderer);
 	~NXSurface();
 	
 	bool AllocNew(int wd, int ht, NXFormat *format = screen->Format());
@@ -74,7 +76,15 @@ public:
 	void DrawSurface(NXSurface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
 	void BlitPatternAcross(NXSurface *src, int x_dst, int y_dst, int y_src, int height);
 	
+	void DrawBatchBegin(size_t max_count);
+	void DrawBatchAdd(NXSurface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
+	void DrawBatchAdd(NXSurface *src, int dstx, int dsty);
+    void DrawBatchAddPatternAcross(NXSurface *sfc, int x_dst, int y_dst, int y_src, int height);
+	void DrawBatchEnd();
+
 	// graphics primitives
+	void DrawLine(int x1, int y1, int x2, int y2, NXColor color);
+
 	void DrawRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
 	void DrawRect(int x1, int y1, int x2, int y2, NXColor color);
 	void DrawRect(NXRect *rect, uint8_t r, uint8_t g, uint8_t b);
@@ -84,6 +94,8 @@ public:
 	void FillRect(int x1, int y1, int x2, int y2, NXColor color);
 	void FillRect(NXRect *rect, uint8_t r, uint8_t g, uint8_t b);
 	void FillRect(NXRect *rect, NXColor color);
+	void ClearRect(int x1, int y1, int x2, int y2);
+	void ClearRect(NXRect *rect);
 	void Clear(uint8_t r, uint8_t g, uint8_t b);
 	
 	void DrawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
@@ -93,26 +105,43 @@ public:
 	void set_clip_rect(int x, int y, int w, int h);
 	void set_clip_rect(NXRect *rect);
 	void clear_clip_rect();
+	bool is_set_clip() const;
+	void clip(SDL_Rect& srcrect, SDL_Rect& dstrect) const;
 	
 	int Width();
 	int Height();
-	void EnableColorKey();
+	// void EnableColorKey();
 	NXFormat *Format();
 	
 	void Flip();
-	SDL_Surface *GetSDLSurface() { return fSurface; }
+	// SDL_Surface *GetSDLSurface() { return fSurface; }
 	
 	static void SetScale(int factor);
+
+	void SetAsTarget(bool enable);
+
+	void setFormat(NXFormat const* format);
+	void setPixelFormat(Uint32 format);
+
 	
 private:
 	static SDL_Surface *Scale(SDL_Surface *original, int factor, bool use_colorkey, bool free_original, bool use_display_format);
 	static void Scale8(SDL_Surface *src, SDL_Surface *dst, int factor);
 	
-	inline uint32_t MapColor(uint8_t r, uint8_t g, uint8_t b);
+	// inline uint32_t MapColor(uint8_t r, uint8_t g, uint8_t b);
 	void Free();
 	
-	SDL_Surface *fSurface;
-	bool fFreeSurface;
+	//SDL_Surface *fSurface;
+	// SDL_Renderer * fRenderer;
+	SDL_Texture * fTexture;
+	int tex_w;
+	int tex_h;
+	NXFormat tex_format;
+	//bool fFreeSurface;
+
+	bool need_clip;
+	SDL_Rect clip_rect;
+
 };
 
 void inline
@@ -139,6 +168,11 @@ NXSurface::FillRect(NXRect *rect, uint8_t r, uint8_t g, uint8_t b)
 void inline
 NXSurface::FillRect(NXRect *rect, NXColor color)
 { FillRect(rect->x, rect->y, rect->x + (rect->w - 1), rect->y + (rect->h - 1), color.r, color.g, color.b); }
+
+void inline
+NXSurface::ClearRect(NXRect *rect)
+{ ClearRect(rect->x, rect->y, rect->x + (rect->w - 1), rect->y + (rect->h - 1)); }
+
 
 
 void inline

@@ -8,11 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../common/basics.h"
-#include "../common/stat.h"
 
 #include "sslib.h"
 
 SSChannel channel[SS_NUM_CHANNELS];
+SDL_AudioSpec spec;
 
 uint8_t *mixbuffer = NULL;
 int mix_pos;
@@ -22,7 +22,7 @@ int lockcount = 0;
 
 char SSInit(void)
 {
-SDL_AudioSpec fmt, obtained;
+SDL_AudioSpec fmt;
 
 	// Set 16-bit stereo audio at 22Khz
 	fmt.freq = SAMPLE_RATE;
@@ -33,20 +33,20 @@ SDL_AudioSpec fmt, obtained;
 	fmt.userdata = NULL;
 	
 	// Open the audio device and start playing sound!
-	if (SDL_OpenAudio(&fmt, &obtained) < 0)
+	if (SDL_OpenAudio(&fmt, &spec) < 0)
 	{
 		staterr("SS: Unable to open audio: %s", SDL_GetError());
 		return 1;
 	}
 	
-	if (obtained.format != fmt.format || \
-		obtained.channels != fmt.channels)
+	if (spec.format != fmt.format || \
+		spec.channels != fmt.channels)
 	{
 		staterr("SS: Failed to obtain the audio format I wanted");
 		return 1;
 	}
 	
-	mixbuffer = (uint8_t *)malloc(obtained.samples * obtained.channels * 2);
+	mixbuffer = (uint8_t *)malloc(spec.samples * spec.channels * 2);
 	
 	// zero everything in all channels
 	memset(channel, 0, sizeof(channel));
@@ -329,6 +329,11 @@ int bytestogo;
 int c;
 int i;
 
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+	/* Need to initialize the stream in SDL 1.3+ */
+	memset(stream, spec.silence, len);
+#endif
+
 	// get data for all channels and add it to the mix
 	for(c=0;c<SS_NUM_CHANNELS;c++)
 	{
@@ -346,7 +351,7 @@ int i;
 				// clear remaining portion of mixbuffer
 				if (bytestogo)
 				{
-					memset(&mixbuffer[mix_pos], 0, bytestogo);
+					memset(&mixbuffer[mix_pos], spec.silence, bytestogo);
 				}
 				
 				break;

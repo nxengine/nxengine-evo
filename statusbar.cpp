@@ -3,6 +3,7 @@
 #include "statusbar.h"
 #include "graphics/sprites.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "autogen/sprites.h"
 #include "screeneffect.h"
 using namespace Sprites;

@@ -13,6 +13,7 @@
 #include "input.h"
 #include "trig.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "graphics/font.h"
 #include "sound/sound.h"
 #include "sound/org.h"
@@ -203,7 +204,7 @@ void AppMinimized(void)
 	
 	for(;;)
 	{
-		if ((SDL_GetAppState() & VISFLAGS) == VISFLAGS)
+        if (Graphics::WindowVisible())
 		{
 			break;
 		}
@@ -240,7 +241,7 @@ int32_t nexttick = 0;
 			nexttick = curtime + GAME_WAIT;
 			
 			// pause game if window minimized
-			if ((SDL_GetAppState() & VISFLAGS) != VISFLAGS)
+            if(!Graphics::WindowVisible())
 			{
 				AppMinimized();
 				nexttick = 0;

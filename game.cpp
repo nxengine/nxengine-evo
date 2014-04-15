@@ -23,6 +23,7 @@
 #include "sound/sound.h"
 #include "common/stat.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "graphics/sprites.h"
 #include "autogen/AssignSprites.h"
 #include "autogen/sprites.h"

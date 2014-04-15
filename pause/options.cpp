@@ -319,7 +319,7 @@ Dialog *dlg = opt.dlg;
 static void _upd_control(ODItem *item)
 {
 	int keysym = input_get_mapping(item->id);
-	const char *keyname = SDL_GetKeyName((SDLKey)keysym);
+	const char *keyname = SDL_GetKeyName((SDL_Keycode)keysym);
 	
 	maxcpy(item->righttext, keyname, sizeof(item->righttext) - 1);
 }

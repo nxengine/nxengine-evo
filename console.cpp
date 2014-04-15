@@ -8,6 +8,7 @@
 #include "statusbar.h"
 #include "tsc.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "graphics/font.h"
 #include "graphics/sprites.h"
 #include "sound/sound.h"
