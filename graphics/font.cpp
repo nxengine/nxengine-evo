@@ -370,7 +370,7 @@ bool NXFont::InitBitmapCharsShadowed(SDL_Surface *sheet, uint32_t fgcolor, \
 Uint32 format = screen->Format()->format;
 NXFont fgfont, shadowfont;
 SDL_Rect dstrect;
-
+SDL_Surface *letter;
 
 
 	// create temporary fonts in the fg and shadow color
@@ -393,22 +393,26 @@ SDL_Rect dstrect;
 	{
 		if (fgfont.letters[i])
 		{
-			letters[i] = SDL_CreateRGBSurface(0, \
+			letter = SDL_CreateRGBSurface(0, \
 							BITMAP_CHAR_WIDTH+1, BITMAP_CHAR_HEIGHT+1+SHADOW_OFFSET,
 							pxformat->BitsPerPixel, \
 							pxformat->Rmask, pxformat->Gmask,
 							pxformat->Bmask, pxformat->Amask);
 			
-			SDL_FillRect(letters[i], NULL, transp);
-			SDL_SetColorKey(letters[i], SDL_TRUE, transp);
-			
+			SDL_FillRect(letter, NULL, transp);
+			SDL_SetColorKey(letter, SDL_TRUE, transp);
+
 			dstrect.x = 0;
 			dstrect.y = SHADOW_OFFSET;
-			SDL_BlitSurface(shadowfont.letters[i], NULL, letters[i], &dstrect);
+			SDL_BlitSurface(shadowfont.letters[i], NULL, letter, &dstrect);
 			
 			dstrect.x = 0;
 			dstrect.y = 0;
-			SDL_BlitSurface(fgfont.letters[i], NULL, letters[i], &dstrect);
+			SDL_BlitSurface(fgfont.letters[i], NULL, letter, &dstrect);
+			SDL_PixelFormat * format = screen->Format();
+    		letters[i] = SDL_ConvertSurfaceFormat(letter, format->format, 0);
+    		SDL_FreeSurface(letter);
+
 		}
 	}
 
@@ -444,10 +448,10 @@ void NXFont::ReplaceColor(SDL_Surface *sfc, uint32_t oldcolor, uint32_t newcolor
 	if (sfc->format->BitsPerPixel == 8)
 	{
 		SDL_Color desired;
-		
 		desired.r = (newcolor >> 16) & 0xff;
 		desired.g = (newcolor >> 8) & 0xff;
 		desired.b = (newcolor & 0xff);
+		desired.a = 0xff;
 		
 		SDL_SetPaletteColors(sfc->format->palette, &desired, oldcolor, 1);
 	}
