@@ -180,6 +180,8 @@ bool Graphics::InitVideo()
 {
 	if (drawtarget == screen) drawtarget = NULL;
 	if (screen) delete screen;
+//	if (renderer) SDL_DestroyRenderer(renderer);
+//	if (window) { SDL_DestroyWindow(window); window = NULL; }
 	
 	uint32_t window_flags = SDL_WINDOW_SHOWN;
 	if (is_fullscreen) window_flags |= SDL_WINDOW_FULLSCREEN;
@@ -187,43 +189,31 @@ bool Graphics::InitVideo()
 	if (window)
 	{
 		stat("second call to Graphics::InitVideo()");
-		abort();
+//		abort();
 	}
 	
 	stat("SDL_CreateWindow: %dx%d @ %dbpp", Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE, screen_bpp);
-	window = SDL_CreateWindow("NXEngine", 
-		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE,
-		window_flags);
+	if (window)
+	{
+        	SDL_SetWindowSize(window,Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE);
+        	if (is_fullscreen) SDL_SetWindowFullscreen(window, window_flags);
+        	else SDL_SetWindowFullscreen(window, 0);
+	}
+	else
+	{
+    	window = SDL_CreateWindow("NXEngine", 
+	    	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    		Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE,
+    		window_flags);
+	}
 
 	if (!window)
 	{
 		staterr("Graphics::InitVideo: error setting video mode (SDL_CreateWindow: %s)", SDL_GetError());
 		return 1;
 	}
-
-	int drv_index = -1;
-#if 0
-	{
-		int drivers = SDL_GetNumRenderDrivers();
-		SDL_RendererInfo info;
-		for (int i = 0; i < drivers; ++i)
-		{
-			if (SDL_GetRenderDriverInfo(i, &info))
-			{
-				staterr("Graphics::InitVideo: SDL_GetRenderDriverInfo() failed: %s", SDL_GetError());
-			}
-
-			if (strcmp("opengl", info.name) == 0)
-			{
-				drv_index = i;
-				break;
-			}
-		}
-	}
-#endif
-	
-	renderer = SDL_CreateRenderer(window, drv_index, /*SDL_RENDERER_SOFTWARE | */SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	if (!renderer)
+    	renderer = SDL_CreateRenderer(window, -1, /*SDL_RENDERER_SOFTWARE | */SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 	if (!renderer)
 	{
 		staterr("Graphics::InitVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
