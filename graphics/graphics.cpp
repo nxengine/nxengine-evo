@@ -12,6 +12,7 @@
 #include "palette.h"
 #include "../dirnames.h"
 #include "../map.h"
+#include "nx_icon.h"
 
 SDL_Window * window = NULL;
 SDL_Renderer * renderer = NULL;
@@ -212,6 +213,29 @@ bool Graphics::InitVideo()
 		staterr("Graphics::InitVideo: error setting video mode (SDL_CreateWindow: %s)", SDL_GetError());
 		return 1;
 	}
+
+    SDL_Surface *icon;
+    icon = SDL_CreateRGBSurfaceFrom((void *)WINDOW_TITLE_ICON.pixel_data,
+                                    WINDOW_TITLE_ICON.width,
+                                    WINDOW_TITLE_ICON.height,
+                                    WINDOW_TITLE_ICON.bytes_per_pixel * 8,
+                                    WINDOW_TITLE_ICON.bytes_per_pixel * WINDOW_TITLE_ICON.width,
+                                #if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+                                    0xff000000, /* Red bit mask. */
+                                    0x00ff0000, /* Green bit mask. */
+                                    0x0000ff00, /* Blue bit mask. */
+                                    0x000000ff  /* Alpha bit mask. */
+                                #else
+                                    0x000000ff, /* Red bit mask. */
+                                    0x0000ff00, /* Green bit mask. */
+                                    0x00ff0000, /* Blue bit mask. */
+                                    0xff000000  /* Alpha bit mask. */
+                                #endif
+                                    );
+    SDL_SetWindowIcon(window, icon);
+    SDL_FreeSurface(icon);
+
+
 	if (!renderer)
     	renderer = SDL_CreateRenderer(window, -1, /*SDL_RENDERER_SOFTWARE | */SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
 	if (!renderer)
