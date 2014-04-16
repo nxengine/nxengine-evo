@@ -34,7 +34,6 @@ static int fps_so_far = 0;
 static uint32_t fpstimer = 0;
 
 #define GAME_WAIT			(1000/GAME_FPS)	// sets framerate
-#define VISFLAGS			(SDL_APPACTIVE | SDL_APPINPUTFOCUS)
 int framecount = 0;
 bool freezeframe = false;
 int flipacceltime = 0;
