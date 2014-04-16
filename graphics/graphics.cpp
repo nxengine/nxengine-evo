@@ -214,7 +214,18 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	else
 	{
 		is_fullscreen = false;
-		factor = r;
+		if (r>5) //widescreen
+		{
+		    factor = r-5;
+		    SCREEN_HEIGHT = 270;
+		    SCREEN_WIDTH = 480;
+		}
+		else
+		{
+		    factor = r;
+		    SCREEN_HEIGHT = 240;
+		    SCREEN_WIDTH = 320;
+		}
 	}
 	
 	stat("Setting scaling %d and fullscreen=%s", factor, is_fullscreen ? "yes":"no");
@@ -248,6 +259,8 @@ static const char *res_str[]   =
 	"Fullscreen (640x480)",
 	"320x240", "640x480", "960x720",
 	"1280x960", "1600x1200",
+	//widescreen
+	"480x270", "960x540", "1440x810", "1920x1080",
 	NULL
 };
 
