@@ -245,8 +245,9 @@ const char **Graphics::GetResolutions()
 {
 static const char *res_str[]   =
 {
-	"Fullscreen",
+	"Fullscreen (640x480)",
 	"320x240", "640x480", "960x720",
+	"1280x960", "1600x1200",
 	NULL
 };
 
