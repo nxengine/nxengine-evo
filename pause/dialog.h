@@ -20,6 +20,11 @@ class Dialog : public FocusHolder
 public:
 	Dialog();
 	~Dialog();
+
+	int DLG_X;
+	int DLG_Y;
+	int DLG_W;
+	int DLG_H;
 	
 	ODItem *AddItem(const char *text, \
 					void (*activate)(ODItem *, int)=NULL, \

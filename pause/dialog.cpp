@@ -18,16 +18,27 @@ using namespace Sprites;
 using namespace Options;
 extern std::vector<void*>  optionstack;
 
-#define DLG_X		((SCREEN_WIDTH / 2) - 88)
-#define DLG_Y		((SCREEN_HEIGHT / 2) - 90)
-#define DLG_W		190
-#define DLG_H		180
 
 #define REPEAT_WAIT	30
 #define REPEAT_RATE	4
 
 Dialog::Dialog()
 {
+    if (widescreen)
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 110);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 240;
+        DLG_H = 180;
+    }
+    else
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 88);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 190;
+        DLG_H = 180;
+    }
+
 	onclear = NULL;
 	ondismiss = NULL;
 	
