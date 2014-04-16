@@ -14,6 +14,7 @@ namespace Graphics
 {
 	extern int SCREEN_WIDTH;
 	extern int SCREEN_HEIGHT;
+	extern bool widescreen;
 
 	bool init(int resolution);
 	void close();

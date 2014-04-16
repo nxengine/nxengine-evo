@@ -22,6 +22,7 @@ SDL_Renderer * renderer = NULL;
 // (unscaled) screen size/video mode
 int Graphics::SCREEN_WIDTH = 320;
 int Graphics::SCREEN_HEIGHT = 240;
+bool Graphics::widescreen = false;
 
 
 NXSurface *screen = NULL;				// created from SDL's screen
@@ -220,12 +221,14 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 		    factor = r-5;
 		    SCREEN_HEIGHT = 270;
 		    SCREEN_WIDTH = 480;
+		    widescreen = true;
 		}
 		else
 		{
 		    factor = r;
 		    SCREEN_HEIGHT = 240;
 		    SCREEN_WIDTH = 320;
+		    widescreen = false;
 		}
 	}
 	
