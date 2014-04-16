@@ -413,6 +413,7 @@ static void PFirePolarStar(int level)
 		if (level == 2) xoff = -5<<CSF; else xoff = -4<<CSF;
 		
 		FireSimpleBulletOffset(OBJ_POLAR_SHOT, B_PSTAR_L1+level, xoff, 0);
+		rumble(0.2,200);
 	}
 }
 
@@ -437,12 +438,14 @@ int x, y;
 			shot->xinertia = random(-0xAA, 0xAA);
 		else
 			shot->yinertia = random(-0xAA, 0xAA);
+		rumble(0.2,200);
 	}
 	else
 	{
 		// drop an OBJ_MGUN_SHOOTER object to fire the layers (trail) of the MGun blast.
 		GetPlayerShootPoint(&x, &y);
 		FireLevel23MGun(x, y, level, dir);
+		rumble(0.3,200);
 	}
 	
 	// do machine-gun flying
