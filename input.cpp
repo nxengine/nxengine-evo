@@ -11,6 +11,8 @@ int32_t mappings[INPUT_COUNT];
 bool inputs[INPUT_COUNT];
 bool lastinputs[INPUT_COUNT];
 int32_t last_sdl_key;
+SDL_Joystick *joy;
+SDL_Haptic *haptic;
 
 bool input_init(void)
 {
@@ -53,7 +55,39 @@ bool input_init(void)
 	mappings[ENDKEY]   = SDLK_END;
 	mappings[ENTERKEY] = SDLK_RETURN;
 	
+	SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
+	if (SDL_NumJoysticks() > 0) {
+	    // Open joystick
+	    joy = SDL_JoystickOpen(0);
+	
+	    if (joy) {
+	        stat("Opened Joystick 0");
+	        stat("Name: %s", SDL_JoystickNameForIndex(0));
+	        stat("Number of Axes: %d", SDL_JoystickNumAxes(joy));
+	        stat("Number of Buttons: %d", SDL_JoystickNumButtons(joy));
+	        stat("Number of Balls: %d", SDL_JoystickNumBalls(joy));
+	        haptic = SDL_HapticOpenFromJoystick( joy );
+	        if (haptic == NULL)
+	        {
+	            stat("No force feedback support");
+	        }
+	        else
+	        {
+	            if (SDL_HapticRumbleInit( haptic ) != 0)
+	                stat("Coiuldn't init simple rumble");
+	        }
+	    } else {
+	        stat("Couldn't open Joystick 0");
+	    }
+	                                                                    
+	}
 	return 0;
+}
+
+void rumble(float str, uint32_t len)
+{
+    if (haptic != NULL)
+        SDL_HapticRumblePlay(haptic, str, len);
 }
 
 
@@ -213,6 +247,33 @@ int ino;//, key;
 				game.running = false;
 			}
 			break;
+			
+			case SDL_JOYBUTTONDOWN:
+			case SDL_JOYBUTTONUP:
+			{
+			    Uint8 but = evt.jbutton.button;
+			    stat(">>>> joy button: %d = %d", but, (evt.jbutton.state == SDL_PRESSED));
+			    inputs[but+4] = (evt.jbutton.state == SDL_PRESSED);
+
+			}
+			break;
+			
+			case SDL_JOYHATMOTION:
+			{
+			    stat(">>>> joy hat: %d = %d", evt.jhat.hat, evt.jhat.value);
+			    inputs[LEFTKEY] = evt.jhat.value & SDL_HAT_LEFT;
+			    inputs[RIGHTKEY] = evt.jhat.value & SDL_HAT_RIGHT;
+			    inputs[UPKEY] = evt.jhat.value & SDL_HAT_UP;
+			    inputs[DOWNKEY] = evt.jhat.value & SDL_HAT_DOWN;
+			}
+			break;
+
+			case SDL_JOYAXISMOTION:
+			{
+			    stat(">>>> joy axis: %d = %d", evt.jaxis.axis, evt.jaxis.value);
+			}
+			break;
+
 		}
 	}
 }
@@ -221,7 +282,10 @@ int ino;//, key;
 
 void input_close(void)
 {
-
+    // Close if opened
+    if (SDL_JoystickGetAttached(joy)) {
+        SDL_JoystickClose(joy);
+    }
 }
 
 /*

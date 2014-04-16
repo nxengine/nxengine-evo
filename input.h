@@ -1,7 +1,7 @@
 
 #ifndef _INPUT_H
 #define _INPUT_H
-//#include <SDL.h>
+#include <SDL.h>
 
 enum INPUTS
 {
@@ -44,6 +44,8 @@ enum INPUTS
 extern bool inputs[INPUT_COUNT];
 extern bool lastinputs[INPUT_COUNT];
 extern int32_t last_sdl_key;
+extern SDL_Joystick *joy;
+extern SDL_Haptic *haptic;
 
 bool input_init(void);
 void input_remap(int keyindex, int32_t sdl_key);
@@ -55,5 +57,6 @@ void input_close(void);
 bool buttondown(void);
 bool buttonjustpushed(void);
 bool justpushed(int k);
+void rumble(float str, uint32_t len);
 
 #endif

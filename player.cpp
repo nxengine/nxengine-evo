@@ -1210,13 +1210,13 @@ void hurtplayer(int damage)
 	{
 		sound(SND_PLAYER_DIE);
 		SmokeClouds(player, 64, 16, 16);
-		
+		rumble(1.0,1000);
 		killplayer(SCRIPT_DIED);
 	}
 	else
 	{
 		sound(SND_PLAYER_HURT);
-		
+		rumble(0.5,500);
 		// hop
 		if (player->movementmode != MOVEMODE_ZEROG)
 			player->yinertia = -0x400;
