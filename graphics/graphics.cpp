@@ -12,6 +12,7 @@
 #include "palette.h"
 #include "../dirnames.h"
 #include "../map.h"
+#include "../version.h"
 #include "nx_icon.h"
 
 SDL_Window * window = NULL;
@@ -100,7 +101,7 @@ bool Graphics::InitVideo()
 	}
 	else
 	{
-    	window = SDL_CreateWindow("NXEngine", 
+    	window = SDL_CreateWindow(NXVERSION, 
 	    	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
     		Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE,
     		window_flags);
