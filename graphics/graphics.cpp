@@ -46,19 +46,6 @@ bool Graphics::init(int resolution)
 	else
 	{
 		screen_bpp = 16;	// the default
-		
-		// #ifndef __SDLSHIM__
-		// const SDL_VideoInfo *info;
-		
-		// // it's faster if we create the SDL screen at the bpp of the real screen.
-		// // max fps went from 120 to 160 on my X11 system this way.
-		// if ((info = SDL_GetVideoInfo()))
-		// {
-		// 	stat("videoinfo: desktop bpp %d", info->vfmt->BitsPerPixel);
-		// 	if (info->vfmt->BitsPerPixel > 8)
-		// 		screen_bpp = info->vfmt->BitsPerPixel;
-		// }
-		// #endif
 	}
 	
 	palette_reset();
@@ -90,99 +77,11 @@ bool Graphics::WindowVisible()
 		&& (flags & SDL_WINDOW_INPUT_FOCUS);                              // SDL_APPINPUTFOCUS 
 }
 
-/*
-void c------------------------------() {}
-*/
-
-bool Graphics::SelectResolution()
-{
-	SDL_DisplayMode curr, close;
-
-	curr.w = 320;
-	curr.h = 240;
-	curr.driverdata = NULL;
-	curr.refresh_rate = 0;
-	curr.format = 0;
-	
-	// Getting biggest display mode
-	// On iPhone 4S (retina device) there is two set of resolutions.
-	// On iPad 2 - only one set.
-	
-	int displayModes = SDL_GetNumDisplayModes(0);
-	
-	if (displayModes <= 0)
-	{
-		staterr("SDL_GetNumDisplayModes modes count = %d, %s", displayModes, SDL_GetError());
-		return true;
-	}
-	
-	int maxw = 0;
-	int maxi = 0;
-	for (int i = 0; i < displayModes; ++i)
-	{
-		if (SDL_GetDisplayMode(0, i, &close))
-		{
-			staterr("SDL_GetDisplayMode %s", SDL_GetError());
-			return true;
-		}
-		
-		int w = close.w > close.h ? close.w : close.h;
-		if (w > maxw)
-		{
-			maxw = w;
-			maxi = i;
-		}
-	}
-	
-	if (SDL_GetDisplayMode(0, maxi, &close))
-	{
-		staterr("SDL_GetDisplayMode %s", SDL_GetError());
-		return true;
-	}
-	
-	if (close.w < close.h)
-		std::swap(close.w, close.h);
-
-	stat("closest w = %d, h = %d, dm = %u", close.w, close.h, close.format);	
-
-	// Scale will be set by the width. Width will be changed to be best possible
-	// Height will be set by scale.
-	// Both width and height will be made even.
-
-	// iPad 1/2
-	// 1024/320 = 3.2 = 3; 1024/3 = 341.3 = 341 = 340
-	// 768/3 = 256
-
-	// iPad 3/4
-	// 2048/320 = 6.4 = 6; 2048/6 = 341.3 = 341 = 340
-	// 1536/6 = 256
-
-	// iPhone 4/4s
-	// 960/320 = 3; 960 / 3 = 320
-	// 640/3 = 213.3 = 213 = 212
-
-	// iPhone 5
-	// 1136/320 = 3.55 = 3; 1136/3 = 378.6 = 378
-	// 640/3 = 213.3 = 213 = 212
-
-	// TODO something with former versions of iPhone. 
-	// Scale factor must be 1.5 on them.
-
-	int wf = close.w / 320;
-	Graphics::SCREEN_WIDTH = int((close.w / wf) & 0xfffffffe);
-	Graphics::SCREEN_HEIGHT = int((close.h / wf) & 0xfffffffe);
-
-	NXSurface::SetScale(wf);
-	
-	return false;
-}
 
 bool Graphics::InitVideo()
 {
 	if (drawtarget == screen) drawtarget = NULL;
 	if (screen) delete screen;
-//	if (renderer) SDL_DestroyRenderer(renderer);
-//	if (window) { SDL_DestroyWindow(window); window = NULL; }
 	
 	uint32_t window_flags = SDL_WINDOW_SHOWN;
 	if (is_fullscreen) window_flags |= SDL_WINDOW_FULLSCREEN;
@@ -190,7 +89,6 @@ bool Graphics::InitVideo()
 	if (window)
 	{
 		stat("second call to Graphics::InitVideo()");
-//		abort();
 	}
 	
 	stat("SDL_CreateWindow: %dx%d @ %dbpp", Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE, screen_bpp);
@@ -306,18 +204,6 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	
 	int old_res = current_res;
 
-#ifdef IPHONE
-	
-	restoreOnFailure = false;
-	
-	if (SelectResolution())
-	{
-		staterr("SelectResolution() failed!");
-		return 1;
-	}
-
-#else
-
 	int factor;
 	
 	if (r == 0)
@@ -333,7 +219,6 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	
 	stat("Setting scaling %d and fullscreen=%s", factor, is_fullscreen ? "yes":"no");
 	NXSurface::SetScale(factor);
-#endif
 
 	if (Graphics::InitVideo())
 	{

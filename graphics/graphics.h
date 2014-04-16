@@ -21,7 +21,6 @@ namespace Graphics
 	bool WindowVisible();
 	
 	bool InitVideo();
-	bool SelectResolution();
 	void SetFullscreen(bool enable);
 	bool SetResolution(int factor, bool restoreOnFailure=true);
 	const char **GetResolutions();
