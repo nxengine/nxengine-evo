@@ -9,7 +9,7 @@
 #ifdef CONFIG_MUTABLE_SCALE
 	extern int SCALE;
 #else
-	#define SCALE		3
+	#define SCALE		1
 #endif
 
 class NXSurface;
