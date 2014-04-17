@@ -1,15 +1,10 @@
 * remove DBuffer and other shit from common
 * make paths configurable
-* opengl render, maybe
 * drop out sif and use original data
 * make compatible with nicalis version
-* split classes in separate files
-* drop global vars and use singletons, etc.
-* split out renderer, soundlib, etc. in separate subsistems
 * use wavs for drums?
 * use ogg for music?
 * rewrite soundlib to use SDL_mixer
 * rewrite c code in c++
 * replace all with stl when possible
 * c++11
-* add support for joystick
