@@ -22,6 +22,9 @@ static void EnterMainMenu();
 void LeavingMainMenu();
 void _res_get(ODItem *item);
 void _res_change(ODItem *item, int dir);
+void _fullscreen_get(ODItem *item);
+void _fullscreen_change(ODItem *item, int dir);
+
 void _debug_change(ODItem *item, int dir);
 void _debug_get(ODItem *item);
 void _save_change(ODItem *item, int dir);
@@ -157,6 +160,7 @@ Dialog *dlg = opt.dlg;
 	dlg->Clear();
 	
 	dlg->AddItem("Resolution: ", _res_change, _res_get);
+	dlg->AddItem("Fullscreen ", _fullscreen_change, _fullscreen_get);
 	dlg->AddItem("Controls", EnterControlsMenu);
 	
 	dlg->AddSeparator();
@@ -209,28 +213,35 @@ int newres;
 	sound(SND_DOOR);
 	
 	newres = (settings->resolution + dir);
-	if (newres >= numres) newres = 0;
-	if (newres < 0) newres = (numres - 1);
-	
-	// because on my computer, a SDL bug causes switching to fullscreen to
-	// not restore the resolution properly on exit, and it keeps messing up all
-	// the windows when I press it accidently.
-	if (newres == 0 && settings->inhibit_fullscreen)
-	{
-		new Message("Fullscreen disabled via", "inhibit-fullscreen console setting");
-		sound(SND_GUN_CLICK);
-		return;
-	}
+	if (newres >= numres) newres = 1;
+	if (newres < 1) newres = (numres - 1);
 	
 	if (!Graphics::SetResolution(newres, true))
 	{
 		settings->resolution = newres;
+		Graphics::SetFullscreen(false);
+		Graphics::SetFullscreen(settings->fullscreen);
+
 	}
 	else
 	{
 		new Message("Resolution change failed");
 		sound(SND_GUN_CLICK);
 	}
+}
+
+void _fullscreen_get(ODItem *item)
+{
+	static const char *strs[] = { "", " =" };
+	strcpy(item->suffix, strs[settings->fullscreen]);
+}
+
+
+void _fullscreen_change(ODItem *item, int dir)
+{
+	settings->fullscreen ^= 1;
+	sound(SND_MENU_SELECT);
+	Graphics::SetFullscreen(settings->fullscreen);
 }
 
 

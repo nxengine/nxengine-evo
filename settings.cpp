@@ -52,6 +52,7 @@ bool settings_load(Settings *setfile)
 		setfile->resolution = 2;		// 640x480 Windowed, should be safe value
 		setfile->last_save_slot = 0;
 		setfile->multisave = true;
+		setfile->fullscreen = false;
 		
 		setfile->enable_debug_keys = false;
 		setfile->sound_enabled = true;

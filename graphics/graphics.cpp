@@ -24,7 +24,6 @@ int Graphics::SCREEN_WIDTH = 320;
 int Graphics::SCREEN_HEIGHT = 240;
 bool Graphics::widescreen = false;
 
-
 NXSurface *screen = NULL;				// created from SDL's screen
 static NXSurface *drawtarget = NULL;	// target of DrawRect etc; almost always screen
 bool use_palette = false;				// true if we are in an indexed-color video mode
@@ -34,7 +33,7 @@ const NXColor DK_BLUE(0, 0, 0x21);		// the popular dk blue backdrop color
 const NXColor BLACK(0, 0, 0);			// pure black, only works if no colorkey
 //const NXColor CLEAR(0, 0, 0);			// the transparent/colorkey color
 
-static bool is_fullscreen = false;
+
 static int current_res = -1;
 
 static NXSurface const* current_batch_drawtarget = NULL;
@@ -86,7 +85,6 @@ bool Graphics::InitVideo()
 	if (screen) delete screen;
 	
 	uint32_t window_flags = SDL_WINDOW_SHOWN;
-	if (is_fullscreen) window_flags |= SDL_WINDOW_FULLSCREEN;
 	
 	if (window)
 	{
@@ -97,8 +95,6 @@ bool Graphics::InitVideo()
 	if (window)
 	{
         	SDL_SetWindowSize(window,Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE);
-        	if (is_fullscreen) SDL_SetWindowFullscreen(window, window_flags);
-        	else SDL_SetWindowFullscreen(window, 0);
 	}
 	else
 	{
@@ -157,9 +153,6 @@ bool Graphics::InitVideo()
 		return 1;
 	}
 
-	
-	SDL_ShowCursor(is_fullscreen == false);
-
 	screen = NXSurface::createScreen(Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE, 
 		info.texture_formats[0]);
     
@@ -185,12 +178,8 @@ bool Graphics::FlushAll()
 
 void Graphics::SetFullscreen(bool enable)
 {
-	if (is_fullscreen != enable)
-	{
-		is_fullscreen = enable;
-		InitVideo();
-		Graphics::FlushAll();
-	}
+	SDL_ShowCursor(!enable);
+	SDL_SetWindowFullscreen(window, (enable ? SDL_WINDOW_FULLSCREEN : 0));
 }
 
 // change the video mode to one of the available resolution codes, currently:
@@ -210,12 +199,10 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	
 	if (r == 0)
 	{
-		is_fullscreen = true;
-		factor = 2;
+		factor = 1;
 	}
 	else
 	{
-		is_fullscreen = false;
 		if (r>5) //widescreen
 		{
 		    factor = r-5;
@@ -232,7 +219,7 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 		}
 	}
 	
-	stat("Setting scaling %d and fullscreen=%s", factor, is_fullscreen ? "yes":"no");
+	stat("Setting scaling %d", factor);
 	NXSurface::SetScale(factor);
 
 	if (Graphics::InitVideo())
@@ -260,7 +247,7 @@ const char **Graphics::GetResolutions()
 {
 static const char *res_str[]   =
 {
-	"Fullscreen (640x480)",
+	"---",
 	"320x240", "640x480", "960x720",
 	"1280x960", "1600x1200",
 	//widescreen

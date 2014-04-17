@@ -10,6 +10,7 @@ extern const NXColor BLACK;
 extern const NXColor CLEAR;
 extern bool use_palette;
 
+
 namespace Graphics
 {
 	extern int SCREEN_WIDTH;

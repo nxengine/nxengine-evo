@@ -13,6 +13,8 @@ struct Settings
 	bool files_extracted;
 	bool show_fps;
 	bool displayformat;
+	bool fullscreen;
+
 	
 	bool enable_debug_keys;
 	bool sound_enabled;
