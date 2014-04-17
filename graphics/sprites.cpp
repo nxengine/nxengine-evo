@@ -1,6 +1,7 @@
 
 // sprites routines
 #include "graphics.h"
+#include "../nx.h"
 #include <string.h>
 #include <vector>
 #include <string>

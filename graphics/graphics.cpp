@@ -4,6 +4,7 @@
 #include <SDL.h>
 
 #include <stdlib.h>
+#include "../nx.h"
 #include "../config.h"
 #include "graphics.h"
 #include "tileset.h"

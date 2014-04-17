@@ -2,7 +2,7 @@
 // manages the tileset
 #include <cassert>
 #include <cstdio>
-
+#include "../nx.h"
 #include "../config.h"
 
 #include "graphics.h"
