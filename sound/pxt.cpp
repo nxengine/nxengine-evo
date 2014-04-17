@@ -1,12 +1,11 @@
 
 // PXT sound file player
 // see bottom of file for info on how to use this module
-
+#include <SDL.h>
 #include <stdio.h>
 #include <math.h>			// for sin()
 #include <stdlib.h>
 #include <string.h>
-#include "portable_endian.h"
 
 #include "../config.h"
 #include "pxt.h"
@@ -705,7 +704,7 @@ int malc_size;
 	{
 		value = buffer[i];
 		value *= 200;
-		value = htole16(value);
+		value = SDL_SwapLE16(value);
 		
 		outbuffer[ap++] = value;		// left ch
 		outbuffer[ap++] = value;		// right ch
