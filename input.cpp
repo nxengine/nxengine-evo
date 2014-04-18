@@ -10,7 +10,7 @@ in_action mappings[INPUT_COUNT];
 
 bool inputs[INPUT_COUNT];
 bool lastinputs[INPUT_COUNT];
-int32_t last_sdl_key;
+in_action last_sdl_action;
 SDL_Joystick *joy;
 SDL_Haptic *haptic;
 
@@ -234,7 +234,7 @@ int ino;//, key;
 						}
 						else
 						{
-							last_sdl_key = key;
+							last_sdl_action.key = key;
 						}
 					}
 				}

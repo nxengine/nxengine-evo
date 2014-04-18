@@ -110,24 +110,21 @@ void safemode::clear()
 }
 
 
-int safemode::run_until_key(bool delay)
+void safemode::run_until_key(bool delay)
 {
 	stat("run_until_key()");
 	uint32_t start = SDL_GetTicks();
 	
-	last_sdl_key = -1;
+	last_sdl_action.key = -1;
 	do
 	{
 		input_poll();
 		SDL_Delay(50);
 		
 		if (delay && (SDL_GetTicks() - start) < 500)
-			last_sdl_key = -1;
+			last_sdl_action.key = -1;
 	}
-	while(last_sdl_key == -1);
-	
-	stat("returning key %d", last_sdl_key);
-	return last_sdl_key;
+	while(last_sdl_action.key == -1);
 }
 
 

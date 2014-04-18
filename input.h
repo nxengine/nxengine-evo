@@ -52,7 +52,7 @@ enum INPUTS
 
 extern bool inputs[INPUT_COUNT];
 extern bool lastinputs[INPUT_COUNT];
-extern int32_t last_sdl_key;
+extern in_action last_sdl_action;
 extern SDL_Joystick *joy;
 extern SDL_Haptic *haptic;
 
