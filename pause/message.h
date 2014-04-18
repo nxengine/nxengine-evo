@@ -3,6 +3,7 @@
 #define _MESSAGE_H
 
 #include "options.h"
+#include "../input.h"
 namespace Options {
 
 class Message : public FocusHolder
@@ -14,7 +15,7 @@ public:
 	void Draw();
 	void RunInput();
 	
-	int32_t *rawKeyReturn;
+	in_action *rawKeyReturn;
 	void (*on_dismiss)(Message *msg);
 	
 private:

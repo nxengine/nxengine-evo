@@ -6,10 +6,11 @@
 typedef struct 
 {
     int32_t key;
-    int32_t hat;
-    int32_t hat_value;
-    int32_t axis;
-    int32_t axis_value;
+    int32_t jbut;
+    int32_t jhat;
+    int32_t jhat_value;
+    int32_t jaxis;
+    int32_t jaxis_value;
 } in_action;
 
 enum INPUTS
@@ -57,7 +58,7 @@ extern SDL_Joystick *joy;
 extern SDL_Haptic *haptic;
 
 bool input_init(void);
-void input_remap(int keyindex, int32_t sdl_key);
+void input_remap(int keyindex, in_action sdl_key);
 in_action input_get_mapping(int keyindex);
 const char *input_get_name(int index);
 void input_set_mappings(in_action *array);

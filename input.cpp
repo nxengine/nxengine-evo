@@ -18,7 +18,14 @@ bool input_init(void)
 {
 	memset(inputs, 0, sizeof(inputs));
 	memset(lastinputs, 0, sizeof(lastinputs));
-	memset(mappings, 0xff, sizeof(mappings));
+	memset(mappings, -1, sizeof(mappings));
+	for (int i=0;i<INPUT_COUNT;i++)
+	{
+	    mappings[i].key=-1;
+	    mappings[i].jbut=-1;
+	    mappings[i].jhat=-1;
+	    mappings[i].jaxis=-1;
+	}
 	
 	// default mappings
 	mappings[LEFTKEY].key      = SDLK_LEFT;
@@ -92,14 +99,14 @@ void rumble(float str, uint32_t len)
 
 
 // set the SDL key that triggers an input
-void input_remap(int keyindex, int32_t sdl_key)
+void input_remap(int keyindex, in_action sdl_key)
 {
-	stat("input_remap(%d => %d)", keyindex, sdl_key);
+	stat("input_remap(%d => %d)", keyindex, sdl_key.key);
 	in_action old_mapping = input_get_mapping(keyindex);
 //	if (old_mapping != -1)
 //		mappings[old_mapping] = 0xff;
 	
-	mappings[keyindex].key = sdl_key;
+	mappings[keyindex] = sdl_key;
 }
 
 // get which SDL key triggers a given input
@@ -252,8 +259,8 @@ int ino;//, key;
 			case SDL_JOYBUTTONUP:
 			{
 			    Uint8 but = evt.jbutton.button;
+			    last_sdl_action.jbut = but;
 			    stat(">>>> joy button: %d = %d", but, (evt.jbutton.state == SDL_PRESSED));
-			    inputs[but+4] = (evt.jbutton.state == SDL_PRESSED);
 
 			}
 			break;
@@ -261,16 +268,19 @@ int ino;//, key;
 			case SDL_JOYHATMOTION:
 			{
 			    stat(">>>> joy hat: %d = %d", evt.jhat.hat, evt.jhat.value);
-			    inputs[LEFTKEY] = evt.jhat.value & SDL_HAT_LEFT;
-			    inputs[RIGHTKEY] = evt.jhat.value & SDL_HAT_RIGHT;
-			    inputs[UPKEY] = evt.jhat.value & SDL_HAT_UP;
-			    inputs[DOWNKEY] = evt.jhat.value & SDL_HAT_DOWN;
+			    last_sdl_action.jhat = evt.jhat.hat;
+			    last_sdl_action.jhat_value = evt.jhat.value;
 			}
 			break;
 
 			case SDL_JOYAXISMOTION:
 			{
-			    stat(">>>> joy axis: %d = %d", evt.jaxis.axis, evt.jaxis.value);
+			    if (evt.jaxis.value > 100 || evt.jaxis.value < -100) //dead zone
+			    {
+			        last_sdl_action.jaxis = evt.jaxis.axis;
+			        last_sdl_action.jaxis_value = evt.jaxis.value;
+			        stat(">>>> joy axis: %d = %d", evt.jaxis.axis, evt.jaxis.value);
+			    }
 			}
 			break;
 

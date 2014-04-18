@@ -23,6 +23,9 @@ Message::Message(const char *msg, const char *msg2)
 	rawKeyReturn = NULL;
 	on_dismiss = NULL;
 	last_sdl_action.key = -1;
+	last_sdl_action.jbut = -1;
+	last_sdl_action.jhat = -1;
+	last_sdl_action.jaxis = -1;
 	
 	fMsg = strdup(msg);
 	fMsg2 = strdup(msg2 ? msg2 : "");
@@ -77,9 +80,9 @@ void Message::Draw()
 
 void Message::RunInput()
 {
-	if (last_sdl_action.key != -1)
+	if ( (last_sdl_action.key != -1) || (last_sdl_action.jbut != -1) || (last_sdl_action.jhat != -1) || (last_sdl_action.jaxis != -1) )
 	{
-		if (rawKeyReturn) *rawKeyReturn = last_sdl_action.key;
+		if (rawKeyReturn) *rawKeyReturn = last_sdl_action;
 		if (on_dismiss)   (*on_dismiss)(this);
 		
 		delete this;

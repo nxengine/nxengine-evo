@@ -50,7 +50,8 @@ static struct
 	bool InMainMenu;
 	int xoffset;
 	
-	int32_t remapping_key, new_sdl_key;
+	int32_t remapping_key;
+	in_action new_sdl_key;
 } opt;
 
 
@@ -120,7 +121,8 @@ FocusHolder *fh;
 	for(i=0;i<optionstack.size();i++)
 	{
 		fh = (FocusHolder *)optionstack.at(i);
-		fh->Draw();
+		if (fh)
+			fh->Draw();
 	}
 	
 	if (opt.xoffset > 0)
@@ -329,9 +331,32 @@ Dialog *dlg = opt.dlg;
 
 static void _upd_control(ODItem *item)
 {
+	char keyname[64];
+	
 	in_action action = input_get_mapping(item->id);
-	int keysym = action.key;
-	const char *keyname = SDL_GetKeyName((SDL_Keycode)keysym);
+	
+	stat("%d %d %d %d", action.key, action.jbut, action.jhat, action.jaxis);
+	
+	if (action.key != -1)
+	{
+	    int keysym = action.key;
+	    snprintf(keyname, 64, "%s", SDL_GetKeyName((SDL_Keycode)keysym));
+	}
+	else if (action.jbut != -1)
+	{
+	    snprintf(keyname, 64, "JBut %d", action.jbut);
+	}
+	else if (action.jaxis != -1)
+	{
+	    if (action.jaxis_value>0)
+	        snprintf(keyname, 64, "JAxis %d+", action.jaxis);
+	    else
+	        snprintf(keyname, 64, "JAxis %d-", action.jaxis);
+	}
+	else if (action.jhat != -1)
+	{
+	    snprintf(keyname, 64, "JHat %d Up", action.jaxis);
+	}
 	
 	maxcpy(item->righttext, keyname, sizeof(item->righttext) - 1);
 }
@@ -341,7 +366,10 @@ static void _edit_control(ODItem *item, int dir)
 Message *msg;
 
 	opt.remapping_key = item->id;
-	opt.new_sdl_key = -1;
+	opt.new_sdl_key.key = -1;
+	opt.new_sdl_key.jbut = -1;
+	opt.new_sdl_key.jhat = -1;
+	opt.new_sdl_key.jaxis = -1;
 	
 	msg = new Message("Press new key for:", input_get_name(opt.remapping_key));
 	msg->rawKeyReturn = &opt.new_sdl_key;
@@ -352,27 +380,22 @@ Message *msg;
 
 static void _finish_control_edit(Message *msg)
 {
-int inputno = opt.remapping_key;
-int32_t new_sdl_key = opt.new_sdl_key;
-int i;
-in_action action = input_get_mapping(inputno);
-	if (action.key == new_sdl_key)
-	{
-		sound(SND_MENU_MOVE);
-		return;
-	}
+	int inputno = opt.remapping_key;
+	in_action new_sdl_key = opt.new_sdl_key;
+	int i;
+	in_action action = input_get_mapping(inputno);
 	
 	// check if key is already in use
-	for(i=0;i<INPUT_COUNT;i++)
+/*	for(i=0;i<INPUT_COUNT;i++)
 	{
 	    action = input_get_mapping(i);
-		if (i != inputno && action.key == new_sdl_key)
+		if (i != inputno && action.key == new_sdl_key.key)
 		{
 			new Message("Key already in use by:", input_get_name(i));
 			sound(SND_GUN_CLICK);
 			return;
 		}
-	}
+	}*/
 	
 	input_remap(inputno, new_sdl_key);
 	sound(SND_MENU_SELECT);
