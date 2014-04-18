@@ -127,6 +127,30 @@ int input_get_action(int32_t sdlkey)
   return -1;
 }
 
+int input_get_action_but(int32_t jbut)
+{
+  for (int i=0;i<INPUT_COUNT;i++)
+  {
+    if(mappings[i].jbut == jbut)
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
+int input_get_action_hat(int32_t jhat, int32_t jvalue)
+{
+  for (int i=0;i<INPUT_COUNT;i++)
+  {
+    if((mappings[i].jhat == jhat) && (jvalue & mappings[i].jhat_value))
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
 
 const char *input_get_name(int index)
 {
@@ -260,16 +284,26 @@ int ino;//, key;
 			{
 			    Uint8 but = evt.jbutton.button;
 			    last_sdl_action.jbut = but;
-			    stat(">>>> joy button: %d = %d", but, (evt.jbutton.state == SDL_PRESSED));
-
+			    ino = input_get_action_but(but);//mappings[key];
+				if (ino != -1)
+					inputs[ino] = (evt.jbutton.state == SDL_PRESSED);
 			}
 			break;
 			
 			case SDL_JOYHATMOTION:
 			{
-			    stat(">>>> joy hat: %d = %d", evt.jhat.hat, evt.jhat.value);
 			    last_sdl_action.jhat = evt.jhat.hat;
 			    last_sdl_action.jhat_value = evt.jhat.value;
+			    ino = input_get_action_hat(evt.jhat.hat,evt.jhat.value);//mappings[key];
+			    //cleanup all hat-binded states
+			    for (int i=0;i<INPUT_COUNT;i++)
+			    {
+			        if (mappings[i].jhat!=-1)
+			            inputs[i] = false;
+			    }
+			
+				if (ino != -1)
+					inputs[ino] = true;
 			}
 			break;
 

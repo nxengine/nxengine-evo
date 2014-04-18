@@ -355,7 +355,14 @@ static void _upd_control(ODItem *item)
 	}
 	else if (action.jhat != -1)
 	{
-	    snprintf(keyname, 64, "JHat %d Up", action.jaxis);
+	    if (action.jhat_value & SDL_HAT_LEFT)
+	        snprintf(keyname, 64, "JHat %d L", action.jhat);
+	    else if (action.jhat_value & SDL_HAT_RIGHT)
+	        snprintf(keyname, 64, "JHat %d R", action.jhat);
+	    else if (action.jhat_value & SDL_HAT_UP)
+	        snprintf(keyname, 64, "JHat %d U", action.jhat);
+	    else if (action.jhat_value & SDL_HAT_DOWN)
+	        snprintf(keyname, 64, "JHat %d D", action.jhat);
 	}
 	
 	maxcpy(item->righttext, keyname, sizeof(item->righttext) - 1);
