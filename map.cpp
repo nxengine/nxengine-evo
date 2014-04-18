@@ -613,10 +613,12 @@ int scroll_x, scroll_y;
 		
 		for(x=0; x <= (SCREEN_WIDTH / TILE_W)+MAP_DRAW_EXTRA_X; x++)
 		{
-			int t = map.tiles[mapx+x][mapy+y];
-			if ((tileattr[t] & TA_FOREGROUND) == foreground)
-				draw_tile(blit_x, blit_y, t);
-			
+			if ( ((mapx+x) >= 0 ) && ((mapy+y) >= 0 ) )
+			{
+				int t = map.tiles[mapx+x][mapy+y];
+				if ((tileattr[t] & TA_FOREGROUND) == foreground)
+					draw_tile(blit_x, blit_y, t);
+			}
 			blit_x += TILE_W;
 		}
 		
