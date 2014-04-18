@@ -6,7 +6,7 @@
 #include "sound/sound.h"
 #include "common/stat.h"
 
-int32_t mappings[INPUT_COUNT];
+in_action mappings[INPUT_COUNT];
 
 bool inputs[INPUT_COUNT];
 bool lastinputs[INPUT_COUNT];
@@ -21,39 +21,39 @@ bool input_init(void)
 	memset(mappings, 0xff, sizeof(mappings));
 	
 	// default mappings
-	mappings[LEFTKEY]      = SDLK_LEFT;
-	mappings[RIGHTKEY]     = SDLK_RIGHT;
-	mappings[UPKEY]        = SDLK_UP;
-	mappings[DOWNKEY]      = SDLK_DOWN;
-	mappings[JUMPKEY]      = SDLK_z;
-	mappings[FIREKEY]      = SDLK_x;
-	mappings[PREVWPNKEY]   = SDLK_a;
-	mappings[NEXTWPNKEY]   = SDLK_s;
-	mappings[INVENTORYKEY] = SDLK_q;
-	mappings[MAPSYSTEMKEY] = SDLK_w;
+	mappings[LEFTKEY].key      = SDLK_LEFT;
+	mappings[RIGHTKEY].key     = SDLK_RIGHT;
+	mappings[UPKEY].key        = SDLK_UP;
+	mappings[DOWNKEY].key      = SDLK_DOWN;
+	mappings[JUMPKEY].key      = SDLK_z;
+	mappings[FIREKEY].key      = SDLK_x;
+	mappings[PREVWPNKEY].key   = SDLK_a;
+	mappings[NEXTWPNKEY].key   = SDLK_s;
+	mappings[INVENTORYKEY].key = SDLK_q;
+	mappings[MAPSYSTEMKEY].key = SDLK_w;
 	
-	mappings[ESCKEY] = SDLK_ESCAPE;
+	mappings[ESCKEY].key = SDLK_ESCAPE;
 	
-	mappings[F1KEY]  = SDLK_F1;
-	mappings[F2KEY]  = SDLK_F2;
-	mappings[F3KEY]  = SDLK_F3;
-	mappings[F4KEY]  = SDLK_F4;
-	mappings[F5KEY]  = SDLK_F5;
-	mappings[F6KEY]  = SDLK_F6;
-	mappings[F7KEY]  = SDLK_F7;
-	mappings[F8KEY]  = SDLK_F8;
-	mappings[F9KEY]  = SDLK_F9;
-	mappings[F10KEY] = SDLK_F10;
-	mappings[F11KEY] = SDLK_F11;
-	mappings[F12KEY] = SDLK_F12;
+	mappings[F1KEY].key  = SDLK_F1;
+	mappings[F2KEY].key  = SDLK_F2;
+	mappings[F3KEY].key  = SDLK_F3;
+	mappings[F4KEY].key  = SDLK_F4;
+	mappings[F5KEY].key  = SDLK_F5;
+	mappings[F6KEY].key  = SDLK_F6;
+	mappings[F7KEY].key  = SDLK_F7;
+	mappings[F8KEY].key  = SDLK_F8;
+	mappings[F9KEY].key  = SDLK_F9;
+	mappings[F10KEY].key = SDLK_F10;
+	mappings[F11KEY].key = SDLK_F11;
+	mappings[F12KEY].key = SDLK_F12;
 	
-	mappings[FREEZE_FRAME_KEY]  = SDLK_SPACE;
-	mappings[FRAME_ADVANCE_KEY] = SDLK_c;
-	mappings[DEBUG_FLY_KEY]     = SDLK_v;
+	mappings[FREEZE_FRAME_KEY].key  = SDLK_SPACE;
+	mappings[FRAME_ADVANCE_KEY].key = SDLK_c;
+	mappings[DEBUG_FLY_KEY].key     = SDLK_v;
 
-	mappings[HOMEKEY]  = SDLK_HOME;
-	mappings[ENDKEY]   = SDLK_END;
-	mappings[ENTERKEY] = SDLK_RETURN;
+	mappings[HOMEKEY].key  = SDLK_HOME;
+	mappings[ENDKEY].key   = SDLK_END;
+	mappings[ENTERKEY].key = SDLK_RETURN;
 	
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
 	if (SDL_NumJoysticks() > 0) {
@@ -95,15 +95,15 @@ void rumble(float str, uint32_t len)
 void input_remap(int keyindex, int32_t sdl_key)
 {
 	stat("input_remap(%d => %d)", keyindex, sdl_key);
-	int old_mapping = input_get_mapping(keyindex);
+	in_action old_mapping = input_get_mapping(keyindex);
 //	if (old_mapping != -1)
 //		mappings[old_mapping] = 0xff;
 	
-	mappings[keyindex] = sdl_key;
+	mappings[keyindex].key = sdl_key;
 }
 
 // get which SDL key triggers a given input
-int32_t input_get_mapping(int keyindex)
+in_action input_get_mapping(int keyindex)
 {
   return mappings[keyindex];
 }
@@ -112,7 +112,7 @@ int input_get_action(int32_t sdlkey)
 {
   for (int i=0;i<INPUT_COUNT;i++)
   {
-    if(mappings[i] == sdlkey)
+    if(mappings[i].key == sdlkey)
     {
       return i;
     }
@@ -139,7 +139,7 @@ static const char *input_names[] =
 	return input_names[index];
 }
 
-void input_set_mappings(int32_t *array)
+void input_set_mappings(in_action *array)
 {
 	memset(mappings, 0xff, sizeof(mappings));
 	for(int i=0;i<INPUT_COUNT;i++)

@@ -329,7 +329,8 @@ Dialog *dlg = opt.dlg;
 
 static void _upd_control(ODItem *item)
 {
-	int keysym = input_get_mapping(item->id);
+	in_action action = input_get_mapping(item->id);
+	int keysym = action.key;
 	const char *keyname = SDL_GetKeyName((SDL_Keycode)keysym);
 	
 	maxcpy(item->righttext, keyname, sizeof(item->righttext) - 1);
@@ -354,8 +355,8 @@ static void _finish_control_edit(Message *msg)
 int inputno = opt.remapping_key;
 int32_t new_sdl_key = opt.new_sdl_key;
 int i;
-
-	if (input_get_mapping(inputno) == new_sdl_key)
+in_action action = input_get_mapping(inputno);
+	if (action.key == new_sdl_key)
 	{
 		sound(SND_MENU_MOVE);
 		return;
@@ -364,7 +365,8 @@ int i;
 	// check if key is already in use
 	for(i=0;i<INPUT_COUNT;i++)
 	{
-		if (i != inputno && input_get_mapping(i) == new_sdl_key)
+	    action = input_get_mapping(i);
+		if (i != inputno && action.key == new_sdl_key)
 		{
 			new Message("Key already in use by:", input_get_name(i));
 			sound(SND_GUN_CLICK);

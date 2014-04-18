@@ -28,7 +28,7 @@ struct Settings
 	bool skip_intro;
 	int reserved[8];
 	
-	int32_t input_mappings[INPUT_COUNT];
+	in_action input_mappings[INPUT_COUNT];
 };
 
 bool settings_load(Settings *settings=NULL);
