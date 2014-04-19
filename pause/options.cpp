@@ -335,8 +335,6 @@ static void _upd_control(ODItem *item)
 	
 	in_action action = input_get_mapping(item->id);
 	
-	stat("%d %d %d %d", action.key, action.jbut, action.jhat, action.jaxis);
-	
 	if (action.key != -1)
 	{
 	    int keysym = action.key;
@@ -393,16 +391,24 @@ static void _finish_control_edit(Message *msg)
 	in_action action = input_get_mapping(inputno);
 	
 	// check if key is already in use
-/*	for(i=0;i<INPUT_COUNT;i++)
+	for(i=0;i<INPUT_COUNT;i++)
 	{
 	    action = input_get_mapping(i);
-		if (i != inputno && action.key == new_sdl_key.key)
+		if (i != inputno && action.key!=-1 && action.key == new_sdl_key.key)
 		{
 			new Message("Key already in use by:", input_get_name(i));
 			sound(SND_GUN_CLICK);
 			return;
 		}
-	}*/
+
+		if (i != inputno && action.jbut!=-1 && action.jbut == new_sdl_key.jbut)
+		{
+			new Message("Key already in use by:", input_get_name(i));
+			sound(SND_GUN_CLICK);
+			return;
+		}
+
+	}
 	
 	input_remap(inputno, new_sdl_key);
 	sound(SND_MENU_SELECT);
