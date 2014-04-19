@@ -528,7 +528,7 @@ void ai_chest_closed(Object *o)
 		o->state = 1;
 		
 		// stop motion of chest spawned from Kulala
-		if (settings->emulate_bugs)
+//		if (settings->emulate_bugs)
 			o->xinertia = 0;
 	}
 	

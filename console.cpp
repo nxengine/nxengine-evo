@@ -494,14 +494,6 @@ extern int fps;
 void c------------------------------() {}
 */
 
-
-static void __emulate_bugs(std::vector<std::string> *args, int num)
-{
-	settings->emulate_bugs = num;
-	settings_save();
-	Respond("emulate bugs: %s", settings->emulate_bugs ? "enabled":"disabled");
-}
-
 static void __skip_intro(std::vector<std::string> *args, int num)
 {
 	settings->skip_intro = num;
@@ -573,7 +565,6 @@ static CommandEntry commands[] =
 	"reset", __reset, 0, 0,
 	"fps", __fps, 0, 1,
 	
-	"emulate-bugs", __emulate_bugs, 1, 1,
 	"skip-intro", __skip_intro, 1, 1,
 	
 	"player->hide", __player_hide, 1, 1,

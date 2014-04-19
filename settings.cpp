@@ -58,8 +58,6 @@ bool settings_load(Settings *setfile)
 		setfile->sound_enabled = true;
 		setfile->music_enabled = 1;	// both Boss and Regular music
 		
-		setfile->emulate_bugs = false;
-		
 		return 1;
 	}
 	else

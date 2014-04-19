@@ -12,13 +12,10 @@ struct Settings
 	bool multisave;
 	bool show_fps;
 	bool fullscreen;
-
 	
 	bool enable_debug_keys;
 	bool sound_enabled;
 	int music_enabled;
-	
-	bool emulate_bugs;
 	
 	bool skip_intro;
 	

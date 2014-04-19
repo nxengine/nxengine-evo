@@ -197,13 +197,6 @@ static void Sprites::LoadSheetIfNeeded(int sheetno)
 		spritesheet[sheetno] = new NXSurface;
 		spritesheet[sheetno]->LoadImage(pbm_name, true);
 		
-		// fix the blue dash in the middle of the starpoof effect on that one frame,
-		// I'm pretty sure this is a glitch.
-		if (!settings->emulate_bugs)
-		{
-			if (sheetno == 3)	// Caret.pbm
-				spritesheet[sheetno]->FillRect(40, 58, 41, 58, 0, 0, 0);
-		}
 	}
 }
 
