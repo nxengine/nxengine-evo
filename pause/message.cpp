@@ -44,15 +44,19 @@ Message::Message(const char *msg, const char *msg2)
 		fMsgY = (MESSAGE_Y + ((MESSAGE_H / 2) - (GetFontHeight() / 2))) - 1;
 		fShowDelay = 4;
 	}
-	
 	optionstack.push_back(this);
 }
 
 Message::~Message()
 {
-//    for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
-//        if (*it==this)
-            optionstack.erase(optionstack.end()-1);
+    for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
+    {
+        if (*it!=NULL && *it==this)
+        {
+            optionstack.erase(it);
+            break;
+        }
+    }
 	free(fMsg);
 	free(fMsg2);
 }
@@ -84,7 +88,6 @@ void Message::RunInput()
 	{
 		if (rawKeyReturn) *rawKeyReturn = last_sdl_action;
 		if (on_dismiss)   (*on_dismiss)(this);
-		
 		delete this;
 	}
 }
