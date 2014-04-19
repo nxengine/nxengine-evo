@@ -280,7 +280,6 @@ int ino;//, key;
 			break;
 			
 			case SDL_JOYBUTTONDOWN:
-			case SDL_JOYBUTTONUP:
 			{
 			    Uint8 but = evt.jbutton.button;
 			    last_sdl_action.jbut = but;
@@ -289,11 +288,23 @@ int ino;//, key;
 					inputs[ino] = (evt.jbutton.state == SDL_PRESSED);
 			}
 			break;
+
+			case SDL_JOYBUTTONUP:
+			{
+			    Uint8 but = evt.jbutton.button;
+			    ino = input_get_action_but(but);//mappings[key];
+				if (ino != -1)
+					inputs[ino] = (evt.jbutton.state == SDL_PRESSED);
+			}
+			break;
 			
 			case SDL_JOYHATMOTION:
 			{
-			    last_sdl_action.jhat = evt.jhat.hat;
-			    last_sdl_action.jhat_value = evt.jhat.value;
+			    if (evt.jhat.value != SDL_HAT_CENTERED)
+			    {
+			        last_sdl_action.jhat = evt.jhat.hat;
+			        last_sdl_action.jhat_value = evt.jhat.value;
+			    }
 			    ino = input_get_action_hat(evt.jhat.hat,evt.jhat.value);//mappings[key];
 			    //cleanup all hat-binded states
 			    for (int i=0;i<INPUT_COUNT;i++)
