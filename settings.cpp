@@ -10,7 +10,7 @@
 
 
 const char *setfilename = "settings.dat";
-const uint16_t SETTINGS_VERSION = 0x1602;		// serves as both a version and magic
+const uint32_t SETTINGS_VERSION = ( ( '1' << 24 ) + ( 'S' << 16 ) + ( 'X' << 8 ) + 'N' );		// serves as both a version and magic
 
 Settings normal_settings;
 Settings *settings = &normal_settings;
@@ -58,18 +58,7 @@ bool settings_load(Settings *setfile)
 		setfile->sound_enabled = true;
 		setfile->music_enabled = 1;	// both Boss and Regular music
 		
-		setfile->instant_quit = false;
 		setfile->emulate_bugs = false;
-		setfile->no_quake_in_hell = false;
-		setfile->inhibit_fullscreen = false;
-		setfile->files_extracted = false;
-		
-		// I found that 8bpp->32bpp blits are actually noticably faster
-		// than 32bpp->32bpp blits on several systems I tested. Not sure why
-		// but calling SDL_DisplayFormat seems to actually be slowing things
-		// down. This goes against established wisdom so if you want it back on,
-		// run "displayformat 1" in the console and restart.
-		setfile->displayformat = false;
 		
 		return 1;
 	}

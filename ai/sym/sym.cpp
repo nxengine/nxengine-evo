@@ -1138,7 +1138,7 @@ void ai_scroll_controller(Object *o)
 // makes a perpetual quake. used during end-run and Hell.
 void ai_quake(Object *o)
 {
-	if (!settings->no_quake_in_hell || \
+	if (
 		(game.curmap != STAGE_HELL1 && \
 		 game.curmap != STAGE_HELL2 && \
 		 game.curmap != STAGE_HELL3 && \

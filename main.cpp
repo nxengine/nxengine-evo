@@ -107,11 +107,7 @@ static int frameskip = 0;
 	// input handling for a few global things
 	if (justpushed(ESCKEY))
 	{
-		if (settings->instant_quit)
-		{
-			game.running = false;
-		}
-		else if (!game.paused)		// no pause from Options
+		if (!game.paused)		// no pause from Options
 		{
 			game.pause(GP_PAUSED);
 		}
