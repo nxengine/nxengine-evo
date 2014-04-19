@@ -59,9 +59,14 @@ Dialog::~Dialog()
 {
 	for(int i=0;i<fItems.size();i++)
 		delete fItems.at(i);
-//	for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
-//	    if (*it==this)
-	        optionstack.erase(optionstack.end()-1);
+	for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
+	{
+	    if (*it==this)
+	    {
+	        optionstack.erase(it);
+	        break;
+	    }
+	}
 }
 
 void Dialog::SetSize(int w, int h)
