@@ -151,6 +151,18 @@ int input_get_action_hat(int32_t jhat, int32_t jvalue)
   return -1;
 }
 
+int input_get_action_axis(int32_t jaxis, int32_t jvalue)
+{
+  for (int i=0;i<INPUT_COUNT;i++)
+  {
+    if( (mappings[i].jaxis == jaxis) && ( (jvalue > 0 && mappings[i].jaxis_value > 0) || (jvalue < 0 && mappings[i].jaxis_value < 0) ))
+    {
+      return i;
+    }
+  }
+  return -1;
+}
+
 
 const char *input_get_name(int index)
 {
@@ -320,11 +332,19 @@ int ino;//, key;
 
 			case SDL_JOYAXISMOTION:
 			{
-			    if (evt.jaxis.value > 100 || evt.jaxis.value < -100) //dead zone
+			    if (evt.jaxis.value > 20000 || evt.jaxis.value < -20000) //dead zone
 			    {
 			        last_sdl_action.jaxis = evt.jaxis.axis;
 			        last_sdl_action.jaxis_value = evt.jaxis.value;
-			        stat(">>>> joy axis: %d = %d", evt.jaxis.axis, evt.jaxis.value);
+			        ino = input_get_action_axis(evt.jaxis.axis,evt.jaxis.value);//mappings[key];
+			        for (int i=0;i<INPUT_COUNT;i++)
+			        {
+			            if (mappings[i].jaxis!=-1)
+			                inputs[i] = false;
+			        }
+			
+				    if (ino != -1)
+					    inputs[ino] = true;
 			    }
 			}
 			break;

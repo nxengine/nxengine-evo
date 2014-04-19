@@ -408,6 +408,24 @@ static void _finish_control_edit(Message *msg)
 			return;
 		}
 
+		if (i != inputno && action.jhat!=-1 && action.jhat == new_sdl_key.jhat && action.jhat_value & new_sdl_key.jhat_value)
+		{
+			new Message("Key already in use by:", input_get_name(i));
+			sound(SND_GUN_CLICK);
+			return;
+		}
+
+		if (i != inputno && action.jaxis!=-1 && action.jaxis == new_sdl_key.jaxis)
+		{
+		    if ( ((action.jaxis_value > 0) && (new_sdl_key.jaxis_value > 0)) || ((action.jaxis_value < 0) && (new_sdl_key.jaxis_value < 0)))
+		    {
+			    new Message("Key already in use by:", input_get_name(i));
+			    sound(SND_GUN_CLICK);
+			    return;
+			}
+		}
+
+
 	}
 	
 	input_remap(inputno, new_sdl_key);
