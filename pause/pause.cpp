@@ -11,48 +11,58 @@
 #include "../autogen/sprites.h"
 using namespace Graphics;
 using namespace Sprites;
+#include "dialog.h"
+using namespace Options;
+
+Dialog *dlg;
+int mm_cursel;
+
+
+void _resume(ODItem* item, int dir)
+{
+    lastinputs[F1KEY] = true;
+    game.pause(false);
+}
+
+void _options(ODItem* item, int dir)
+{
+    game.pause(GP_OPTIONS);
+}
+
+void _reset(ODItem* item, int dir)
+{
+    lastinputs[F2KEY] = true;
+    game.reset();
+}
+
+void _exit(ODItem* item, int dir)
+{
+    lastinputs[ESCKEY] = true;
+    game.running = false;
+}
 
 bool pause_init(int param)
 {
 	memset(lastinputs, 1, sizeof(lastinputs));
+	dlg = new Dialog();
+	dlg->AddItem("Resume", _resume);
+	dlg->AddItem("Options", _options);
+	dlg->AddItem("Reset", _reset);
+	dlg->AddItem("Exit", _exit);
+	dlg->SetSelection(mm_cursel);
+	dlg->ShowFull();
+	dlg->SetSize(100,70);
 	return 0;
 }
 
 void pause_tick()
 {
-	ClearScreen(BLACK);
+	dlg->RunInput();
+	dlg->Draw();
 	
-	int cx = (SCREEN_WIDTH / 2) - (sprites[SPR_RESETPROMPT].w / 2);
-	int cy = (SCREEN_HEIGHT / 2) - (sprites[SPR_RESETPROMPT].h / 2);
-	draw_sprite(cx, cy, SPR_RESETPROMPT);
-	
-	const char *str = "F3:Options";
-	cx = (SCREEN_WIDTH / 2) - (GetFontWidth(str, 0) / 2) - 4;
-	cy = (SCREEN_HEIGHT - 8) - GetFontHeight();
-	int f3wd = font_draw(cx, cy, "F3", 0);
-	font_draw(cx + f3wd, cy, ":Options", 0, &bluefont);
-	
-	// resume
-	if (justpushed(F1KEY))
-	{
-		lastinputs[F1KEY] = true;
-		game.pause(false);
-		return;
-	}
-	
-	// reset
-	if (justpushed(F2KEY))
-	{
-		lastinputs[F2KEY] = true;
-		game.reset();
-		return;
-	}
-	
-	// exit
 	if (justpushed(ESCKEY))
 	{
-		lastinputs[ESCKEY] = true;
-		game.running = false;
+	    _resume(NULL,0);
 		return;
 	}
 }

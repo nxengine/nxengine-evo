@@ -105,17 +105,6 @@ static int frameskip = 0;
 	input_poll();
 	
 	// input handling for a few global things
-	if (justpushed(ESCKEY))
-	{
-		if (!game.paused)		// no pause from Options
-		{
-			game.pause(GP_PAUSED);
-		}
-	}
-	else if (justpushed(F3KEY))
-	{
-		game.pause(GP_OPTIONS);
-	}
 	
 	// freeze frame
 	if (settings->enable_debug_keys)

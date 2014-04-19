@@ -228,6 +228,10 @@ void Game::tick(void)
 		
 		// call the tick function for the current game mode
 		tickfunctions[game.mode].OnTick();
+		if (justpushed(ESCKEY) && (game.mode == GM_NORMAL || game.mode == GM_INVENTORY || game.mode == GM_MAP_SYSTEM))
+		{
+		    game.pause(GP_PAUSED);
+		}
 	}
 	
 	DrawDebug();
