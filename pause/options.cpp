@@ -324,6 +324,7 @@ Dialog *dlg = opt.dlg;
 	dlg->AddItem("Wpn Next", _edit_control, _upd_control, NEXTWPNKEY);
 	dlg->AddItem("Inventory", _edit_control, _upd_control, INVENTORYKEY);
 	dlg->AddItem("Map", _edit_control, _upd_control, MAPSYSTEMKEY);
+	dlg->AddItem("Pause", _edit_control, _upd_control, ESCKEY);
 	
 	dlg->AddSeparator();
 	dlg->AddDismissalItem();

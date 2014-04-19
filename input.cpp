@@ -169,9 +169,9 @@ const char *input_get_name(int index)
 static const char *input_names[] =
 {
 	"left", "right", "up", "down",
-	"jump", "fire", "pervious wpn", "next wpn",
+	"jump", "fire", "previous wpn", "next wpn",
 	"inventory", "map",
-	"escape",
+	"pause",
 	"f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
 	"freeze frame", "frame advance", "debug fly"
 };
