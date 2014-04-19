@@ -88,8 +88,9 @@ bool fall = true;
 			if (o->y < 0)
 			{
 				o->Delete();
-				sound(SND_QUAKE);
-				game.quaketime = 30;
+				quake(30);
+//				sound(SND_QUAKE);
+//				game.quaketime = 30;
 			}
 		}
 		break;

@@ -1148,7 +1148,8 @@ void ai_quake(Object *o)
 		 game.curmap != STAGE_CORRIDOR && \
 		 game.curmap != STAGE_SEAL_CHAMBER))
 	{
-		game.quaketime = 10;
+		//game.quaketime = 10;
+		quake(10,0);
 	}
 }
 

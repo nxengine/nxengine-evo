@@ -1026,7 +1026,12 @@ int cmdip;
 			}
 			break;
 			
-			case OP_QUA: s->nod_delay = game.quaketime = parm[0]; break;
+			case OP_QUA:
+			{
+			    s->nod_delay = parm[0];
+			    quake(parm[0],0);
+			}
+			break;
 			
 			case OP_LIPLUS: AddHealth(parm[0]); break;
 			case OP_AEPLUS: RefillAllAmmo(); break;		// refills missiles

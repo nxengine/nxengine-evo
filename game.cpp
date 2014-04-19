@@ -322,6 +322,7 @@ void quake(int quaketime, int snd)
 	
 	if (snd)
 		sound((snd != -1) ? snd : SND_QUAKE);
+	rumble(0.6,quaketime*10);
 }
 
 // during Ballos fight, since there's already a perpetual quake,
@@ -337,6 +338,7 @@ void megaquake(int quaketime, int snd)
 	
 	if (snd)
 		sound((snd != -1) ? snd : SND_QUAKE);
+	rumble(0.8,quaketime*10);
 }
 
 
