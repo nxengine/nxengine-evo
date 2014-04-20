@@ -472,22 +472,4 @@ void Graphics::clip(SDL_Rect& srcrect, SDL_Rect& dstrect)
 	drawtarget->clip(srcrect, dstrect);
 }
 
-/*
-void c------------------------------() {}
-*/
-
-// change the target surface of operation like DrawRect to something
-// other than the screen.
-void Graphics::SetDrawTarget(NXSurface *surface)
-{
-	surface->SetAsTarget(surface != screen);
-	drawtarget = surface;
-}
-
-
-
-
-
-
-
 

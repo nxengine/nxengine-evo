@@ -66,8 +66,6 @@ namespace Graphics
 	void clear_clip_rect();
 	bool is_set_clip();
 	void clip(SDL_Rect& srcrect, SDL_Rect& dstrect);
-	
-	void SetDrawTarget(NXSurface *surface);
 };
 
 #endif
