@@ -11,7 +11,6 @@
 #include "graphics/font.h"
 #include "graphics/sprites.h"
 #include "autogen/sprites.h"
-#include "graphics/palette.h"
 #include "graphics/tileset.h"
 using namespace Graphics;
 using namespace Sprites;
@@ -52,7 +51,6 @@ char fname[MAXPATHLEN];
 	
 	if (use_palette)
 	{
-		palette_reset();
 		Sprites::FlushSheets();
 		map_flush_graphics();
 	}

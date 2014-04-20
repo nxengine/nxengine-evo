@@ -10,7 +10,6 @@
 #include "tileset.h"
 #include "sprites.h"
 #include "font.h"
-#include "palette.h"
 #include "../dirnames.h"
 #include "../map.h"
 #include "../version.h"
@@ -50,7 +49,6 @@ bool Graphics::init(int resolution)
 		screen_bpp = 16;	// the default
 	}
 	
-	palette_reset();
 	
 	if (SetResolution(resolution, false))
 		return 1;
@@ -170,7 +168,6 @@ bool Graphics::InitVideo()
 bool Graphics::FlushAll()
 {
 	stat("Graphics::FlushAll()");
-	palette_reset();
 	Sprites::FlushSheets();
 	Tileset::Reload();
 	map_flush_graphics();
