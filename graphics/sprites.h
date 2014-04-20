@@ -35,8 +35,6 @@ namespace Sprites
 	
 	NXSurface *get_spritesheet(int sheetno);
 	int create_spritesheet(int wd, int ht);
-	void draw_sprite_to_surface(NXSurface *dst, int x, int y, int s, int frame, uint8_t dir);
-
 };
 
 
