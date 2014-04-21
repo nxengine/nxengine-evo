@@ -85,21 +85,26 @@ bool Graphics::InitVideo()
 	
 	uint32_t window_flags = SDL_WINDOW_SHOWN;
 	
+	const Graphics::gres_t* res=GetRes();
+	
+	uint32_t width = res[current_res].width;
+	uint32_t height = res[current_res].height;
+	
 	if (window)
 	{
 		stat("second call to Graphics::InitVideo()");
 	}
 	
-	stat("SDL_CreateWindow: %dx%d @ %dbpp", Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE, screen_bpp);
+	stat("SDL_CreateWindow: %dx%d @ %dbpp", width, height, screen_bpp);
 	if (window)
 	{
-        	SDL_SetWindowSize(window,Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE);
+        	SDL_SetWindowSize(window, width, height);
 	}
 	else
 	{
     	window = SDL_CreateWindow(NXVERSION, 
 	    	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-    		Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE,
+    		width, height,
     		window_flags);
 	}
 
@@ -152,7 +157,7 @@ bool Graphics::InitVideo()
 		return 1;
 	}
 
-	screen = NXSurface::createScreen(Graphics::SCREEN_WIDTH*SCALE, Graphics::SCREEN_HEIGHT*SCALE, 
+	screen = NXSurface::createScreen(width, height, 
 		info.texture_formats[0]);
     
     if (!screen)
@@ -201,25 +206,16 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	}
 	else
 	{
-		if (r>5) //widescreen
-		{
-		    factor = r-5;
-		    SCREEN_HEIGHT = 270;
-		    SCREEN_WIDTH = 480;
-		    widescreen = true;
-		}
-		else
-		{
-		    factor = r;
-		    SCREEN_HEIGHT = 240;
-		    SCREEN_WIDTH = 320;
-		    widescreen = false;
-		}
+	    const Graphics::gres_t* res=GetRes();
+		factor = res[r].scale;
+		SCREEN_HEIGHT = res[r].base_height;
+		SCREEN_WIDTH = res[r].base_width;
+		widescreen = res[r].widescreen;
 	}
 	
 	stat("Setting scaling %d", factor);
 	NXSurface::SetScale(factor);
-
+    current_res = r;
 	if (Graphics::InitVideo())
 	{
 		staterr("Switch to resolution %d failed!", r);
@@ -231,29 +227,45 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 			{
 				staterr("Fatal error: vidmode recovery failed!!!");
 			}
+			current_res = old_res;
 		}
 		
 		return 1;
 	}
-	
+	current_res = r;
 	if (Graphics::FlushAll()) return 1;
 	return 0;
 }
 
-// return a pointer to a null-terminated list of available resolutions.
-const char **Graphics::GetResolutions()
-{
-static const char *res_str[]   =
-{
-	"---",
-	"320x240", "640x480", "960x720",
-	"1280x960", "1600x1200",
-	//widescreen
-	"480x270", "960x540", "1440x810", "1920x1080",
-	NULL
-};
 
-	return res_str;
+const Graphics::gres_t* Graphics::GetRes()
+{
+    static const Graphics::gres_t res[] = {
+        // 4:3
+        {(char*)"---", 0, 0, 0, 0, 1, false },
+        {(char*)"320x240", 320, 240, 320, 240, 1, false },
+        {(char*)"640x480", 640, 480, 320, 240, 2, false },
+//        {(char*)"800x600", 800, 600, 320, 240, 2.5, false }, //requires float scalefactor
+        {(char*)"1024x768", 1024, 768, 340, 256, 3, false },
+        {(char*)"1280x1024", 1280, 1024, 320, 256, 4, false },
+        {(char*)"1600x1200", 1600, 1200, 320, 240, 5, false },
+        // widescreen
+        {(char*)"480x272", 480, 272, 480, 272, 1, true },
+        {(char*)"1440x900", 1440, 900, 480, 300, 3, true },
+        {(char*)"1920x1080", 1440, 900, 480, 270, 4, true },
+        NULL
+    };
+
+    return res;
+}
+
+uint32_t Graphics::GetResCount()
+{
+  uint32_t i;
+  const gres_t *res = GetRes();
+
+  for (i=0;res[i].name;i++);
+  return i;
 }
 
 /*

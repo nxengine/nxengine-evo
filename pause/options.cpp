@@ -190,26 +190,26 @@ void LeavingMainMenu()
 	opt.InMainMenu = false;
 }
 
+
 void _res_get(ODItem *item)
 {
-	const char **reslist = Graphics::GetResolutions();
+	const gres_t *reslist = Graphics::GetRes();
 	
 	if (settings->resolution < 0 || \
-		settings->resolution >= count_string_list(reslist))
+		settings->resolution >= Graphics::GetResCount())
 	{
 		item->suffix[0] = 0;
 	}
 	else
 	{
-		strcpy(item->suffix, reslist[settings->resolution]);
+		strcpy(item->suffix, reslist[settings->resolution].name);
 	}
 }
 
 
 void _res_change(ODItem *item, int dir)
 {
-const char **reslist = Graphics::GetResolutions();
-int numres = count_string_list(reslist);
+int numres = Graphics::GetResCount();
 int newres;
 
 	sound(SND_DOOR);

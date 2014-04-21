@@ -13,6 +13,17 @@ extern bool use_palette;
 
 namespace Graphics
 {
+    typedef struct 
+    {
+        char *name;
+        uint32_t width;
+        uint32_t height;
+        uint32_t base_width;
+        uint32_t base_height;
+        uint32_t scale;
+        bool widescreen;
+    } gres_t;
+
 	extern int SCREEN_WIDTH;
 	extern int SCREEN_HEIGHT;
 	extern bool widescreen;
@@ -25,7 +36,8 @@ namespace Graphics
 	bool InitVideo();
 	void SetFullscreen(bool enable);
 	bool SetResolution(int factor, bool restoreOnFailure=true);
-	const char **GetResolutions();
+	const gres_t *GetRes();
+	uint32_t GetResCount();
 	bool FlushAll();
 	
 	// ---------------------------------------
