@@ -38,6 +38,7 @@ public:
 	void Clear();
 	void Refresh();
 	
+	void UpdateSizePos();
 	void SetSize(int w, int h);
 	void offset(int xd, int yd);
 	

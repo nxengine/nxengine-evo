@@ -69,6 +69,30 @@ Dialog::~Dialog()
 	}
 }
 
+void Dialog::UpdateSizePos()
+{
+    if (widescreen)
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 110);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 240;
+        DLG_H = 180;
+    }
+    else
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 88);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 190;
+        DLG_H = 180;
+    }
+
+    fCoords.x = DLG_X;
+    fCoords.y = DLG_Y;
+    fCoords.w = DLG_W;
+    fCoords.h = DLG_H;
+    fTextX = (fCoords.x + 48);
+}
+
 void Dialog::SetSize(int w, int h)
 {
 	fCoords.w = w;
