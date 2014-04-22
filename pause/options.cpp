@@ -162,7 +162,7 @@ Dialog *dlg = opt.dlg;
 	dlg->Clear();
 	
 	dlg->AddItem("Resolution: ", _res_change, _res_get);
-	dlg->AddItem("Fullscreen ", _fullscreen_change, _fullscreen_get);
+	dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get);
 	dlg->AddItem("Controls", EnterControlsMenu);
 	
 	dlg->AddSeparator();
@@ -234,7 +234,7 @@ int newres;
 
 void _fullscreen_get(ODItem *item)
 {
-	static const char *strs[] = { "", " =" };
+	static const char *strs[] = { "Off", "On" };
 	strcpy(item->suffix, strs[settings->fullscreen]);
 }
 
