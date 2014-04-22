@@ -467,10 +467,15 @@ static void DrawFastLeftLayered(void)
     int y1, y2;
     int i, x;
 
-	if (--map.parscroll_x <= -(SCREEN_WIDTH*2))
+	if (--map.parscroll_x <= -(480*SCALE*2))
 		map.parscroll_x = 0;
 	
 	y1 = x = 0;
+	// fix for extra height
+	if (map.backdrop == 9)
+	    ClearScreen(111,156,214);
+	else if (map.backdrop == 10)
+	    ClearScreen(111,107,86);
 	for(i=0;i<nlayers;i++)
 	{
 		y2 = layer_ys[i];
@@ -478,7 +483,7 @@ static void DrawFastLeftLayered(void)
 		if (i)	// not the static moon layer?
 		{
 			x = (map.parscroll_x * move_spd[i]) >> 1;
-			x %= SCREEN_WIDTH;
+//			x %= SCREEN_WIDTH;
 		}
 		
 		BlitPatternAcross(backdrop[map.backdrop], x, y1, y1, (y2-y1)+1);
