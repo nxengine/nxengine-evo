@@ -21,8 +21,6 @@ using namespace Graphics;
 #define GAUDI_FLYING_HP		15
 #define GAUDI_ARMORED_HP	15
 
-#define PLAYER_NEAR_ENOUGH()	(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF))
-
 INITFUNC(AIRoutines)
 {
 	ONTICK(OBJ_GAUDI, ai_gaudi);
@@ -49,7 +47,7 @@ void ai_gaudi(Object *o)
 		return;
 	}
 	
-	if (!PLAYER_NEAR_ENOUGH())
+	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
 		return;
 	
 	switch(o->state)
@@ -230,7 +228,7 @@ void ai_gaudi_flying(Object *o)
 		return;
 	}
 	
-	if (!PLAYER_NEAR_ENOUGH())
+	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
 		return;
 	
 	switch(o->state)
@@ -296,7 +294,7 @@ void ai_gaudi_armored(Object *o)
 		return;
 	}
 	
-	if (!PLAYER_NEAR_ENOUGH())
+	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
 		return;
 	
 	FACEPLAYER;

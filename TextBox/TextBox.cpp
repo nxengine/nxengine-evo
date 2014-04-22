@@ -22,7 +22,7 @@ bool TextBox::Init()
 {
 	fCoords.w = MSG_W;
 	fCoords.h = MSG_H;
-	fCoords.x = MSG_X;
+	fCoords.x = ((SCREEN_WIDTH / 2) - (MSG_W / 2));
 	
 	SetFace(0);
 	SetVisible(false);
@@ -77,6 +77,10 @@ void TextBox::SetVisible(bool enable, uint8_t flags)
 {
 	//stat("TextBox::SetVisible(%s)", enable?"true":"false");
 	
+	fCoords.w = MSG_W;
+	fCoords.h = MSG_H;
+	fCoords.x = ((SCREEN_WIDTH / 2) - (MSG_W / 2));
+
 	if (enable && fVisible)
 		ClearText();
 	
@@ -88,7 +92,7 @@ void TextBox::SetVisible(bool enable, uint8_t flags)
 void TextBox::SetFlags(uint8_t flags)
 {
 	fFlags = flags;
-	fCoords.y = (fFlags & TB_DRAW_AT_TOP) ? MSG_UPPER_Y : MSG_NORMAL_Y;
+	fCoords.y = (fFlags & TB_DRAW_AT_TOP) ? MSG_UPPER_Y : ((SCREEN_HEIGHT - MSG_H) - 2);
 }
 
 void TextBox::SetFlags(uint8_t flags, bool enable)

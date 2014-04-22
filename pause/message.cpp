@@ -13,13 +13,14 @@ using namespace Graphics;
 using namespace Options;
 extern std::vector<void*> optionstack;
 
-#define MESSAGE_X		((SCREEN_WIDTH / 2) - 112)
-#define MESSAGE_Y		((SCREEN_HEIGHT / 2) - 30)
 #define MESSAGE_W		244
 #define MESSAGE_H		48
 
 Message::Message(const char *msg, const char *msg2)
 {
+    MESSAGE_X = ((SCREEN_WIDTH / 2) - 112);
+    MESSAGE_Y = ((SCREEN_HEIGHT / 2) - 30);
+
 	rawKeyReturn = NULL;
 	on_dismiss = NULL;
 	last_sdl_action.key = -1;

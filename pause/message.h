@@ -24,6 +24,7 @@ private:
 	int fMsg2X, fMsg2Y;
 	
 	int fShowDelay;
+	int MESSAGE_X, MESSAGE_Y;
 };
 
 
