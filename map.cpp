@@ -463,7 +463,7 @@ static void DrawFastLeftLayered(void)
     }
 
     static const int move_spd[] = { 0,    1,   2,   4,   8 };
-    int nlayers = 6;
+    int nlayers = 5;
     int y1, y2;
     int i, x;
 
