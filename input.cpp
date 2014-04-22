@@ -5,6 +5,7 @@
 #include "game.h"
 #include "sound/sound.h"
 #include "common/stat.h"
+#include "settings.h"
 
 in_action mappings[INPUT_COUNT];
 
@@ -93,7 +94,7 @@ bool input_init(void)
 
 void rumble(float str, uint32_t len)
 {
-    if (haptic != NULL)
+    if (haptic != NULL && settings->rumble)
         SDL_HapticRumblePlay(haptic, str, len);
 }
 

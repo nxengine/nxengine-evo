@@ -18,6 +18,7 @@ struct Settings
 	int music_enabled;
 	
 	bool skip_intro;
+	bool rumble;
 	
 	in_action input_mappings[INPUT_COUNT];
 };

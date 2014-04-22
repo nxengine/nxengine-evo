@@ -304,13 +304,26 @@ void _music_get(ODItem *item)
 void c------------------------------() {}
 */
 
+void _rumble_change(ODItem *item, int dir)
+{
+	settings->rumble ^= 1;
+	sound(SND_MENU_SELECT);
+}
+
+void _rumble_get(ODItem *item)
+{
+	static const char *strs[] = { "Off", "On" };
+	strcpy(item->suffix, strs[settings->rumble]);
+}
+
+
 static void EnterControlsMenu(ODItem *item, int dir)
 {
 Dialog *dlg = opt.dlg;
 
 	dlg->Clear();
 	sound(SND_MENU_MOVE);
-	
+	dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get);
 	dlg->AddItem("Left", _edit_control, _upd_control, LEFTKEY);
 	dlg->AddItem("Right", _edit_control, _upd_control, RIGHTKEY);
 	dlg->AddItem("Up", _edit_control, _upd_control, UPKEY);
