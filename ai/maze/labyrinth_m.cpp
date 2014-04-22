@@ -37,8 +37,6 @@ void c------------------------------() {}
 
 void ai_firewhirr(Object *o)
 {
-Object *shot;
-
 	FACEPLAYER;
 	
 	switch(o->state)
@@ -73,7 +71,7 @@ Object *shot;
 			// if time to fire, spawn a shot
 			if (o->timer2 > 20)
 			{
-				shot = SpawnObjectAtActionPoint(o, OBJ_FIREWHIRR_SHOT);
+				SpawnObjectAtActionPoint(o, OBJ_FIREWHIRR_SHOT);
 				o->timer2 = -100 + random(0, 20);
 				// tell Curly to acquire us as a target
 				if (o->onscreen)

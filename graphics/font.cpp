@@ -181,6 +181,7 @@ SDL_Surface *letter;
 	fgcolor.r = (uint8_t)(color >> 16);
 	fgcolor.g = (uint8_t)(color >> 8);
 	fgcolor.b = (uint8_t)(color);
+	fgcolor.a = 255;
 	
 	char str[2];
 	str[1] = 0;
@@ -215,10 +216,12 @@ SDL_Rect dstrect;
 	fgcolor.r = (uint8_t)(color >> 16);
 	fgcolor.g = (uint8_t)(color >> 8);
 	fgcolor.b = (uint8_t)(color);
+	fgcolor.a = 255;
 	
 	shcolor.r = (uint8_t)(shadowcolor >> 16);
 	shcolor.g = (uint8_t)(shadowcolor >> 8);
 	shcolor.b = (uint8_t)(shadowcolor);
+	shcolor.a = 255;
 	
 	char str[2];
 	str[1] = 0;

@@ -236,7 +236,7 @@ void Dialog::RunInput()
 			{
 				fCurSel += dir;
 				if (fCurSel < 0) fCurSel = (nitems - 1);
-							else fCurSel %= nitems;
+				if (fCurSel>=fItems.size()) fCurSel = 0;
 				
 				if(fCurSel>=0 && fCurSel<fItems.size())
 				{

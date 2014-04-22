@@ -102,7 +102,7 @@ void ai_mgun_trail(Object *o)
 	// check if the leader has hit something
 	if (o->linkedobject->state == STATE_SHOT_HIT)
 	{
-		bool passed_leader;
+		bool passed_leader = false;
 		
 		// dissappear as we pass the point it hit at
 		switch(o->shot.dir)

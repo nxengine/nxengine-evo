@@ -135,7 +135,7 @@ int x, y;
             map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) << CSF;
             map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) << CSF;
         } else if (map.xsize * TILE_W<SCREEN_WIDTH) {
-            if (x == 25) { // MazeI
+            if (map.xsize == 25) { // MazeI
                 map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 48)) - 8) << CSF;
                 map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
             } else { // Others

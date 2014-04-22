@@ -607,7 +607,8 @@ void ExecScript(ScriptInstance *s)
 {
 char debugbuffer[256];
 int cmd;
-int val, parm[6];
+int val;
+int parm[6] = {0,0,0,0,0,0};
 int i;
 Object *o;
 char *mnemonic;
