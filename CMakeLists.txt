@@ -8,7 +8,6 @@ project(nx)
 set (nx_VERSION_MAJOR 2)
 set (nx_VERSION_MINOR 1)
 
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(SDL2)
@@ -44,6 +43,24 @@ set(SOURCES
     ${SL_SOURCES}
     ${SN_SOURCES}
 )
+
+option(DEBUG "build application with debug traces" OFF) # OFF is the default
+option(MUTABLE_SCALE "build application with changable scale" ON) # OFF is the default
+option(USE_TTF "build application with ttf font support" ON) # OFF is the default
+
+if(DEBUG)
+  add_definitions(-DTRACE_SCRIPT)
+endif(DEBUG)
+
+if(MUTABLE_SCALE)
+    add_definitions(-DCONFIG_MUTABLE_SCALE)
+endif(MUTABLE_SCALE)
+
+if(USE_TTF)
+    add_definitions(-DCONFIG_ENABLE_TTF)
+endif(USE_TTF)
+
+add_definitions(-DNEWMENU)
 
 add_executable(nx ${SOURCES})
 target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY})

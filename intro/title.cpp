@@ -65,8 +65,6 @@ static void draw_title()
 	
 	// draw menu
 
-
-#define NEWMENU
 #ifdef NEWMENU
 
 	int cx = (SCREEN_WIDTH / 2) - 32;
