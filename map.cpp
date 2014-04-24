@@ -616,7 +616,7 @@ int scroll_x, scroll_y;
 		
 		for(x=0; x <= (SCREEN_WIDTH / TILE_W)+MAP_DRAW_EXTRA_X; x++)
 		{
-			if ( ((mapx+x) >= 0 ) && ((mapy+y) >= 0 ) )
+			if ( ((mapx+x) >= 0 ) && ((mapy+y) >= 0 ) && ((mapx+x) < map.xsize ) && ((mapy+y) < map.ysize ))
 			{
 				int t = map.tiles[mapx+x][mapy+y];
 				if ((tileattr[t] & TA_FOREGROUND) == foreground)
