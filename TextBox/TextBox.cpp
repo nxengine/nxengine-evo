@@ -14,7 +14,6 @@ using namespace Sprites;
 #define MAXLINELEN_FACE		26
 #define MAXLINELEN_NO_FACE	35
 
-#define CONTENT_X			(fCoords.x + 14)
 #define CONTENT_Y			10
 #define FACE_W				48
 
@@ -201,7 +200,7 @@ void TextBox::Draw(void)
 void TextBox::DrawTextBox()
 {
 	int text_top = (fCoords.y + 10);
-	int text_x = CONTENT_X;
+	int text_x = (fCoords.x + 14);
 	
 	// allow player to speed up text by holding the button
 	if (buttondown())
@@ -254,14 +253,14 @@ void TextBox::DrawTextBox()
 	
 	// set clipping region to inside of frame, so that text cannot
 	// overflow during scrolling, etc.
-	set_clip_rect(CONTENT_X, text_top, SCREEN_WIDTH, 48);
+	set_clip_rect((fCoords.x + 14), text_top, SCREEN_WIDTH, 48);
 	
 	//SDL_FillRect(screen, &cliprect, SDL_MapRGB(screen->format,0,0,255));
 	
 	// draw face
 	if (fFace != 0)
 	{
-		draw_sprite(CONTENT_X+fFaceXOffset, fCoords.y+CONTENT_Y-3, SPR_FACES, fFace);
+		draw_sprite((fCoords.x + 14)+fFaceXOffset, fCoords.y+CONTENT_Y-3, SPR_FACES, fFace);
 		text_x += (FACE_W + 8);		// move text over by width of face
 		
 		// face slide-in animation
