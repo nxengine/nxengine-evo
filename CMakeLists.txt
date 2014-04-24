@@ -60,8 +60,6 @@ if(USE_TTF)
     add_definitions(-DCONFIG_ENABLE_TTF)
 endif(USE_TTF)
 
-add_definitions(-DNEWMENU)
-
 add_executable(nx ${SOURCES})
 target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY})
 

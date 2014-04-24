@@ -65,8 +65,6 @@ static void draw_title()
 	
 	// draw menu
 
-#ifdef NEWMENU
-
 	int cx = (SCREEN_WIDTH / 2) - 32;
 	int cy = (SCREEN_HEIGHT / 2) + 8;
 
@@ -84,24 +82,6 @@ static void draw_title()
 		
 		cy += 12;
 	}
-
-#else
-
-	int cx = (SCREEN_WIDTH / 2) - (sprites[SPR_MENU].w / 2) - 8;
-	int cy = (SCREEN_HEIGHT / 2) + 8;
-
-	for(int i=0;i<sprites[SPR_MENU].nframes;i++)
-	{
-		draw_sprite(cx, cy, SPR_MENU, i);
-		if (i == title.cursel)
-		{
-			draw_sprite(cx - 16, cy - 1, title.sprite, title.selframe);
-		}
-		
-		cy += (sprites[SPR_MENU].h + 4);
-	}
-
-#endif
 
 	// animate character
 	if (++title.seltimer > 8)
@@ -158,24 +138,14 @@ static void handle_input()
 	if (justpushed(DOWNKEY))
 	{
 		sound(SND_MENU_MOVE);
-		#ifdef NEWMENU
 		if (++title.cursel >= 4)
 			title.cursel = 0;
-		#else
-		if (++title.cursel >= sprites[SPR_MENU].nframes)
-			title.cursel = 0;
-		#endif
 	}
 	else if (justpushed(UPKEY))
 	{
 		sound(SND_MENU_MOVE);
-		#ifdef NEWMENU
 		if (--title.cursel < 0)
 			title.cursel = 3;
-		#else
-		if (--title.cursel < 0)
-			title.cursel = 3;
-		#endif
 	}
 	
 	if (buttonjustpushed() || justpushed(ENTERKEY))
@@ -247,7 +217,7 @@ static void selectoption(int index)
 			game.setmode(GM_NORMAL);
 		}
 		break;
-#ifdef NEWMENU
+
 		case 2:		// Options
 		{
 //			music(0);
@@ -260,7 +230,7 @@ static void selectoption(int index)
 			game.running = false;
 		}
 		break;
-#endif
+
 		case 10:		// Load Menu (multisave)
 		{
 			textbox.SetVisible(true);
