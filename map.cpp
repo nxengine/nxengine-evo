@@ -438,16 +438,21 @@ int x, y;
 			staterr("map_draw_backdrop: unhandled map scrolling type %d", map.scrolltype);
 		break;
 	}
-	
 	map.parscroll_x %= backdrop[map.backdrop]->Width();
 	map.parscroll_y %= backdrop[map.backdrop]->Height();
+	if (map.parscroll_x < 0 ) map.parscroll_x = map.parscroll_x * 2;
+	if (map.parscroll_y < 0 ) map.parscroll_y = map.parscroll_y * 2;
 	int w = backdrop[map.backdrop]->Width();
 	int h = backdrop[map.backdrop]->Height();
 	
+	int mapx = (map.xsize * TILE_W);
+	int mapy = (map.ysize * TILE_H);
+
 	for(y=0;y<SCREEN_HEIGHT+map.parscroll_y; y+=h)
 	{
 		for(x=0;x<SCREEN_WIDTH+map.parscroll_x; x+=w)
 		{
+		    if ( ((x - map.parscroll_x) < mapx) && ((y - map.parscroll_y) < mapy))
 			DrawSurface(backdrop[map.backdrop], x - map.parscroll_x, y - map.parscroll_y);
 		}
 	}
