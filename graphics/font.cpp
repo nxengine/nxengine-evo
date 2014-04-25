@@ -447,7 +447,6 @@ bool NXFont::InitTextures()
 // if sfc is a 16bpp surface, replace all instances of color 'oldcolor' with 'newcolor'
 void NXFont::ReplaceColor(SDL_Surface *sfc, uint32_t oldcolor, uint32_t newcolor)
 {
-	#ifndef __SDLSHIM__
 	if (sfc->format->BitsPerPixel == 8)
 	{
 		SDL_Color desired;
@@ -459,7 +458,6 @@ void NXFont::ReplaceColor(SDL_Surface *sfc, uint32_t oldcolor, uint32_t newcolor
 		SDL_SetPaletteColors(sfc->format->palette, &desired, oldcolor, 1);
 	}
 	else
-	#endif
 	{
 		uint16_t *pixels = (uint16_t *)sfc->pixels;
 		int npixels = (sfc->w * sfc->h);
@@ -471,32 +469,6 @@ void NXFont::ReplaceColor(SDL_Surface *sfc, uint32_t oldcolor, uint32_t newcolor
 		}
 	}
 }
-
-/*
-void c------------------------------() {}
-*/
-
-#ifdef __SDLSHIM__
-void direct_text_draw(int x, int y, const char *text)
-{
-SDL_Rect dstrect;
-
-	for(int i=0;text[i];i++)
-	{
-		SDL_Surface *letter = whitefont.letters[text[i]];
-		
-		if (letter)
-		{
-			dstrect.x = x;
-			dstrect.y = y;
-			SDL_BlitSurface(letter, NULL, SDLS_VRAMSurface, &dstrect);
-		}
-		
-		x += 8;
-	}
-}
-#endif
-
 
 // draw a text string
 static int text_draw(int x, int y, const char *text, int spacing, NXFont *font)

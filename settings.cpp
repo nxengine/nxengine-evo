@@ -63,12 +63,7 @@ bool settings_load(Settings *setfile)
 	}
 	else
 	{
-		#ifdef __SDLSHIM__
-			stat("settings_load(): Hey FIXME!!!");
-			settings->show_fps = true;
-		#else
-			input_set_mappings(settings->input_mappings);
-		#endif
+		input_set_mappings(settings->input_mappings);
 	}
 	
 	return 0;
