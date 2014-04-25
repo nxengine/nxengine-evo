@@ -15,6 +15,7 @@
 #include "graphics/graphics.h"
 using namespace Graphics;
 #include "graphics/font.h"
+#include "graphics/screenshot.h"
 #include "sound/sound.h"
 #include "sound/org.h"
 #include "common/stat.h"
@@ -105,6 +106,11 @@ static int frameskip = 0;
 	input_poll();
 	
 	// input handling for a few global things
+	
+	if (justpushed(F9KEY))
+	{
+	    SaveScreenshot();
+	}
 	
 	// freeze frame
 	if (settings->enable_debug_keys)

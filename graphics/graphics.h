@@ -5,6 +5,7 @@
 #include "nxsurface.h"
 
 extern NXSurface *screen;
+extern SDL_Renderer* renderer;
 extern const NXColor DK_BLUE;
 extern const NXColor BLACK;
 extern const NXColor CLEAR;

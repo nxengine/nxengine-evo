@@ -12,6 +12,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 find_package(SDL2)
 find_package(SDL2_ttf)
+find_package(PNG)
 
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2TTF_INCLUDE_DIR})
@@ -68,7 +69,7 @@ if(USE_TTF)
 endif(USE_TTF)
 
 add_executable(nx ${SOURCES})
-target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY})
+target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${PNG_LIBRARY})
 
 add_executable(extract ${EXTR_SOURCES})
 
