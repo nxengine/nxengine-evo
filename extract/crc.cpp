@@ -7,6 +7,22 @@
 static uint32_t CRC_Table[256];
 static const uint32_t poly = 0x04c11db7;
 
+uint32_t reflect(uint32_t value, int size)
+{
+uint32_t newbits = 0;
+int i;
+
+	for(i=1;i<=size;i++)
+	{
+		if (value & 1)
+			newbits |= (1 << (size - i));
+		
+		value >>= 1;
+	}
+
+	return newbits;
+}
+
 void crc_init(void)
 {
 int i, j;
@@ -34,22 +50,4 @@ uint32_t crc = 0xFFFFFFFF;
 	
 	return (crc ^ 0xFFFFFFFF);
 }
-
-
-uint32_t reflect(uint32_t value, int size)
-{
-uint32_t newbits = 0;
-int i;
-
-	for(i=1;i<=size;i++)
-	{
-		if (value & 1)
-			newbits |= (1 << (size - i));
-		
-		value >>= 1;
-	}
-
-	return newbits;
-}
-
 
