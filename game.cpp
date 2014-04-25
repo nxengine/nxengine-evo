@@ -346,7 +346,7 @@ void DrawScene(void)
 {
 int scr_x, scr_y;
 extern int flipacceltime;
-	
+	ClearScreen(BLACK);
 	// sporidically-used animated tile feature,
 	// e.g. water currents in Waterway
 	if (map.nmotiontiles)
