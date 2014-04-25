@@ -27,6 +27,13 @@ file(GLOB IN_SOURCES "intro/[a-zA-Z]*.cpp")
 file(GLOB PA_SOURCES "pause/[a-zA-Z]*.cpp")
 file(GLOB SL_SOURCES "siflib/[a-zA-Z]*.cpp")
 file(GLOB SN_SOURCES "sound/[a-zA-Z]*.cpp")
+file(GLOB EXTR_SOURCES "extract/[a-zA-Z]*.cpp")
+set(EXTR_SOURCES
+    ${EXTR_SOURCES}
+    "common/misc.cpp"
+    "common/stat.cpp"
+    "stagedata.cpp"
+)
 
 include_directories(${nx_SOURCE_DIR})
 
@@ -62,4 +69,7 @@ endif(USE_TTF)
 
 add_executable(nx ${SOURCES})
 target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY})
+
+add_executable(extract ${EXTR_SOURCES})
+
 
