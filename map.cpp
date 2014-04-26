@@ -254,6 +254,23 @@ int nEntities;
 				// now that it's all set up, execute OnSpawn,
 				// since we didn't do it in CreateObject.
 				o->OnSpawn();
+				if (type == OBJ_MOTION_WALL)
+				{
+				    stat("spawning extra motion wall");
+				    o = CreateObject(((x+22) * TILE_W) << CSF, \
+										 (y * TILE_H) << CSF, type,
+										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
+				    o->id1 = id1;
+				    o->id2 = id2;
+				    o->flags |= flags;
+				
+				    ID2Lookup[o->id2] = o;
+				
+				    // now that it's all set up, execute OnSpawn,
+				    // since we didn't do it in CreateObject.
+				    o->OnSpawn();
+				}
+
 			}
 		}
 	}
@@ -453,6 +470,12 @@ int x, y;
     {
         map.parscroll_x-= 16;
         mapx+=64;
+    }
+
+    if (game.curmap == 31 && widescreen)
+    {
+        map.parscroll_y-= 36;
+//        mapy+=64;
     }
 
 	for(y=0;y<SCREEN_HEIGHT+map.parscroll_y; y+=h)

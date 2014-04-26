@@ -3,6 +3,5 @@
 * make compatible with nicalis version
 * use wavs for drums?
 * rewrite soundlib to use SDL_mixer
-* fix top/bottom wall in IronHead stage
 * fix bg in throne room
 * fix clouds in 'Fall' end cinematic
