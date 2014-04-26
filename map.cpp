@@ -339,7 +339,6 @@ FILE *fp;
 		
 	//hack to show nice backdrop in menu, like nicalis
 	stages[0].bg_no=9;
-	stages[0].scroll_type=BK_FASTLEFT_LAYERS;
 	
 	return 0;
 }
@@ -459,7 +458,7 @@ int x, y;
 }
 
 // blit OSide's BK_FASTLEFT_LAYERS
-static void DrawFastLeftLayered(void)
+void DrawFastLeftLayered(void)
 {
     int layer_ys[] = { 80, 122, 145, 176, 240 };
     if (widescreen)

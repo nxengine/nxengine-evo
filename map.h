@@ -129,7 +129,7 @@ bool initmapfirsttime(void);
 void initmap(void);
 void map_set_backdrop(int backdrop_no);
 void map_draw_backdrop(void);
-static void DrawFastLeftLayered(void);
+void DrawFastLeftLayered(void);
 static bool LoadBackdropIfNeeded(int backdrop_no);
 void map_flush_graphics();
 void map_drawwaterlevel(void);
