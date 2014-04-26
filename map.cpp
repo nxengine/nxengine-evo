@@ -238,6 +238,8 @@ int nEntities;
 			{
 				// hack for chests (can we do this elsewhere?)
 				if (type == OBJ_CHEST_OPEN) y++;
+				// hack for skydragon in Fall end cinematic
+				if (type == OBJ_SKY_DRAGON && id2 == 230) y++;
 				
 				Object *o = CreateObject((x * TILE_W) << CSF, \
 										 (y * TILE_H) << CSF, type,
