@@ -448,6 +448,12 @@ int x, y;
 	
 	int mapx = (map.xsize * TILE_W);
 	int mapy = (map.ysize * TILE_H);
+	// hack for ending Maze map
+    if (game.curmap == 74)
+    {
+        map.parscroll_x-= 16;
+        mapx+=64;
+    }
 
 	for(y=0;y<SCREEN_HEIGHT+map.parscroll_y; y+=h)
 	{
@@ -625,8 +631,14 @@ int scroll_x, scroll_y;
 			if ( ((mapx+x) >= 0 ) && ((mapy+y) >= 0 ) && ((mapx+x) < map.xsize ) && ((mapy+y) < map.ysize ))
 			{
 				int t = map.tiles[mapx+x][mapy+y];
-				if ((tileattr[t] & TA_FOREGROUND) == foreground)
-					draw_tile(blit_x, blit_y, t);
+				//fixes drawing of debug tiles in Stream and Fall maps
+				if( ((game.curmap == 71) && (tilecode[t] == 0x41))
+				    ||
+				    ((game.curmap == 31) && (tilecode[t] == 0x46))
+				) {}
+				else
+					if ((tileattr[t] & TA_FOREGROUND) == foreground)
+						draw_tile(blit_x, blit_y, t);
 			}
 			blit_x += TILE_W;
 		}
