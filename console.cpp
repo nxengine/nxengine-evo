@@ -85,6 +85,8 @@ static void __warp(std::vector<std::string> *args, int num)
 			
 			if (strcasebegin(stages[num].stagename, stagename.c_str()))
 				break;
+			if (strcasebegin(stages[num].filename, stagename.c_str()))
+				break;
 		}
 	}
 	
