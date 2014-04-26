@@ -1,10 +1,9 @@
-* remove DBuffer and other shit from common
 * make paths configurable
 * drop out sif and use original data
 * make compatible with nicalis version
 * use wavs for drums?
-* use ogg for music?
 * rewrite soundlib to use SDL_mixer
-* rewrite c code in c++
-* replace all with stl when possible
-* c++11
+* fix bg in IronHead stage
+* fix bg in throne room
+* fix bg in clinic in credits
+* fix bg and clouds in 'Fall' end cinematic
