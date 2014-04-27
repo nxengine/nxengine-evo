@@ -34,7 +34,8 @@ void ai_npc_player(Object *o)
 {
 static const int pwalkanimframes[] = { 0, 1, 0, 2 };
 #define NUM_PWALK_FRAMES		4
-	
+	o->sprite = (player->equipmask & EQUIP_MIMIGA_MASK) ? \
+	                                        SPR_MYCHAR_MIMIGA : SPR_MYCHAR;
 	switch(o->state)
 	{
 		case 0:
