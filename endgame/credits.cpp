@@ -296,6 +296,9 @@ char fname[MAXPATHLEN];
 	// load any images present
 	for(int i=0;i<MAX_BIGIMAGES;i++)
 	{
+	    if (i>0 && i<4 && game.flags[1020])
+		sprintf(fname, "%s/credit%02dm.bmp", pic_dir, i);
+		else
 		sprintf(fname, "%s/credit%02d.bmp", pic_dir, i);
 		if (file_exists(fname))
 		{
