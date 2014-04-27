@@ -76,6 +76,7 @@ int type;
 		{
 			cloud->x = o->x;
 			cloud->y = o->y + MAPY(random(-7, 7));
+			if (widescreen) cloud->y+=(32 << CSF);
 			cloud->xinertia = -(0x400 >> type);
 		}
 		
