@@ -41,24 +41,24 @@ static struct
 }
 files[] =
 {
-	"endpic/credit01.bmp", 0x117047, 19293, 0xeb87b19b, credit_header,
-	"endpic/credit02.bmp", 0x11bbaf, 19293, 0x239c1a37, credit_header,
-	"endpic/credit03.bmp", 0x120717, 19293, 0x4398bbda, credit_header,
-	"endpic/credit04.bmp", 0x12527f, 19293, 0x44bae3ac, credit_header,
-	"endpic/credit05.bmp", 0x129de7, 19293, 0xd1b876ad, credit_header,
-	"endpic/credit06.bmp", 0x12e94f, 19293, 0x5a60082e, credit_header,
-	"endpic/credit07.bmp", 0x1334b7, 19293, 0xc1e9db91, credit_header,
-	"endpic/credit08.bmp", 0x13801f, 19293, 0xcbbcc7fa, credit_header,
-	"endpic/credit09.bmp", 0x13cb87, 19293, 0xfa7177b1, credit_header,
-	"endpic/credit10.bmp", 0x1416ef, 19293, 0x56390a07, credit_header,
-	"endpic/credit11.bmp", 0x146257, 19293, 0xff3d6d83, credit_header,
-	"endpic/credit12.bmp", 0x14adbf, 19293, 0x9e948dc2, credit_header,
-	"endpic/credit14.bmp", 0x14f927, 19293, 0x32b6ce2d, credit_header,
-	"endpic/credit15.bmp", 0x15448f, 19293, 0x88539803, credit_header,
-	"endpic/credit16.bmp", 0x158ff7, 19293, 0xc0ef9adf, credit_header,
-	"endpic/credit17.bmp", 0x15db5f, 19293, 0x8c5a003d, credit_header,
-	"endpic/credit18.bmp", 0x1626c7, 19293, 0x66bcbf22, credit_header,
-	"endpic/pixel.bmp",    0x16722f, 1373,  0x6181d0a1, pixel_header,
+	"data/endpic/credit01.bmp", 0x117047, 19293, 0xeb87b19b, credit_header,
+	"data/endpic/credit02.bmp", 0x11bbaf, 19293, 0x239c1a37, credit_header,
+	"data/endpic/credit03.bmp", 0x120717, 19293, 0x4398bbda, credit_header,
+	"data/endpic/credit04.bmp", 0x12527f, 19293, 0x44bae3ac, credit_header,
+	"data/endpic/credit05.bmp", 0x129de7, 19293, 0xd1b876ad, credit_header,
+	"data/endpic/credit06.bmp", 0x12e94f, 19293, 0x5a60082e, credit_header,
+	"data/endpic/credit07.bmp", 0x1334b7, 19293, 0xc1e9db91, credit_header,
+	"data/endpic/credit08.bmp", 0x13801f, 19293, 0xcbbcc7fa, credit_header,
+	"data/endpic/credit09.bmp", 0x13cb87, 19293, 0xfa7177b1, credit_header,
+	"data/endpic/credit10.bmp", 0x1416ef, 19293, 0x56390a07, credit_header,
+	"data/endpic/credit11.bmp", 0x146257, 19293, 0xff3d6d83, credit_header,
+	"data/endpic/credit12.bmp", 0x14adbf, 19293, 0x9e948dc2, credit_header,
+	"data/endpic/credit14.bmp", 0x14f927, 19293, 0x32b6ce2d, credit_header,
+	"data/endpic/credit15.bmp", 0x15448f, 19293, 0x88539803, credit_header,
+	"data/endpic/credit16.bmp", 0x158ff7, 19293, 0xc0ef9adf, credit_header,
+	"data/endpic/credit17.bmp", 0x15db5f, 19293, 0x8c5a003d, credit_header,
+	"data/endpic/credit18.bmp", 0x1626c7, 19293, 0x66bcbf22, credit_header,
+	"data/endpic/pixel.bmp",    0x16722f, 1373,  0x6181d0a1, pixel_header,
 	"wavetable.dat",       0x110664, 25599, 0xcaa7b1dd, NULL,
 	"org/access.org",      0x09b35c, 1138,  0xd965dddb, NULL,
 	"org/balcony.org",     0x09dbbc, 3082,  0x892345ca, NULL,
@@ -107,7 +107,7 @@ files[] =
 void createdir(const char *fname)
 {
 	char *dir = strdup(fname);
-	char *ptr = strchr(dir, '/');
+	char *ptr = strrchr(dir, '/');
 	if (ptr)
 	{
 		*ptr = 0;
