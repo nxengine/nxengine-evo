@@ -509,7 +509,7 @@ void DrawFastLeftLayered(void)
 	// fix for extra height
 	if (map.backdrop == 9)
 	    ClearScreen(111,156,214);
-	else if (map.backdrop == 10)
+	else if (map.backdrop == 10 && game.curmap != 64 )
 	    ClearScreen(111,107,86);
 	for(i=0;i<nlayers;i++)
 	{
@@ -520,10 +520,12 @@ void DrawFastLeftLayered(void)
 			x = (map.parscroll_x * move_spd[i]) >> 1;
 //			x %= SCREEN_WIDTH;
 		}
-		
 		BlitPatternAcross(backdrop[map.backdrop], x, y1, y1, (y2-y1)+1);
 		y1 = (y2 + 1);
 	}
+	int mapy = map.displayed_yscroll >> CSF;
+	if (mapy<0)
+		FillRect(0,0,SCREEN_WIDTH, -mapy,0,0,0);
 }
 
 
