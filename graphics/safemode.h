@@ -23,7 +23,7 @@ namespace safemode
 	void status(const char *fmt, ...);
 	void clearstatus();
 	
-	int run_until_key(bool delay=true);
+	void run_until_key(bool delay=true);
 };
 
 #endif

@@ -6,11 +6,11 @@
 #include "ItemImage.h"
 #include "StageSelect.h"
 #include "SaveSelect.h"
+#include "../graphics/graphics.h"
+using namespace Graphics;
 
 #define MSG_W				244
 #define MSG_H				64
-#define MSG_X				((SCREEN_WIDTH / 2) - (MSG_W / 2))
-#define MSG_NORMAL_Y		((SCREEN_HEIGHT - MSG_H) - 2)
 #define MSG_UPPER_Y			24
 
 #define MSG_NLINES			4

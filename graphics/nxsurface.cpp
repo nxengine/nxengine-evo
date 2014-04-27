@@ -1,36 +1,48 @@
-
+#include <cassert>
 #include <string.h>
 #include <stdint.h>
 #include "../settings.h"
 #include "../config.h"
 #include "graphics.h"
 #include "nxsurface.h"
-#include "../common/stat.h"
 
 #ifdef CONFIG_MUTABLE_SCALE
 	int SCALE = 3;
 #endif
 
+extern SDL_Renderer * renderer;
 
-NXSurface::NXSurface()
+
+NXSurface::NXSurface() :
+	fTexture(NULL),
+	tex_w(0),
+	tex_h(0),
+	tex_format(),
+	need_clip(false)
 {
-	fSurface = NULL;
-	fFreeSurface = true;
 }
 
 
-NXSurface::NXSurface(int wd, int ht, NXFormat *format)
+NXSurface::NXSurface(int wd, int ht, NXFormat *format) :
+	fTexture(NULL),
+	tex_w(0),
+	tex_h(0),
+	tex_format(),
+	need_clip(false)
 {
-	fSurface = NULL;
 	AllocNew(wd, ht, format);
-	fFreeSurface = true;
+	setFormat(format);
 }
 
-
-NXSurface::NXSurface(SDL_Surface *from_sfc, bool free_surface)
+NXSurface* NXSurface::createScreen(int wd, int ht, Uint32 pixel_format)
 {
-	fSurface = from_sfc;
-	fFreeSurface = free_surface;
+
+	NXSurface* s = new NXSurface();
+	s->tex_w = wd;
+	s->tex_h = ht;
+	s->setPixelFormat(pixel_format);
+
+	return s;
 }
 
 NXSurface::~NXSurface()
@@ -53,44 +65,90 @@ void c------------------------------() {}
 */
 
 // allocate for an empty surface of the given size
-bool NXSurface::AllocNew(int wd, int ht, NXFormat *format)
+bool NXSurface::AllocNew(int wd, int ht, NXFormat* format)
 {
 	Free();
+
+	stat("NXSurface::AllocNew this = %p", this);
+
+	fTexture = SDL_CreateTexture(renderer, format->format, SDL_TEXTUREACCESS_TARGET, wd*SCALE, ht*SCALE);
 	
-	fSurface = SDL_CreateRGBSurface(SDL_SRCCOLORKEY, wd*SCALE, ht*SCALE, \
-			format->BitsPerPixel, format->Rmask, format->Gmask, format->Bmask, format->Amask);
-	
-	if (!fSurface)
+	if (!fTexture)
 	{
-		staterr("NXSurface::AllocNew: failed to allocate RGB surface");
-		return 1;
+		staterr("NXSurface::AllocNew: failed to allocate texture: %s", SDL_GetError());
+		return true;
 	}
+
+	tex_w = wd*SCALE;
+	tex_h = ht*SCALE;
 	
-	return fSurface;
+	return false;
 }
 
 
 // load the surface from a .pbm or bitmap file
 bool NXSurface::LoadImage(const char *pbm_name, bool use_colorkey, int use_display_format)
 {
-SDL_Surface *image;
+	stat("NXSurface::LoadImage name = %s, this = %p", pbm_name, this);
 
 	Free();
 	
-	if (use_display_format == -1)
-	{	// use value specified in settings
-		use_display_format = settings->displayformat;
-	}
+	// if (use_display_format == -1)
+	// {	// use value specified in settings
+	// 	use_display_format = settings->displayformat;
+	// }
 	
-	image = SDL_LoadBMP(pbm_name);
-	if (!image)
+
+	SDL_Surface *image = SDL_LoadBMP(pbm_name);
+	if (!image) { staterr("NXSurface::LoadImage: load failed of '%s'! %s", pbm_name, SDL_GetError()); return 1; }
+	
+	if (use_colorkey)
 	{
-		staterr("NXSurface::LoadImage: load failed of '%s'!", pbm_name);
+		SDL_SetColorKey(image, SDL_TRUE, SDL_MapRGB(image->format, 0, 0, 0));
+	}
+
+	SDL_Texture * tmptex = SDL_CreateTextureFromSurface(renderer, image);
+	if (!tmptex)
+	{
+		staterr("NXSurface::LoadImage: SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+		SDL_FreeSurface(image);
 		return 1;
 	}
-	
-	fSurface = Scale(image, SCALE, use_colorkey, true, use_display_format);
-	return (fSurface == NULL);
+
+	SDL_FreeSurface(image);
+
+	{
+		int wd, ht, access;
+		Uint32 format;
+		NXFormat nxformat;
+		if (SDL_QueryTexture(tmptex, &format, &access, &wd, &ht)) goto error;
+		nxformat.format = format;
+		if (AllocNew(wd, ht, &nxformat)) goto error;
+		if (SDL_SetTextureBlendMode(tmptex, SDL_BLENDMODE_NONE))	goto error;
+		if (SDL_SetRenderTarget(renderer, fTexture)) goto error;
+		if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255)) goto error;
+		if (SDL_RenderClear(renderer)) goto error;
+		if (SDL_RenderCopy(renderer, tmptex, NULL, NULL)) goto error;
+		if (SDL_SetRenderTarget(renderer, NULL)) goto error;
+		if (SDL_SetTextureBlendMode(fTexture, SDL_BLENDMODE_BLEND)) goto error;
+
+		SDL_DestroyTexture(tmptex);
+
+		goto done;
+error:
+		{
+			staterr("NXSurface::LoadImage failed: %s", SDL_GetError());
+			if (tmptex)  { SDL_DestroyTexture(tmptex); tmptex = NULL; }
+			if (fTexture){ SDL_DestroyTexture(fTexture); fTexture = NULL; }
+			SDL_SetRenderTarget(renderer, NULL);
+		}
+done:
+		;
+	}
+
+	stat("NXSurface::LoadImage name = %s, this = %p done", pbm_name, this);
+
+	return (fTexture == NULL);
 }
 
 
@@ -113,9 +171,15 @@ void c------------------------------() {}
 
 // draw some or all of another surface onto this surface.
 void NXSurface::DrawSurface(NXSurface *src, \
-						 	int dstx, int dsty, int srcx, int srcy, int wd, int ht)
+							int dstx, int dsty, int srcx, int srcy, int wd, int ht)
 {
-SDL_Rect srcrect, dstrect;
+	if (this != screen)
+		SetAsTarget(true);
+
+	assert(renderer);
+	assert(src->fTexture);
+
+	SDL_Rect srcrect, dstrect;
 
 	srcrect.x = srcx * SCALE;
 	srcrect.y = srcy * SCALE;
@@ -124,8 +188,18 @@ SDL_Rect srcrect, dstrect;
 	
 	dstrect.x = dstx * SCALE;
 	dstrect.y = dsty * SCALE;
+	dstrect.w = srcrect.w;
+	dstrect.h = srcrect.h;
+
+	if (need_clip) clip(srcrect, dstrect);
 	
-	SDL_BlitSurface(src->fSurface, &srcrect, fSurface, &dstrect);
+	if (SDL_RenderCopy(renderer, src->fTexture, &srcrect, &dstrect))
+	{
+		staterr("NXSurface::DrawSurface: SDL_RenderCopy failed: %s", SDL_GetError());
+	}
+
+	if (this != screen)
+		SetAsTarget(false);
 }
 
 void NXSurface::DrawSurface(NXSurface *src, int dstx, int dsty)
@@ -141,81 +215,157 @@ void NXSurface::DrawSurface(NXSurface *src, int dstx, int dsty)
 void NXSurface::BlitPatternAcross(NXSurface *src,
 						   int x_dst, int y_dst, int y_src, int height)
 {
-SDL_Rect srcrect, dstrect;
+	if (this != screen)
+		SetAsTarget(true);
+
+	SDL_Rect srcrect, dstrect;
 
 	srcrect.x = 0;
-	srcrect.w = src->fSurface->w;
+	srcrect.w = src->tex_w;
 	srcrect.y = (y_src * SCALE);
 	srcrect.h = (height * SCALE);
-	
+
+	dstrect.w = srcrect.w;
+	dstrect.h = srcrect.h;
+
 	int x = (x_dst * SCALE);
 	int y = (y_dst * SCALE);
-	int destwd = fSurface->w;
+	int destwd = this->tex_w;
+	
+	assert(!need_clip && "clip for blitpattern is not implemented");
 	
 	do
 	{
 		dstrect.x = x;
 		dstrect.y = y;
 		
-		SDL_BlitSurface(src->fSurface, &srcrect, fSurface, &dstrect);
-		x += src->fSurface->w;
+		SDL_RenderCopy(renderer, src->fTexture, &srcrect, &dstrect);
+		x += src->tex_w;
 	}
 	while(x < destwd);
-}
 
+	if (this != screen)
+		SetAsTarget(false);
+}
 
 /*
 void c------------------------------() {}
 */
 
 
+void NXSurface::DrawBatchBegin(size_t) { }
+
+void NXSurface::DrawBatchAdd(NXSurface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht)
+{
+	this->DrawSurface(src, dstx, dsty, srcx, srcy, wd, ht);
+}
+
+void NXSurface::DrawBatchAdd(NXSurface *src, int dstx, int dsty)
+{
+	DrawBatchAdd(src, dstx, dsty, 0, 0, src->Width(), src->Height());
+}
+
+void NXSurface::DrawBatchAddPatternAcross(NXSurface *src,
+                                          int x_dst, int y_dst, int y_src, int height)
+{
+    this->BlitPatternAcross(src, x_dst, y_dst, y_src, height);
+}
+
+void NXSurface::DrawBatchEnd() { }
+
+
+
+/*
+void c------------------------------() {}
+*/
+
+void NXSurface::DrawLine(int x1, int y1, int x2, int y2, NXColor color)
+{
+	if (this != screen)
+		SetAsTarget(true);
+
+	SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
+	SDL_RenderDrawLine(renderer, x1 * SCALE, y1 * SCALE, x2 * SCALE, y2 * SCALE);
+
+	if (this != screen)
+		SetAsTarget(false);	
+}
+
 void NXSurface::DrawRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
 {
-SDL_Rect rect;
-uint32_t color = MapColor(r, g, b);
+	if (this != screen)
+		SetAsTarget(true);
 
-	// top and bottom
-	rect.x = x1 * SCALE;
-	rect.y = y1 * SCALE;
-	rect.w = ((x2 - x1) + 1) * SCALE;
-	rect.h = SCALE;
-	SDL_FillRect(fSurface, &rect, color);
-	
-	rect.y = y2 * SCALE;
-	SDL_FillRect(fSurface, &rect, color);
-	
-	// left and right
-	rect.y = y1 * SCALE;
-	rect.w = SCALE;
-	rect.h = ((y2 - y1) + 1) * SCALE;
-	SDL_FillRect(fSurface, &rect, color);
-	
-	rect.x = x2 * SCALE;
-	SDL_FillRect(fSurface, &rect, color);
+	SDL_Rect rects[4] = {
+		{x1 * SCALE, y1 * SCALE, ((x2 - x1) + 1) * SCALE, SCALE},
+		{x1 * SCALE, y2 * SCALE, ((x2 - x1) + 1) * SCALE, SCALE},
+		{x1 * SCALE, y1 * SCALE, SCALE,                   ((y2 - y1) + 1) * SCALE},
+		{x2 * SCALE, y1 * SCALE, SCALE,                   ((y2 - y1) + 1) * SCALE}
+	};
+
+	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
+	SDL_RenderFillRects(renderer, rects, 4);
+
+	if (this != screen)
+		SetAsTarget(false);
 }
 
 
 void NXSurface::FillRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
 {
-SDL_Rect rect;
+	if (this != screen)
+		SetAsTarget(true);
+
+	SDL_Rect rect;
 
 	rect.x = x1 * SCALE;
 	rect.y = y1 * SCALE;
 	rect.w = ((x2 - x1) + 1) * SCALE;
 	rect.h = ((y2 - y1) + 1) * SCALE;
 	
-	SDL_FillRect(fSurface, &rect, MapColor(r, g, b));
+	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
+	SDL_RenderFillRect(renderer, &rect);
+
+	if (this != screen)
+		SetAsTarget(false);
+}
+
+void NXSurface::ClearRect(int x1, int y1, int x2, int y2)
+{
+	if (this != screen)
+		SetAsTarget(true);
+
+	SDL_Rect rect;
+
+	rect.x = x1 * SCALE;
+	rect.y = y1 * SCALE;
+	rect.w = ((x2 - x1) + 1) * SCALE;
+	rect.h = ((y2 - y1) + 1) * SCALE;
+	
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_TRANSPARENT);
+	SDL_RenderFillRect(renderer, &rect);
+
+	if (this != screen)
+		SetAsTarget(false);
+
 }
 
 void NXSurface::Clear(uint8_t r, uint8_t g, uint8_t b)
 {
-	SDL_FillRect(fSurface, NULL, MapColor(r, g, b));
-}
+	if (this != screen)
+		SetAsTarget(true);
 
+	SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
+	//SDL_RenderFillRect(renderer, NULL);
+	SDL_RenderClear(renderer);
+
+	if (this != screen)
+		SetAsTarget(false);
+}
 
 void NXSurface::DrawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
-	DrawRect(x, y, x, y, r, g, b);
+	FillRect(x, y, x, y, r, g, b);
 }
 
 /*
@@ -224,22 +374,25 @@ void c------------------------------() {}
 
 int NXSurface::Width()
 {
-	return fSurface->w / SCALE;
+	return tex_w / SCALE;
 }
 
 int NXSurface::Height()
 {
-	return fSurface->h / SCALE;
+	return tex_h / SCALE;
 }
 
 NXFormat *NXSurface::Format()
 {
-	return fSurface->format;
+	return &tex_format;
 }
 
 void NXSurface::Flip()
 {
-	SDL_Flip(fSurface);
+	if (this == screen)
+	{
+		SDL_RenderPresent(renderer);
+	}
 }
 
 /*
@@ -248,150 +401,112 @@ void c------------------------------() {}
 
 void NXSurface::set_clip_rect(int x, int y, int w, int h)
 {
-	NXRect rect(x * SCALE, y * SCALE, w * SCALE, h * SCALE);
-	SDL_SetClipRect(fSurface, &rect);
+	need_clip = true;
+
+	clip_rect.x = x * SCALE;
+	clip_rect.y = y * SCALE;
+	clip_rect.w = w * SCALE;
+	clip_rect.h = h * SCALE;
 }
 
 void NXSurface::set_clip_rect(NXRect *rect)
 {
-	SDL_SetClipRect(fSurface, rect);
+	assert(false && "not implemented");
 }
 
 void NXSurface::clear_clip_rect()
 {
-	SDL_SetClipRect(fSurface, NULL);
+	need_clip = false;
+}
+
+bool NXSurface::is_set_clip() const
+{
+	return need_clip;
+}
+
+void NXSurface::clip(SDL_Rect& srcrect, SDL_Rect& dstrect) const
+{
+	
+	int w = srcrect.w;
+	int h = srcrect.h;
+	
+    int dx, dy;
+
+    // Code is from SDL_UpperBlit().
+    // This is how SDL performs clip on surface.
+
+    dx = clip_rect.x - dstrect.x;
+    if (dx > 0) {
+        w -= dx;
+        dstrect.x += dx;
+        srcrect.x += dx;
+    }
+    dx = dstrect.x + w - clip_rect.x - clip_rect.w;
+    if (dx > 0)
+        w -= dx;
+
+    dy = clip_rect.y - dstrect.y;
+    if (dy > 0) {
+        h -= dy;
+        dstrect.y += dy;
+        srcrect.y += dy;
+    }
+    dy = dstrect.y + h - clip_rect.y - clip_rect.h;
+    if (dy > 0)
+        h -= dy;
+
+    dstrect.w = srcrect.w = w;
+    dstrect.h = srcrect.h = h;
 }
 
 /*
 void c------------------------------() {}
 */
 
-// internal function which scales the given SDL surface by the given factor.
-SDL_Surface *NXSurface::Scale(SDL_Surface *original, int factor, \
-		bool use_colorkey, bool free_original, bool use_display_format)
-{
-SDL_Surface *scaled;
-
-	if (factor == 1 && free_original)
-	{
-		scaled = original;
-	}
-	else
-	{
-		scaled = SDL_CreateRGBSurface(SDL_SRCCOLORKEY, \
-						original->w * SCALE, \
-						original->h * SCALE, \
-						original->format->BitsPerPixel, \
-						original->format->Rmask, original->format->Gmask,
-						original->format->Bmask, original->format->Amask);
-		
-		if (original->format->BitsPerPixel == 8)
-		{	// copy the palette from the old surface to the new surface
-			SDL_Color palette[256];
-			for(int i=0;i<256;i++)
-			{
-				SDL_GetRGB(i, original->format, &palette[i].r, &palette[i].g, &palette[i].b);
-			}
-			
-			SDL_SetColors(scaled, palette, 0, 256);
-		}
-		
-		// all the .pbm files are 8bpp, so I haven't had a reason
-		// to write any other scalers.
-		switch(original->format->BitsPerPixel)
-		{
-			case 8:
-				Scale8(original, scaled, factor);
-			break;
-			
-			default:
-				staterr("NXSurface::Scale: unsupported bpp %d", original->format->BitsPerPixel);
-				SDL_FreeSurface(scaled);
-			return NULL;
-		}
-		
-		// can get rid of original now if they wanted us to
-		if (free_original)
-			SDL_FreeSurface(original);
-	}
-	
-	// set colorkey to black if requested
-	if (use_colorkey)
-	{	// don't use SDL_RLEACCEL--it seems to actually make things a lot slower,
-		// especially on maps with motion tiles.
-		SDL_SetColorKey(scaled, SDL_SRCCOLORKEY, SDL_MapRGB(scaled->format, 0, 0, 0));
-	}
-	
-	if (use_palette)
-	{
-		scaled = palette_add(scaled);
-		if (!scaled)
-			return NULL;
-	}
-	
-	if (use_display_format)
-	{
-		SDL_Surface *ret_sfc = SDL_DisplayFormat(scaled);
-		SDL_FreeSurface(scaled);
-		
-		return ret_sfc;
-	}
-	else
-	{
-		return scaled;
-	}
-}
-
-void NXSurface::Scale8(SDL_Surface *src, SDL_Surface *dst, int factor)
-{
-int x, y, i;
-
-	for(y=0;y<src->h;y++)
-	{
-		uint8_t *srcline = (uint8_t *)src->pixels + (y * src->pitch);
-		uint8_t *dstline = (uint8_t *)dst->pixels + (y * factor * dst->pitch);
-		uint8_t *dstptr = dstline;
-		
-		for(x=0;x<src->w;x++)
-		{
-			for(i=0;i<factor;i++)
-				*(dstptr++) = srcline[x];
-		}
-		
-		dstptr = dstline;
-		for(i=1;i<factor;i++)
-		{
-			dstptr += dst->pitch;
-			memcpy(dstptr, dstline, dst->pitch);
-		}
-	}
-}
 
 /*
 void c------------------------------() {}
 */
 
-void NXSurface::EnableColorKey()
-{
-	SDL_SetColorKey(fSurface, SDL_SRCCOLORKEY, SDL_MapRGB(fSurface->format, 0, 0, 0));
-}
+// void NXSurface::EnableColorKey()
+// {
+// 	SDL_SetColorKey(fSurface, SDL_TRUE, SDL_MapRGB(fSurface->format, 0, 0, 0));
+// }
 
-uint32_t NXSurface::MapColor(uint8_t r, uint8_t g, uint8_t b)
-{
-	return SDL_MapRGB(fSurface->format, r, g, b);
-}
+// uint32_t NXSurface::MapColor(uint8_t r, uint8_t g, uint8_t b)
+// {
+// 	return SDL_MapRGB(fSurface->format, r, g, b);
+// }
 
 
 void NXSurface::Free()
 {
-	if (fSurface)
+	if (fTexture)
 	{
-		if (fFreeSurface)
-			SDL_FreeSurface(fSurface);
-		
-		fSurface = NULL;
+		SDL_DestroyTexture(fTexture);
+		fTexture = NULL;
 	}
 }
 
 
 
+void NXSurface::SetAsTarget(bool enabled)
+{
+	// stat("NXSurface::SetAsTarget this = %p, enabled = %d", this, (int)enabled);
+
+	if (SDL_SetRenderTarget(renderer, (enabled ? fTexture : NULL)))
+	{
+		staterr("NXSurface::SetAsTarget: SDL_SetRenderTarget failed: %s" , SDL_GetError());
+	}
+}
+
+void NXSurface::setFormat(NXFormat const* format)
+{
+	tex_format = *format;
+	tex_format.palette = NULL;
+}
+
+void NXSurface::setPixelFormat(Uint32 format)
+{
+	tex_format.format = format;
+}

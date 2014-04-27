@@ -3,6 +3,7 @@
 #include "ai/sym/smoke.h"
 #include "object.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "graphics/sprites.h"
 #include "autogen/sprites.h"
 #include "graphics/tileset.h"

@@ -1,22 +1,28 @@
-
+#include <cassert>
+#include <algorithm>
 // graphics routines
 #include <SDL.h>
-#ifndef __SDLSHIM__
-	#include <SDL_getenv.h>
-#endif
 
 #include <stdlib.h>
+#include "../nx.h"
 #include "../config.h"
-#include "../version.h"
 #include "graphics.h"
 #include "tileset.h"
 #include "sprites.h"
-#include "palette.h"
-#include "../dirnames.h"
 #include "font.h"
-#include "../common/stat.h"
+#include "../dirnames.h"
 #include "../map.h"
+#include "../version.h"
 #include "nx_icon.h"
+
+SDL_Window * window = NULL;
+SDL_Renderer * renderer = NULL;
+
+
+// (unscaled) screen size/video mode
+int Graphics::SCREEN_WIDTH = 320;
+int Graphics::SCREEN_HEIGHT = 240;
+bool Graphics::widescreen = false;
 
 NXSurface *screen = NULL;				// created from SDL's screen
 static NXSurface *drawtarget = NULL;	// target of DrawRect etc; almost always screen
@@ -25,10 +31,12 @@ int screen_bpp;
 
 const NXColor DK_BLUE(0, 0, 0x21);		// the popular dk blue backdrop color
 const NXColor BLACK(0, 0, 0);			// pure black, only works if no colorkey
-const NXColor CLEAR(0, 0, 0);			// the transparent/colorkey color
+//const NXColor CLEAR(0, 0, 0);			// the transparent/colorkey color
 
-static bool is_fullscreen = false;
+
 static int current_res = -1;
+
+static NXSurface const* current_batch_drawtarget = NULL;
 
 bool Graphics::init(int resolution)
 {
@@ -39,22 +47,8 @@ bool Graphics::init(int resolution)
 	else
 	{
 		screen_bpp = 16;	// the default
-		
-		#ifndef __SDLSHIM__
-		const SDL_VideoInfo *info;
-		
-		// it's faster if we create the SDL screen at the bpp of the real screen.
-		// max fps went from 120 to 160 on my X11 system this way.
-		if ((info = SDL_GetVideoInfo()))
-		{
-			stat("videoinfo: desktop bpp %d", info->vfmt->BitsPerPixel);
-			if (info->vfmt->BitsPerPixel > 8)
-				screen_bpp = info->vfmt->BitsPerPixel;
-		}
-		#endif
 	}
 	
-	palette_reset();
 	
 	if (SetResolution(resolution, false))
 		return 1;
@@ -72,15 +66,53 @@ void Graphics::close()
 {
 	stat("Graphics::Close()");
 	SDL_ShowCursor(true);
+	SDL_DestroyWindow(window); window = NULL;
 }
 
-/*
-void c------------------------------() {}
-*/
+bool Graphics::WindowVisible()
+{
+	Uint32 flags = SDL_GetWindowFlags(window);
+
+	return (flags & SDL_WINDOW_SHOWN) && !(flags & SDL_WINDOW_MINIMIZED) // SDL_APPACTIVE
+		&& (flags & SDL_WINDOW_INPUT_FOCUS);                              // SDL_APPINPUTFOCUS 
+}
+
 
 bool Graphics::InitVideo()
 {
-    SDL_Surface *sdl_screen;
+	if (drawtarget == screen) drawtarget = NULL;
+	if (screen) delete screen;
+	
+	uint32_t window_flags = SDL_WINDOW_SHOWN;
+	
+	const Graphics::gres_t* res=GetRes();
+	
+	uint32_t width = res[current_res].width;
+	uint32_t height = res[current_res].height;
+	
+	if (window)
+	{
+		stat("second call to Graphics::InitVideo()");
+	}
+	
+	stat("SDL_CreateWindow: %dx%d @ %dbpp", width, height, screen_bpp);
+	if (window)
+	{
+        	SDL_SetWindowSize(window, width, height);
+	}
+	else
+	{
+    	window = SDL_CreateWindow(NXVERSION, 
+	    	SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    		width, height,
+    		window_flags);
+	}
+
+	if (!window)
+	{
+		staterr("Graphics::InitVideo: error setting video mode (SDL_CreateWindow: %s)", SDL_GetError());
+		return 1;
+	}
 
     SDL_Surface *icon;
     icon = SDL_CreateRGBSurfaceFrom((void *)WINDOW_TITLE_ICON.pixel_data,
@@ -100,37 +132,40 @@ bool Graphics::InitVideo()
                                     0xff000000  /* Alpha bit mask. */
                                 #endif
                                     );
-    SDL_WM_SetIcon(icon, NULL);
+    SDL_SetWindowIcon(window, icon);
     SDL_FreeSurface(icon);
 
-	if (drawtarget == screen) drawtarget = NULL;
-	if (screen) delete screen;
-	
-	uint32_t flags = SDL_SWSURFACE | SDL_HWPALETTE;
-	if (is_fullscreen) flags |= SDL_FULLSCREEN;
-	
-	#ifndef __SDLSHIM__
-	putenv((char *)"SDL_VIDEO_CENTERED=1");
-	#endif
-	
-	stat("SDL_SetVideoMode: %dx%d @ %dbpp", SCREEN_WIDTH*SCALE, SCREEN_HEIGHT*SCALE, screen_bpp);
-	sdl_screen = SDL_SetVideoMode(SCREEN_WIDTH*SCALE, SCREEN_HEIGHT*SCALE, screen_bpp, flags);
-	if (!sdl_screen)
+
+	if (!renderer)
+    	renderer = SDL_CreateRenderer(window, -1, /*SDL_RENDERER_SOFTWARE | */SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+	if (!renderer)
 	{
-		staterr("Graphics::InitVideo: error setting video mode");
+		staterr("Graphics::InitVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
 		return 1;
 	}
-	
-	if (use_palette && !(sdl_screen->flags & SDL_HWPALETTE))
+
+	SDL_RendererInfo info;
+	if (SDL_GetRendererInfo(renderer, &info))
 	{
-		staterr("Graphics::InitVideo: failed to obtain exclusive access to hardware palette");
-		exit(1);
+		staterr("Graphics::InitVideo: SDL_GetRendererInfo failed: %s", SDL_GetError());
+		return 1;
 	}
-	
-	SDL_WM_SetCaption(NXVERSION, NULL);
-	SDL_ShowCursor(is_fullscreen == false);
-	
-	screen = new NXSurface(sdl_screen, false);
+
+	if (!(info.flags & SDL_RENDERER_TARGETTEXTURE))
+	{
+		staterr("Graphics::InitVideo: SDL_RENDERER_TARGETTEXTURE is not supported");
+		return 1;
+	}
+
+	screen = NXSurface::createScreen(width, height, 
+		info.texture_formats[0]);
+    
+    if (!screen)
+    {
+        staterr("Graphics::InitVideo: no screen has been created");
+        return 1;
+    }
+
 	if (!drawtarget) drawtarget = screen;
 	return 0;
 }
@@ -138,7 +173,6 @@ bool Graphics::InitVideo()
 bool Graphics::FlushAll()
 {
 	stat("Graphics::FlushAll()");
-	palette_reset();
 	Sprites::FlushSheets();
 	Tileset::Reload();
 	map_flush_graphics();
@@ -147,12 +181,8 @@ bool Graphics::FlushAll()
 
 void Graphics::SetFullscreen(bool enable)
 {
-	if (is_fullscreen != enable)
-	{
-		is_fullscreen = enable;
-		InitVideo();
-		Graphics::FlushAll();
-	}
+	SDL_ShowCursor(!enable);
+	SDL_SetWindowFullscreen(window, (enable ? SDL_WINDOW_FULLSCREEN : 0));
 }
 
 // change the video mode to one of the available resolution codes, currently:
@@ -167,22 +197,25 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 		return 0;
 	
 	int old_res = current_res;
+
 	int factor;
 	
 	if (r == 0)
 	{
-		is_fullscreen = true;
-		factor = 2;
+		factor = 1;
 	}
 	else
 	{
-		is_fullscreen = false;
-		factor = r;
+	    const Graphics::gres_t* res=GetRes();
+		factor = res[r].scale;
+		SCREEN_HEIGHT = res[r].base_height;
+		SCREEN_WIDTH = res[r].base_width;
+		widescreen = res[r].widescreen;
 	}
 	
-	stat("Setting scaling %d and fullscreen=%s", factor, is_fullscreen ? "yes":"no");
+	stat("Setting scaling %d", factor);
 	NXSurface::SetScale(factor);
-	
+    current_res = r;
 	if (Graphics::InitVideo())
 	{
 		staterr("Switch to resolution %d failed!", r);
@@ -194,26 +227,45 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 			{
 				staterr("Fatal error: vidmode recovery failed!!!");
 			}
+			current_res = old_res;
 		}
 		
 		return 1;
 	}
-	
+	current_res = r;
 	if (Graphics::FlushAll()) return 1;
 	return 0;
 }
 
-// return a pointer to a null-terminated list of available resolutions.
-const char **Graphics::GetResolutions()
-{
-static const char *res_str[]   =
-{
-	"Fullscreen",
-	"320x240", "640x480", "960x720", "1280x960",
-	NULL
-};
 
-	return res_str;
+const Graphics::gres_t* Graphics::GetRes()
+{
+    static const Graphics::gres_t res[] = {
+        // 4:3
+        {(char*)"---", 0, 0, 0, 0, 1, false },
+        {(char*)"320x240", 320, 240, 320, 240, 1, false },
+        {(char*)"640x480", 640, 480, 320, 240, 2, false },
+//        {(char*)"800x600", 800, 600, 320, 240, 2.5, false }, //requires float scalefactor
+        {(char*)"1024x768", 1024, 768, 340, 256, 3, false },
+        {(char*)"1280x1024", 1280, 1024, 320, 256, 4, false },
+        {(char*)"1600x1200", 1600, 1200, 320, 240, 5, false },
+        // widescreen
+        {(char*)"480x272", 480, 272, 480, 272, 1, true },
+        {(char*)"1440x900", 1440, 900, 480, 300, 3, true },
+        {(char*)"1920x1080", 1920, 1080, 480, 270, 4, true },
+        NULL
+    };
+
+    return res;
+}
+
+uint32_t Graphics::GetResCount()
+{
+  uint32_t i;
+  const gres_t *res = GetRes();
+
+  for (i=0;res[i].name;i++);
+  return i;
 }
 
 /*
@@ -243,7 +295,7 @@ NXRect srcrect, dstrect;
 	if (tileset && spritesheet)
 	{
 		// blank out the old tile data with clear
-		tileset->FillRect(&dstrect, CLEAR);
+		tileset->ClearRect(&dstrect);
 		
 		// copy the sprite over
 		BlitSurface(spritesheet, &srcrect, tileset, &dstrect);
@@ -260,8 +312,8 @@ char fname[MAXPATHLEN];
 	if (loading.LoadImage(fname))
 		return;
 	
-	int x = (SCREEN_WIDTH / 2) - (loading.Width() / 2);
-	int y = (SCREEN_HEIGHT / 2) - loading.Height();
+	int x = (Graphics::SCREEN_WIDTH / 2) - (loading.Width() / 2);
+	int y = (Graphics::SCREEN_HEIGHT / 2) - loading.Height();
 	
 	ClearScreen(BLACK);
 	DrawSurface(&loading, x, y);
@@ -304,9 +356,60 @@ void Graphics::BlitPatternAcross(NXSurface *sfc, int x_dst, int y_dst, int y_src
 	drawtarget->BlitPatternAcross(sfc, x_dst, y_dst, y_src, height);
 }
 
+
+void Graphics::DrawBatchBegin(size_t max_count)
+{
+	if (NULL != current_batch_drawtarget)
+		assert(false && "batch operation already begun");
+
+	current_batch_drawtarget = drawtarget;
+
+	drawtarget->DrawBatchBegin(max_count);
+}
+
+void Graphics::DrawBatchAdd(NXSurface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht)
+{
+	if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+
+	drawtarget->DrawBatchAdd(src, dstx, dsty, srcx, srcy, wd, ht);
+}
+
+void Graphics::DrawBatchAdd(NXSurface *src, int x, int y)
+{
+	if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+
+	drawtarget->DrawBatchAdd(src, x, y);
+}
+
+void Graphics::DrawBatchAddPatternAcross(NXSurface *sfc, int x_dst, int y_dst, int y_src, int height)
+{
+    if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+    
+	drawtarget->DrawBatchAddPatternAcross(sfc, x_dst, y_dst, y_src, height);
+}
+
+void Graphics::DrawBatchEnd()
+{
+	if (current_batch_drawtarget != drawtarget)
+		assert(false && "drawtarget has been changed during batch operation");
+
+	current_batch_drawtarget = NULL;
+
+	drawtarget->DrawBatchEnd();
+}
+
+
 /*
 void c------------------------------() {}
 */
+
+void Graphics::DrawLine(int x1, int y1, int x2, int y2, NXColor color)
+{
+	drawtarget->DrawLine(x1, y1, x2, y2, color);
+}
 
 void Graphics::DrawRect(int x1, int y1, int x2, int y2, NXColor color)
 {
@@ -371,21 +474,14 @@ void Graphics::clear_clip_rect()
 	drawtarget->clear_clip_rect();
 }
 
-/*
-void c------------------------------() {}
-*/
-
-// change the target surface of operation like DrawRect to something
-// other than the screen.
-void Graphics::SetDrawTarget(NXSurface *surface)
+bool Graphics::is_set_clip()
 {
-	drawtarget = surface;
+	return drawtarget->is_set_clip();
 }
 
-
-
-
-
-
+void Graphics::clip(SDL_Rect& srcrect, SDL_Rect& dstrect)
+{
+	drawtarget->clip(srcrect, dstrect);
+}
 
 

@@ -1,12 +1,11 @@
 
 // PXT sound file player
 // see bottom of file for info on how to use this module
-
+#include <SDL.h>
 #include <stdio.h>
 #include <math.h>			// for sin()
 #include <stdlib.h>
 #include <string.h>
-#include "portable_endian.h"
 
 #include "../config.h"
 #include "pxt.h"
@@ -20,22 +19,6 @@
 #define PXCACHE_MAGICK           ( ( '1' << 24 ) + ( 'C' << 16 ) + ( 'X' << 8 ) + 'P' )
 
 
-// gets the next byte from wave "wave", scales it by the waves volume, and places result in "out".
-// x * (y / z) = (x * y) / z
-#define GETWAVEBYTE(wave, out)	\
-{	\
-	if (wave->model_no != MOD_WHITE)	\
-	{		\
-		out = wave->model[(unsigned char)wave->phaseacc];	\
-	}		\
-	else	\
-	{	\
-		out = white[wave->white_ptr];		\
-		if (++wave->white_ptr >= WHITE_LEN) wave->white_ptr = 0;	\
-	}	\
-	out *= wave->volume;			\
-	out /= 64;	\
-}
 
 
 #define WHITE_LEN		22050
@@ -57,6 +40,25 @@ static struct
 {
 	uint8_t table[256];
 } wave[PXT_NO_MODELS];
+
+
+// gets the next byte from wave "wave", scales it by the waves volume, and places result in "out".
+// x * (y / z) = (x * y) / z
+inline void GETWAVEBYTE(stPXWave* wave, int& out)
+{	
+	if (wave->model_no != MOD_WHITE)	
+	{		
+	    unsigned char index = static_cast<unsigned char>(static_cast<unsigned int>(wave->phaseacc) % 256);
+		out = wave->model[index];	
+	}		
+	else	
+	{	
+		out = white[wave->white_ptr];		
+		if (++wave->white_ptr >= WHITE_LEN) wave->white_ptr = 0;	
+	}	
+	out *= wave->volume;			
+	out /= 64;	
+}
 
 
 static unsigned int rng_seed = 0;
@@ -702,7 +704,7 @@ int malc_size;
 	{
 		value = buffer[i];
 		value *= 200;
-		value = htole16(value);
+		value = SDL_SwapLE16(value);
 		
 		outbuffer[ap++] = value;		// left ch
 		outbuffer[ap++] = value;		// right ch

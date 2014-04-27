@@ -8,6 +8,7 @@
 #include "statusbar.h"
 #include "tsc.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "graphics/font.h"
 #include "graphics/sprites.h"
 #include "sound/sound.h"
@@ -83,6 +84,8 @@ static void __warp(std::vector<std::string> *args, int num)
 			}
 			
 			if (strcasebegin(stages[num].stagename, stagename.c_str()))
+				break;
+			if (strcasebegin(stages[num].filename, stagename.c_str()))
 				break;
 		}
 	}
@@ -493,42 +496,6 @@ extern int fps;
 void c------------------------------() {}
 */
 
-static void __set_iquit(std::vector<std::string> *args, int num)
-{
-	settings->instant_quit = num;
-	settings_save();
-	Respond("instant quit: %s", settings->instant_quit ? "enabled":"disabled");
-}
-
-static void __set_noquake(std::vector<std::string> *args, int num)
-{
-	settings->no_quake_in_hell = num;
-	settings_save();
-	Respond("no quake in hell: %s", settings->no_quake_in_hell ? "enabled":"disabled");
-}
-
-static void __inhibit_fullscreen(std::vector<std::string> *args, int num)
-{
-	settings->inhibit_fullscreen = num;
-	settings_save();
-	Respond("inhibit fullscreen: %s", settings->inhibit_fullscreen ? "enabled":"disabled");
-}
-
-static void __emulate_bugs(std::vector<std::string> *args, int num)
-{
-	settings->emulate_bugs = num;
-	settings_save();
-	Respond("emulate bugs: %s", settings->emulate_bugs ? "enabled":"disabled");
-}
-
-static void __displayformat(std::vector<std::string> *args, int num)
-{
-	settings->displayformat = num;
-	settings_save();
-	Graphics::FlushAll();
-	Respond("SDL_DisplayFormat: %s", settings->displayformat ? "on":"off");
-}
-
 static void __skip_intro(std::vector<std::string> *args, int num)
 {
 	settings->skip_intro = num;
@@ -600,11 +567,6 @@ static CommandEntry commands[] =
 	"reset", __reset, 0, 0,
 	"fps", __fps, 0, 1,
 	
-	"instant-quit", __set_iquit, 1, 1,
-	"no-quake-in-hell", __set_noquake, 1, 1,
-	"inhibit-fullscreen", __inhibit_fullscreen, 1, 1,
-	"emulate-bugs", __emulate_bugs, 1, 1,
-	"displayformat", __displayformat, 1, 1,
 	"skip-intro", __skip_intro, 1, 1,
 	
 	"player->hide", __player_hide, 1, 1,

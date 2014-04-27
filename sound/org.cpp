@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "portable_endian.h"
 
 #include "../common/basics.h"
 #include "org.h"
@@ -601,7 +600,7 @@ signed short *final;
 		if (mixed_sample > 32767) mixed_sample = 32767;
 		else if (mixed_sample < -32768) mixed_sample = -32768;
 		
-		final[cursample] = htole16(mixed_sample);
+		final[cursample] = SDL_SwapLE16(mixed_sample);
 	}
 }
 

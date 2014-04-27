@@ -56,6 +56,7 @@ int xmin, xmax, ymin, ymax;
 int xi_min, xi_max, yi_min, yi_max;
 static const int SSLOW = 0x155;
 static const int SFAST = 0x600;
+xmin = xmax = ymin = ymax = xi_min = xi_max = yi_min = yi_max = 0;
 
 	switch(dir)
 	{

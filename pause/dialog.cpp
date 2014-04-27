@@ -2,8 +2,10 @@
 #include "../nx.h"
 #include "dialog.h"
 #include "../graphics/graphics.h"
+using namespace Graphics;
 #include "../graphics/font.h"
 #include "../graphics/sprites.h"
+
 using namespace Sprites;
 #include "../TextBox/TextBox.h"
 #include "../sound/sound.h"
@@ -16,16 +18,27 @@ using namespace Sprites;
 using namespace Options;
 extern std::vector<void*>  optionstack;
 
-#define DLG_X		((SCREEN_WIDTH / 2) - 88)
-#define DLG_Y		((SCREEN_HEIGHT / 2) - 90)
-#define DLG_W		190
-#define DLG_H		180
 
 #define REPEAT_WAIT	30
 #define REPEAT_RATE	4
 
 Dialog::Dialog()
 {
+    if (widescreen)
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 110);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 240;
+        DLG_H = 180;
+    }
+    else
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 88);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 190;
+        DLG_H = 180;
+    }
+
 	onclear = NULL;
 	ondismiss = NULL;
 	
@@ -46,9 +59,38 @@ Dialog::~Dialog()
 {
 	for(int i=0;i<fItems.size();i++)
 		delete fItems.at(i);
-//	for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
-//	    if (*it==this)
-	        optionstack.erase(optionstack.end()-1);
+	for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
+	{
+	    if (*it==this)
+	    {
+	        optionstack.erase(it);
+	        break;
+	    }
+	}
+}
+
+void Dialog::UpdateSizePos()
+{
+    if (widescreen)
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 110);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 240;
+        DLG_H = 180;
+    }
+    else
+    {
+        DLG_X = ((SCREEN_WIDTH / 2) - 88);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_W = 190;
+        DLG_H = 180;
+    }
+
+    fCoords.x = DLG_X;
+    fCoords.y = DLG_Y;
+    fCoords.w = DLG_W;
+    fCoords.h = DLG_H;
+    fTextX = (fCoords.x + 48);
 }
 
 void Dialog::SetSize(int w, int h)
@@ -194,7 +236,7 @@ void Dialog::RunInput()
 			{
 				fCurSel += dir;
 				if (fCurSel < 0) fCurSel = (nitems - 1);
-							else fCurSel %= nitems;
+				if (fCurSel>=fItems.size()) fCurSel = 0;
 				
 				if(fCurSel>=0 && fCurSel<fItems.size())
 				{

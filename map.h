@@ -108,17 +108,17 @@ void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds=4, bool boom
 #include "stagedata.h"
 
 // needed if resolution is changed to a non-multiple of the tile size
-#if (((SCREEN_WIDTH / TILE_W) * TILE_W) != SCREEN_WIDTH)
+//#if (((SCREEN_WIDTH / TILE_W) * TILE_W) != SCREEN_WIDTH)
 	#define MAP_DRAW_EXTRA_X	1
-#else
-	#define MAP_DRAW_EXTRA_X	0
-#endif
+//#else
+//	#define MAP_DRAW_EXTRA_X	0
+//#endif
 
-#if (((SCREEN_HEIGHT / TILE_H) * TILE_H) != SCREEN_HEIGHT)
+//#if (((SCREEN_HEIGHT / TILE_H) * TILE_H) != SCREEN_HEIGHT)
 	#define MAP_DRAW_EXTRA_Y	1
-#else
-	#define MAP_DRAW_EXTRA_Y	0
-#endif
+//#else
+//	#define MAP_DRAW_EXTRA_Y	0
+//#endif
 
 bool load_stage(int stage_no);
 bool load_map(const char *fname);
@@ -129,7 +129,7 @@ bool initmapfirsttime(void);
 void initmap(void);
 void map_set_backdrop(int backdrop_no);
 void map_draw_backdrop(void);
-static void DrawFastLeftLayered(void);
+void DrawFastLeftLayered(void);
 static bool LoadBackdropIfNeeded(int backdrop_no);
 void map_flush_graphics();
 void map_drawwaterlevel(void);

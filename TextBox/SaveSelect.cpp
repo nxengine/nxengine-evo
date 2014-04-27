@@ -68,10 +68,19 @@ void TB_SaveSelect::SetVisible(bool enable, bool saving)
 	if (!enable) return;
 	game.showmapnametime = 0;
 	
-	fCoords.x = 38;
-	fCoords.y = 8;
 	fCoords.w = 244;
 	fCoords.h = 152;
+	if (widescreen)
+	{
+	    fCoords.x = (SCREEN_WIDTH / 2) - (fCoords.w / 2);
+	    fCoords.y = 30;
+	}
+	else
+	{
+	    fCoords.x = 38;
+	    fCoords.y = 8;
+	}
+	
 	fNumFiles = MAX_SAVE_SLOTS;
 	fSaving = saving;
 	
@@ -196,14 +205,14 @@ int x, y, s;
 	if (fPicXOffset < 0)
 	{
 		fPicXOffset += 8;
-		set_clip_rect(MSG_X+4, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+		set_clip_rect(((SCREEN_WIDTH / 2) - (MSG_W / 2))+4, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	}
 	
 	// player pic
-	draw_sprite((MSG_X+8) + fPicXOffset, MSG_NORMAL_Y+8, SPR_SELECTOR_ARMS);
+	draw_sprite((((SCREEN_WIDTH / 2) - (MSG_W / 2))+8) + fPicXOffset, ((SCREEN_HEIGHT - MSG_H) - 2)+8, SPR_SELECTOR_ARMS);
 	
-	x = (MSG_X + 12) + fPicXOffset;
-	y = MSG_NORMAL_Y + 12;
+	x = (((SCREEN_WIDTH / 2) - (MSG_W / 2)) + 12) + fPicXOffset;
+	y = ((SCREEN_HEIGHT - MSG_H) - 2) + 12;
 	s = (p->equipmask & EQUIP_MIMIGA_MASK) ? SPR_MYCHAR_MIMIGA : SPR_MYCHAR;
 	
 	draw_sprite(x, y, s, 0, RIGHT);
@@ -224,7 +233,7 @@ int x, y, s;
 	// whimsical stars
 	if (p->equipmask & EQUIP_WHIMSTAR)
 	{
-		x = MSG_X + 12;
+		x = ((SCREEN_WIDTH / 2) - (MSG_W / 2)) + 12;
 		
 		for(int i=0;i<3;i++)
 		{
@@ -235,8 +244,8 @@ int x, y, s;
 	}
 	
 	// WEAPONS:
-	x = MSG_X + 64;
-	y = MSG_NORMAL_Y + 8;
+	x = ((SCREEN_WIDTH / 2) - (MSG_W / 2)) + 64;
+	y = ((SCREEN_HEIGHT - MSG_H) - 2) + 8;
 	
 	// weapon list
 	for(int i=0;i<WPN_COUNT;i++)
@@ -251,8 +260,8 @@ int x, y, s;
 	// xp of current weapon
 	if (p->curWeapon != WPN_NONE)
 	{
-		int xb = MSG_X + 64;
-		int yb = MSG_NORMAL_Y + 26;
+		int xb = ((SCREEN_WIDTH / 2) - (MSG_W / 2)) + 64;
+		int yb = ((SCREEN_HEIGHT - MSG_H) - 2) + 26;
 		
 		int level = p->weapons[p->curWeapon].level;
 		int curxp = p->weapons[p->curWeapon].xp;
@@ -269,8 +278,8 @@ int x, y, s;
 	}
 	
 	// ITEMS:
-	x = (MSG_X + 64) - 10;
-	y = MSG_NORMAL_Y + 40;
+	x = (((SCREEN_WIDTH / 2) - (MSG_W / 2)) + 64) - 10;
+	y = ((SCREEN_HEIGHT - MSG_H) - 2) + 40;
 	
 	// Booster
 	// items list. I generally tried to put the ones that are temporary and indicate a
@@ -297,13 +306,13 @@ int x, y, s;
 			draw_sprite(x, y, SPR_ITEMIMAGE, items[i]);
 			x += 28;
 			
-			if (x + sprites[SPR_ITEMIMAGE].w > (MSG_X + MSG_W) - 8)
+			if (x + sprites[SPR_ITEMIMAGE].w > (((SCREEN_WIDTH / 2) - (MSG_W / 2)) + MSG_W) - 8)
 				break;
 		}
 	}
 	
 	// health
-	DrawHealth((MSG_X+MSG_W) - 4, MSG_NORMAL_Y+8, p);
+	DrawHealth((((SCREEN_WIDTH / 2) - (MSG_W / 2))+MSG_W) - 4, ((SCREEN_HEIGHT - MSG_H) - 2)+8, p);
 	
 }
 

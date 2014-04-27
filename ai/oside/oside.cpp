@@ -11,6 +11,7 @@
 #include "../../player.h"
 
 #include "../../graphics/graphics.h"
+using namespace Graphics;
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
 #include "../../autogen/sprites.h"

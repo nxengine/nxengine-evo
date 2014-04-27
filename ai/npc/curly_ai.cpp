@@ -193,6 +193,7 @@ if (inputs[DEBUGKEY7]) o->state=999;
 	
 	// face target. I used two seperate IF statements so she doesn't freak out at start point
 	// when her x == xmark.
+	wantdir = o->dir;
 	if (o->x < o->xmark) wantdir = RIGHT;
 	if (o->x > o->xmark) wantdir = LEFT;
 	if (wantdir != o->dir)

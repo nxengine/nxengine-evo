@@ -1,5 +1,10 @@
 
 // manages the tileset
+#include <cassert>
+#include <cstdio>
+#include "../nx.h"
+#include "../config.h"
+
 #include "graphics.h"
 #include "tileset.h"
 using namespace Graphics;
@@ -64,6 +69,33 @@ void Tileset::draw_tile(int x, int y, int t)
 	
 	DrawSurface(tileset, x, y, srcx, srcy, TILE_W, TILE_H);
 }
+
+#if defined(CONFIG_FAST_TILEGRID)
+
+void Tileset::draw_tilegrid_begin(size_t max_count)
+{
+	DrawBatchBegin(max_count);
+}
+
+void Tileset::draw_tilegrid_add(int x, int y, int t)
+{
+	// 16 tiles per row on all tilesheet
+	int srcx = (t % 16) * TILE_W;
+	int srcy = (t / 16) * TILE_H;
+
+	DrawBatchAdd(tileset, x, y, srcx, srcy, TILE_W, TILE_H);
+}
+
+void Tileset::draw_tilegrid_end()
+{
+	DrawBatchEnd();
+}
+
+#else
+void Tileset::draw_tilegrid_begin(size_t) {}
+void Tileset::draw_tilegrid_add(int x, int y, int t) { return draw_tile(x, y, t); }
+void Tileset::draw_tilegrid_end() {}
+#endif
 
 void Tileset::Reload()
 {

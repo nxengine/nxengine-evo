@@ -4,6 +4,7 @@
 #include "nx.h"
 #include "inventory.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "p_arms.h"
 #include "player.h"
 #include "graphics/sprites.h"
@@ -42,7 +43,11 @@ int curwpn = 0;
 	inv.w = 244;
 	inv.h = 152;
 	inv.x = (SCREEN_WIDTH / 2) - (inv.w / 2);
-	inv.y = 8;
+	if (widescreen)
+    	inv.y = 30;
+	else
+    	inv.y = 8;
+	
 	
 	// find current weapon and count # items for armssel selector
 	inv.armssel.items[0] = 0;		// show "no weapon" in case of no weapon

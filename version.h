@@ -1,7 +1,7 @@
 #ifndef __VERSION_H_
 #define __VERSION_H_
 
-#define NXVERSION "NXEngine-evo 1.1"
+#define NXVERSION "NXEngine-evo 2.1"
 
 #endif
 

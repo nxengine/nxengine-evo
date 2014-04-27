@@ -152,7 +152,9 @@ void c------------------------------() {}
 // spawn an effect at a shot's center point
 void shot_spawn_effect(Object *o, int effectno)
 {
-int x, y;
+    int x=0;
+    int y=0;
+
 
 	// Nemesis shots are very long so just centering the star doesn't look right.
 	// I could have gone off of aspect ratio but wanted to keep missiles the same

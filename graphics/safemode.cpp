@@ -5,10 +5,8 @@
 #include "../nx.h"
 #include "safemode.h"
 #include "graphics.h"
-#include "../graphics/font.h"
+#include "font.h"
 #include "../input.h"
-#include "../common/stat.h"
-
 
 using namespace safemode;
 using namespace Graphics;
@@ -49,20 +47,20 @@ void safemode::moveto(int y)
 	switch(y)
 	{
 		case SM_CENTER:
-			nexty = (SCREEN_HEIGHT / 2) - (GetFontHeight() / 2);
+			nexty = (Graphics::SCREEN_HEIGHT / 2) - (GetFontHeight() / 2);
 		break;
 		
 		case SM_UPPER_THIRD:
-			nexty = (SCREEN_HEIGHT / 4) - (GetFontHeight() / 2);
+			nexty = (Graphics::SCREEN_HEIGHT / 4) - (GetFontHeight() / 2);
 		break;
 		
 		case SM_LOWER_THIRD:
-			nexty = (SCREEN_HEIGHT / 4) - (GetFontHeight() / 2);
-			nexty = (SCREEN_HEIGHT - nexty);
+			nexty = (Graphics::SCREEN_HEIGHT / 4) - (GetFontHeight() / 2);
+			nexty = (Graphics::SCREEN_HEIGHT - nexty);
 		break;
 		
 		case SM_MIDUPPER_Y:
-			nexty = (SCREEN_HEIGHT / 2) - (GetFontHeight() / 2);
+			nexty = (Graphics::SCREEN_HEIGHT / 2) - (GetFontHeight() / 2);
 			nexty -= 32;
 		break;
 		
@@ -88,7 +86,7 @@ char buffer[128];
 	
 	if (buffer[0])
 	{
-		int x = ((SCREEN_WIDTH / 2) - (fontwidth / 2));
+		int x = ((Graphics::SCREEN_WIDTH / 2) - (fontwidth / 2));
 		
 		printrect.x = x;
 		printrect.y = nexty;
@@ -112,24 +110,21 @@ void safemode::clear()
 }
 
 
-int safemode::run_until_key(bool delay)
+void safemode::run_until_key(bool delay)
 {
 	stat("run_until_key()");
 	uint32_t start = SDL_GetTicks();
 	
-	last_sdl_key = -1;
+	last_sdl_action.key = -1;
 	do
 	{
 		input_poll();
 		SDL_Delay(50);
 		
 		if (delay && (SDL_GetTicks() - start) < 500)
-			last_sdl_key = -1;
+			last_sdl_action.key = -1;
 	}
-	while(last_sdl_key == -1);
-	
-	stat("returning key %d", last_sdl_key);
-	return last_sdl_key;
+	while(last_sdl_action.key == -1);
 }
 
 

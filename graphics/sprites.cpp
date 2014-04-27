@@ -1,7 +1,10 @@
 
 // sprites routines
 #include "graphics.h"
+#include "../nx.h"
 #include <string.h>
+#include <vector>
+#include <string>
 #include "../siflib/sif.h"
 #include "../siflib/sifloader.h"
 #include "../siflib/sectSprites.h"
@@ -12,51 +15,16 @@
 using namespace Graphics;
 
 #include "sprites.h"
-#include "../common/stat.h"
 
 static NXSurface *spritesheet[MAX_SPRITESHEETS];
 static int num_spritesheets;
-std::vector<std::string> sheetfiles;
+static std::vector<std::string> sheetfiles;
 
 SIFSprite sprites[MAX_SPRITES];
 int num_sprites;
 
-/*
-void c------------------------------() {}
-*/
+static bool batch_draw_enabled = false;
 
-
-// create slope boxes for all sprites, used by the slope-handling routines
-// these are basically just a form of bounding box describing the bounds of the
-// blockd points.
-static void create_slope_boxes()
-{
-	for(int s=0;s<num_sprites;s++)
-	{
-		if (sprites[s].block_d.count != 0)
-		{
-			int leftmost = 99999;
-			int rightmost = -99999;
-			for(int i=0;i<sprites[s].block_d.count;i++)
-			{
-				if (sprites[s].block_d[i].x < leftmost)  leftmost = sprites[s].block_d[i].x;
-				if (sprites[s].block_d[i].x > rightmost) rightmost = sprites[s].block_d[i].x;
-			}
-			
-			sprites[s].slopebox.x1 = leftmost;
-			sprites[s].slopebox.x2 = rightmost;
-			
-			if (sprites[s].block_u.count)
-				sprites[s].slopebox.y1 = (sprites[s].block_u[0].y + 1);
-			else
-				sprites[s].slopebox.y1 = 0;
-			
-			sprites[s].slopebox.y2 = (sprites[s].block_d[0].y - 1);
-		}
-	}
-	
-	sprites[SPR_MYCHAR].slopebox.y1 += 3;
-}
 
 // offset things like blockl/r/u/d, bounding box etc by the draw point of all
 // sprites so that these things are consistent with where the sprite appears to be
@@ -104,6 +72,41 @@ static void expand_single_dir_sprites()
 	}
 }
 
+
+
+// create slope boxes for all sprites, used by the slope-handling routines
+// these are basically just a form of bounding box describing the bounds of the
+// blockd points.
+static void create_slope_boxes()
+{
+	for(int s=0;s<num_sprites;s++)
+	{
+		if (sprites[s].block_d.count != 0)
+		{
+			int leftmost = 99999;
+			int rightmost = -99999;
+			for(int i=0;i<sprites[s].block_d.count;i++)
+			{
+				if (sprites[s].block_d[i].x < leftmost)  leftmost = sprites[s].block_d[i].x;
+				if (sprites[s].block_d[i].x > rightmost) rightmost = sprites[s].block_d[i].x;
+			}
+			
+			sprites[s].slopebox.x1 = leftmost;
+			sprites[s].slopebox.x2 = rightmost;
+			
+			if (sprites[s].block_u.count)
+				sprites[s].slopebox.y1 = (sprites[s].block_u[0].y + 1);
+			else
+				sprites[s].slopebox.y1 = 0;
+			
+			sprites[s].slopebox.y2 = (sprites[s].block_d[0].y - 1);
+		}
+	}
+	
+	sprites[SPR_MYCHAR].slopebox.y1 += 3;
+}
+
+
 static bool load_sif(const char *fname)
 {
 SIFLoader sif;
@@ -146,6 +149,7 @@ int sheetdatalength, spritesdatalength;
 	
 	return 0;
 }
+
 
 
 bool Sprites::Init()
@@ -193,16 +197,13 @@ static void Sprites::LoadSheetIfNeeded(int sheetno)
 		spritesheet[sheetno] = new NXSurface;
 		spritesheet[sheetno]->LoadImage(pbm_name, true);
 		
-		// fix the blue dash in the middle of the starpoof effect on that one frame,
-		// I'm pretty sure this is a glitch.
-		if (!settings->emulate_bugs)
-		{
-			if (sheetno == 3)	// Caret.pbm
-				spritesheet[sheetno]->FillRect(40, 58, 41, 58, 0, 0, 0);
-		}
 	}
 }
 
+void Sprites::draw_in_batch(bool enabled)
+{
+    batch_draw_enabled = enabled;
+}
 
 // master sprite drawing function
 static void Sprites::BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
@@ -213,11 +214,22 @@ static void Sprites::BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
 	dir %= sprites[s].ndirs;
 	SIFDir *sprdir = &sprites[s].frame[frame].dir[dir];
 	
-	DrawSurface(spritesheet[sprites[s].spritesheet], \
-				x, y, \
-				(sprdir->sheet_offset.x + xoff), \
-				(sprdir->sheet_offset.y + yoff), \
-				wd, ht);
+    if (batch_draw_enabled)
+    {
+        DrawBatchAdd(spritesheet[sprites[s].spritesheet], \
+                     x, y, \
+                     (sprdir->sheet_offset.x + xoff), \
+                     (sprdir->sheet_offset.y + yoff), \
+                     wd, ht);
+    }
+    else
+    {
+        DrawSurface(spritesheet[sprites[s].spritesheet], \
+                    x, y, \
+                    (sprdir->sheet_offset.x + xoff), \
+                    (sprdir->sheet_offset.y + yoff), \
+                    wd, ht);
+    }
 }
 
 /*
@@ -231,6 +243,11 @@ void Sprites::draw_sprite(int x, int y, int s, int frame, uint8_t dir)
 	BlitSprite(x, y, s, frame, dir, 0, 0, sprites[s].w, sprites[s].h);
 }
 
+RectI Sprites::get_sprite_rect(int x, int y, int s, int/* frame*/, uint8_t/* dir*/)
+{
+    return RectI(x, y, sprites[s].w, sprites[s].h);
+}
+
 // draw sprite "s", place it's draw point at [x,y] instead of it's upper-left corner.
 void Sprites::draw_sprite_at_dp(int x, int y, int s, int frame, uint8_t dir)
 {
@@ -238,7 +255,6 @@ void Sprites::draw_sprite_at_dp(int x, int y, int s, int frame, uint8_t dir)
 	y -= sprites[s].frame[frame].dir[dir].drawpoint.y;
 	BlitSprite(x, y, s, frame, dir, 0, 0, sprites[s].w, sprites[s].h);
 }
-
 
 // draw a portion of a sprite, such as a sprite in the middle of "teleporting".
 // only the area between clipy1 (inclusive) and clipy2 (exclusive) are visible.
@@ -306,23 +322,5 @@ NXSurface *Sprites::get_spritesheet(int sheetno)
 {
 	LoadSheetIfNeeded(sheetno);
 	return spritesheet[sheetno];
-}
-
-// create an empty spritesheet of the given size and return it's index.
-int Sprites::create_spritesheet(int wd, int ht)
-{
-	if (num_spritesheets >= MAX_SPRITESHEETS)
-		return -1;
-	
-	spritesheet[num_spritesheets] = new NXSurface(wd, ht);
-	return num_spritesheets++;
-}
-
-// draw a sprite onto some surface other than the screen
-void Sprites::draw_sprite_to_surface(NXSurface *dst, int x, int y, int s, int frame, uint8_t dir)
-{
-	Graphics::SetDrawTarget(dst);
-	draw_sprite(x, y, s, frame, dir);
-	Graphics::SetDrawTarget(screen);
 }
 

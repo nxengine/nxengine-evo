@@ -11,6 +11,7 @@
 #include "../../player.h"
 #include "../../map.h"
 #include "../../graphics/graphics.h"
+using namespace Graphics;
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
 #include "../../autogen/sprites.h"
@@ -19,8 +20,6 @@
 #define GAUDI_HP			15
 #define GAUDI_FLYING_HP		15
 #define GAUDI_ARMORED_HP	15
-
-#define PLAYER_NEAR_ENOUGH()	(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF))
 
 INITFUNC(AIRoutines)
 {
@@ -48,7 +47,7 @@ void ai_gaudi(Object *o)
 		return;
 	}
 	
-	if (!PLAYER_NEAR_ENOUGH())
+	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
 		return;
 	
 	switch(o->state)
@@ -229,7 +228,7 @@ void ai_gaudi_flying(Object *o)
 		return;
 	}
 	
-	if (!PLAYER_NEAR_ENOUGH())
+	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
 		return;
 	
 	switch(o->state)
@@ -295,7 +294,7 @@ void ai_gaudi_armored(Object *o)
 		return;
 	}
 	
-	if (!PLAYER_NEAR_ENOUGH())
+	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
 		return;
 	
 	FACEPLAYER;

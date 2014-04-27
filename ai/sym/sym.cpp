@@ -16,6 +16,7 @@
 
 #include "../../player.h"
 #include "../../graphics/graphics.h"
+using namespace Graphics;
 #include "../../graphics/sprites.h"
 #include "../../autogen/sprites.h"
 #include "../../settings.h"
@@ -527,7 +528,7 @@ void ai_chest_closed(Object *o)
 		o->state = 1;
 		
 		// stop motion of chest spawned from Kulala
-		if (settings->emulate_bugs)
+//		if (settings->emulate_bugs)
 			o->xinertia = 0;
 	}
 	
@@ -1137,7 +1138,7 @@ void ai_scroll_controller(Object *o)
 // makes a perpetual quake. used during end-run and Hell.
 void ai_quake(Object *o)
 {
-	if (!settings->no_quake_in_hell || \
+	if (
 		(game.curmap != STAGE_HELL1 && \
 		 game.curmap != STAGE_HELL2 && \
 		 game.curmap != STAGE_HELL3 && \
@@ -1147,7 +1148,8 @@ void ai_quake(Object *o)
 		 game.curmap != STAGE_CORRIDOR && \
 		 game.curmap != STAGE_SEAL_CHAMBER))
 	{
-		game.quaketime = 10;
+		//game.quaketime = 10;
+		quake(10,0);
 	}
 }
 

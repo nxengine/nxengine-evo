@@ -27,9 +27,12 @@ public:
 	bool InitBitmapChars(SDL_Surface *sheet, uint32_t fgcolor, uint32_t color);
 	bool InitBitmapCharsShadowed(SDL_Surface *sheet, uint32_t fgcolor, uint32_t color, uint32_t shadowcolor);
 	
+	bool InitTextures();
+
 	void free();
 	
 	SDL_Surface *letters[NUM_FONT_LETTERS];
+	SDL_Texture *tletters[NUM_FONT_LETTERS];
 
 private:
 	void ReplaceColor(SDL_Surface *sfc, uint32_t oldcolor, uint32_t newcolor);
@@ -46,7 +49,6 @@ int font_draw_shaded(int x, int y, const char *text, int spacing=0, NXFont *font
 
 int GetFontWidth(const char *text, int spacing=0, bool is_shaded=false);
 int GetFontHeight();
-
 bool font_init(void);
 void font_close(void);
 bool font_reload();

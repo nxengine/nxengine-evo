@@ -11,7 +11,6 @@
 #include "graphics/font.h"
 #include "graphics/sprites.h"
 #include "autogen/sprites.h"
-#include "graphics/palette.h"
 #include "graphics/tileset.h"
 using namespace Graphics;
 using namespace Sprites;
@@ -52,7 +51,6 @@ char fname[MAXPATHLEN];
 	
 	if (use_palette)
 	{
-		palette_reset();
 		Sprites::FlushSheets();
 		map_flush_graphics();
 	}
@@ -131,8 +129,32 @@ int x, y;
 	
 	fclose(fp);
 	
-	map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) << CSF;
-	map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+	if (widescreen)
+	{
+        if (map.xsize * TILE_W<SCREEN_WIDTH && map.ysize * TILE_W<SCREEN_HEIGHT) {
+            map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) << CSF;
+            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) << CSF;
+        } else if (map.xsize * TILE_W<SCREEN_WIDTH) {
+            if (map.xsize == 25) { // MazeI
+                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 48)) - 8) << CSF;
+                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+            } else { // Others
+                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) << CSF;
+                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+            }
+        } else if (map.ysize * TILE_W<SCREEN_HEIGHT) {
+            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) << CSF;
+            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) << CSF;
+        } else {
+            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) << CSF;
+            map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+        }
+	}
+	else
+	{
+    	map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) << CSF;
+    	map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+	}
 	
 	stat("load_map: '%s' loaded OK! - %dx%d", fname, map.xsize, map.ysize);
 	return 0;
@@ -216,6 +238,8 @@ int nEntities;
 			{
 				// hack for chests (can we do this elsewhere?)
 				if (type == OBJ_CHEST_OPEN) y++;
+				// hack for skydragon in Fall end cinematic
+				if (type == OBJ_SKY_DRAGON && id2 == 230) y++;
 				
 				Object *o = CreateObject((x * TILE_W) << CSF, \
 										 (y * TILE_H) << CSF, type,
@@ -230,6 +254,23 @@ int nEntities;
 				// now that it's all set up, execute OnSpawn,
 				// since we didn't do it in CreateObject.
 				o->OnSpawn();
+				if (type == OBJ_MOTION_WALL)
+				{
+				    stat("spawning extra motion wall");
+				    o = CreateObject(((x+22) * TILE_W) << CSF, \
+										 (y * TILE_H) << CSF, type,
+										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
+				    o->id1 = id1;
+				    o->id2 = id2;
+				    o->flags |= flags;
+				
+				    ID2Lookup[o->id2] = o;
+				
+				    // now that it's all set up, execute OnSpawn,
+				    // since we didn't do it in CreateObject.
+				    o->OnSpawn();
+				}
+
 			}
 		}
 	}
@@ -317,7 +358,6 @@ FILE *fp;
 		
 	//hack to show nice backdrop in menu, like nicalis
 	stages[0].bg_no=9;
-	stages[0].scroll_type=BK_FASTLEFT_LAYERS;
 	
 	return 0;
 }
@@ -385,6 +425,10 @@ int x, y;
 		case BK_PARALLAX:
 			map.parscroll_y = (map.displayed_yscroll >> CSF) / 2;
 			map.parscroll_x = (map.displayed_xscroll >> CSF) / 2;
+			map.parscroll_x %= backdrop[map.backdrop]->Width();
+			map.parscroll_y %= backdrop[map.backdrop]->Height();
+			if (map.parscroll_x < 0 ) map.parscroll_x = map.parscroll_x * 2;
+			if (map.parscroll_y < 0 ) map.parscroll_y = map.parscroll_y * 2;
 		break;
 		
 		case BK_FASTLEFT:		// Ironhead
@@ -416,34 +460,57 @@ int x, y;
 			staterr("map_draw_backdrop: unhandled map scrolling type %d", map.scrolltype);
 		break;
 	}
-	
-	map.parscroll_x %= backdrop[map.backdrop]->Width();
-	map.parscroll_y %= backdrop[map.backdrop]->Height();
 	int w = backdrop[map.backdrop]->Width();
 	int h = backdrop[map.backdrop]->Height();
 	
+	int mapx = (map.xsize * TILE_W);
+	int mapy = (map.ysize * TILE_H);
+	// hack for ending Maze map
+    if (game.curmap == 74)
+    {
+        map.parscroll_x-= 16;
+        mapx+=64;
+    }
+
+    if (game.curmap == 31 && widescreen)
+    {
+        map.parscroll_y-= 36;
+//        mapy+=64;
+    }
+
 	for(y=0;y<SCREEN_HEIGHT+map.parscroll_y; y+=h)
 	{
 		for(x=0;x<SCREEN_WIDTH+map.parscroll_x; x+=w)
 		{
+		    if ( ((x - map.parscroll_x) < mapx) && ((y - map.parscroll_y) < mapy))
 			DrawSurface(backdrop[map.backdrop], x - map.parscroll_x, y - map.parscroll_y);
 		}
 	}
 }
 
 // blit OSide's BK_FASTLEFT_LAYERS
-static void DrawFastLeftLayered(void)
+void DrawFastLeftLayered(void)
 {
-static const int layer_ys[] = { 80, 122, 145, 176, 240 };
-static const int move_spd[] = { 0,    1,   2,   4,   8 };
-int nlayers = 6;
-int y1, y2;
-int i, x;
+    int layer_ys[] = { 80, 122, 145, 176, 240 };
+    if (widescreen)
+    {
+        layer_ys[4] = 272;
+    }
 
-	if (--map.parscroll_x <= -(SCREEN_WIDTH*2))
+    static const int move_spd[] = { 0,    1,   2,   4,   8 };
+    int nlayers = 5;
+    int y1, y2;
+    int i, x;
+
+	if (--map.parscroll_x <= -(480*SCALE*2))
 		map.parscroll_x = 0;
 	
 	y1 = x = 0;
+	// fix for extra height
+	if (map.backdrop == 9)
+	    ClearScreen(111,156,214);
+	else if (map.backdrop == 10 && game.curmap != 64 )
+	    ClearScreen(111,107,86);
 	for(i=0;i<nlayers;i++)
 	{
 		y2 = layer_ys[i];
@@ -451,12 +518,14 @@ int i, x;
 		if (i)	// not the static moon layer?
 		{
 			x = (map.parscroll_x * move_spd[i]) >> 1;
-			x %= SCREEN_WIDTH;
+//			x %= SCREEN_WIDTH;
 		}
-		
 		BlitPatternAcross(backdrop[map.backdrop], x, y1, y1, (y2-y1)+1);
 		y1 = (y2 + 1);
 	}
+	int mapy = map.displayed_yscroll >> CSF;
+	if (mapy<0)
+		FillRect(0,0,SCREEN_WIDTH, -mapy,0,0,0);
 }
 
 
@@ -470,8 +539,24 @@ char fname[MAXPATHLEN];
 	{
 		// use chromakey (transparency) on bkwater, all others don't
 		bool use_chromakey = (backdrop_no == 8);
-		
-		sprintf(fname, "%s/%s.pbm", data_dir, backdrop_names[backdrop_no]);
+		if (widescreen)
+		{
+		    if (backdrop_no == 9) {
+		        if (sprintf(fname, "%s/%s.pbm", data_dir, "bkMoon480fix") < 0) {
+		            staterr("Error opening bkMoon480fix file");
+		        }
+		    } else if (backdrop_no == 10) {
+		        if (sprintf(fname, "%s/%s.pbm", data_dir, "bkFog480fix")) {
+		            staterr("Error opening bkFog480fix file");
+		        }
+		    }   else {
+		        sprintf(fname, "%s/%s.pbm", data_dir, backdrop_names[backdrop_no]);
+		    }
+		}
+		else
+		{
+		    sprintf(fname, "%s/%s.pbm", data_dir, backdrop_names[backdrop_no]);
+		}
 		
 		backdrop[backdrop_no] = NXSurface::FromFile(fname, use_chromakey);
 		if (!backdrop[backdrop_no])
@@ -568,10 +653,18 @@ int scroll_x, scroll_y;
 		
 		for(x=0; x <= (SCREEN_WIDTH / TILE_W)+MAP_DRAW_EXTRA_X; x++)
 		{
-			int t = map.tiles[mapx+x][mapy+y];
-			if ((tileattr[t] & TA_FOREGROUND) == foreground)
-				draw_tile(blit_x, blit_y, t);
-			
+			if ( ((mapx+x) >= 0 ) && ((mapy+y) >= 0 ) && ((mapx+x) < map.xsize ) && ((mapy+y) < map.ysize ))
+			{
+				int t = map.tiles[mapx+x][mapy+y];
+				//fixes drawing of debug tiles in Stream and Fall maps
+				if( ((game.curmap == 71) && (tilecode[t] == 0x41))
+				    ||
+				    ((game.curmap == 31) && (tilecode[t] == 0x46))
+				) {}
+				else
+					if ((tileattr[t] & TA_FOREGROUND) == foreground)
+						draw_tile(blit_x, blit_y, t);
+			}
 			blit_x += TILE_W;
 		}
 		

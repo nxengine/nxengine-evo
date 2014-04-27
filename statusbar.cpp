@@ -3,6 +3,7 @@
 #include "statusbar.h"
 #include "graphics/sprites.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "autogen/sprites.h"
 #include "screeneffect.h"
 using namespace Sprites;
@@ -87,8 +88,8 @@ bool maxed_out;
 	{
 		#define BOSSBAR_W	198
 		// BOSS_X = 32 at normal resolution
-		#define BOSS_X		((SCREEN_WIDTH / 2) - (BOSSBAR_W / 2) - 29)
-		#define BOSS_Y		(SCREEN_HEIGHT-20)
+		uint32_t BOSS_X =((SCREEN_WIDTH / 2) - (BOSSBAR_W / 2) - 29);
+		uint32_t BOSS_Y = (SCREEN_HEIGHT-20);
 		draw_sprite(BOSS_X, BOSS_Y, SPR_TEXTBOX, 0, 0);
 		draw_sprite(BOSS_X, BOSS_Y+8, SPR_TEXTBOX, 2, 0);
 		draw_sprite(BOSS_X+8, BOSS_Y+4, SPR_BOSSHPICON, 0, 0);

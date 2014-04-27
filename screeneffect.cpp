@@ -157,28 +157,6 @@ void SE_Fade::Start(int fadedir, int sweepdir, int spr)
 void SE_Fade::Draw(void)
 {
 int x, y;
-
-	#define DRAW_VCOLUMN	\
-	{	\
-		if (frame >= 0)				\
-		{							\
-			if (frame > FADE_LAST_FRAME) frame = FADE_LAST_FRAME;	\
-			\
-			for(y=0;y<SCREEN_HEIGHT;y+=16)							\
-				draw_sprite(x, y, fade.sprite, frame);		\
-		}		\
-	}
-	
-	#define DRAW_HROW	\
-	{	\
-		if (frame >= 0)				\
-		{							\
-			if (frame > FADE_LAST_FRAME) frame = FADE_LAST_FRAME;	\
-			\
-			for(x=0;x<SCREEN_WIDTH;x+=16)							\
-				draw_sprite(x, y, fade.sprite, frame);		\
-		}		\
-	}
 	
 	if (state == FS_NO_FADE)
 	{
@@ -193,10 +171,61 @@ int x, y;
 	int frame = fade.curframe;
 	switch(fade.sweepdir)
 	{
-		case FADE_RIGHT:for(x=0;x<SCREEN_WIDTH;x+=16)	   	{ DRAW_VCOLUMN; frame++; }	break;
-		case FADE_LEFT: for(x=SCREEN_WIDTH-1;x>=-16;x-=16)  { DRAW_VCOLUMN; frame++; }	break;
-		case FADE_DOWN: for(y=0;y<SCREEN_HEIGHT;y+=16)	  	{ DRAW_HROW; frame++; }	break;
-		case FADE_UP: 	for(y=SCREEN_HEIGHT-1;y>=-16;y-=16) { DRAW_HROW; frame++; }	break;
+		case FADE_RIGHT:
+		    for(x=0;x<SCREEN_WIDTH;x+=16)
+		    {
+		        if (frame >= 0)
+		        {
+			        if (frame > FADE_LAST_FRAME) frame = FADE_LAST_FRAME;
+			
+			        for(y=0;y<SCREEN_HEIGHT;y+=16)
+				        draw_sprite(x, y, fade.sprite, frame);
+		        }
+		        frame++;
+		    }
+		break;
+		
+		case FADE_LEFT:
+		    for(x=SCREEN_WIDTH-1;x>=-16;x-=16)
+		    {
+		        if (frame >= 0)
+		        {
+			        if (frame > FADE_LAST_FRAME) frame = FADE_LAST_FRAME;
+			
+			        for(y=0;y<SCREEN_HEIGHT;y+=16)
+				        draw_sprite(x, y, fade.sprite, frame);
+		        }
+		        frame++;
+		    }
+		break;
+		
+		case FADE_DOWN:
+		    for(y=0;y<SCREEN_HEIGHT;y+=16)
+		    {
+			    if (frame >= 0)
+		        {
+			        if (frame > FADE_LAST_FRAME) frame = FADE_LAST_FRAME;
+			
+			        for(x=0;x<SCREEN_WIDTH;x+=16)
+				        draw_sprite(x, y, fade.sprite, frame);
+		        }
+		        frame++;
+		    }
+		break;
+		
+		case FADE_UP:
+		    for(y=SCREEN_HEIGHT-1;y>=-16;y-=16)
+		    {
+			    if (frame >= 0)
+		        {
+			        if (frame > FADE_LAST_FRAME) frame = FADE_LAST_FRAME;
+			
+			        for(x=0;x<SCREEN_WIDTH;x+=16)
+				        draw_sprite(x, y, fade.sprite, frame);
+		        }
+		        frame++;
+		    }
+		break;
 		
 		case FADE_CENTER:
 		{

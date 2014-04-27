@@ -4,7 +4,11 @@
 
 #include <SDL.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <ctype.h>
+
 #include "config.h"
 #include "version.h"
 #include "common/basics.h"

@@ -202,6 +202,7 @@ void HandlePlayer(void)
 	if (player->riding && !player->lastriding &&
 		(player->riding->nxflags & NXFLAG_THUD_ON_RIDING))
 	{
+	    rumble(0.3,100);
 		sound(SND_THUD);
 	}
 }
@@ -230,7 +231,10 @@ void HandlePlayer_am(void)
 	if (player->blockd && player->yinertia > 0)
 	{
 		if (player->yinertia > 0x400 && !player->hide)
+		{
+		    rumble(0.3,100);
 			sound(SND_THUD);
+		}
 		
 		player->yinertia = 0;
 		player->jumping = 0;
@@ -245,6 +249,7 @@ void HandlePlayer_am(void)
 			player->blocku == BLOCKED_MAP)
 		{
 			sound(SND_BONK_HEAD);
+			rumble(0.4,200);
 			effect(player->CenterX(), player->y, EFFECT_BONKPLUS);
 		}
 		
@@ -1210,13 +1215,13 @@ void hurtplayer(int damage)
 	{
 		sound(SND_PLAYER_DIE);
 		SmokeClouds(player, 64, 16, 16);
-		
+		rumble(1.0,1000);
 		killplayer(SCRIPT_DIED);
 	}
 	else
 	{
 		sound(SND_PLAYER_HURT);
-		
+		rumble(0.5,500);
 		// hop
 		if (player->movementmode != MOVEMODE_ZEROG)
 			player->yinertia = -0x400;

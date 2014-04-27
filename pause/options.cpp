@@ -22,6 +22,9 @@ static void EnterMainMenu();
 void LeavingMainMenu();
 void _res_get(ODItem *item);
 void _res_change(ODItem *item, int dir);
+void _fullscreen_get(ODItem *item);
+void _fullscreen_change(ODItem *item, int dir);
+
 void _debug_change(ODItem *item, int dir);
 void _debug_get(ODItem *item);
 void _save_change(ODItem *item, int dir);
@@ -47,7 +50,8 @@ static struct
 	bool InMainMenu;
 	int xoffset;
 	
-	int32_t remapping_key, new_sdl_key;
+	int32_t remapping_key;
+	in_action new_sdl_key;
 } opt;
 
 
@@ -117,7 +121,8 @@ FocusHolder *fh;
 	for(i=0;i<optionstack.size();i++)
 	{
 		fh = (FocusHolder *)optionstack.at(i);
-		fh->Draw();
+		if (fh)
+			fh->Draw();
 	}
 	
 	if (opt.xoffset > 0)
@@ -157,6 +162,7 @@ Dialog *dlg = opt.dlg;
 	dlg->Clear();
 	
 	dlg->AddItem("Resolution: ", _res_change, _res_get);
+	dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get);
 	dlg->AddItem("Controls", EnterControlsMenu);
 	
 	dlg->AddSeparator();
@@ -184,53 +190,60 @@ void LeavingMainMenu()
 	opt.InMainMenu = false;
 }
 
+
 void _res_get(ODItem *item)
 {
-	const char **reslist = Graphics::GetResolutions();
+	const gres_t *reslist = Graphics::GetRes();
 	
 	if (settings->resolution < 0 || \
-		settings->resolution >= count_string_list(reslist))
+		settings->resolution >= Graphics::GetResCount())
 	{
 		item->suffix[0] = 0;
 	}
 	else
 	{
-		strcpy(item->suffix, reslist[settings->resolution]);
+		strcpy(item->suffix, reslist[settings->resolution].name);
 	}
 }
 
 
 void _res_change(ODItem *item, int dir)
 {
-const char **reslist = Graphics::GetResolutions();
-int numres = count_string_list(reslist);
+int numres = Graphics::GetResCount();
 int newres;
 
 	sound(SND_DOOR);
 	
 	newres = (settings->resolution + dir);
-	if (newres >= numres) newres = 0;
-	if (newres < 0) newres = (numres - 1);
-	
-	// because on my computer, a SDL bug causes switching to fullscreen to
-	// not restore the resolution properly on exit, and it keeps messing up all
-	// the windows when I press it accidently.
-	if (newres == 0 && settings->inhibit_fullscreen)
-	{
-		new Message("Fullscreen disabled via", "inhibit-fullscreen console setting");
-		sound(SND_GUN_CLICK);
-		return;
-	}
+	if (newres >= numres) newres = 1;
+	if (newres < 1) newres = (numres - 1);
 	
 	if (!Graphics::SetResolution(newres, true))
 	{
 		settings->resolution = newres;
+		Graphics::SetFullscreen(false);
+		Graphics::SetFullscreen(settings->fullscreen);
+		opt.dlg->UpdateSizePos();
 	}
 	else
 	{
 		new Message("Resolution change failed");
 		sound(SND_GUN_CLICK);
 	}
+}
+
+void _fullscreen_get(ODItem *item)
+{
+	static const char *strs[] = { "Off", "On" };
+	strcpy(item->suffix, strs[settings->fullscreen]);
+}
+
+
+void _fullscreen_change(ODItem *item, int dir)
+{
+	settings->fullscreen ^= 1;
+	sound(SND_MENU_SELECT);
+	Graphics::SetFullscreen(settings->fullscreen);
 }
 
 
@@ -291,13 +304,26 @@ void _music_get(ODItem *item)
 void c------------------------------() {}
 */
 
+void _rumble_change(ODItem *item, int dir)
+{
+	settings->rumble ^= 1;
+	sound(SND_MENU_SELECT);
+}
+
+void _rumble_get(ODItem *item)
+{
+	static const char *strs[] = { "Off", "On" };
+	strcpy(item->suffix, strs[settings->rumble]);
+}
+
+
 static void EnterControlsMenu(ODItem *item, int dir)
 {
 Dialog *dlg = opt.dlg;
 
 	dlg->Clear();
 	sound(SND_MENU_MOVE);
-	
+	dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get);
 	dlg->AddItem("Left", _edit_control, _upd_control, LEFTKEY);
 	dlg->AddItem("Right", _edit_control, _upd_control, RIGHTKEY);
 	dlg->AddItem("Up", _edit_control, _upd_control, UPKEY);
@@ -311,6 +337,7 @@ Dialog *dlg = opt.dlg;
 	dlg->AddItem("Wpn Next", _edit_control, _upd_control, NEXTWPNKEY);
 	dlg->AddItem("Inventory", _edit_control, _upd_control, INVENTORYKEY);
 	dlg->AddItem("Map", _edit_control, _upd_control, MAPSYSTEMKEY);
+	dlg->AddItem("Pause", _edit_control, _upd_control, ESCKEY);
 	
 	dlg->AddSeparator();
 	dlg->AddDismissalItem();
@@ -318,8 +345,37 @@ Dialog *dlg = opt.dlg;
 
 static void _upd_control(ODItem *item)
 {
-	int keysym = input_get_mapping(item->id);
-	const char *keyname = SDL_GetKeyName((SDLKey)keysym);
+	char keyname[64];
+	
+	in_action action = input_get_mapping(item->id);
+	
+	if (action.key != -1)
+	{
+	    int keysym = action.key;
+	    snprintf(keyname, 64, "%s", SDL_GetKeyName((SDL_Keycode)keysym));
+	}
+	else if (action.jbut != -1)
+	{
+	    snprintf(keyname, 64, "JBut %d", action.jbut);
+	}
+	else if (action.jaxis != -1)
+	{
+	    if (action.jaxis_value>0)
+	        snprintf(keyname, 64, "JAxis %d+", action.jaxis);
+	    else
+	        snprintf(keyname, 64, "JAxis %d-", action.jaxis);
+	}
+	else if (action.jhat != -1)
+	{
+	    if (action.jhat_value & SDL_HAT_LEFT)
+	        snprintf(keyname, 64, "JHat %d L", action.jhat);
+	    else if (action.jhat_value & SDL_HAT_RIGHT)
+	        snprintf(keyname, 64, "JHat %d R", action.jhat);
+	    else if (action.jhat_value & SDL_HAT_UP)
+	        snprintf(keyname, 64, "JHat %d U", action.jhat);
+	    else if (action.jhat_value & SDL_HAT_DOWN)
+	        snprintf(keyname, 64, "JHat %d D", action.jhat);
+	}
 	
 	maxcpy(item->righttext, keyname, sizeof(item->righttext) - 1);
 }
@@ -329,7 +385,10 @@ static void _edit_control(ODItem *item, int dir)
 Message *msg;
 
 	opt.remapping_key = item->id;
-	opt.new_sdl_key = -1;
+	opt.new_sdl_key.key = -1;
+	opt.new_sdl_key.jbut = -1;
+	opt.new_sdl_key.jhat = -1;
+	opt.new_sdl_key.jaxis = -1;
 	
 	msg = new Message("Press new key for:", input_get_name(opt.remapping_key));
 	msg->rawKeyReturn = &opt.new_sdl_key;
@@ -340,25 +399,47 @@ Message *msg;
 
 static void _finish_control_edit(Message *msg)
 {
-int inputno = opt.remapping_key;
-int32_t new_sdl_key = opt.new_sdl_key;
-int i;
-
-	if (input_get_mapping(inputno) == new_sdl_key)
-	{
-		sound(SND_MENU_MOVE);
-		return;
-	}
+	int inputno = opt.remapping_key;
+	in_action new_sdl_key = opt.new_sdl_key;
+	int i;
+	in_action action = input_get_mapping(inputno);
 	
 	// check if key is already in use
 	for(i=0;i<INPUT_COUNT;i++)
 	{
-		if (i != inputno && input_get_mapping(i) == new_sdl_key)
+	    action = input_get_mapping(i);
+		if (i != inputno && action.key!=-1 && action.key == new_sdl_key.key)
 		{
 			new Message("Key already in use by:", input_get_name(i));
 			sound(SND_GUN_CLICK);
 			return;
 		}
+
+		if (i != inputno && action.jbut!=-1 && action.jbut == new_sdl_key.jbut)
+		{
+			new Message("Key already in use by:", input_get_name(i));
+			sound(SND_GUN_CLICK);
+			return;
+		}
+
+		if (i != inputno && action.jhat!=-1 && action.jhat == new_sdl_key.jhat && action.jhat_value & new_sdl_key.jhat_value)
+		{
+			new Message("Key already in use by:", input_get_name(i));
+			sound(SND_GUN_CLICK);
+			return;
+		}
+
+		if (i != inputno && action.jaxis!=-1 && action.jaxis == new_sdl_key.jaxis)
+		{
+		    if ( ((action.jaxis_value > 0) && (new_sdl_key.jaxis_value > 0)) || ((action.jaxis_value < 0) && (new_sdl_key.jaxis_value < 0)))
+		    {
+			    new Message("Key already in use by:", input_get_name(i));
+			    sound(SND_GUN_CLICK);
+			    return;
+			}
+		}
+
+
 	}
 	
 	input_remap(inputno, new_sdl_key);

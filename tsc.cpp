@@ -24,8 +24,6 @@
 #include "settings.h"
 #include "console.h"
 
-#define TRACE_SCRIPT
-
 // which textbox options are enabled by the "<TUR" script command.
 #define TUR_PARAMS		(TB_LINE_AT_ONCE | TB_VARIABLE_WIDTH_CHARS | TB_CURSOR_NEVER_SHOWN)
 
@@ -607,7 +605,8 @@ void ExecScript(ScriptInstance *s)
 {
 char debugbuffer[256];
 int cmd;
-int val, parm[6];
+int val;
+int parm[6] = {0,0,0,0,0,0};
 int i;
 Object *o;
 char *mnemonic;
@@ -1026,7 +1025,12 @@ int cmdip;
 			}
 			break;
 			
-			case OP_QUA: s->nod_delay = game.quaketime = parm[0]; break;
+			case OP_QUA:
+			{
+			    s->nod_delay = parm[0];
+			    quake(parm[0],0);
+			}
+			break;
 			
 			case OP_LIPLUS: AddHealth(parm[0]); break;
 			case OP_AEPLUS: RefillAllAmmo(); break;		// refills missiles

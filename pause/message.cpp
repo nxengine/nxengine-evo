@@ -5,23 +5,28 @@
 #include <vector>
 
 #include "../graphics/graphics.h"
+using namespace Graphics;
 #include "../TextBox/TextBox.h"
+#include "../input.h"
 
 
 using namespace Options;
 extern std::vector<void*> optionstack;
-extern int last_sdl_key;	// from inputs.cpp
 
-#define MESSAGE_X		((SCREEN_WIDTH / 2) - 112)
-#define MESSAGE_Y		((SCREEN_HEIGHT / 2) - 30)
 #define MESSAGE_W		244
 #define MESSAGE_H		48
 
 Message::Message(const char *msg, const char *msg2)
 {
+    MESSAGE_X = ((SCREEN_WIDTH / 2) - 112);
+    MESSAGE_Y = ((SCREEN_HEIGHT / 2) - 30);
+
 	rawKeyReturn = NULL;
 	on_dismiss = NULL;
-	last_sdl_key = -1;
+	last_sdl_action.key = -1;
+	last_sdl_action.jbut = -1;
+	last_sdl_action.jhat = -1;
+	last_sdl_action.jaxis = -1;
 	
 	fMsg = strdup(msg);
 	fMsg2 = strdup(msg2 ? msg2 : "");
@@ -40,15 +45,19 @@ Message::Message(const char *msg, const char *msg2)
 		fMsgY = (MESSAGE_Y + ((MESSAGE_H / 2) - (GetFontHeight() / 2))) - 1;
 		fShowDelay = 4;
 	}
-	
 	optionstack.push_back(this);
 }
 
 Message::~Message()
 {
-//    for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
-//        if (*it==this)
-            optionstack.erase(optionstack.end()-1);
+    for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
+    {
+        if (*it!=NULL && *it==this)
+        {
+            optionstack.erase(it);
+            break;
+        }
+    }
 	free(fMsg);
 	free(fMsg2);
 }
@@ -76,11 +85,10 @@ void Message::Draw()
 
 void Message::RunInput()
 {
-	if (last_sdl_key != -1)
+	if ( (last_sdl_action.key != -1) || (last_sdl_action.jbut != -1) || (last_sdl_action.jhat != -1) || (last_sdl_action.jaxis != -1) )
 	{
-		if (rawKeyReturn) *rawKeyReturn = last_sdl_key;
+		if (rawKeyReturn) *rawKeyReturn = last_sdl_action;
 		if (on_dismiss)   (*on_dismiss)(this);
-		
 		delete this;
 	}
 }

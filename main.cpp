@@ -13,7 +13,9 @@
 #include "input.h"
 #include "trig.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "graphics/font.h"
+#include "graphics/screenshot.h"
 #include "sound/sound.h"
 #include "sound/org.h"
 #include "common/stat.h"
@@ -26,14 +28,12 @@
 const char *data_dir = "data";
 const char *stage_dir = "data/Stage";
 const char *pic_dir = "endpic";
-const char *nxdata_dir = ".";
 
 int fps = 0;
 static int fps_so_far = 0;
 static uint32_t fpstimer = 0;
 
 #define GAME_WAIT			(1000/GAME_FPS)	// sets framerate
-#define VISFLAGS			(SDL_APPACTIVE | SDL_APPINPUTFOCUS)
 int framecount = 0;
 bool freezeframe = false;
 int flipacceltime = 0;
@@ -106,20 +106,10 @@ static int frameskip = 0;
 	input_poll();
 	
 	// input handling for a few global things
-	if (justpushed(ESCKEY))
+	
+	if (justpushed(F9KEY))
 	{
-		if (settings->instant_quit)
-		{
-			game.running = false;
-		}
-		else if (!game.paused)		// no pause from Options
-		{
-			game.pause(GP_PAUSED);
-		}
-	}
-	else if (justpushed(F3KEY))
-	{
-		game.pause(GP_OPTIONS);
+	    SaveScreenshot();
 	}
 	
 	// freeze frame
@@ -203,7 +193,7 @@ void AppMinimized(void)
 	
 	for(;;)
 	{
-		if ((SDL_GetAppState() & VISFLAGS) == VISFLAGS)
+        if (Graphics::WindowVisible())
 		{
 			break;
 		}
@@ -240,7 +230,7 @@ int32_t nexttick = 0;
 			nexttick = curtime + GAME_WAIT;
 			
 			// pause game if window minimized
-			if ((SDL_GetAppState() & VISFLAGS) != VISFLAGS)
+            if(!Graphics::WindowVisible())
 			{
 				AppMinimized();
 				nexttick = 0;
@@ -309,6 +299,7 @@ bool freshstart;
 	settings_load();
 	
 	if (Graphics::init(settings->resolution)) { staterr("Failed to initialize graphics."); return 1; }
+	Graphics::SetFullscreen(settings->fullscreen);
 	if (font_init()) { staterr("Failed to load font."); return 1; }
 	
 	

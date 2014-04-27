@@ -12,6 +12,7 @@
 #include "../../map.h"
 
 #include "../../graphics/graphics.h"
+using namespace Graphics;
 #include "../../graphics/tileset.h"
 #include "../../autogen/sprites.h"
 

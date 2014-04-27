@@ -1,7 +1,17 @@
 
 #ifndef _INPUT_H
 #define _INPUT_H
-//#include <SDL.h>
+#include <SDL.h>
+
+typedef struct 
+{
+    int32_t key;
+    int32_t jbut;
+    int32_t jhat;
+    int32_t jhat_value;
+    int32_t jaxis;
+    int32_t jaxis_value;
+} in_action;
 
 enum INPUTS
 {
@@ -43,17 +53,20 @@ enum INPUTS
 
 extern bool inputs[INPUT_COUNT];
 extern bool lastinputs[INPUT_COUNT];
-extern int32_t last_sdl_key;
+extern in_action last_sdl_action;
+extern SDL_Joystick *joy;
+extern SDL_Haptic *haptic;
 
 bool input_init(void);
-void input_remap(int keyindex, int32_t sdl_key);
-int32_t input_get_mapping(int keyindex);
+void input_remap(int keyindex, in_action sdl_key);
+in_action input_get_mapping(int keyindex);
 const char *input_get_name(int index);
-void input_set_mappings(int32_t *array);
+void input_set_mappings(in_action *array);
 void input_poll(void);
 void input_close(void);
 bool buttondown(void);
 bool buttonjustpushed(void);
 bool justpushed(int k);
+void rumble(float str, uint32_t len);
 
 #endif

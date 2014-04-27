@@ -23,6 +23,7 @@
 #include "sound/sound.h"
 #include "common/stat.h"
 #include "graphics/graphics.h"
+using namespace Graphics;
 #include "graphics/sprites.h"
 #include "autogen/AssignSprites.h"
 #include "autogen/sprites.h"
@@ -227,6 +228,10 @@ void Game::tick(void)
 		
 		// call the tick function for the current game mode
 		tickfunctions[game.mode].OnTick();
+		if (justpushed(ESCKEY) && (game.mode == GM_NORMAL || game.mode == GM_INVENTORY || game.mode == GM_MAP_SYSTEM || game.mode == GM_CREDITS))
+		{
+		    game.pause(GP_PAUSED);
+		}
 	}
 	
 	DrawDebug();
@@ -317,6 +322,7 @@ void quake(int quaketime, int snd)
 	
 	if (snd)
 		sound((snd != -1) ? snd : SND_QUAKE);
+	rumble(0.6,quaketime*10);
 }
 
 // during Ballos fight, since there's already a perpetual quake,
@@ -332,6 +338,7 @@ void megaquake(int quaketime, int snd)
 	
 	if (snd)
 		sound((snd != -1) ? snd : SND_QUAKE);
+	rumble(0.8,quaketime*10);
 }
 
 
@@ -339,7 +346,7 @@ void DrawScene(void)
 {
 int scr_x, scr_y;
 extern int flipacceltime;
-	
+	ClearScreen(BLACK);
 	// sporidically-used animated tile feature,
 	// e.g. water currents in Waterway
 	if (map.nmotiontiles)

@@ -27,6 +27,7 @@ void ai_nemesis_shot(Object *o)
 		if ((++o->timer % 4) == 3)
 		{
 			int x, y, xi, yi;
+			x = y = xi = yi = 0;
 			
 			switch(o->shot.dir)
 			{
