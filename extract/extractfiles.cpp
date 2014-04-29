@@ -59,7 +59,7 @@ files[] =
 	"data/endpic/credit17.bmp", 0x15db5f, 19293, 0x8c5a003d, credit_header,
 	"data/endpic/credit18.bmp", 0x1626c7, 19293, 0x66bcbf22, credit_header,
 	"data/endpic/pixel.bmp",    0x16722f, 1373,  0x6181d0a1, pixel_header,
-	"wavetable.dat",       0x110664, 25599, 0xcaa7b1dd, NULL,
+	"wavetable.dat",       0x110664, 25600, 0xb3a3b7ef, NULL,
 	"org/access.org",      0x09b35c, 1138,  0xd965dddb, NULL,
 	"org/balcony.org",     0x09dbbc, 3082,  0x892345ca, NULL,
 	"org/balrog.org",      0x0b45a0, 5970,  0xb02093b8, NULL,
