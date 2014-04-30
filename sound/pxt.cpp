@@ -425,7 +425,7 @@ double env_acc, env_inc;
 	
 	// average our doublesampled audio down into the final buffer
 	signed char *outbuffer = chan->buffer;
-	for(i=j=0;i<size_blocks;i+=2)
+	for(i=j=0;(i+1)<size_blocks;i+=2)
 	{
 		e = buffer[i] + buffer[i+1];
 		e >>= 1;
