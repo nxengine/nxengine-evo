@@ -18,21 +18,6 @@
 #define NUM_NOTES			(8 * KEYS_OCTAVE)	// range of note values: 00-this.
 #define NUM_DRUMS			12					// max # of drum instruments to load
 
-// if you care to know which music note an org note is, modulus it by
-// KEYS_OCTAVE and compare to the following constants.
-#define NOTE_C			0
-#define NOTE_CS			1
-#define NOTE_D			2
-#define NOTE_DS			3
-#define NOTE_E			4
-#define NOTE_F			5
-#define NOTE_FS			6
-#define NOTE_G			7
-#define NOTE_GS			8
-#define NOTE_A			9
-#define NOTE_AS			10
-#define NOTE_B			11
-
 #define MAX_SONG_LENGTH		5000		// max song length to allocate for, in notes
 
 
@@ -144,9 +129,6 @@ static void drum_gen(int m_channel, int num_samples);
 void org_run(void);
 static void generate_music(void);
 static void NextBeat(int m);
-int org_GetCurrentBeat(void);
-int org_GetCurrentBuffer(void);
-
 
 #endif
 
