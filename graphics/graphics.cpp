@@ -252,6 +252,7 @@ const Graphics::gres_t* Graphics::GetRes()
         // widescreen
         {(char*)"480x272", 480, 272, 480, 272, 1, true },
         {(char*)"1440x900", 1440, 900, 480, 300, 3, true },
+        {(char*)"1366x768", 1366, 768, 455, 256, 3, true },
         {(char*)"1920x1080", 1920, 1080, 480, 270, 4, true },
         NULL
     };
