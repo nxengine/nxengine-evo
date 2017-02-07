@@ -18,23 +18,23 @@ find_package(PNG)
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2TTF_INCLUDE_DIR})
 
-file(GLOB APP_SOURCES "[a-zA-Z]*.cpp")
-file(GLOB TB_SOURCES "TextBox/[a-zA-Z]*.cpp")
-file(GLOB_RECURSE AI_SOURCES "ai/[a-zA-Z]*.cpp")
-file(GLOB AG_SOURCES "autogen/[a-zA-Z]*.cpp")
-file(GLOB CM_SOURCES "common/[a-zA-Z]*.cpp")
-file(GLOB EG_SOURCES "endgame/[a-zA-Z]*.cpp")
-file(GLOB GR_SOURCES "graphics/[a-zA-Z]*.cpp")
-file(GLOB IN_SOURCES "intro/[a-zA-Z]*.cpp")
-file(GLOB PA_SOURCES "pause/[a-zA-Z]*.cpp")
-file(GLOB SL_SOURCES "siflib/[a-zA-Z]*.cpp")
-file(GLOB SN_SOURCES "sound/[a-zA-Z]*.cpp")
-file(GLOB EXTR_SOURCES "extract/[a-zA-Z]*.cpp")
+file(GLOB APP_SOURCES "src/[a-zA-Z]*.cpp")
+file(GLOB TB_SOURCES "src/TextBox/[a-zA-Z]*.cpp")
+file(GLOB_RECURSE AI_SOURCES "src/ai/[a-zA-Z]*.cpp")
+file(GLOB AG_SOURCES "src/autogen/[a-zA-Z]*.cpp")
+file(GLOB CM_SOURCES "src/common/[a-zA-Z]*.cpp")
+file(GLOB EG_SOURCES "src/endgame/[a-zA-Z]*.cpp")
+file(GLOB GR_SOURCES "src/graphics/[a-zA-Z]*.cpp")
+file(GLOB IN_SOURCES "src/intro/[a-zA-Z]*.cpp")
+file(GLOB PA_SOURCES "src/pause/[a-zA-Z]*.cpp")
+file(GLOB SL_SOURCES "src/siflib/[a-zA-Z]*.cpp")
+file(GLOB SN_SOURCES "src/sound/[a-zA-Z]*.cpp")
+file(GLOB EXTR_SOURCES "src/extract/[a-zA-Z]*.cpp")
 set(EXTR_SOURCES
     ${EXTR_SOURCES}
-    "common/misc.cpp"
-    "common/stat.cpp"
-    "stagedata.cpp"
+    "src/common/misc.cpp"
+    "src/common/stat.cpp"
+    "src/stagedata.cpp"
 )
 
 include_directories(${nx_SOURCE_DIR})
