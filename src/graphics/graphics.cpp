@@ -254,15 +254,15 @@ const Graphics::gres_t* Graphics::GetRes()
         {(char*)"1440x900", 1440, 900, 480, 300, 3, true },
         {(char*)"1366x768", 1366, 768, 455, 256, 3, true },
         {(char*)"1920x1080", 1920, 1080, 480, 270, 4, true },
-        NULL
+        {NULL}
     };
 
     return res;
 }
 
-uint32_t Graphics::GetResCount()
+int Graphics::GetResCount()
 {
-  uint32_t i;
+  int i;
   const gres_t *res = GetRes();
 
   for (i=0;res[i].name;i++);

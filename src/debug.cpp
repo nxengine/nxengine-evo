@@ -195,7 +195,7 @@ va_list ar;
 
 void debug_draw(void)
 {
-	for(int i=0;i<DebugList.size();i++)
+	for(unsigned int i=0;i<DebugList.size();i++)
 	{
 		const char *text = DebugList.at(i).c_str();
 		

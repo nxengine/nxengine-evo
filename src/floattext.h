@@ -42,7 +42,6 @@ private:
 	int sprite;			// allows selecting font
 	int timer;
 	
-	SDL_Rect cliprect;
 	int objX, objY;		// the center pixel of the associated object (de-CSFd)
 	
 	

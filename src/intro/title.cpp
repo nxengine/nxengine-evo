@@ -27,11 +27,11 @@ static struct
 	int songtrack;
 } titlescreens[] =
 {
-	(3*3000),	SPR_CS_SUE,    2,		// 3 mins	- Sue & Safety
-	(4*3000),	SPR_CS_KING,   41,		// 4 mins	- King & White
-	(5*3000),	SPR_CS_TOROKO, 40,		// 5 mins	- Toroko & Toroko's Theme
-	(6*3000),	SPR_CS_CURLY,  36,		// 6 mins	- Curly & Running Hell
-	0xFFFFFFFF, SPR_CS_MYCHAR, 24		// default
+	{(3*3000),	SPR_CS_SUE,    2},		// 3 mins	- Sue & Safety
+	{(4*3000),	SPR_CS_KING,   41},		// 4 mins	- King & White
+	{(5*3000),	SPR_CS_TOROKO, 40},		// 5 mins	- Toroko & Toroko's Theme
+	{(6*3000),	SPR_CS_CURLY,  36},		// 6 mins	- Curly & Running Hell
+	{0xFFFFFFFF, SPR_CS_MYCHAR, 24}		// default
 };
 
 // artifical fake "loading" delay between selecting an option and it being executed,

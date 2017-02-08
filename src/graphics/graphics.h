@@ -38,7 +38,7 @@ namespace Graphics
 	void SetFullscreen(bool enable);
 	bool SetResolution(int factor, bool restoreOnFailure=true);
 	const gres_t *GetRes();
-	uint32_t GetResCount();
+	int GetResCount();
 	bool FlushAll();
 	
 	// ---------------------------------------

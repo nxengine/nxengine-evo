@@ -38,6 +38,8 @@ enum BossType
 class StageBoss
 {
 public:
+    StageBoss() {}
+    virtual ~StageBoss() {}
 	virtual void OnMapEntry() { }
 	virtual void OnMapExit() { }
 	

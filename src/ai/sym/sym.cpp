@@ -911,7 +911,7 @@ void ai_droplet_spawner(Object *o)
 // small flying water droplet from splashes or sprinklers
 void ai_water_droplet(Object *o)
 {
-static const Point waterattrpoint[] = { 0, -3 };
+static const Point waterattrpoint[] = { { 0, -3 } };
 
 	o->flags &= ~FLAG_IGNORE_SOLID;
 	

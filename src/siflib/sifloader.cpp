@@ -26,7 +26,7 @@ void c------------------------------() {}
 
 void SIFLoader::ClearIndex()
 {
-	for(int i=0;i<fIndex.size();i++)
+	for(unsigned int i=0;i<fIndex.size();i++)
 	{
 		SIFIndexEntry *entry = (SIFIndexEntry *)fIndex.at(i);
 		
@@ -100,7 +100,7 @@ uint32_t magick;
 uint8_t *SIFLoader::FindSection(int type, int *length_out)
 {
 	// try and find the section in the index
-	for(int i=0;i<fIndex.size();i++)
+	for(unsigned int i=0;i<fIndex.size();i++)
 	{
 		SIFIndexEntry *entry = (SIFIndexEntry *)fIndex.at(i);
 //		if (!entry) break;

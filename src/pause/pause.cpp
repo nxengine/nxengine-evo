@@ -15,7 +15,7 @@ using namespace Sprites;
 using namespace Options;
 
 Dialog *dlg;
-int mm_cursel;
+unsigned int mm_cursel;
 
 
 void _resume(ODItem* item, int dir)

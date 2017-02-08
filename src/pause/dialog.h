@@ -6,7 +6,7 @@
 #include "options.h"
 namespace Options {
 
-class ODItem;
+struct ODItem;
 
 enum OD_TYPES
 {
@@ -43,7 +43,7 @@ public:
 	void offset(int xd, int yd);
 	
 	void SetSelection(int sel);
-	int GetSelection() { return fCurSel; }
+	unsigned int GetSelection() { return fCurSel; }
 	void ShowFull() { fNumShown = 99; }
 	
 	void (*onclear)();
@@ -53,13 +53,12 @@ private:
 	void DrawItem(int x, int y, ODItem *item);
 	
 	int fCurSel;
-	int fNumShown;			// for text-draw animation on entry
+	unsigned int fNumShown;			// for text-draw animation on entry
 	int fRepeatTimer;
 	std::vector<ODItem*> fItems;
 	
 	struct { int x, y, w, h; } fCoords;
 	int fTextX;
-	bool fDismissOnFocus;
 };
 
 

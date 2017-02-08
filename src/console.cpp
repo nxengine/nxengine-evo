@@ -59,7 +59,7 @@ static void __warp(std::vector<std::string> *args, int num)
 	if (num == 0)
 	{
 		std::string stagename;
-		for(int i=0;i<args->size();i++)
+		for(unsigned int i=0;i<args->size();i++)
 		{
 			if (i != 0) stagename+=' ';
 			stagename+=(args->at(i));
@@ -247,11 +247,11 @@ static void __xp(std::vector<std::string> *args, int num)
 
 static void __spawn(std::vector<std::string> *args, int num)
 {
-	int i = 0;
+	unsigned int i = 0;
 
 	// if first argument is a number interpret it as a count of
 	// objects to spawn.
-	int count;
+	unsigned int count;
 	if (isdigit(args->at(0).c_str()[0]))
 	{
 		count = num;
@@ -265,7 +265,7 @@ static void __spawn(std::vector<std::string> *args, int num)
 	// reconstitute the arguments into the name of the object
 	// to be spawned.
 	std::string objName;
-	int starti = i;
+	unsigned int starti = i;
 	for(;;i++)
 	{
 		if (i>=args->size()) break;
@@ -538,46 +538,46 @@ static void __textbox_setvisible(std::vector<std::string> *args, int num)
 
 static CommandEntry commands[] =
 {
-	"god", __god, 0, 1,
-	"script", __script, 1, 1,
-	"warp", __warp, 1, 999,
-	"sound", __sound, 1, 1,
-	"music", __music, 1, 1,
-	"giveweapon", __giveweapon, 1, 1,
-	"dropweapon", __dropweapon, 0, 1,
-	"level", __level, 1, 1,
-	"ammo", __ammo, 1, 1,
-	"maxammo", __maxammo, 1, 1,
-	"hp", __hp, 1, 1,
-	"maxhp", __maxhp, 1, 1,
-	"xp", __xp, 1, 1,
-	"spawn", __spawn, 1, 999,
-	"animate", __animate, 1, 2,
-	"infinitedamage", __infinitedamage, 0, 1,
-	"killall", __killall, 0, 0,
-	"movemode", __movemode, 1, 1,
-	"flag", __flag, 1, 1,
-	"clearflags", __clearflags, 0, 0,
-	"equip", __equip, 1, 2,
-	"giveitem", __giveitem, 1, 1,
-	"takeitem", __takeitem, 1, 1,
-	"qua", __qua, 0, 1,
-	"boa", __boa, 1, 1,
-	"cre", __cre, 0, 0,
-	"reset", __reset, 0, 0,
-	"fps", __fps, 0, 1,
+	{"god", __god, 0, 1},
+	{"script", __script, 1, 1},
+	{"warp", __warp, 1, 999},
+	{"sound", __sound, 1, 1},
+	{"music", __music, 1, 1},
+	{"giveweapon", __giveweapon, 1, 1},
+	{"dropweapon", __dropweapon, 0, 1},
+	{"level", __level, 1, 1},
+	{"ammo", __ammo, 1, 1},
+	{"maxammo", __maxammo, 1, 1},
+	{"hp", __hp, 1, 1},
+	{"maxhp", __maxhp, 1, 1},
+	{"xp", __xp, 1, 1},
+	{"spawn", __spawn, 1, 999},
+	{"animate", __animate, 1, 2},
+	{"infinitedamage", __infinitedamage, 0, 1},
+	{"killall", __killall, 0, 0},
+	{"movemode", __movemode, 1, 1},
+	{"flag", __flag, 1, 1},
+	{"clearflags", __clearflags, 0, 0},
+	{"equip", __equip, 1, 2},
+	{"giveitem", __giveitem, 1, 1},
+	{"takeitem", __takeitem, 1, 1},
+	{"qua", __qua, 0, 1},
+	{"boa", __boa, 1, 1},
+	{"cre", __cre, 0, 0},
+	{"reset", __reset, 0, 0},
+	{"fps", __fps, 0, 1},
 	
-	"skip-intro", __skip_intro, 1, 1,
+	{"skip-intro", __skip_intro, 1, 1},
 	
-	"player->hide", __player_hide, 1, 1,
-	"player->inputs_locked", __player_inputs_locked, 1, 1,
-	"game.frozen", __game_frozen, 1, 1,
-	"textbox.SetVisible", __textbox_setvisible, 1, 1,
+	{"player->hide", __player_hide, 1, 1},
+	{"player->inputs_locked", __player_inputs_locked, 1, 1},
+	{"game.frozen", __game_frozen, 1, 1},
+	{"textbox.SetVisible", __textbox_setvisible, 1, 1},
 	
-	"hello", __hello, 0, 0,
-	"hi", __hello, 0, 0,
+	{"hello", __hello, 0, 0},
+	{"hi", __hello, 0, 0},
 	
-	NULL, NULL
+	{NULL, NULL}
 };
 
 
@@ -907,7 +907,7 @@ char *cmd;
 			CommandEntry *command = (CommandEntry *)matches.at(fExpandIndex);
 			std::string newCommand(command->name);
 			
-			for(int i=0;i<args.size();i++)
+			for(unsigned int i=0;i<args.size();i++)
 			{
 				const char *arg = args.at(i).c_str();
 				

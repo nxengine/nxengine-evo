@@ -14,7 +14,7 @@ struct CommandEntry
 {
 	const char *name;
 	void (*handler)(std::vector<std::string> *args, int num);
-	int minArgs, maxArgs;
+	unsigned int minArgs, maxArgs;
 };
 
 class DebugConsole
@@ -39,13 +39,13 @@ private:
 	void ExpandCommand();
 	
 	char fLine[CONSOLE_MAXCMDLEN];
-	int fLineLen;
+	unsigned int fLineLen;
 	int fKeyDown;
 	int fRepeatTimer;
 	
 	char fLineToExpand[CONSOLE_MAXCMDLEN];
 	bool fBrowsingExpansion;
-	int fExpandIndex;
+	unsigned int fExpandIndex;
 	
 	char fResponse[CONSOLE_MAXRESPONSELEN];
 	int fResponseTimer;

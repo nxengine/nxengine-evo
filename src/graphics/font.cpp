@@ -120,7 +120,7 @@ bool error = false;
 	error = error || create_shade_sfc();
 	if (error) return 1;
 	
-	fontheight = (whitefont.letters['M']->h / SCALE);
+	fontheight = (whitefont.letters[(unsigned char)'M']->h / SCALE);
 	initilized = true;
 	return 0;
 }
@@ -574,7 +574,7 @@ static bool create_shade_sfc(void)
 	}
 	
 	int wd = (Graphics::SCREEN_WIDTH * SCALE);
-	int ht = whitefont.letters['M']->h;
+	int ht = whitefont.letters[(unsigned char)'M']->h;
 	
 	SDL_PixelFormat* pxformat = SDL_AllocFormat(screen->Format()->format);
 	if (!pxformat)

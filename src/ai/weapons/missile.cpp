@@ -32,15 +32,15 @@ missile_settings[] =
 //  Level 1-3 regular missile
 //  have on record here for damage 4, 6, 4; check if that's correct
 //  maxspd   acl   smk, nboom, range,  dmg,  bmdmg
-	0xA00,  0x80,  4,   4,		16,		8,	   1,
-	0xA00,  0x100, 6,   6,		32,		15,	   2,
-	0xA00,  0x80,  12,  2,		40,		8,	   2,
+	{0xA00,  0x80,  4,   4,		16,		8,	   1},
+	{0xA00,  0x100, 6,   6,		32,		15,	   2},
+	{0xA00,  0x80,  12,  2,		40,		8,	   2},
 	
 //  Level 1-3 super missile
 //  maxspd   acl   smk, nboom, range,  dmg,  bmdmg
-	0x1400, 0x200, 8,   4,     16,		18,	   1,
-	0x1400, 0x200, 6,   5,     32,		30,	   2,
-	0x1400, 0x200, 12,  3,     40,		18,    2,
+	{0x1400, 0x200, 8,   4,     16,		18,	   1},
+	{0x1400, 0x200, 6,   5,     32,		30,	   2},
+	{0x1400, 0x200, 12,  3,     40,		18,    2}
 };
 
 /*

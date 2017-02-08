@@ -46,7 +46,7 @@ static struct
 {
 	Dialog *dlg, *subdlg;
 	Dialog *dismiss_on_focus;
-	int mm_cursel;
+	unsigned int mm_cursel;
 	bool InMainMenu;
 	int xoffset;
 	
@@ -76,7 +76,7 @@ bool options_init(int retmode)
 void options_close()
 {
 	Options::close_objects();
-	for (int i=0;i<optionstack.size();i++)
+	for (unsigned int i=0;i<optionstack.size();i++)
 	{
 	  FocusHolder *fh = (FocusHolder *)optionstack.at(i);
 	  delete fh;
@@ -91,7 +91,7 @@ void c------------------------------() {}
 
 void options_tick()
 {
-int i;
+unsigned int i;
 FocusHolder *fh;
 
 	if (justpushed(F3KEY))

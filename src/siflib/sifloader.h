@@ -73,7 +73,6 @@ private:
 	std::vector<SIFIndexEntry*> fIndex;			// index table from header (list of SIFIndexEntry)
 	FILE *fFP;				// open file handle
 	
-	uint32_t fTotalDataAdded;	// for saving
 };
 
 

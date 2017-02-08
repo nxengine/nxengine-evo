@@ -69,7 +69,7 @@ void ai_fireball(Object *o)
 		// (prevents incorrect dissipation if a fireball hits the Lift in Almond)
 		if ((enemy->flags & FLAG_INVULNERABLE) && enemy->damage == 0)
 		{
-			static const Point embedpt[] = { 8, 8 };
+			static const Point embedpt[] = { { 8, 8 } };
 			static const Point pcheckl[] = { { -1, 4 }, { -1, 12 } };
 			static const Point pcheckr[] = { { 16, 4 }, { 16, 12 } };
 			static const Point pchecku[] = { { 4, -1 }, { 12, -1 } };

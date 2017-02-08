@@ -103,7 +103,7 @@ void rumble(float str, uint32_t len)
 void input_remap(int keyindex, in_action sdl_key)
 {
 	stat("input_remap(%d => %d)", keyindex, sdl_key.key);
-	in_action old_mapping = input_get_mapping(keyindex);
+//	in_action old_mapping = input_get_mapping(keyindex);
 //	if (old_mapping != -1)
 //		mappings[old_mapping] = 0xff;
 	

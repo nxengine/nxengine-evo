@@ -495,15 +495,15 @@ void BallosBoss::RunForm3(Object *o)
 	}
 	platform_pattern[] =
 	{
-		500, 2,
-		200, 1,
-		20,  0,
-		200, -1,
-		500, -2,
-		200, -1,
-		20,  0,
-		200, 1,
-		0,   0
+		{500, 2},
+		{200, 1},
+		{20,  0},
+		{200, -1},
+		{500, -2},
+		{200, -1},
+		{20,  0},
+		{200, 1},
+		{0,   0}
 	};
 	
 	switch(o->state)
@@ -1072,10 +1072,10 @@ static void spawn_impact_puffs(Object *o)
 	}
 	hitdata[] =
 	{
-		0x180, SHORT, -SHORT, -LONG, -LONG,		// RIGHT on ceiling
-		0x80,  SHORT, -SHORT, LONG, LONG,		// LEFT on floor
-		0x100, -LONG, -LONG, SHORT, -SHORT,		// UP left wall
-		0x00,  LONG, LONG,   SHORT, -SHORT		// DOWN right wall
+		{0x180, SHORT, -SHORT, -LONG, -LONG},		// RIGHT on ceiling
+		{0x80,  SHORT, -SHORT, LONG, LONG},		// LEFT on floor
+		{0x100, -LONG, -LONG, SHORT, -SHORT},		// UP left wall
+		{0x00,  LONG, LONG,   SHORT, -SHORT}		// DOWN right wall
 	};
 	
 	int bd = ballos->dirparam;

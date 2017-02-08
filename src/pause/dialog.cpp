@@ -57,7 +57,7 @@ Dialog::Dialog()
 
 Dialog::~Dialog()
 {
-	for(int i=0;i<fItems.size();i++)
+	for(unsigned int i=0;i<fItems.size();i++)
 		delete fItems.at(i);
 	for (std::vector<void*>::iterator it = optionstack.begin() ; it != optionstack.end(); ++it)
 	{
@@ -157,7 +157,7 @@ void Dialog::Draw()
 	
 	int x = fTextX;
 	int y = (fCoords.y + 18);
-	for(int i=0;i<fItems.size();i++)
+	for(unsigned int i=0;i<fItems.size();i++)
 	{
 		ODItem *item = (ODItem *)fItems.at(i);
 		
@@ -236,9 +236,9 @@ void Dialog::RunInput()
 			{
 				fCurSel += dir;
 				if (fCurSel < 0) fCurSel = (nitems - 1);
-				if (fCurSel>=fItems.size()) fCurSel = 0;
+				if (fCurSel>=(int)fItems.size()) fCurSel = 0;
 				
-				if(fCurSel>=0 && fCurSel<fItems.size())
+				if(fCurSel>=0 && fCurSel<(int)fItems.size())
 				{
 				  ODItem *item = fItems.at(fCurSel);
 				  if (item && item->type != OD_SEPARATOR) break;
@@ -265,7 +265,7 @@ void Dialog::RunInput()
 		int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(ENTERKEY)) ? 1 : -1;
 		
 		ODItem *item = NULL;
-		if (fCurSel>=0 && fCurSel<fItems.size())
+		if (fCurSel>=0 && fCurSel<(int)fItems.size())
 		    item=fItems.at(fCurSel);
 		if (item)
 		{
@@ -301,7 +301,7 @@ void Dialog::RunInput()
 void Dialog::SetSelection(int sel)
 {
 	if (sel < 0) sel = fItems.size();
-	if (sel >= fItems.size()) sel = (fItems.size() - 1);
+	if (sel >= (int)fItems.size()) sel = (fItems.size() - 1);
 	
 	fCurSel = sel;
 }
@@ -314,7 +314,7 @@ void Dialog::Dismiss()
 
 void Dialog::Refresh()
 {
-	for(int i=0;i<fItems.size();i++)
+	for(unsigned int i=0;i<fItems.size();i++)
 	{
 	    ODItem* item = fItems.at(i);
 		if (item->update)
@@ -327,7 +327,7 @@ void Dialog::Clear()
 	if (onclear)
 		(*onclear)();
 	
-	for(int i=0;i<fItems.size();i++)
+	for(unsigned int i=0;i<fItems.size();i++)
 		delete fItems.at(i);
 	
 	fItems.clear();

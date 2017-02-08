@@ -23,7 +23,8 @@ lX		Location X
 
 bool CredReader::ReadCommand(CredCommand *cmd)
 {
-int ch, i;
+	int ch;
+	unsigned int i;
 
 	memset(cmd, 0, sizeof(CredCommand));
 	cmd->type = -1;
