@@ -71,121 +71,6 @@ bool statusbar_init(void)
 }
 
 
-void DrawStatusBar(void)
-{
-int level, curxp, maxxp;
-int w, x;
-bool maxed_out;
-
-	//debug("%08x", game.bossbar.object);
-	//debug("%s", game.bossbar.defeated ? "true" : "false");
-	
-	// handle animations etc
-	RunStatusBar();
-	
-	// draw boss bar
-	if (game.bossbar.object && !game.bossbar.defeated)
-	{
-		#define BOSSBAR_W	198
-		// BOSS_X = 32 at normal resolution
-		uint32_t BOSS_X =((SCREEN_WIDTH / 2) - (BOSSBAR_W / 2) - 29);
-		uint32_t BOSS_Y = (SCREEN_HEIGHT-20);
-		draw_sprite(BOSS_X, BOSS_Y, SPR_TEXTBOX, 0, 0);
-		draw_sprite(BOSS_X, BOSS_Y+8, SPR_TEXTBOX, 2, 0);
-		draw_sprite(BOSS_X+8, BOSS_Y+4, SPR_BOSSHPICON, 0, 0);
-		
-		// e.g. bosses w/ multiple forms (Ballos)
-		if (game.bossbar.object->hp > game.bossbar.starting_hp)
-			game.bossbar.starting_hp = game.bossbar.object->hp;
-		
-		RunPercentBar(&game.bossbar.bar, game.bossbar.object->hp);
-		DrawPercentBar(&game.bossbar.bar, BOSS_X+40, BOSS_Y+5, game.bossbar.object->hp, game.bossbar.starting_hp, BOSSBAR_W);
-	}
-	
-	if (game.frozen || player->inputs_locked) return;
-	if (fade.getstate() != FS_NO_FADE) return;
-	
-	if (player->hp)
-	{
-		if (!player->hurt_flash_state)
-		{
-			if (!game.debug.god)
-			{
-				// -- draw the health bar -----------------------------
-				draw_sprite(HEALTH_X, HEALTH_Y, SPR_HEALTHBAR, 0, 0);
-				
-				DrawPercentBar(&PHealthBar, HEALTHFILL_X, HEALTHFILL_Y, player->hp, player->maxHealth, HEALTHFILL_MAXLEN);
-				
-				// draw the health in numbers
-				DrawNumberRAlign(HEALTH_X+24, HEALTH_Y, SPR_WHITENUMBERS, PHealthBar.displayed_value);
-			}
-			
-			// -- draw the XP bar ---------------------------------
-			level = player->weapons[player->curWeapon].level;
-			curxp = player->weapons[player->curWeapon].xp;
-			maxxp = player->weapons[player->curWeapon].max_xp[level];
-			
-			if (player->curWeapon == WPN_NONE)
-			{
-				curxp = 0;
-				maxxp = 1;
-			}
-			
-			// draw XP bar and fill it
-			draw_sprite(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_BAR, 0);
-			
-			maxed_out = ((curxp == maxxp) && level == 2);
-			if (!maxed_out)
-				DrawPercentage(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_FILL, curxp, maxxp, sprites[SPR_XPBAR].w);
-			
-			// draw the white flashing if we just got more XP
-			// the time-left and flash-state are in separate variables--
-			// otherwise the Spur will not flash XP bar
-			if (statusbar.xpflashcount)
-			{
-				if (++statusbar.xpflashstate & 2)
-				{
-					draw_sprite(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_FLASH, 0);
-				}
-				
-				statusbar.xpflashcount--;
-			}
-			else statusbar.xpflashstate = 0;
-			
-			// draw "MAX"
-			if (maxed_out)
-				draw_sprite(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_MAX, 0);
-			
-			// Level Number
-			DrawWeaponLevel(HEALTH_X + slide.lv_offset, XPBAR_Y, player->curWeapon);
-		}
-		
-		// -- draw the weapon bar -----------------------------
-		// draw current weapon
-		if (player->curWeapon != WPN_NONE)
-			draw_sprite(CURWEAPON_X + slide.wpn_offset, WEAPONBAR_Y, SPR_ARMSICONS, slide.firstWeapon, 0);
-		
-		// draw ammo, note we draw ammo of firstweapon NOT current weapon, for slide effect
-		DrawWeaponAmmo((AMMO_X + slide.wpn_offset + slide.ammo_offset), AMMO_Y, slide.firstWeapon);
-		
-		// draw other weapons
-		w = slide.firstWeapon;
-		x = STATUS_X + 64 + slide.wpn_offset + 1;
-		for(;;)
-		{
-			if (++w >= WPN_COUNT) w = 0;
-			if (w==slide.firstWeapon) break;
-			
-			if (player->weapons[w].hasWeapon)
-			{
-				draw_sprite(x, WEAPONBAR_Y, SPR_ARMSICONS, w, RIGHT);
-				x += 16;
-			}
-		}
-		
-		DrawAirLeft((SCREEN_WIDTH/2) - (5*8), ((SCREEN_HEIGHT)/2)-16);
-	}
-}
 
 void DrawAirLeft(int x, int y)
 {
@@ -494,6 +379,121 @@ void niku_draw(int value, bool force_white)
 	draw_sprite(NIKU_X+30, NIKU_Y, SPR_NIKU_PUNC);
 }
 
+void DrawStatusBar(void)
+{
+int level, curxp, maxxp;
+int w, x;
+bool maxed_out;
+
+	//debug("%08x", game.bossbar.object);
+	//debug("%s", game.bossbar.defeated ? "true" : "false");
+	
+	// handle animations etc
+	RunStatusBar();
+	
+	// draw boss bar
+	if (game.bossbar.object && !game.bossbar.defeated)
+	{
+		#define BOSSBAR_W	198
+		// BOSS_X = 32 at normal resolution
+		uint32_t BOSS_X =((SCREEN_WIDTH / 2) - (BOSSBAR_W / 2) - 29);
+		uint32_t BOSS_Y = (SCREEN_HEIGHT-20);
+		draw_sprite(BOSS_X, BOSS_Y, SPR_TEXTBOX, 0, 0);
+		draw_sprite(BOSS_X, BOSS_Y+8, SPR_TEXTBOX, 2, 0);
+		draw_sprite(BOSS_X+8, BOSS_Y+4, SPR_BOSSHPICON, 0, 0);
+		
+		// e.g. bosses w/ multiple forms (Ballos)
+		if (game.bossbar.object->hp > game.bossbar.starting_hp)
+			game.bossbar.starting_hp = game.bossbar.object->hp;
+		
+		RunPercentBar(&game.bossbar.bar, game.bossbar.object->hp);
+		DrawPercentBar(&game.bossbar.bar, BOSS_X+40, BOSS_Y+5, game.bossbar.object->hp, game.bossbar.starting_hp, BOSSBAR_W);
+	}
+	
+	if (game.frozen || player->inputs_locked) return;
+	if (fade.getstate() != FS_NO_FADE) return;
+	
+	if (player->hp)
+	{
+		if (!player->hurt_flash_state)
+		{
+			if (!game.debug.god)
+			{
+				// -- draw the health bar -----------------------------
+				draw_sprite(HEALTH_X, HEALTH_Y, SPR_HEALTHBAR, 0, 0);
+				
+				DrawPercentBar(&PHealthBar, HEALTHFILL_X, HEALTHFILL_Y, player->hp, player->maxHealth, HEALTHFILL_MAXLEN);
+				
+				// draw the health in numbers
+				DrawNumberRAlign(HEALTH_X+24, HEALTH_Y, SPR_WHITENUMBERS, PHealthBar.displayed_value);
+			}
+			
+			// -- draw the XP bar ---------------------------------
+			level = player->weapons[player->curWeapon].level;
+			curxp = player->weapons[player->curWeapon].xp;
+			maxxp = player->weapons[player->curWeapon].max_xp[level];
+			
+			if (player->curWeapon == WPN_NONE)
+			{
+				curxp = 0;
+				maxxp = 1;
+			}
+			
+			// draw XP bar and fill it
+			draw_sprite(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_BAR, 0);
+			
+			maxed_out = ((curxp == maxxp) && level == 2);
+			if (!maxed_out)
+				DrawPercentage(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_FILL, curxp, maxxp, sprites[SPR_XPBAR].w);
+			
+			// draw the white flashing if we just got more XP
+			// the time-left and flash-state are in separate variables--
+			// otherwise the Spur will not flash XP bar
+			if (statusbar.xpflashcount)
+			{
+				if (++statusbar.xpflashstate & 2)
+				{
+					draw_sprite(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_FLASH, 0);
+				}
+				
+				statusbar.xpflashcount--;
+			}
+			else statusbar.xpflashstate = 0;
+			
+			// draw "MAX"
+			if (maxed_out)
+				draw_sprite(XPBAR_X+slide.lv_offset, XPBAR_Y, SPR_XPBAR, FRAME_XP_MAX, 0);
+			
+			// Level Number
+			DrawWeaponLevel(HEALTH_X + slide.lv_offset, XPBAR_Y, player->curWeapon);
+		}
+		
+		// -- draw the weapon bar -----------------------------
+		// draw current weapon
+		if (player->curWeapon != WPN_NONE)
+			draw_sprite(CURWEAPON_X + slide.wpn_offset, WEAPONBAR_Y, SPR_ARMSICONS, slide.firstWeapon, 0);
+		
+		// draw ammo, note we draw ammo of firstweapon NOT current weapon, for slide effect
+		DrawWeaponAmmo((AMMO_X + slide.wpn_offset + slide.ammo_offset), AMMO_Y, slide.firstWeapon);
+		
+		// draw other weapons
+		w = slide.firstWeapon;
+		x = STATUS_X + 64 + slide.wpn_offset + 1;
+		for(;;)
+		{
+			if (++w >= WPN_COUNT) w = 0;
+			if (w==slide.firstWeapon) break;
+			
+			if (player->weapons[w].hasWeapon)
+			{
+				draw_sprite(x, WEAPONBAR_Y, SPR_ARMSICONS, w, RIGHT);
+				x += 16;
+			}
+		}
+		
+		DrawAirLeft((SCREEN_WIDTH/2) - (5*8), ((SCREEN_HEIGHT)/2)-16);
+	}
+}
 
 
 

@@ -116,22 +116,8 @@ void PDoWeapons(void);
 void FireWeapon(void);
 void RunWeapon(bool firing);
 void SetupBullet(Object *shot, int x, int y, int btype, int dir);
-static Object *FireSimpleBullet(int otype, int btype, int xoff, int yoff);
-static Object *FireSimpleBulletOffset(int otype, int btype, int xoff, int yoff);
-static void PFirePolarStar(int level);
-static void PFireMachineGun(int level);
 void FireLevel23MGun(int x, int y, int level, int dir);
 void PMgunFly(void);
-static void PFireMissile(int level, bool is_super);
-static void PFireFireball(int level);
-static void PFireBlade(int level);
-static void PFireSnake(int level);
-static void PFireNemesis(int level);
-static void PFireBubbler(int level);
-static void PFireSpur(void);
-static void PHandleSpur(void);
-static bool can_fire_spur(void);
-static bool IsWeaponMaxed(void);
 
 
 #endif

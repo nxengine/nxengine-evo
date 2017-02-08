@@ -37,9 +37,6 @@ private:
 void ondeath_ballos(Object *o);
 void ai_ballos_rotator(Object *o);
 void aftermove_ballos_rotator(Object *o);
-static void SetRotatorStates(int newstate);
-static void spawn_impact_puffs(Object *o);
-static void make_puff(int x, int y, int bd);
 void ai_ballos_platform(Object *o);
 
 

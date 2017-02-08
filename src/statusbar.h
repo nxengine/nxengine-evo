@@ -25,7 +25,6 @@ void DrawStatusBar(void);
 void DrawAirLeft(int x, int y);
 void DrawWeaponAmmo(int x, int y, int wpn);
 void DrawWeaponLevel(int x, int y, int wpn);
-static void RunStatusBar(void);
 void weapon_slide(int dir, int newwpn);
 void weapon_introslide();
 void InitPercentBar(PercentBar *bar, int starting_value);

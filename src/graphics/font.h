@@ -53,8 +53,6 @@ bool font_init(void);
 void font_close(void);
 bool font_reload();
 void direct_text_draw(int x, int y, const char *text);
-static int text_draw(int x, int y, const char *text, int spacing, NXFont *font);
 int GetFontWidth(const char *text, int spacing, bool is_shaded);
 int GetFontHeight();
-static bool create_shade_sfc(void);
 #endif

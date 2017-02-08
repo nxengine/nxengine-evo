@@ -16,7 +16,6 @@ private:
 	int hittimer;
 };
 
-static void ironh_smokecloud(Object *o);
 void ondeath_ironhead(Object *o);
 void ai_ironh_fishy(Object *o);
 void ai_ironh_shot(Object *o);

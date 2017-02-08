@@ -95,40 +95,15 @@ struct stSong
 	uint32_t last_fade_time;
 };
 
-static void init_pitch(void);
-static double GetNoteSampleRate(int note, int instrument_pitch);
-static int MSToSamples(int ms);
-static int SamplesToMS(int samples);
-static bool load_drumtable(const char *pxt_path);
-static bool load_drum(char *fname, int d);
-static bool load_drum_pxt(char *fname, int d);
-static bool load_wavetable(const char *fname);
 int org_init(const char *wavetable_fname, const char *drum_pxt_dir, int org_volume);
 void org_close(void);
 char org_load(char *fname);
-static bool init_buffers(void);
-static void free_buffers(void);
 bool org_start(int startbeat);
 void org_stop(void);
 bool org_is_playing(void);
 void org_fade(void);
 void org_set_volume(int newvolume);
-static void runfade();
-static void mix_buffers(void);
-static void queue_final_buffer(void);
-static void OrgBufferFinished(int channel, int buffer_no);
-static void ComputeVolumeRatios(int volume, int panning, double *volume_ratio, double *volume_left_ratio, double *volume_right_ratio);
-static double Interpolate(int sample1, int sample2, double ratio);
-static void ForceSamplePos(int m, int desired_samples);
-static void silence_gen(stNoteChannel *chan, int num_samples);
-static void note_open(stNoteChannel *chan, int wave, int pitch, int note);
-static void note_gen(stNoteChannel *chan, int num_samples);
-static int note_close(stNoteChannel *chan);
-static int drum_open(int m_channel, int wave, int note);
-static void drum_gen(int m_channel, int num_samples);
 void org_run(void);
-static void generate_music(void);
-static void NextBeat(int m);
 
 #endif
 

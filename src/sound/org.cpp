@@ -100,10 +100,86 @@ static int MSToSamples(int ms)
 }
 
 // converts a sample length to milliseconds
-static int SamplesToMS(int samples)
+//static int SamplesToMS(int samples)
+//{
+//	return (int)(((double)samples * 1000) / SAMPLE_RATE);
+//}
+
+#ifndef DRUM_PXT
+
+static bool load_drum(char *fname, int d)
 {
-	return (int)(((double)samples * 1000) / SAMPLE_RATE);
+Mix_Chunk *chunk;
+int i, read_pt;
+int left,right;
+signed short *abuf;
+
+	//stat("load_drum: loading %s into drum index %d", fname, d);
+	if (!(chunk = Mix_LoadWAV(fname)))
+	{
+		staterr("Missing drum sample: '%s'", fname);
+		return 1;
+	}
+	
+	//stat("chunk: %d bytes in chunk", chunk->alen);
+	drumtable[d].nsamples = chunk->alen / 2 / 2;	// 16-bit stereo sound
+	drumtable[d].samples = malloc(drumtable[d].nsamples * 2);
+	
+	#ifndef QUIET
+		stat("drum0%X [%s]: %d samples", d, fname, drumtable[d].nsamples);
+	#endif
+	
+	read_pt = 0;
+	abuf = (signed short *)chunk->abuf;
+	for(i=0;i<drumtable[d].nsamples;i++)
+	{
+		left = abuf[read_pt++]; right = abuf[read_pt++];
+		
+		drumtable[d].samples[i] = (left + right) / 2;
+		drumtable[d].samples[i] += drumtable[d].samples[i];		// make drums louder--sounds better
+	}
+	
+	Mix_FreeChunk(chunk);
+	return 0;
 }
+
+#else
+
+static bool load_drum_pxt(char *fname, int d)
+{
+int i;
+signed short sample;
+stPXSound snd;
+
+	stat("load_drum: loading %s into drum index %d", fname, d);
+	
+	if (pxt_load(fname, &snd)) return 1;
+	pxt_Render(&snd);
+	
+	drumtable[d].nsamples = snd.final_size;
+	drumtable[d].samples = (signed short *)malloc(snd.final_size * 2);		// *2 - it is 16-bit
+	
+	#ifndef QUIET
+		stat("drum0%X [%s]: %d samples", d, fname, drumtable[d].nsamples);
+	#endif
+	
+	// read data out of pxt's render result and put it into our drum sample table
+	for(i=0;i<drumtable[d].nsamples;i++)
+	{
+		sample = snd.final_buffer[i];
+		//i'm upscaling the 8-bit value to 16-bit;
+		//but this also sets volume of drums relative to music
+		sample *= 200;
+		
+		drumtable[d].samples[i] = sample;
+	}
+	
+	FreePXTBuf(&snd);
+	return 0;
+}
+
+#endif
+
 
 
 static bool load_drumtable(const char *pxt_path)		// pxt_path = the path where drum pxt files can be found
@@ -183,81 +259,6 @@ uint16_t version;
 	return 0;
 }
 
-#ifndef DRUM_PXT
-
-static bool load_drum(char *fname, int d)
-{
-Mix_Chunk *chunk;
-int i, read_pt;
-int left,right;
-signed short *abuf;
-
-	//stat("load_drum: loading %s into drum index %d", fname, d);
-	if (!(chunk = Mix_LoadWAV(fname)))
-	{
-		staterr("Missing drum sample: '%s'", fname);
-		return 1;
-	}
-	
-	//stat("chunk: %d bytes in chunk", chunk->alen);
-	drumtable[d].nsamples = chunk->alen / 2 / 2;	// 16-bit stereo sound
-	drumtable[d].samples = malloc(drumtable[d].nsamples * 2);
-	
-	#ifndef QUIET
-		stat("drum0%X [%s]: %d samples", d, fname, drumtable[d].nsamples);
-	#endif
-	
-	read_pt = 0;
-	abuf = (signed short *)chunk->abuf;
-	for(i=0;i<drumtable[d].nsamples;i++)
-	{
-		left = abuf[read_pt++]; right = abuf[read_pt++];
-		
-		drumtable[d].samples[i] = (left + right) / 2;
-		drumtable[d].samples[i] += drumtable[d].samples[i];		// make drums louder--sounds better
-	}
-	
-	Mix_FreeChunk(chunk);
-	return 0;
-}
-
-#else
-
-static bool load_drum_pxt(char *fname, int d)
-{
-int i;
-signed short sample;
-stPXSound snd;
-
-	stat("load_drum: loading %s into drum index %d", fname, d);
-	
-	if (pxt_load(fname, &snd)) return 1;
-	pxt_Render(&snd);
-	
-	drumtable[d].nsamples = snd.final_size;
-	drumtable[d].samples = (signed short *)malloc(snd.final_size * 2);		// *2 - it is 16-bit
-	
-	#ifndef QUIET
-		stat("drum0%X [%s]: %d samples", d, fname, drumtable[d].nsamples);
-	#endif
-	
-	// read data out of pxt's render result and put it into our drum sample table
-	for(i=0;i<drumtable[d].nsamples;i++)
-	{
-		sample = snd.final_buffer[i];
-		//i'm upscaling the 8-bit value to 16-bit;
-		//but this also sets volume of drums relative to music
-		sample *= 200;
-		
-		drumtable[d].samples[i] = sample;
-	}
-	
-	FreePXTBuf(&snd);
-	return 0;
-}
-
-#endif
-
 
 
 
@@ -319,6 +320,16 @@ int i;
 	return 0;
 }
 
+static void free_buffers(void)
+{
+int i;
+
+	for(i=0;i<16;i++)
+		if (note_channel[i].outbuffer) free(note_channel[i].outbuffer);
+	
+	for(i=0;i<2;i++)
+		if (final_buffer[i].samples) free(final_buffer[i].samples);
+}
 
 void org_close(void)
 {
@@ -329,6 +340,46 @@ int d;
 	
 	for(d=0;d<NUM_DRUMS;d++)
 		if (drumtable[d].samples) free(drumtable[d].samples);
+}
+
+static bool init_buffers(void)
+{
+int i;
+
+	// free the old buffers, as we're probably going to change their size here in a sec
+	free_buffers();
+	
+	/* figure some stuff out real quick about buffer lengths --- */
+	
+	// convert the ms-per-beat stuff into samples
+	song.samples_per_beat = MSToSamples(song.ms_per_beat);
+	song.note_closing_samples = MSToSamples(song.ms_of_last_beat_of_note);
+	// take the suggestion on cache ahead time (which is in ms) and figure out how many beats that is
+	buffer_beats = (cache_ahead_time / song.ms_per_beat) + 1;
+	if (buffer_beats < 3) buffer_beats = 3;
+	
+	// now figure out how many samples that is.
+	buffer_samples = (buffer_beats * song.samples_per_beat);
+	// now figure out how many bytes THAT is.
+	outbuffer_size_bytes = buffer_samples * 2 * 2;		// @ 16-bits, and stereo sound
+	
+	
+	// initialize the per-channel output buffers
+	for(i=0;i<16;i++)
+	{
+		note_channel[i].outbuffer = (signed short *)malloc(outbuffer_size_bytes);
+		note_channel[i].number = i;
+		//memset(note_channel[i].outbuffer, 0, outbuffer_size_bytes);
+	}
+	
+	// initialize the final (mixed) output buffers
+	for(i=0;i<2;i++)
+	{
+		final_buffer[i].samples = (signed short *)malloc(outbuffer_size_bytes);
+		//memset(final_buffer[i].samples, 0, outbuffer_size_bytes);
+	}
+	
+	return 0;
 }
 
 
@@ -427,155 +478,57 @@ int i, j;
 void c------------------------------() {}
 */
 
-
-static bool init_buffers(void)
+// callback from sslib when a buffer is finished playing.
+static void OrgBufferFinished(int channel, int buffer_no)
 {
-int i;
+	buffers_full = false;
+}
 
-	// free the old buffers, as we're probably going to change their size here in a sec
-	free_buffers();
+
+// start whichever buffer is queued to play next, and flag the other one as needing
+// to be filled
+static void queue_final_buffer(void)
+{
+	SSEnqueueChunk(ORG_CHANNEL, final_buffer[current_buffer].samples, buffer_samples,
+						current_buffer, OrgBufferFinished);
 	
-	/* figure some stuff out real quick about buffer lengths --- */
+	current_buffer ^= 1;
+}
+
+// adds num_samples samples of silence to the output buffer of channel "m".
+static void silence_gen(stNoteChannel *chan, int num_samples)
+{
+int clear_bytes;
+
+	//stat("silence_gen: making %d samples of silence", num_samples);
 	
-	// convert the ms-per-beat stuff into samples
-	song.samples_per_beat = MSToSamples(song.ms_per_beat);
-	song.note_closing_samples = MSToSamples(song.ms_of_last_beat_of_note);
-	// take the suggestion on cache ahead time (which is in ms) and figure out how many beats that is
-	buffer_beats = (cache_ahead_time / song.ms_per_beat) + 1;
-	if (buffer_beats < 3) buffer_beats = 3;
+	clear_bytes = (num_samples * 2 * 2);		// clear twice as many shorts as = num_samples
+	memset(&chan->outbuffer[chan->outpos], 0, clear_bytes);
 	
-	// now figure out how many samples that is.
-	buffer_samples = (buffer_beats * song.samples_per_beat);
-	// now figure out how many bytes THAT is.
-	outbuffer_size_bytes = buffer_samples * 2 * 2;		// @ 16-bits, and stereo sound
-	
-	
-	// initialize the per-channel output buffers
-	for(i=0;i<16;i++)
+	chan->samples_so_far += num_samples;
+	chan->outpos += (num_samples * 2);
+}
+
+
+// ensures that there are exactly desired_samples contained in the output buffer of instrument m.
+// if there are fewer samples than desired, the gap is filled with silence.
+// if there are more, the extra audio is truncated.
+static void ForceSamplePos(int m, int desired_samples)
+{
+	if (note_channel[m].samples_so_far != desired_samples)
 	{
-		note_channel[i].outbuffer = (signed short *)malloc(outbuffer_size_bytes);
-		note_channel[i].number = i;
-		//memset(note_channel[i].outbuffer, 0, outbuffer_size_bytes);
-	}
-	
-	// initialize the final (mixed) output buffers
-	for(i=0;i<2;i++)
-	{
-		final_buffer[i].samples = (signed short *)malloc(outbuffer_size_bytes);
-		//memset(final_buffer[i].samples, 0, outbuffer_size_bytes);
-	}
-	
-	return 0;
-}
-
-static void free_buffers(void)
-{
-int i;
-
-	for(i=0;i<16;i++)
-		if (note_channel[i].outbuffer) free(note_channel[i].outbuffer);
-	
-	for(i=0;i<2;i++)
-		if (final_buffer[i].samples) free(final_buffer[i].samples);
-}
-
-
-/*
-void c------------------------------() {}
-*/
-
-
-// start the currently-loaded track playing at beat startbeat.
-bool org_start(int startbeat)
-{
-	org_stop();		// stop any old music
-	
-	// set all the note-tracking stuff to starting values
-	song.beat = startbeat;
-	song.haslooped = false;
-	
-	for(int i=0;i<16;i++)
-	{
-		song.instrument[i].curnote = 0;
-		note_channel[i].volume = ORG_MAX_VOLUME;
-		note_channel[i].panning = ORG_PAN_CENTERED;
-		note_channel[i].length = 0;
-	}
-	
-	// fill the first buffer and play it to jumpstart the playback cycle
-	//lprintf(" ** org_start: Jumpstarting buffer cycle\n");
-	
-	song.playing = true;
-	song.fading = false;
-	
-	song.volume = OrgVolume;
-	SSSetVolume(ORG_CHANNEL, song.volume);
-	
-	// kickstart the first buffer
-	current_buffer = 0;
-	generate_music();
-	queue_final_buffer();
-	buffers_full = 0;				// tell org_run to generate the other buffer right away
-	
-	return 0;
-}
-
-
-// pause/stop playback of the current song
-void org_stop(void)
-{
-	if (song.playing)
-	{
-		song.playing = false;
-		// cancel whichever buffer is playing
-		SSAbortChannel(ORG_CHANNEL);
-	}
-}
-
-bool org_is_playing(void)
-{
-	return song.playing;
-}
-
-void org_fade(void)
-{
-	stat("org_fade");
-	song.fading = true;
-	song.last_fade_time = 0;
-}
-
-void org_set_volume(int newvolume)
-{
-	if (newvolume != song.volume)
-	{
-		song.volume = newvolume;
-		SSSetVolume(ORG_CHANNEL, newvolume);
-	}
-}
-
-static void runfade()
-{
-	uint32_t curtime = SDL_GetTicks();
-	if ((curtime - song.last_fade_time) >= 25)
-	{
-		int newvol = (song.volume - 1);
-		if (newvol <= 0)
+		if (desired_samples > note_channel[m].samples_so_far)
 		{
-			song.fading = false;
-			org_stop();
+			silence_gen(&note_channel[m], (desired_samples - note_channel[m].samples_so_far));
 		}
 		else
-		{
-			org_set_volume(newvol);
+		{	// this should NEVER actually happen!!
+			stat("ForceSamplePos: WARNING: !!! truncated channel %d from %d to %d samples !!!", m, note_channel[m].samples_so_far, desired_samples);
+			note_channel[m].samples_so_far = desired_samples;
+			note_channel[m].outpos = desired_samples * 2;
 		}
-		
-		song.last_fade_time = curtime;
 	}
 }
-
-/*
-void c------------------------------() {}
-*/
 
 // combines all of the individual channel output buffers into a single, final, buffer.
 static void mix_buffers(void)
@@ -604,27 +557,30 @@ signed short *final;
 	}
 }
 
-// start whichever buffer is queued to play next, and flag the other one as needing
-// to be filled
-static void queue_final_buffer(void)
+
+// -------------------
+// note_open
+// -------------------
+// initializes the synthesis of a new note.
+// chan: the instrument channel the note will play on
+// wave: the instrument no to play the note with
+// pitch: the pitch variation of the instrument as set in the org
+// note: the note # we'll be playing
+// total_ms: the maximum length the note will play for (controls buffer allocation length)
+static void note_open(stNoteChannel *chan, int wave, int pitch, int note)
 {
-	SSEnqueueChunk(ORG_CHANNEL, final_buffer[current_buffer].samples, buffer_samples,
-						current_buffer, OrgBufferFinished);
+double new_sample_rate;
+#define	samplK	 	 11025		// constant is original sampling rate of the samples in the wavetable
+
+	// compute how quickly, or slowly, to play back the wavetable sample
+	new_sample_rate = GetNoteSampleRate(note, pitch);
+	chan->sample_inc = (new_sample_rate / (double)samplK);
 	
-	current_buffer ^= 1;
+	chan->wave = wave;
+	chan->phaseacc = 0;
+	
+	//lprintf("note_open: new note opened for channel %08x at sample_inc %.2f, using wave %d\n", chan, chan->sample_inc, chan->wave);
 }
-
-
-// callback from sslib when a buffer is finished playing.
-static void OrgBufferFinished(int channel, int buffer_no)
-{
-	buffers_full = false;
-}
-
-/*
-void c------------------------------() {}
-*/
-
 
 // given a volume and a panning value, it returns three values
 // between 0 and 1.00 which are how much to scale:
@@ -667,65 +623,6 @@ double s1, s2;
 	return (s1 + s2);
 }
 
-
-// ensures that there are exactly desired_samples contained in the output buffer of instrument m.
-// if there are fewer samples than desired, the gap is filled with silence.
-// if there are more, the extra audio is truncated.
-static void ForceSamplePos(int m, int desired_samples)
-{
-	if (note_channel[m].samples_so_far != desired_samples)
-	{
-		if (desired_samples > note_channel[m].samples_so_far)
-		{
-			silence_gen(&note_channel[m], (desired_samples - note_channel[m].samples_so_far));
-		}
-		else
-		{	// this should NEVER actually happen!!
-			stat("ForceSamplePos: WARNING: !!! truncated channel %d from %d to %d samples !!!", m, note_channel[m].samples_so_far, desired_samples);
-			note_channel[m].samples_so_far = desired_samples;
-			note_channel[m].outpos = desired_samples * 2;
-		}
-	}
-}
-
-
-// adds num_samples samples of silence to the output buffer of channel "m".
-static void silence_gen(stNoteChannel *chan, int num_samples)
-{
-int clear_bytes;
-
-	//stat("silence_gen: making %d samples of silence", num_samples);
-	
-	clear_bytes = (num_samples * 2 * 2);		// clear twice as many shorts as = num_samples
-	memset(&chan->outbuffer[chan->outpos], 0, clear_bytes);
-	
-	chan->samples_so_far += num_samples;
-	chan->outpos += (num_samples * 2);
-}
-
-// -------------------
-// note_open
-// -------------------
-// initializes the synthesis of a new note.
-// chan: the instrument channel the note will play on
-// wave: the instrument no to play the note with
-// pitch: the pitch variation of the instrument as set in the org
-// note: the note # we'll be playing
-// total_ms: the maximum length the note will play for (controls buffer allocation length)
-static void note_open(stNoteChannel *chan, int wave, int pitch, int note)
-{
-double new_sample_rate;
-#define	samplK	 	 11025		// constant is original sampling rate of the samples in the wavetable
-
-	// compute how quickly, or slowly, to play back the wavetable sample
-	new_sample_rate = GetNoteSampleRate(note, pitch);
-	chan->sample_inc = (new_sample_rate / (double)samplK);
-	
-	chan->wave = wave;
-	chan->phaseacc = 0;
-	
-	//lprintf("note_open: new note opened for channel %08x at sample_inc %.2f, using wave %d\n", chan, chan->sample_inc, chan->wave);
-}
 
 // -------------------
 // note_gen
@@ -874,82 +771,6 @@ int i;
 }
 
 
-void org_run(void)
-{
-	if (!song.playing)
-		return;
-	
-	// keep both buffers queued. if one of them isn't queued, then it's time to
-	// generate more music for it and queue it back on.
-	if (!buffers_full)
-	{
-		generate_music();				// generate more music into current_buffer
-		
-		queue_final_buffer();			// enqueue current_buffer and switch buffers
-		buffers_full = true;			// both buffers full again until OrgBufferFinished called
-	}
-	
-	if (song.fading) runfade();
-}
-
-
-// generate a buffer's worth of music and place it in the current final buffer.
-static void generate_music(void)
-{
-int m;
-int beats_left;
-int out_position;
-
-	//stat("generate_music: cb=%d buffer_beats=%d", current_buffer, buffer_beats);
-	
-	// save beat # of the first beat in buffer for calculating current beat for TrackFuncs
-	final_buffer[current_buffer].firstbeat = song.beat;
-	
-	// clear all the channel buffers
-	for(m=0;m<16;m++)
-	{
-		note_channel[m].samples_so_far = 0;
-		note_channel[m].outpos = 0;
-	}
-	
-	//stat("generate_music: generating %d beats of music\n", buffer_beats);
-	beats_left = buffer_beats;
-	out_position = 0;
-	
-	while(beats_left)
-	{
-		out_position += song.samples_per_beat;
-		
-		// for each channel...
-		for(m=0;m<16;m++)
-		{
-			// generate any music that's supposed to go into the current beat
-			NextBeat(m);
-			// ensure that exactly one beat of samples was added to the channel by inserting silence
-			// if needed. sometimes NextBeat may not actually generate a full beats worth, for
-			// example if there was no note playing on the track, of if it was the last beat of a note.
-			ForceSamplePos(m, out_position);
-		}
-		
-		if (++song.beat >= song.loop_end)
-		{
-			song.beat = song.loop_start;
-			song.haslooped = true;
-			
-			for(m=0;m<16;m++)
-			{
-				song.instrument[m].curnote = song.instrument[m].loop_note;
-				note_channel[m].length = 0;
-			}
-		}
-		
-		beats_left--;
-	}
-	
-	mix_buffers();
-}
-
-
 // generate up to a 1 beat worth of music from channel "m" at the song.beat cursor point.
 // it may generate less.
 static void NextBeat(int m)
@@ -1052,5 +873,193 @@ int len;
 	}
 
 }
+
+
+// generate a buffer's worth of music and place it in the current final buffer.
+static void generate_music(void)
+{
+int m;
+int beats_left;
+int out_position;
+
+	//stat("generate_music: cb=%d buffer_beats=%d", current_buffer, buffer_beats);
+	
+	// save beat # of the first beat in buffer for calculating current beat for TrackFuncs
+	final_buffer[current_buffer].firstbeat = song.beat;
+	
+	// clear all the channel buffers
+	for(m=0;m<16;m++)
+	{
+		note_channel[m].samples_so_far = 0;
+		note_channel[m].outpos = 0;
+	}
+	
+	//stat("generate_music: generating %d beats of music\n", buffer_beats);
+	beats_left = buffer_beats;
+	out_position = 0;
+	
+	while(beats_left)
+	{
+		out_position += song.samples_per_beat;
+		
+		// for each channel...
+		for(m=0;m<16;m++)
+		{
+			// generate any music that's supposed to go into the current beat
+			NextBeat(m);
+			// ensure that exactly one beat of samples was added to the channel by inserting silence
+			// if needed. sometimes NextBeat may not actually generate a full beats worth, for
+			// example if there was no note playing on the track, of if it was the last beat of a note.
+			ForceSamplePos(m, out_position);
+		}
+		
+		if (++song.beat >= song.loop_end)
+		{
+			song.beat = song.loop_start;
+			song.haslooped = true;
+			
+			for(m=0;m<16;m++)
+			{
+				song.instrument[m].curnote = song.instrument[m].loop_note;
+				note_channel[m].length = 0;
+			}
+		}
+		
+		beats_left--;
+	}
+	
+	mix_buffers();
+}
+
+
+// start the currently-loaded track playing at beat startbeat.
+bool org_start(int startbeat)
+{
+	org_stop();		// stop any old music
+	
+	// set all the note-tracking stuff to starting values
+	song.beat = startbeat;
+	song.haslooped = false;
+	
+	for(int i=0;i<16;i++)
+	{
+		song.instrument[i].curnote = 0;
+		note_channel[i].volume = ORG_MAX_VOLUME;
+		note_channel[i].panning = ORG_PAN_CENTERED;
+		note_channel[i].length = 0;
+	}
+	
+	// fill the first buffer and play it to jumpstart the playback cycle
+	//lprintf(" ** org_start: Jumpstarting buffer cycle\n");
+	
+	song.playing = true;
+	song.fading = false;
+	
+	song.volume = OrgVolume;
+	SSSetVolume(ORG_CHANNEL, song.volume);
+	
+	// kickstart the first buffer
+	current_buffer = 0;
+	generate_music();
+	queue_final_buffer();
+	buffers_full = 0;				// tell org_run to generate the other buffer right away
+	
+	return 0;
+}
+
+
+// pause/stop playback of the current song
+void org_stop(void)
+{
+	if (song.playing)
+	{
+		song.playing = false;
+		// cancel whichever buffer is playing
+		SSAbortChannel(ORG_CHANNEL);
+	}
+}
+
+bool org_is_playing(void)
+{
+	return song.playing;
+}
+
+void org_fade(void)
+{
+	stat("org_fade");
+	song.fading = true;
+	song.last_fade_time = 0;
+}
+
+void org_set_volume(int newvolume)
+{
+	if (newvolume != song.volume)
+	{
+		song.volume = newvolume;
+		SSSetVolume(ORG_CHANNEL, newvolume);
+	}
+}
+
+static void runfade()
+{
+	uint32_t curtime = SDL_GetTicks();
+	if ((curtime - song.last_fade_time) >= 25)
+	{
+		int newvol = (song.volume - 1);
+		if (newvol <= 0)
+		{
+			song.fading = false;
+			org_stop();
+		}
+		else
+		{
+			org_set_volume(newvol);
+		}
+		
+		song.last_fade_time = curtime;
+	}
+}
+
+/*
+void c------------------------------() {}
+*/
+
+
+
+
+
+/*
+void c------------------------------() {}
+*/
+
+
+
+
+
+
+
+
+
+void org_run(void)
+{
+	if (!song.playing)
+		return;
+	
+	// keep both buffers queued. if one of them isn't queued, then it's time to
+	// generate more music for it and queue it back on.
+	if (!buffers_full)
+	{
+		generate_music();				// generate more music into current_buffer
+		
+		queue_final_buffer();			// enqueue current_buffer and switch buffers
+		buffers_full = true;			// both buffers full again until OrgBufferFinished called
+	}
+	
+	if (song.fading) runfade();
+}
+
+
+
+
 
 

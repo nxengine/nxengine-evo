@@ -139,7 +139,6 @@ enum BoosterState
 void hurtplayer(int damage);
 
 void PInitFirstTime();
-static void InitWeapon(int wpn, int l1, int l2, int l3, int maxammo);
 void InitPlayer(void);
 void HandlePlayer(void);
 void HandlePlayer_am(void);
@@ -163,8 +162,6 @@ void PHandleZeroG(void);
 void PInitRepel(void);
 void PDoRepel(void);
 void PTryActivateScript();
-static bool RunScriptAtX(int x);
-static bool RunScriptAtLocation(int x, int y);
 void PDoHurtFlash(void);
 void PSelectFrame(void);
 void PSelectSprite(void);

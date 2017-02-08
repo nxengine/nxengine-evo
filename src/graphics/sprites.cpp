@@ -186,8 +186,9 @@ void Sprites::FlushSheets()
 void c------------------------------() {}
 */
 
+namespace Sprites {
 // ensure the given spritesheet is loaded
-static void Sprites::LoadSheetIfNeeded(int sheetno)
+static void LoadSheetIfNeeded(int sheetno)
 {
 	if (!spritesheet[sheetno])
 	{
@@ -199,14 +200,16 @@ static void Sprites::LoadSheetIfNeeded(int sheetno)
 		
 	}
 }
+}
 
 void Sprites::draw_in_batch(bool enabled)
 {
     batch_draw_enabled = enabled;
 }
 
+namespace Sprites {
 // master sprite drawing function
-static void Sprites::BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
+static void BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
 								int xoff, int yoff, int wd, int ht)
 {
 	LoadSheetIfNeeded(sprites[s].spritesheet);
@@ -231,7 +234,7 @@ static void Sprites::BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
                     wd, ht);
     }
 }
-
+}
 /*
 void c------------------------------() {}
 */

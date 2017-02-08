@@ -152,6 +152,13 @@ void UDCoreBoss::OnMapExit()
 void c------------------------------() {}
 */
 
+static void CreateSpinner(int x, int y)
+{
+	CreateObject(x, y, OBJ_UD_SPINNER);
+	CreateObject(x, y, OBJ_UD_SPINNER)->angle = 0x80;
+}
+
+
 void UDCoreBoss::Run(void)
 {
 	Object *o = main;
@@ -948,11 +955,6 @@ void ai_ud_smoke(Object *o)
 void c------------------------------() {}
 */
 
-static void CreateSpinner(int x, int y)
-{
-	CreateObject(x, y, OBJ_UD_SPINNER);
-	CreateObject(x, y, OBJ_UD_SPINNER)->angle = 0x80;
-}
 
 // spinny thing shot by rotators during Teeth phase.
 // they come in pairs.

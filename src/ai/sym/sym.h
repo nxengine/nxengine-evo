@@ -4,7 +4,6 @@
 
 void ai_null(Object *o);
 void ai_hvtrigger(Object *o);
-static void hv_project_beam(Object *o);
 void ai_xp(Object *o);
 void ai_powerup(Object *o);
 bool Handle_Falling_Left(Object *o);
@@ -14,7 +13,6 @@ void ai_save_point(Object *o);
 void ai_recharge(Object *o);
 void ai_chest_closed(Object *o);
 void ai_chest_open(Object *o);
-static void smoke_if_bonus_item(Object *o);
 void ai_lightning(Object *o);
 void ai_teleporter(Object *o);
 void ai_door(Object *o);

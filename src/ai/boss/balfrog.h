@@ -47,7 +47,6 @@ private:
 	} frog;
 };
 
-static void call_place_bboxes(void *balfrog);
 void ondeath_balfrog(Object *o);
 
 

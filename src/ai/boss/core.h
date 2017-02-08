@@ -24,7 +24,6 @@ private:
 
 void ai_core_front(Object *o);
 void ai_core_back(Object *o);
-static Object *CreateMinicore(Object *core);
 void ai_minicore(Object *o);
 void ai_minicore_shot(Object *o);
 void ai_core_ghostie(Object *o);

@@ -20,6 +20,96 @@ int mix_pos;
 int lockcount = 0;
 
 
+// add the contents of the chunk at head to the mix_buffer.
+// don't add more than bytes.
+// return the number of bytes that were added.
+static int AddBuffer(SSChannel *chan, int bytes)
+{
+	SSChunk *chunk = &chan->chunks[chan->head];
+	
+	if (bytes > chunk->bytelength)
+	{
+		bytes = chunk->bytelength;
+	}
+	
+	// don't copy past end of chunk
+	if (chunk->bytepos+bytes > chunk->bytelength)
+	{
+		// add it to list of finished chunks
+		chan->FinishedChunkUserdata[chan->nFinishedChunks++] = chunk->userdata;
+		
+		// only add what's left. and advance the head pointer to the next chunk.
+		bytes = chunk->bytelength - chunk->bytepos;
+		if (++chan->head >= MAX_QUEUED_CHUNKS) chan->head = 0;
+		
+		//stat("AddBuffer: reached end of chunk %d; new head is %d, and tail is %d", c, chan->head, chan->tail);
+	}
+	
+//	stat("%d: Channel %d: Copying %d bytes from chunk %d @ %08x -- pos=%d, len=%d", SDL_GetTicks(), cnn, bytes, c, chunk->bytebuffer, chunk->bytepos, chunk->bytelength);
+	memcpy(&mixbuffer[mix_pos], &chunk->bytebuffer[chunk->bytepos], bytes);
+	mix_pos += bytes;
+	chunk->bytepos += bytes;
+	
+	return bytes;
+}
+
+
+static void mixaudio(void *unused, uint8_t *stream, int len)
+{
+int bytes_copied;
+int bytestogo;
+int c;
+int i;
+
+#if SDL_VERSION_ATLEAST(1, 3, 0)
+	/* Need to initialize the stream in SDL 1.3+ */
+	memset(stream, spec.silence, len);
+#endif
+
+	// get data for all channels and add it to the mix
+	for(c=0;c<SS_NUM_CHANNELS;c++)
+	{
+		if (channel[c].head==channel[c].tail) continue;
+		
+		bytestogo = len;
+		mix_pos = 0;
+		while(bytestogo > 0)
+		{
+			bytes_copied = AddBuffer(&channel[c], bytestogo);
+			bytestogo -= bytes_copied;
+			
+			if (channel[c].head==channel[c].tail)
+			{		// ran out of chunks before buffer full
+				// clear remaining portion of mixbuffer
+				if (bytestogo)
+				{
+					memset(&mixbuffer[mix_pos], spec.silence, bytestogo);
+				}
+				
+				break;
+			}
+		}
+		
+		SDL_MixAudio(stream, mixbuffer, len, channel[c].volume);
+	}
+	
+	// tell any callbacks that had a chunk finish, that their chunk finished
+	for(c=0;c<SS_NUM_CHANNELS;c++)
+	{
+		if (channel[c].FinishedCB)
+		{
+			for(i=0;i<channel[c].nFinishedChunks;i++)
+			{
+				//stat("Telling channel %d's handler that chunk %d finished", c, channel[c].FinishedChunkUserdata[i]);
+				(*channel[c].FinishedCB)(c, channel[c].FinishedChunkUserdata[i]);
+			}
+		}
+		
+		channel[c].nFinishedChunks = 0;
+	}
+}
+
+
 char SSInit(void)
 {
 SDL_AudioSpec fmt;
@@ -288,91 +378,3 @@ void SSUnlockAudio(void)
 void c------------------------------() {}
 */
 
-// add the contents of the chunk at head to the mix_buffer.
-// don't add more than bytes.
-// return the number of bytes that were added.
-static int AddBuffer(SSChannel *chan, int bytes)
-{
-	SSChunk *chunk = &chan->chunks[chan->head];
-	
-	if (bytes > chunk->bytelength)
-	{
-		bytes = chunk->bytelength;
-	}
-	
-	// don't copy past end of chunk
-	if (chunk->bytepos+bytes > chunk->bytelength)
-	{
-		// add it to list of finished chunks
-		chan->FinishedChunkUserdata[chan->nFinishedChunks++] = chunk->userdata;
-		
-		// only add what's left. and advance the head pointer to the next chunk.
-		bytes = chunk->bytelength - chunk->bytepos;
-		if (++chan->head >= MAX_QUEUED_CHUNKS) chan->head = 0;
-		
-		//stat("AddBuffer: reached end of chunk %d; new head is %d, and tail is %d", c, chan->head, chan->tail);
-	}
-	
-//	stat("%d: Channel %d: Copying %d bytes from chunk %d @ %08x -- pos=%d, len=%d", SDL_GetTicks(), cnn, bytes, c, chunk->bytebuffer, chunk->bytepos, chunk->bytelength);
-	memcpy(&mixbuffer[mix_pos], &chunk->bytebuffer[chunk->bytepos], bytes);
-	mix_pos += bytes;
-	chunk->bytepos += bytes;
-	
-	return bytes;
-}
-
-
-static void mixaudio(void *unused, uint8_t *stream, int len)
-{
-int bytes_copied;
-int bytestogo;
-int c;
-int i;
-
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-	/* Need to initialize the stream in SDL 1.3+ */
-	memset(stream, spec.silence, len);
-#endif
-
-	// get data for all channels and add it to the mix
-	for(c=0;c<SS_NUM_CHANNELS;c++)
-	{
-		if (channel[c].head==channel[c].tail) continue;
-		
-		bytestogo = len;
-		mix_pos = 0;
-		while(bytestogo > 0)
-		{
-			bytes_copied = AddBuffer(&channel[c], bytestogo);
-			bytestogo -= bytes_copied;
-			
-			if (channel[c].head==channel[c].tail)
-			{		// ran out of chunks before buffer full
-				// clear remaining portion of mixbuffer
-				if (bytestogo)
-				{
-					memset(&mixbuffer[mix_pos], spec.silence, bytestogo);
-				}
-				
-				break;
-			}
-		}
-		
-		SDL_MixAudio(stream, mixbuffer, len, channel[c].volume);
-	}
-	
-	// tell any callbacks that had a chunk finish, that their chunk finished
-	for(c=0;c<SS_NUM_CHANNELS;c++)
-	{
-		if (channel[c].FinishedCB)
-		{
-			for(i=0;i<channel[c].nFinishedChunks;i++)
-			{
-				//stat("Telling channel %d's handler that chunk %d finished", c, channel[c].FinishedChunkUserdata[i]);
-				(*channel[c].FinishedCB)(c, channel[c].FinishedChunkUserdata[i]);
-			}
-		}
-		
-		channel[c].nFinishedChunks = 0;
-	}
-}

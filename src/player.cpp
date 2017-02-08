@@ -22,10 +22,19 @@ using namespace Sprites;
 
 
 Player *player = NULL;
-static void InitWeapon(int wpn, int l1, int l2, int l3, int maxammo=0);
+//static void InitWeapon(int wpn, int l1, int l2, int l3, int maxammo=0);
 
 bool pinputs[INPUT_COUNT];
 bool lastpinputs[INPUT_COUNT];
+
+static void InitWeapon(int wpn, int l1, int l2, int l3, int maxammo=0)
+{
+	player->weapons[wpn].max_xp[0] = l1;
+	player->weapons[wpn].max_xp[1] = l2;
+	player->weapons[wpn].max_xp[2] = l3;
+	player->weapons[wpn].maxammo = maxammo;
+}
+
 
 void PInitFirstTime()
 {
@@ -64,13 +73,6 @@ void PInitFirstTime()
 }
 
 
-static void InitWeapon(int wpn, int l1, int l2, int l3, int maxammo)
-{
-	player->weapons[wpn].max_xp[0] = l1;
-	player->weapons[wpn].max_xp[1] = l2;
-	player->weapons[wpn].max_xp[2] = l3;
-	player->weapons[wpn].maxammo = maxammo;
-}
 
 
 void InitPlayer(void)
@@ -1426,6 +1428,42 @@ void PDoRepel(void)
 void c------------------------------() {}
 */
 
+static bool RunScriptAtLocation(int x, int y)
+{
+	// top-to-bottom scan
+	for(int i=nOnscreenObjects-1; i>=0; i--)
+	{
+		Object *o = onscreen_objects[i];
+		
+		if (o->flags & FLAG_SCRIPTONACTIVATE)
+		{
+			if (x >= o->Left() && x <= o->Right() && \
+				y >= o->Top() && y <= o->Bottom())
+			{
+				StartScript(o->id2);
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+
+static bool RunScriptAtX(int x)
+{
+	if (RunScriptAtLocation(x, player->y + (8 * CSFI)) || \
+		RunScriptAtLocation(x, player->y + (14 * CSFI)) || \
+		RunScriptAtLocation(x, player->y + (2 * CSFI)))
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+
+
 // called when you press down.
 // Tries to find an SCRIPTONACTIVATE object you are standing near and activate it.
 // if it can't find anything to activate, spawns the "question mark" effect.
@@ -1455,38 +1493,6 @@ void PTryActivateScript()
 	effect(player->CenterX(), player->CenterY(), EFFECT_QMARK);
 }
 
-static bool RunScriptAtX(int x)
-{
-	if (RunScriptAtLocation(x, player->y + (8 * CSFI)) || \
-		RunScriptAtLocation(x, player->y + (14 * CSFI)) || \
-		RunScriptAtLocation(x, player->y + (2 * CSFI)))
-	{
-		return true;
-	}
-	
-	return false;
-}
-
-static bool RunScriptAtLocation(int x, int y)
-{
-	// top-to-bottom scan
-	for(int i=nOnscreenObjects-1; i>=0; i--)
-	{
-		Object *o = onscreen_objects[i];
-		
-		if (o->flags & FLAG_SCRIPTONACTIVATE)
-		{
-			if (x >= o->Left() && x <= o->Right() && \
-				y >= o->Top() && y <= o->Bottom())
-			{
-				StartScript(o->id2);
-				return true;
-			}
-		}
-	}
-	
-	return false;
-}
 
 /*
 void c------------------------------() {}

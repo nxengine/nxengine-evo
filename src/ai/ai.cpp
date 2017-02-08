@@ -215,28 +215,6 @@ void transfer_damage(Object *o, Object *target)
 void c------------------------------() {}
 */
 
-// do the "teleport in" effect for object o.
-// when complete, returns true.
-// this function uses o->timer and assume o->timer starts at 0.
-bool DoTeleportIn(Object *o, int slowness)
-{
-	if (teleffect(o, slowness, false))
-	{
-		o->clip_enable = false;
-		return true;
-	}
-	
-	return false;
-}
-
-// does a teleport out effect.
-// When complete, returns true.
-// this function uses o->timer and assume o->timer starts at 0.
-bool DoTeleportOut(Object *o, int slowness)
-{
-	return teleffect(o, slowness, true);
-}
-
 // common code for DoTeleportIn and DoTeleportOut
 // returns true when teleport is complete
 static bool teleffect(Object *o, int slowness, bool teleporting_out)
@@ -269,15 +247,33 @@ static bool teleffect(Object *o, int slowness, bool teleporting_out)
 	}
 }
 
+
+// do the "teleport in" effect for object o.
+// when complete, returns true.
+// this function uses o->timer and assume o->timer starts at 0.
+bool DoTeleportIn(Object *o, int slowness)
+{
+	if (teleffect(o, slowness, false))
+	{
+		o->clip_enable = false;
+		return true;
+	}
+	
+	return false;
+}
+
+// does a teleport out effect.
+// When complete, returns true.
+// this function uses o->timer and assume o->timer starts at 0.
+bool DoTeleportOut(Object *o, int slowness)
+{
+	return teleffect(o, slowness, true);
+}
+
+
 /*
 void c------------------------------() {}
 */
-
-void ai_animate1(Object *o) { if (++o->frame >= sprites[o->sprite].nframes) o->frame = 0; }
-void ai_animate2(Object *o) { simpleanim(o, 2); }
-void ai_animate3(Object *o) { simpleanim(o, 3); }
-void ai_animate4(Object *o) { simpleanim(o, 4); }
-void ai_animate5(Object *o) { simpleanim(o, 5); }
 
 static void simpleanim(Object *o, int spd)
 {
@@ -287,6 +283,14 @@ static void simpleanim(Object *o, int spd)
 		if (++o->frame >= sprites[o->sprite].nframes) o->frame = 0;
 	}
 }
+
+
+void ai_animate1(Object *o) { if (++o->frame >= sprites[o->sprite].nframes) o->frame = 0; }
+void ai_animate2(Object *o) { simpleanim(o, 2); }
+void ai_animate3(Object *o) { simpleanim(o, 3); }
+void ai_animate4(Object *o) { simpleanim(o, 4); }
+void ai_animate5(Object *o) { simpleanim(o, 5); }
+
 
 /*
 void c------------------------------() {}

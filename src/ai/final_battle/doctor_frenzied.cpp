@@ -67,100 +67,6 @@ INITFUNC(AIRoutines)
 void c------------------------------() {}
 */
 
-void ai_boss_doctor_frenzied(Object *o)
-{
-	//AIDEBUG;
-	
-	switch(o->state)
-	{
-		// fight begin/base state
-		case STATE_BASE:
-		{
-			o->flags |= FLAG_SHOOTABLE;
-			o->flags &= ~FLAG_INVULNERABLE;
-			
-			o->xinertia = 0;
-			o->frame = 1;
-			
-			o->timer = 0;
-			o->animtimer = 0;
-			
-			o->savedhp = o->hp;
-			o->state++;
-		}
-		case STATE_BASE+1:
-		{
-			o->yinertia += 0x80;
-			FACEPLAYER;
-			
-			// select frame
-			if (o->frame == 6)	// arms out
-			{
-				// must have done "redsplode" attack; leave alone for the duration
-			}
-			else if (!o->blockd)
-			{	// falling
-				o->frame = 4;
-			}
-			else
-			{	// panting animation
-				ANIMATE(10, 1, 2);
-				
-				// "redsplode" attack if possible
-				if ((o->savedhp - o->hp) > 20)
-				{
-					if (pdistlx(48 * CSFI) && player->blockd)
-						do_redsplode(o);
-				}
-			}
-			
-			// after a moment select next attack in the loop
-			if (++o->timer > 30 || (o->savedhp - o->hp) > 20)
-			{
-				o->state = attack_pattern[o->timer2];
-				o->timer = 0;
-				
-				// move to next state
-				if (attack_pattern[++o->timer2] == -1)
-					o->timer2 = 0;
-			}
-		}
-		break;
-	}
-	
-	run_jumps(o);
-	
-	run_red_dash(o);
-	run_mega_bats(o);
-	run_teleport(o);
-	run_init(o);
-	run_defeat(o);
-	
-	if (o->state < STATE_DISSOLVE)
-		run_red_drip(o);
-	
-	// set crystal follow position
-	// still set it on first 2 DEFEATED states (falling to ground)
-	// but not after that (alert: this seems pretty damn bug prone, fixme)
-	if (o->state >= STATE_BASE && o->state <= STATE_DEFEATED+1)
-	{
-		if (o->invisible)	// in middle of teleport: after tp out, before tp in
-		{
-			crystal_xmark = o->xmark;
-			crystal_ymark = o->ymark;
-		}
-		else
-		{
-			crystal_xmark = o->x;
-			crystal_ymark = o->y;
-		}
-	}
-	
-	if (o->yinertia > 0x5ff)
-		o->yinertia = 0x5ff;
-}
-
-
 static void run_jumps(Object *o)
 {
 	
@@ -684,6 +590,102 @@ static void run_red_drip(Object *o)
 		drip->angle = DOWN;
 	}
 }
+
+
+void ai_boss_doctor_frenzied(Object *o)
+{
+	//AIDEBUG;
+	
+	switch(o->state)
+	{
+		// fight begin/base state
+		case STATE_BASE:
+		{
+			o->flags |= FLAG_SHOOTABLE;
+			o->flags &= ~FLAG_INVULNERABLE;
+			
+			o->xinertia = 0;
+			o->frame = 1;
+			
+			o->timer = 0;
+			o->animtimer = 0;
+			
+			o->savedhp = o->hp;
+			o->state++;
+		}
+		case STATE_BASE+1:
+		{
+			o->yinertia += 0x80;
+			FACEPLAYER;
+			
+			// select frame
+			if (o->frame == 6)	// arms out
+			{
+				// must have done "redsplode" attack; leave alone for the duration
+			}
+			else if (!o->blockd)
+			{	// falling
+				o->frame = 4;
+			}
+			else
+			{	// panting animation
+				ANIMATE(10, 1, 2);
+				
+				// "redsplode" attack if possible
+				if ((o->savedhp - o->hp) > 20)
+				{
+					if (pdistlx(48 * CSFI) && player->blockd)
+						do_redsplode(o);
+				}
+			}
+			
+			// after a moment select next attack in the loop
+			if (++o->timer > 30 || (o->savedhp - o->hp) > 20)
+			{
+				o->state = attack_pattern[o->timer2];
+				o->timer = 0;
+				
+				// move to next state
+				if (attack_pattern[++o->timer2] == -1)
+					o->timer2 = 0;
+			}
+		}
+		break;
+	}
+	
+	run_jumps(o);
+	
+	run_red_dash(o);
+	run_mega_bats(o);
+	run_teleport(o);
+	run_init(o);
+	run_defeat(o);
+	
+	if (o->state < STATE_DISSOLVE)
+		run_red_drip(o);
+	
+	// set crystal follow position
+	// still set it on first 2 DEFEATED states (falling to ground)
+	// but not after that (alert: this seems pretty damn bug prone, fixme)
+	if (o->state >= STATE_BASE && o->state <= STATE_DEFEATED+1)
+	{
+		if (o->invisible)	// in middle of teleport: after tp out, before tp in
+		{
+			crystal_xmark = o->xmark;
+			crystal_ymark = o->ymark;
+		}
+		else
+		{
+			crystal_xmark = o->x;
+			crystal_ymark = o->y;
+		}
+	}
+	
+	if (o->yinertia > 0x5ff)
+		o->yinertia = 0x5ff;
+}
+
+
 
 
 /*

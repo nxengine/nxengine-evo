@@ -111,6 +111,52 @@ void ai_null(Object *o)
 	}
 }
 
+// project the Option 1 beam and set the hvtrigger's y1/y2 or x1/x2
+static void hv_project_beam(Object *o)
+{
+int tilex = (o->x / CSFI) / TILE_W;
+int tiley = (o->y / CSFI) / TILE_H;
+int x, y, t;
+	
+	if (!o->hvt.is_horizontal)
+	{
+		for(y=tiley;y>=0;y--)
+		{
+			t = map.tiles[tilex][y];
+			if (tileattr[t] & TA_SOLID) { y++; break; }
+		}
+		
+		o->hvt.y1 = (y * TILE_H) * CSFI;
+		
+		for(y=tiley;y<map.ysize;y++)
+		{
+			t = map.tiles[tilex][y];
+			if (tileattr[t] & TA_SOLID) { y--; break; }
+		}
+		
+		o->hvt.y2 = ((y * TILE_H) + (TILE_H - 1)) * CSFI;
+	}
+	else
+	{
+		for(x=tilex;x>=0;x--)
+		{
+			t = map.tiles[x][tiley];
+			if (tileattr[t] & TA_SOLID) { x++; break; }
+		}
+		
+		o->hvt.x1 = (x * TILE_W) * CSFI;
+		
+		for(x=tilex;x<map.xsize;x++)
+		{
+			t = map.tiles[x][tiley];
+			if (tileattr[t] & TA_SOLID) { x--; break; }
+		}
+		
+		o->hvt.x2 = ((x * TILE_W) + (TILE_W - 1)) * CSFI;
+	}
+}
+
+
 // H/V Trigger
 //
 // By default, triggers on vertical axis.
@@ -176,50 +222,6 @@ void ai_hvtrigger(Object *o)
 	}
 }
 
-// project the Option 1 beam and set the hvtrigger's y1/y2 or x1/x2
-static void hv_project_beam(Object *o)
-{
-int tilex = (o->x / CSFI) / TILE_W;
-int tiley = (o->y / CSFI) / TILE_H;
-int x, y, t;
-	
-	if (!o->hvt.is_horizontal)
-	{
-		for(y=tiley;y>=0;y--)
-		{
-			t = map.tiles[tilex][y];
-			if (tileattr[t] & TA_SOLID) { y++; break; }
-		}
-		
-		o->hvt.y1 = (y * TILE_H) * CSFI;
-		
-		for(y=tiley;y<map.ysize;y++)
-		{
-			t = map.tiles[tilex][y];
-			if (tileattr[t] & TA_SOLID) { y--; break; }
-		}
-		
-		o->hvt.y2 = ((y * TILE_H) + (TILE_H - 1)) * CSFI;
-	}
-	else
-	{
-		for(x=tilex;x>=0;x--)
-		{
-			t = map.tiles[x][tiley];
-			if (tileattr[t] & TA_SOLID) { x++; break; }
-		}
-		
-		o->hvt.x1 = (x * TILE_W) * CSFI;
-		
-		for(x=tilex;x<map.xsize;x++)
-		{
-			t = map.tiles[x][tiley];
-			if (tileattr[t] & TA_SOLID) { x--; break; }
-		}
-		
-		o->hvt.x2 = ((x * TILE_W) + (TILE_W - 1)) * CSFI;
-	}
-}
 
 
 /*
@@ -463,6 +465,19 @@ void ai_xp_capsule(Object *o)
 void c------------------------------() {}
 */
 
+// save points, recharges, and chests make smoke and jump in air for a moment
+// when spawned as a bonus item (e.g. after a boss fight). That they should do
+// this is indicated by the script setting it's direction to RIGHT.
+static void smoke_if_bonus_item(Object *o)
+{
+	if (o->dir == RIGHT)
+	{
+		SmokeClouds(o, 4, 8, 8);
+		o->yinertia = -0x200;
+	}
+}
+
+
 void ai_save_point(Object *o)
 {
 	if (o->state == 0)
@@ -555,17 +570,6 @@ void ai_chest_open(Object *o)
 	o->flags |= FLAG_SCRIPTONACTIVATE;
 }
 
-// save points, recharges, and chests make smoke and jump in air for a moment
-// when spawned as a bonus item (e.g. after a boss fight). That they should do
-// this is indicated by the script setting it's direction to RIGHT.
-static void smoke_if_bonus_item(Object *o)
-{
-	if (o->dir == RIGHT)
-	{
-		SmokeClouds(o, 4, 8, 8);
-		o->yinertia = -0x200;
-	}
-}
 
 /*
 void c------------------------------() {}

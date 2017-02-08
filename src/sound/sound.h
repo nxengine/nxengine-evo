@@ -101,7 +101,6 @@ void music(int songno);
 bool should_music_play(int songno, int musicmode);
 bool music_is_boss(int songno);
 void music_set_enabled(int newstate);
-static void start_track(int songno);
 int music_cursong();
 int music_lastsong();
 

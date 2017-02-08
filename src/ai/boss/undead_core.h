@@ -54,7 +54,6 @@ void onspawn_ud_minicore_idle(Object *o);
 void ai_udmini_platform(Object *o);
 void ai_ud_pellet(Object *o);
 void ai_ud_smoke(Object *o);
-static void CreateSpinner(int x, int y);
 void ai_ud_spinner(Object *o);
 void ai_ud_spinner_trail(Object *o);
 void ai_ud_blast(Object *o);

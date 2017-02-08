@@ -19,7 +19,6 @@ void ai_kanpachi_standing(Object *o);
 void ai_npc_momorin(Object *o);
 void ai_proximity_press_hoz(Object *o);
 void ai_rocket(Object *o);
-static Caret *SpawnRocketTrail(Object *o, int side);
 void ai_numahachi(Object *o);
 
 #endif

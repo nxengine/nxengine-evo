@@ -368,6 +368,16 @@ void BallosBoss::RunForm1(Object *o)
 	}
 }
 
+static void SetRotatorStates(int newstate)
+{
+	Object *o;
+	FOREACH_OBJECT(o)
+	{
+		if (o->type == OBJ_BALLOS_ROTATOR)
+			o->state = newstate;
+	}
+}
+
 
 // 2nd form as a stageboss.
 // the one where he spawns spiky rotators and circles around the room.
@@ -851,6 +861,58 @@ void BallosBoss::SetEyeStates(int newstate)
 void c------------------------------() {}
 */
 
+static void make_puff(int x, int y, int bd)
+{
+	Object *o = SmokePuff(x, y);
+	
+	// make sure the smoke puff is traveling away from floor/wall
+	switch(bd)
+	{
+		case LEFT:	o->yinertia = -abs(o->yinertia); break;
+		case UP:	o->xinertia = abs(o->xinertia); break;
+		case RIGHT: o->yinertia = abs(o->yinertia); break;
+		case DOWN:	o->xinertia = -abs(o->xinertia); break;
+	}
+}
+
+
+// spawns impact smokeclouds/skulls as the rotators hit the ground/walls
+static void spawn_impact_puffs(Object *o)
+{
+	Object *ballos = game.stageboss.object;
+	
+	#define SHORT		(8 * CSFI)
+	#define LONG		(12 * CSFI)
+	#define HITANGLE	12
+	static const struct
+	{
+		int wallangle;
+		int xoffs1, xoffs2;
+		int yoffs1, yoffs2;
+	}
+	hitdata[] =
+	{
+		{0x180, SHORT, -SHORT, -LONG, -LONG},		// RIGHT on ceiling
+		{0x80,  SHORT, -SHORT, LONG, LONG},		// LEFT on floor
+		{0x100, -LONG, -LONG, SHORT, -SHORT},		// UP left wall
+		{0x00,  LONG, LONG,   SHORT, -SHORT}		// DOWN right wall
+	};
+	
+	int bd = ballos->dirparam;
+	if (o->timer2 == hitdata[bd].wallangle + HITANGLE)
+	{
+		make_puff(o->x + hitdata[bd].xoffs1, o->y + hitdata[bd].yoffs1, bd);
+		make_puff(o->x + hitdata[bd].xoffs2, o->y + hitdata[bd].yoffs2, bd);
+		sound(SND_QUAKE);
+		
+		if (bd == RIGHT)		// on ceiling
+		{
+			CreateObject(o->x - SHORT, o->y - LONG, OBJ_BALLOS_SKULL);
+		}
+	}
+}
+
+
 void ai_ballos_rotator(Object *o)
 {
 	switch(o->state)
@@ -1045,66 +1107,8 @@ void aftermove_ballos_rotator(Object *o)
 }
 
 
-static void SetRotatorStates(int newstate)
-{
-	Object *o;
-	FOREACH_OBJECT(o)
-	{
-		if (o->type == OBJ_BALLOS_ROTATOR)
-			o->state = newstate;
-	}
-}
 
 
-// spawns impact smokeclouds/skulls as the rotators hit the ground/walls
-static void spawn_impact_puffs(Object *o)
-{
-	Object *ballos = game.stageboss.object;
-	
-	#define SHORT		(8 * CSFI)
-	#define LONG		(12 * CSFI)
-	#define HITANGLE	12
-	static const struct
-	{
-		int wallangle;
-		int xoffs1, xoffs2;
-		int yoffs1, yoffs2;
-	}
-	hitdata[] =
-	{
-		{0x180, SHORT, -SHORT, -LONG, -LONG},		// RIGHT on ceiling
-		{0x80,  SHORT, -SHORT, LONG, LONG},		// LEFT on floor
-		{0x100, -LONG, -LONG, SHORT, -SHORT},		// UP left wall
-		{0x00,  LONG, LONG,   SHORT, -SHORT}		// DOWN right wall
-	};
-	
-	int bd = ballos->dirparam;
-	if (o->timer2 == hitdata[bd].wallangle + HITANGLE)
-	{
-		make_puff(o->x + hitdata[bd].xoffs1, o->y + hitdata[bd].yoffs1, bd);
-		make_puff(o->x + hitdata[bd].xoffs2, o->y + hitdata[bd].yoffs2, bd);
-		sound(SND_QUAKE);
-		
-		if (bd == RIGHT)		// on ceiling
-		{
-			CreateObject(o->x - SHORT, o->y - LONG, OBJ_BALLOS_SKULL);
-		}
-	}
-}
-
-static void make_puff(int x, int y, int bd)
-{
-	Object *o = SmokePuff(x, y);
-	
-	// make sure the smoke puff is traveling away from floor/wall
-	switch(bd)
-	{
-		case LEFT:	o->yinertia = -abs(o->yinertia); break;
-		case UP:	o->xinertia = abs(o->xinertia); break;
-		case RIGHT: o->yinertia = abs(o->yinertia); break;
-		case DOWN:	o->xinertia = -abs(o->xinertia); break;
-	}
-}
 
 /*
 void c------------------------------() {}

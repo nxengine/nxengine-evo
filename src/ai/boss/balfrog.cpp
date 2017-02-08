@@ -115,6 +115,12 @@ void BalfrogBoss::OnMapEntry(void)
 void c------------------------------() {}
 */
 
+static void call_place_bboxes(void *balfrog)
+{
+	((BalfrogBoss *)balfrog)->place_bboxes();
+}
+
+
 void BalfrogBoss::Run()
 {
 	if (!o) return;
@@ -144,10 +150,6 @@ void BalfrogBoss::Run()
 void c------------------------------() {}
 */
 
-static void call_place_bboxes(void *balfrog)
-{
-	((BalfrogBoss *)balfrog)->place_bboxes();
-}
 
 void BalfrogBoss::place_bboxes()
 {

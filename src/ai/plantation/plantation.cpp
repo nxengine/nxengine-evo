@@ -994,6 +994,28 @@ void ai_proximity_press_hoz(Object *o)
 void c------------------------------() {}
 */
 
+static Caret *SpawnRocketTrail(Object *o, int side)
+{
+Caret *trail;
+int x, y;
+
+	if (side == LEFT)
+	{
+		x = o->ActionPointX();
+		y = o->ActionPointY();
+	}
+	else
+	{
+		x = o->ActionPoint2X();
+		y = o->ActionPoint2Y();
+	}
+	
+	trail = effect(x, y, EFFECT_SMOKETRAIL);
+	trail->yinertia = 0x400;
+	return trail;
+}
+
+
 void ai_rocket(Object *o)
 {
 	
@@ -1099,26 +1121,6 @@ void ai_rocket(Object *o)
 	LIMITY(0x5ff);
 }
 
-static Caret *SpawnRocketTrail(Object *o, int side)
-{
-Caret *trail;
-int x, y;
-
-	if (side == LEFT)
-	{
-		x = o->ActionPointX();
-		y = o->ActionPointY();
-	}
-	else
-	{
-		x = o->ActionPoint2X();
-		y = o->ActionPoint2Y();
-	}
-	
-	trail = effect(x, y, EFFECT_SMOKETRAIL);
-	trail->yinertia = 0x400;
-	return trail;
-}
 
 /*
 void c------------------------------() {}

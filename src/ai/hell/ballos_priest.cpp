@@ -60,114 +60,243 @@ INITFUNC(AIRoutines)
 void c------------------------------() {}
 */
 
-void ai_ballos_priest(Object *o)
+// defeat sequence
+// he flies away, then the script triggers the next form
+static void run_defeated(Object *o)
 {
-	//AIDEBUG;
-	//debug("timer3: %d", o->timer3);
-	
-	/*if (o->state < 1000)
-	{
-		FindObjectByID2(500)->Delete();
-		StartScript(900);
-		return;
-	}*/
-	
-	run_intro(o);
-	run_defeated(o);
-	
-	run_flight(o);
-	run_lightning(o);
-	
 	switch(o->state)
 	{
-		// show "ninja" stance for "timer" ticks,
-		// then prepare to fly horizontally
-		case BP_FIGHTING_STANCE:
+		// defeated (script triggered; constant value 1000)
+		case BP_DEFEATED:
 		{
-			o->frame = 1;
-			o->animtimer = 0;
 			o->state++;
+			o->timer = 0;
+			o->frame = 10;
 			
-			o->damage = DMG_NORMAL;
-			o->savedhp = o->hp;
+			o->flags &= ~FLAG_SHOOTABLE;
+			effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
+			SmokeClouds(o, 16, 16, 16);
+			sound(SND_BIG_CRASH);
+			
+			o->xmark = o->x;
+			o->xinertia = 0;
 		}
-		case BP_FIGHTING_STANCE+1:
+		case BP_DEFEATED+1:		// fall to ground, shaking
 		{
-			ANIMATE(10, 1, 2);
-			FACEPLAYER;
+			o->yinertia += 0x20;
+			LIMITY(0x5ff);
 			
-			if (--o->timer < 0 || (o->savedhp - o->hp) > 50)
+			o->x = o->xmark;
+			if (++o->timer & 2) o->x += (1 * CSFI);
+						   else o->x -= (1 * CSFI);
+			
+			if (o->blockd && o->yinertia >= 0)
 			{
-				if (++o->timer3 > 4)
+				if (++o->timer > 150)
 				{
-					o->state = BP_LIGHTNING_STRIKE;
-					o->timer3 = 0;
-				}
-				else
-				{
-					o->state = BP_PREPARE_FLY_LR;
-					o->timer2 = 0;
+					o->state++;
+					o->timer = 0;
+					o->frame = 3;
+					FACEPLAYER;
 				}
 			}
 		}
 		break;
 		
-		// prepare for flight attack
-		case BP_PREPARE_FLY_LR:
-		case BP_PREPARE_FLY_UD:
+		case BP_DEFEATED+2:		// prepare to jump
 		{
-			o->timer2++;
-			o->state++;
-			
-			o->timer = 0;
-			o->frame = 3;	// fists in
-			o->damage = DMG_NORMAL;
-			
-			// Fly/UD faces player only once, at start
-			FACEPLAYER;
-		}
-		case BP_PREPARE_FLY_LR+1:
-		{
-			FACEPLAYER;
-		}
-		case BP_PREPARE_FLY_UD+1:
-		{
-			// braking, if we came here out of another fly state
-			o->xinertia *= 8; o->xinertia /= 9;
-			o->yinertia *= 8; o->yinertia /= 9;
-			
-			if (++o->timer > 20)
+			if (++o->timer > 30)
 			{
-				sound(SND_FUNNY_EXPLODE);
+				o->yinertia = -0xA00;
 				
-				if (o->state == BP_PREPARE_FLY_LR+1)
+				o->state++;
+				o->frame = 8;
+				o->flags |= FLAG_IGNORE_SOLID;
+			}
+		}
+		break;
+		
+		case BP_DEFEATED+3:		// jumping
+		{
+			ANIMATE(1, 8, 9);
+			o->dir = LEFT;		// up frame
+			
+			if (o->y < 0)
+			{
+				flashscreen.Start();
+				sound(SND_TELEPORT);
+				
+				o->xinertia = 0;
+				o->yinertia = 0;
+				o->state++;
+			}
+		}
+		break;
+	}
+}
+
+// intro cinematic sequence
+static void run_intro(Object *o)
+{
+	switch(o->state)
+	{
+		// idle/talking to player
+		case 0:
+		{
+			// setup
+			o->y -= (6 * CSFI);
+			o->dir = LEFT;
+			o->damage = 0;
+			
+			// ensure copy pfbox first time
+			o->dirparam = -1;
+			
+			// closed eyes/mouth
+			o->linkedobject = CreateObject(o->x, o->y - (16 * CSFI), OBJ_BALLOS_SMILE);
+			o->state = 1;
+		}
+		break;
+		
+		// fight begin
+		// he smiles, then enters base attack state
+		case 10:
+		{
+			o->timer++;
+			
+			// animate smile/open eyes
+			if (o->timer > 50)
+			{
+				Object *smile = o->linkedobject;
+				if (smile)
 				{
-					o->state = BP_FLY_LR;		// flying left/right
+					if (++smile->animtimer > 4)
+					{
+						smile->animtimer = 0;
+						smile->frame++;
+						
+						if (smile->frame > 2)
+							smile->Delete();
+					}
 				}
-				else if (player->y < (o->y + (12 * CSFI)))
+				
+				if (o->timer > 100)
 				{
-					o->state = BP_FLY_UP;		// flying up
-				}
-				else
-				{
-					o->state = BP_FLY_DOWN;		// flying down
+					o->state = BP_FIGHTING_STANCE;
+					o->timer = 150;
+					
+					o->flags |= FLAG_SHOOTABLE;
+					o->flags &= ~FLAG_INVULNERABLE;
 				}
 			}
 		}
 		break;
 	}
-	
-	// his bounding box is in a slightly different place on L/R frames
-	if (o->dirparam != o->dir)
+}
+
+// his lightning-strike attack
+static void run_lightning(Object *o)
+{
+	switch(o->state)
 	{
-		sprites[o->sprite].bbox = sprites[o->sprite].frame[0].dir[o->dir].pf_bbox;
-		o->dirparam = o->dir;
+		// lightning strikes (targeting player)
+		case BP_LIGHTNING_STRIKE:
+		{
+			o->xmark = player->x;
+			o->yinertia = -0x600;
+			
+			o->timer = 0;
+			o->timer2 = 0;
+			o->animtimer = 0;
+			
+			o->frame = 4;		// facing screen
+			o->dir = LEFT;		// not flashing
+			
+			o->state++;
+		}
+		case BP_LIGHTNING_STRIKE+1:
+		{
+			ANIMATE(1, 4, 5);
+			
+			o->xinertia += (o->x < o->xmark) ? 0x40 : -0x40;
+			o->yinertia += (o->y < FLOAT_Y) ? 0x40 : -0x40;
+			LIMITX(0x400);
+			LIMITY(0x400);
+			
+			// run firing
+			if (++o->timer > 200)
+			{
+				int pos = (o->timer % 40);
+				
+				if (pos == 1)
+				{
+					// spawn lightning target
+					CreateObject(player->CenterX(), LIGHTNING_Y, OBJ_BALLOS_TARGET)->dir = LEFT;
+					o->dir = RIGHT;		// switch to flashing frames
+					o->animtimer = 0;
+					
+					// after 8 attacks, switch to even-spaced strikes
+					if (++o->timer2 >= 8)
+					{
+						o->xinertia = 0;
+						o->yinertia = 0;
+						
+						o->dir = RIGHT;		// flashing
+						o->frame = 5;		// flash red then white during screen flash
+						o->animtimer = 1;	// desync animation from screen flashes so it's visible
+						
+						o->state++;
+						o->timer = 0;
+						o->timer2 = 0;
+					}
+				}
+				else if (pos == 20)
+				{
+					o->dir = LEFT;		// stop flashing
+				}
+			}
+		}
+		break;
+		
+		// lightning strikes (evenly-spaced everywhere)
+		case BP_LIGHTNING_STRIKE+2:
+		{
+			ANIMATE(1, 4, 5);
+			o->timer++;
+			
+			if (o->timer == 40)
+				flashscreen.Start();
+			
+			if (o->timer > 50)
+			{
+				if ((o->timer % 10) == 1)
+				{
+					CreateObject((o->timer2 * TILE_W) * CSFI, \
+								 LIGHTNING_Y, OBJ_BALLOS_TARGET)->dir = LEFT;
+					o->timer2 += 4;
+					
+					if (o->timer2 >= 40)
+						o->state = BP_RETURN_TO_GROUND;
+				}
+			}
+		}
+		break;
 	}
 }
 
-/*
-void c------------------------------() {}
-*/
+// creates the two bone spawners which appear when he crashes into the floor or ceiling.
+// pass UP if he has hit the ceiling, DOWN if he has hit the floor.
+static void spawn_bones(Object *o, int dir)
+{
+int y;
+
+	if (dir == UP)
+		y = (o->y - (12 * CSFI));
+	else
+		y = (o->y + (12 * CSFI));
+	
+	CreateObject(o->x - (12 * CSFI), y, OBJ_BALLOS_BONE_SPAWNER)->dir = LEFT;
+	CreateObject(o->x + (12 * CSFI), y, OBJ_BALLOS_BONE_SPAWNER)->dir = RIGHT;
+}
 
 // handles his "looping" flight/rush attacks
 static void run_flight(Object *o)
@@ -372,257 +501,113 @@ static void run_flight(Object *o)
 }
 
 
-// creates the two bone spawners which appear when he crashes into the floor or ceiling.
-// pass UP if he has hit the ceiling, DOWN if he has hit the floor.
-static void spawn_bones(Object *o, int dir)
-{
-int y;
 
-	if (dir == UP)
-		y = (o->y - (12 * CSFI));
-	else
-		y = (o->y + (12 * CSFI));
+
+void ai_ballos_priest(Object *o)
+{
+	//AIDEBUG;
+	//debug("timer3: %d", o->timer3);
 	
-	CreateObject(o->x - (12 * CSFI), y, OBJ_BALLOS_BONE_SPAWNER)->dir = LEFT;
-	CreateObject(o->x + (12 * CSFI), y, OBJ_BALLOS_BONE_SPAWNER)->dir = RIGHT;
-}
-
-/*
-void c------------------------------() {}
-*/
-
-// his lightning-strike attack
-static void run_lightning(Object *o)
-{
+	/*if (o->state < 1000)
+	{
+		FindObjectByID2(500)->Delete();
+		StartScript(900);
+		return;
+	}*/
+	
+	run_intro(o);
+	run_defeated(o);
+	
+	run_flight(o);
+	run_lightning(o);
+	
 	switch(o->state)
 	{
-		// lightning strikes (targeting player)
-		case BP_LIGHTNING_STRIKE:
+		// show "ninja" stance for "timer" ticks,
+		// then prepare to fly horizontally
+		case BP_FIGHTING_STANCE:
 		{
-			o->xmark = player->x;
-			o->yinertia = -0x600;
-			
-			o->timer = 0;
-			o->timer2 = 0;
+			o->frame = 1;
 			o->animtimer = 0;
-			
-			o->frame = 4;		// facing screen
-			o->dir = LEFT;		// not flashing
-			
 			o->state++;
+			
+			o->damage = DMG_NORMAL;
+			o->savedhp = o->hp;
 		}
-		case BP_LIGHTNING_STRIKE+1:
+		case BP_FIGHTING_STANCE+1:
 		{
-			ANIMATE(1, 4, 5);
+			ANIMATE(10, 1, 2);
+			FACEPLAYER;
 			
-			o->xinertia += (o->x < o->xmark) ? 0x40 : -0x40;
-			o->yinertia += (o->y < FLOAT_Y) ? 0x40 : -0x40;
-			LIMITX(0x400);
-			LIMITY(0x400);
-			
-			// run firing
-			if (++o->timer > 200)
+			if (--o->timer < 0 || (o->savedhp - o->hp) > 50)
 			{
-				int pos = (o->timer % 40);
-				
-				if (pos == 1)
+				if (++o->timer3 > 4)
 				{
-					// spawn lightning target
-					CreateObject(player->CenterX(), LIGHTNING_Y, OBJ_BALLOS_TARGET)->dir = LEFT;
-					o->dir = RIGHT;		// switch to flashing frames
-					o->animtimer = 0;
-					
-					// after 8 attacks, switch to even-spaced strikes
-					if (++o->timer2 >= 8)
-					{
-						o->xinertia = 0;
-						o->yinertia = 0;
-						
-						o->dir = RIGHT;		// flashing
-						o->frame = 5;		// flash red then white during screen flash
-						o->animtimer = 1;	// desync animation from screen flashes so it's visible
-						
-						o->state++;
-						o->timer = 0;
-						o->timer2 = 0;
-					}
+					o->state = BP_LIGHTNING_STRIKE;
+					o->timer3 = 0;
 				}
-				else if (pos == 20)
+				else
 				{
-					o->dir = LEFT;		// stop flashing
+					o->state = BP_PREPARE_FLY_LR;
+					o->timer2 = 0;
 				}
 			}
 		}
 		break;
 		
-		// lightning strikes (evenly-spaced everywhere)
-		case BP_LIGHTNING_STRIKE+2:
+		// prepare for flight attack
+		case BP_PREPARE_FLY_LR:
+		case BP_PREPARE_FLY_UD:
 		{
-			ANIMATE(1, 4, 5);
-			o->timer++;
-			
-			if (o->timer == 40)
-				flashscreen.Start();
-			
-			if (o->timer > 50)
-			{
-				if ((o->timer % 10) == 1)
-				{
-					CreateObject((o->timer2 * TILE_W) * CSFI, \
-								 LIGHTNING_Y, OBJ_BALLOS_TARGET)->dir = LEFT;
-					o->timer2 += 4;
-					
-					if (o->timer2 >= 40)
-						o->state = BP_RETURN_TO_GROUND;
-				}
-			}
-		}
-		break;
-	}
-}
-
-/*
-void c------------------------------() {}
-*/
-
-// intro cinematic sequence
-static void run_intro(Object *o)
-{
-	switch(o->state)
-	{
-		// idle/talking to player
-		case 0:
-		{
-			// setup
-			o->y -= (6 * CSFI);
-			o->dir = LEFT;
-			o->damage = 0;
-			
-			// ensure copy pfbox first time
-			o->dirparam = -1;
-			
-			// closed eyes/mouth
-			o->linkedobject = CreateObject(o->x, o->y - (16 * CSFI), OBJ_BALLOS_SMILE);
-			o->state = 1;
-		}
-		break;
-		
-		// fight begin
-		// he smiles, then enters base attack state
-		case 10:
-		{
-			o->timer++;
-			
-			// animate smile/open eyes
-			if (o->timer > 50)
-			{
-				Object *smile = o->linkedobject;
-				if (smile)
-				{
-					if (++smile->animtimer > 4)
-					{
-						smile->animtimer = 0;
-						smile->frame++;
-						
-						if (smile->frame > 2)
-							smile->Delete();
-					}
-				}
-				
-				if (o->timer > 100)
-				{
-					o->state = BP_FIGHTING_STANCE;
-					o->timer = 150;
-					
-					o->flags |= FLAG_SHOOTABLE;
-					o->flags &= ~FLAG_INVULNERABLE;
-				}
-			}
-		}
-		break;
-	}
-}
-
-
-// defeat sequence
-// he flies away, then the script triggers the next form
-static void run_defeated(Object *o)
-{
-	switch(o->state)
-	{
-		// defeated (script triggered; constant value 1000)
-		case BP_DEFEATED:
-		{
+			o->timer2++;
 			o->state++;
+			
 			o->timer = 0;
-			o->frame = 10;
+			o->frame = 3;	// fists in
+			o->damage = DMG_NORMAL;
 			
-			o->flags &= ~FLAG_SHOOTABLE;
-			effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
-			SmokeClouds(o, 16, 16, 16);
-			sound(SND_BIG_CRASH);
-			
-			o->xmark = o->x;
-			o->xinertia = 0;
+			// Fly/UD faces player only once, at start
+			FACEPLAYER;
 		}
-		case BP_DEFEATED+1:		// fall to ground, shaking
+		case BP_PREPARE_FLY_LR+1:
 		{
-			o->yinertia += 0x20;
-			LIMITY(0x5ff);
+			FACEPLAYER;
+		}
+		case BP_PREPARE_FLY_UD+1:
+		{
+			// braking, if we came here out of another fly state
+			o->xinertia *= 8; o->xinertia /= 9;
+			o->yinertia *= 8; o->yinertia /= 9;
 			
-			o->x = o->xmark;
-			if (++o->timer & 2) o->x += (1 * CSFI);
-						   else o->x -= (1 * CSFI);
-			
-			if (o->blockd && o->yinertia >= 0)
+			if (++o->timer > 20)
 			{
-				if (++o->timer > 150)
+				sound(SND_FUNNY_EXPLODE);
+				
+				if (o->state == BP_PREPARE_FLY_LR+1)
 				{
-					o->state++;
-					o->timer = 0;
-					o->frame = 3;
-					FACEPLAYER;
+					o->state = BP_FLY_LR;		// flying left/right
+				}
+				else if (player->y < (o->y + (12 * CSFI)))
+				{
+					o->state = BP_FLY_UP;		// flying up
+				}
+				else
+				{
+					o->state = BP_FLY_DOWN;		// flying down
 				}
 			}
 		}
 		break;
-		
-		case BP_DEFEATED+2:		// prepare to jump
-		{
-			if (++o->timer > 30)
-			{
-				o->yinertia = -0xA00;
-				
-				o->state++;
-				o->frame = 8;
-				o->flags |= FLAG_IGNORE_SOLID;
-			}
-		}
-		break;
-		
-		case BP_DEFEATED+3:		// jumping
-		{
-			ANIMATE(1, 8, 9);
-			o->dir = LEFT;		// up frame
-			
-			if (o->y < 0)
-			{
-				flashscreen.Start();
-				sound(SND_TELEPORT);
-				
-				o->xinertia = 0;
-				o->yinertia = 0;
-				o->state++;
-			}
-		}
-		break;
+	}
+	
+	// his bounding box is in a slightly different place on L/R frames
+	if (o->dirparam != o->dir)
+	{
+		sprites[o->sprite].bbox = sprites[o->sprite].frame[0].dir[o->dir].pf_bbox;
+		o->dirparam = o->dir;
 	}
 }
 
-
-/*
-void c------------------------------() {}
-*/
 
 // targeter for lightning strikes
 void ai_ballos_target(Object *o)

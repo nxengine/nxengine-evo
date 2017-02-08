@@ -119,6 +119,27 @@ void StopLoopSounds(void)
 void c------------------------------() {}
 */
 
+static void start_track(int songno)
+{
+char fname[MAXPATHLEN];
+
+	if (songno == 0)
+	{
+		org_stop();
+		return;
+	}
+	
+	strcpy(fname, org_dir);
+	strcat(fname, org_names[songno]);
+	strcat(fname, ".org");
+	
+	if (!org_load(fname))
+	{
+		org_start(0);
+	}
+}
+
+
 void music(int songno)
 {
 	if (songno == cursong)
@@ -183,25 +204,6 @@ void music_set_enabled(int newstate)
 	}
 }
 
-static void start_track(int songno)
-{
-char fname[MAXPATHLEN];
-
-	if (songno == 0)
-	{
-		org_stop();
-		return;
-	}
-	
-	strcpy(fname, org_dir);
-	strcat(fname, org_names[songno]);
-	strcat(fname, ".org");
-	
-	if (!org_load(fname))
-	{
-		org_start(0);
-	}
-}
 
 int music_cursong()		{ return cursong; }
 int music_lastsong() 	{ return lastsong; }

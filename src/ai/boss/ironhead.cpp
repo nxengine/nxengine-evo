@@ -67,6 +67,19 @@ void IronheadBoss::OnMapExit()
 void c------------------------------() {}
 */
 
+static void ironh_smokecloud(Object *o)
+{
+Object *smoke;
+
+	smoke = CreateObject(o->CenterX() + (random(-128, 128) * CSFI), \
+						 o->CenterY() + (random(-64, 64) * CSFI),
+						 OBJ_SMOKE_CLOUD);
+	
+	smoke->xinertia = random(-128, 128);
+	smoke->yinertia = random(-128, 128);
+}
+
+
 void IronheadBoss::Run(void)
 {
 	if (!o) return;
@@ -224,17 +237,6 @@ void IronheadBoss::Run(void)
 	}
 }
 
-static void ironh_smokecloud(Object *o)
-{
-Object *smoke;
-
-	smoke = CreateObject(o->CenterX() + (random(-128, 128) * CSFI), \
-						 o->CenterY() + (random(-64, 64) * CSFI),
-						 OBJ_SMOKE_CLOUD);
-	
-	smoke->xinertia = random(-128, 128);
-	smoke->yinertia = random(-128, 128);
-}
 
 void ondeath_ironhead(Object *o)
 {

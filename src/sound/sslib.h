@@ -49,7 +49,5 @@ void SSAbortChannelByUserData(int ud);
 void SSSetVolume(int c, int newvol);
 void SSLockAudio(void);
 void SSUnlockAudio(void);
-static int AddBuffer(SSChannel *chan, int bytes);
-static void mixaudio(void *unused, uint8_t *stream, int len);
 
 #endif

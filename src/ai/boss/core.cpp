@@ -75,6 +75,20 @@ INITFUNC(AIRoutines)
 void c------------------------------() {}
 */
 
+static Object *CreateMinicore(Object *core)
+{
+Object *o;
+
+	o = CreateObject(0, 0, OBJ_MINICORE);
+	o->linkedobject = core;
+	o->flags = (FLAG_SHOOTABLE | FLAG_INVULNERABLE | FLAG_IGNORE_SOLID);
+	o->hp = 1000;
+	o->state = MC_SLEEP;
+	
+	return o;
+}
+
+
 // called at the entry to the Core room.
 // initilize all the pieces of the Core boss.
 void CoreBoss::OnMapEntry(void)
@@ -476,18 +490,6 @@ void ai_core_back(Object *o)
 void c------------------------------() {}
 */
 
-static Object *CreateMinicore(Object *core)
-{
-Object *o;
-
-	o = CreateObject(0, 0, OBJ_MINICORE);
-	o->linkedobject = core;
-	o->flags = (FLAG_SHOOTABLE | FLAG_INVULNERABLE | FLAG_IGNORE_SOLID);
-	o->hp = 1000;
-	o->state = MC_SLEEP;
-	
-	return o;
-}
 
 void ai_minicore(Object *o)
 {

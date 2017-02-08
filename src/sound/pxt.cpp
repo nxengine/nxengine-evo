@@ -594,6 +594,30 @@ int pxt_Play(int chan, int slot, char loop)
 	return pxt_PlayWithCallback(chan, slot, loop, NULL);
 }
 
+static void pxtSoundDone(int chan, int slot)
+{
+	sound_fx[slot].channel = -1;
+	if (sound_fx[slot].DoneCallback)
+	{
+		(*sound_fx[slot].DoneCallback)(chan, slot);
+	}
+}
+
+static void pxtLooper(int chan, int slot)
+{
+	if (sound_fx[slot].loops_left)
+	{
+		SSEnqueueChunk(chan, sound_fx[slot].buffer, sound_fx[slot].len, slot, pxtLooper);
+	}
+	else
+	{
+		pxtSoundDone(chan, slot);
+	}
+	
+	if (sound_fx[slot].loops_left > 0) sound_fx[slot].loops_left--;
+}
+
+
 int pxt_PlayWithCallback(int chan, int slot, char loop, void (*FinishedCB)(int, int))
 {
 	if (sound_fx[slot].buffer)
@@ -630,28 +654,6 @@ int pxt_PlayWithCallback(int chan, int slot, char loop, void (*FinishedCB)(int, 
 	}
 }
 
-static void pxtSoundDone(int chan, int slot)
-{
-	sound_fx[slot].channel = -1;
-	if (sound_fx[slot].DoneCallback)
-	{
-		(*sound_fx[slot].DoneCallback)(chan, slot);
-	}
-}
-
-static void pxtLooper(int chan, int slot)
-{
-	if (sound_fx[slot].loops_left)
-	{
-		SSEnqueueChunk(chan, sound_fx[slot].buffer, sound_fx[slot].len, slot, pxtLooper);
-	}
-	else
-	{
-		pxtSoundDone(chan, slot);
-	}
-	
-	if (sound_fx[slot].loops_left > 0) sound_fx[slot].loops_left--;
-}
 
 void pxt_Stop(int slot)
 {	/// possible threading issues here? i'm not sure if it's important enough
@@ -667,6 +669,73 @@ void pxt_Stop(int slot)
 char pxt_IsPlaying(int slot)
 {
 	return (sound_fx[slot].channel != -1);
+}
+
+
+// attempts to load all the PXT's out of the given cache file.
+// if succesful, returns 0.
+static char LoadFXCache(const char *fname, int top)
+{
+FILE *fp;
+int slot;
+uint32_t magick;
+stPXSound snd;
+
+	fp = fopen(fname, "rb");
+	if (!fp)
+	{
+		stat("LoadFXCache: audio cache %s not exist", fname);
+		return 1;
+	}
+	
+	// I don't use endian-agnostic fgetl as this file is endian-specific and we
+	// want the check to fail if the file were moved from a little-endian to
+	// big-endian system or vice-versa.
+	fread(&magick, sizeof(magick), 1, fp);
+	if (magick != PXCACHE_MAGICK)
+	{
+		stat("LoadFXCache: %s is incorrect format: expected %08x, got %08x", fname, PXCACHE_MAGICK, magick);
+		fclose(fp);
+		return 1;
+	}
+	
+	if (fgeti(fp) != top)
+	{
+		stat("LoadFXCache: # of sounds has changed since cache creation");
+		fclose(fp);
+		return 1;
+	}
+	
+	int allocd_size = 0;
+	snd.final_buffer = NULL;
+	
+	stat("LoadFXCache: restoring pxts from cache");
+	for(;;)
+	{
+		snd.final_size = fgetl(fp);
+		slot = fgetc(fp);
+		if (slot == -1) break;
+		
+		if (snd.final_size > allocd_size)
+		{
+			allocd_size = (snd.final_size * 10);
+			
+			if (snd.final_buffer) free(snd.final_buffer);
+			snd.final_buffer = (signed char *)malloc(allocd_size);
+			if (!snd.final_buffer)
+			{
+				staterr("LoadFXCache: out of memory!");
+				return 1;
+			}
+		}
+		
+		fread(snd.final_buffer, snd.final_size, 1, fp);
+		pxt_PrepareToPlay(&snd, slot);
+	}
+	
+	load_top = slot;
+	free(snd.final_buffer);
+	return 0;
 }
 
 
@@ -744,71 +813,6 @@ FILE *fp = NULL;
 }
 
 
-// attempts to load all the PXT's out of the given cache file.
-// if succesful, returns 0.
-static char LoadFXCache(const char *fname, int top)
-{
-FILE *fp;
-int slot;
-uint32_t magick;
-stPXSound snd;
-
-	fp = fopen(fname, "rb");
-	if (!fp)
-	{
-		stat("LoadFXCache: audio cache %s not exist", fname);
-		return 1;
-	}
-	
-	// I don't use endian-agnostic fgetl as this file is endian-specific and we
-	// want the check to fail if the file were moved from a little-endian to
-	// big-endian system or vice-versa.
-	fread(&magick, sizeof(magick), 1, fp);
-	if (magick != PXCACHE_MAGICK)
-	{
-		stat("LoadFXCache: %s is incorrect format: expected %08x, got %08x", fname, PXCACHE_MAGICK, magick);
-		fclose(fp);
-		return 1;
-	}
-	
-	if (fgeti(fp) != top)
-	{
-		stat("LoadFXCache: # of sounds has changed since cache creation");
-		fclose(fp);
-		return 1;
-	}
-	
-	int allocd_size = 0;
-	snd.final_buffer = NULL;
-	
-	stat("LoadFXCache: restoring pxts from cache");
-	for(;;)
-	{
-		snd.final_size = fgetl(fp);
-		slot = fgetc(fp);
-		if (slot == -1) break;
-		
-		if (snd.final_size > allocd_size)
-		{
-			allocd_size = (snd.final_size * 10);
-			
-			if (snd.final_buffer) free(snd.final_buffer);
-			snd.final_buffer = (signed char *)malloc(allocd_size);
-			if (!snd.final_buffer)
-			{
-				staterr("LoadFXCache: out of memory!");
-				return 1;
-			}
-		}
-		
-		fread(snd.final_buffer, snd.final_size, 1, fp);
-		pxt_PrepareToPlay(&snd, slot);
-	}
-	
-	load_top = slot;
-	free(snd.final_buffer);
-	return 0;
-}
 
 void pxt_freeSoundFX(void)
 {
@@ -884,6 +888,34 @@ void FreePXTBuf(stPXSound *snd)
 	}
 }
 
+static char LoadComponent(FILE *fp, stPXWave *pxw)
+{
+	if (pxt_SetModel(pxw, fgeticsv(fp))) return 1;
+	
+	pxw->repeat = fgetfcsv(fp);
+	pxw->volume = fgeticsv(fp);
+	pxw->offset = fgeticsv(fp);
+	return 0;
+}
+
+static char ReadToBracket(FILE *fp)
+{
+uint8_t ch;
+
+	for(;;)
+	{
+		ch = fgetc(fp);
+		if (ch=='{') break;
+		
+		if (feof(fp))
+		{
+			staterr("pxt_load: file is in incorrect file format [failed to find '{']");
+			fclose(fp);
+			return 1;
+		}
+	}
+	return 0;
+}
 
 
 // read a .pxt file into memory and return a stPXSound ready to be rendered.
@@ -894,7 +926,6 @@ char load_extended_section = 0;
 char ch;
 int i, cc;
 
-#define BRACK		'{'		// my damn IDE is borking up the Function List if i put this inline
 
 	fp = fopen(fname, "rb");
 	if (!fp) { staterr("pxt_load: file '%s' not found.", fname); return 1; }
@@ -910,7 +941,7 @@ int i, cc;
 	
 	// load all channels we find
 	cc = 0;
-	ch = BRACK;
+	ch = '{';
 	while(!feof(fp))
 	{
 		if (ch=='>')		// extended section
@@ -918,7 +949,7 @@ int i, cc;
 			load_extended_section = 1;
 			break;
 		}
-		else if (ch==BRACK)
+		else if (ch=='{')
 		{	// opening a new channel
 			if (cc >= PXT_NO_CHANNELS)
 			{
@@ -983,34 +1014,60 @@ error: ;
 	return 1;
 }
 
-static char LoadComponent(FILE *fp, stPXWave *pxw)
+static void SaveComponent(FILE *fp, const char *name, stPXWave *pxw)
 {
-	if (pxt_SetModel(pxw, fgeticsv(fp))) return 1;
+char spaces[40];
+int nspaces;
+
+	nspaces = 6 - strlen(name);
+	if (nspaces) memset(spaces, ' ', nspaces);
+	spaces[nspaces] = 0;
 	
-	pxw->repeat = fgetfcsv(fp);
-	pxw->volume = fgeticsv(fp);
-	pxw->offset = fgeticsv(fp);
-	return 0;
+	fprintf(fp, "%s_model %s:%d\r\n", name, spaces, pxw->model_no);
+	fprintf(fp, "%s_freq  %s:%.2f\r\n", name, spaces, pxw->repeat);
+	fprintf(fp, "%s_top   %s:%d\r\n", name, spaces, pxw->volume);
+	fprintf(fp, "%s_offset%s:%d\r\n", name, spaces, pxw->offset);
 }
 
-static char ReadToBracket(FILE *fp)
+static void SaveComponentMachine(FILE *fp, stPXWave *pxw, char trailcomma)
 {
-uint8_t ch;
-
-	for(;;)
-	{
-		ch = fgetc(fp);
-		if (ch==BRACK) break;
-		
-		if (feof(fp))
-		{
-			staterr("pxt_load: file is in incorrect file format [failed to find '{']");
-			fclose(fp);
-			return 1;
-		}
-	}
-	return 0;
+	fprintf(fp, "%d,%.2f,%d,%d", pxw->model_no, pxw->repeat, pxw->volume, pxw->offset);
+	if (trailcomma) fprintf(fp, ",");
 }
+
+static void SaveEnvVertice(FILE *fp, stPXEnvelope *env, int v)
+{
+	fprintf(fp, "%cx      :%d\r\n", v+'a', env->time[v]);
+	fprintf(fp, "%cy      :%d\r\n", v+'a', env->val[v]);
+}
+
+/*
+	how to use it--it's pretty easy
+	
+	First you have to load (parse) the pxt file you want to play.
+	You can do this with pxt_load() which will read a pxt file and set up your stPXSound
+	structure with the proper values as spec'd in the file.
+	
+	Then you must synthesize or *render* the sound. First make sure the synthesizer
+	is initialized by calling pxt_init & pxt_initsynth.
+	
+	Send your stPXSound through render_pxt. Now it includes 8-bit signed PCM audio
+	in final_buffer.
+	
+	But maybe you want it in a format SDL_mixer can play easier? No problem, call pxt_PrepareToPlay.
+	Give it your sound and a *slot number* from 0-255 which is like a sound id as would be used in
+	a game. You can free (pxt_freebuffers) that old 8-bit data now if you like and in fact entirely
+	throw away the stPXSound as it has nothing to do with pxt_Play. When you're ready to
+	play the sound give pxt_Play the slot number you picked and it will return to you the
+	SDL_mixer channel number if successful.
+	
+	Oh yeah, you can also load a whole directory full of pxt's, up to some max slot #,
+	by using pxt_LoadSoundFX. This function also has the bonus that first, you don't have to
+	do any of the above stuff, it does it all for you and you can just call pxt_Play straight away.
+	Secondly, you can give it a filename for a cache file and it will cache all the sounds after
+	it builds them so that they load quicker next time.
+*/
+
 
 
 char pxt_save(const char *fname, stPXSound *snd)
@@ -1093,58 +1150,4 @@ int i, j;
 	return 0;
 }
 
-
-static void SaveComponent(FILE *fp, const char *name, stPXWave *pxw)
-{
-char spaces[40];
-int nspaces;
-
-	nspaces = 6 - strlen(name);
-	if (nspaces) memset(spaces, ' ', nspaces);
-	spaces[nspaces] = 0;
-	
-	fprintf(fp, "%s_model %s:%d\r\n", name, spaces, pxw->model_no);
-	fprintf(fp, "%s_freq  %s:%.2f\r\n", name, spaces, pxw->repeat);
-	fprintf(fp, "%s_top   %s:%d\r\n", name, spaces, pxw->volume);
-	fprintf(fp, "%s_offset%s:%d\r\n", name, spaces, pxw->offset);
-}
-
-static void SaveComponentMachine(FILE *fp, stPXWave *pxw, char trailcomma)
-{
-	fprintf(fp, "%d,%.2f,%d,%d", pxw->model_no, pxw->repeat, pxw->volume, pxw->offset);
-	if (trailcomma) fprintf(fp, ",");
-}
-
-static void SaveEnvVertice(FILE *fp, stPXEnvelope *env, int v)
-{
-	fprintf(fp, "%cx      :%d\r\n", v+'a', env->time[v]);
-	fprintf(fp, "%cy      :%d\r\n", v+'a', env->val[v]);
-}
-
-/*
-	how to use it--it's pretty easy
-	
-	First you have to load (parse) the pxt file you want to play.
-	You can do this with pxt_load() which will read a pxt file and set up your stPXSound
-	structure with the proper values as spec'd in the file.
-	
-	Then you must synthesize or *render* the sound. First make sure the synthesizer
-	is initialized by calling pxt_init & pxt_initsynth.
-	
-	Send your stPXSound through render_pxt. Now it includes 8-bit signed PCM audio
-	in final_buffer.
-	
-	But maybe you want it in a format SDL_mixer can play easier? No problem, call pxt_PrepareToPlay.
-	Give it your sound and a *slot number* from 0-255 which is like a sound id as would be used in
-	a game. You can free (pxt_freebuffers) that old 8-bit data now if you like and in fact entirely
-	throw away the stPXSound as it has nothing to do with pxt_Play. When you're ready to
-	play the sound give pxt_Play the slot number you picked and it will return to you the
-	SDL_mixer channel number if successful.
-	
-	Oh yeah, you can also load a whole directory full of pxt's, up to some max slot #,
-	by using pxt_LoadSoundFX. This function also has the bonus that first, you don't have to
-	do any of the above stuff, it does it all for you and you can just call pxt_Play straight away.
-	Secondly, you can give it a filename for a cache file and it will cache all the sounds after
-	it builds them so that they load quicker next time.
-*/
 

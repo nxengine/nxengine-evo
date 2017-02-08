@@ -55,6 +55,62 @@ extern SDL_Renderer * renderer;
 void c------------------------------() {}
 */
 
+// create the shadesfc, used by font_draw_shaded. It's just a big long black surface
+// with 50% per-surface alpha applied, that we can use to darken the background.
+static bool create_shade_sfc(void)
+{
+	if (tshadesfc)
+	{
+		SDL_DestroyTexture(tshadesfc);
+		tshadesfc = NULL;
+	}
+	
+	int wd = (Graphics::SCREEN_WIDTH * SCALE);
+	int ht = whitefont.letters[(unsigned char)'M']->h;
+	
+	SDL_PixelFormat* pxformat = SDL_AllocFormat(screen->Format()->format);
+	if (!pxformat)
+	{
+		staterr("InitBitmapChars: SDL_AllocFormat failed: %s", SDL_GetError());
+		return 1;
+	}
+	SDL_Surface* shadesfc = SDL_CreateRGBSurface(0, wd, ht,
+							pxformat->BitsPerPixel, pxformat->Rmask, pxformat->Gmask,
+							pxformat->Bmask, pxformat->Amask);
+	
+	if (!shadesfc)
+	{
+		staterr("create_shade_sfc: failed to create surface: %s", SDL_GetError());
+		SDL_FreeFormat(pxformat);
+		return 1;
+	}
+	
+	SDL_FillRect(shadesfc, NULL, SDL_ALPHA_TRANSPARENT);
+
+	Uint8 alpha_value = 128;
+	if (shadesfc->format->Amask) {
+		alpha_value = 0xFF;
+	}
+	SDL_SetSurfaceAlphaMod(shadesfc, alpha_value);
+	SDL_SetSurfaceBlendMode(shadesfc, SDL_BLENDMODE_BLEND);
+
+	
+	tshadesfc = SDL_CreateTextureFromSurface(renderer, shadesfc);
+	if (!shadesfc)
+	{
+		staterr("create_shade_sfc: failed to create surface: %s", SDL_GetError());
+		SDL_FreeSurface(shadesfc);
+		return 1;
+	}
+
+	SDL_FreeSurface(shadesfc);
+	shadesfc_h = ht;
+
+	return tshadesfc == NULL;
+}
+
+
+
 bool font_init(void)
 {
 bool error = false;
@@ -562,60 +618,6 @@ int GetFontHeight()
 /*
 void c------------------------------() {}
 */
-
-// create the shadesfc, used by font_draw_shaded. It's just a big long black surface
-// with 50% per-surface alpha applied, that we can use to darken the background.
-static bool create_shade_sfc(void)
-{
-	if (tshadesfc)
-	{
-		SDL_DestroyTexture(tshadesfc);
-		tshadesfc = NULL;
-	}
-	
-	int wd = (Graphics::SCREEN_WIDTH * SCALE);
-	int ht = whitefont.letters[(unsigned char)'M']->h;
-	
-	SDL_PixelFormat* pxformat = SDL_AllocFormat(screen->Format()->format);
-	if (!pxformat)
-	{
-		staterr("InitBitmapChars: SDL_AllocFormat failed: %s", SDL_GetError());
-		return 1;
-	}
-	SDL_Surface* shadesfc = SDL_CreateRGBSurface(0, wd, ht,
-							pxformat->BitsPerPixel, pxformat->Rmask, pxformat->Gmask,
-							pxformat->Bmask, pxformat->Amask);
-	
-	if (!shadesfc)
-	{
-		staterr("create_shade_sfc: failed to create surface: %s", SDL_GetError());
-		SDL_FreeFormat(pxformat);
-		return 1;
-	}
-	
-	SDL_FillRect(shadesfc, NULL, SDL_ALPHA_TRANSPARENT);
-
-	Uint8 alpha_value = 128;
-	if (shadesfc->format->Amask) {
-		alpha_value = 0xFF;
-	}
-	SDL_SetSurfaceAlphaMod(shadesfc, alpha_value);
-	SDL_SetSurfaceBlendMode(shadesfc, SDL_BLENDMODE_BLEND);
-
-	
-	tshadesfc = SDL_CreateTextureFromSurface(renderer, shadesfc);
-	if (!shadesfc)
-	{
-		staterr("create_shade_sfc: failed to create surface: %s", SDL_GetError());
-		SDL_FreeSurface(shadesfc);
-		return 1;
-	}
-
-	SDL_FreeSurface(shadesfc);
-	shadesfc_h = ht;
-
-	return tshadesfc == NULL;
-}
 
 
 int font_draw(int x, int y, const char *text, int spacing, NXFont *font)
