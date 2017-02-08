@@ -6,7 +6,7 @@ include(CheckCXXCompilerFlag)
 project(nx)
 
 set (nx_VERSION_MAJOR 2)
-set (nx_VERSION_MINOR 1)
+set (nx_VERSION_MINOR 2)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
