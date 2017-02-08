@@ -116,16 +116,16 @@ void ai_intro_crown(Object *o)
 	{
 		case 0:
 		{
-			o->x += (8 << CSF);
-			o->y += (14 << CSF);
+			o->x += (8 * CSFI);
+			o->y += (14 * CSFI);
 			o->state = 1;
 		}
 		case 1:
 		{
 			if ((++o->timer % 8) == 1)
 			{
-				effect(o->x + random(-8<<CSF, 8<<CSF),
-						o->y + (8<<CSF),
+				effect(o->x + random(-8 * CSFI, 8 * CSFI),
+						o->y + (8 * CSFI),
 						   EFFECT_GHOST_SPARKLE);
 			}
 		}
@@ -141,7 +141,7 @@ void ai_intro_doctor(Object *o)
 	{
 		case 0:
 		{
-			o->y -= (8 << CSF);
+			o->y -= (8 * CSFI);
 			o->state = 1;
 		}
 		case 1:

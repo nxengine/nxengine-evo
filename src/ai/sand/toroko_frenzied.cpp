@@ -41,8 +41,8 @@ Object *block = o->linkedobject;
 }
 #define THROWBLOCK	\
 {			\
-	block->x += (16 << CSF) * ((o->dir==RIGHT) ? 1 : -1);	\
-	block->y += (9 << CSF);	\
+	block->x += (16 * CSFI) * ((o->dir==RIGHT) ? 1 : -1);	\
+	block->y += (9 * CSFI);	\
 	block->flags |= FLAG_INVULNERABLE;		\
 	ThrowObjectAtPlayer(block, 1, 0x900);		\
 	o->linkedobject = block->linkedobject = NULL;	\

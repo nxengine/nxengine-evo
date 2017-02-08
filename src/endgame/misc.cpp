@@ -76,7 +76,7 @@ int type;
 		{
 			cloud->x = o->x;
 			cloud->y = o->y + MAPY(random(-7, 7));
-			if (widescreen) cloud->y+=(32 << CSF);
+			if (widescreen) cloud->y+=(32 * CSFI);
 			cloud->xinertia = -(0x400 >> type);
 		}
 		
@@ -84,7 +84,7 @@ int type;
 		// against plain blue when he appears in the credits
 		if (game.mode == GM_CREDITS && o->state < 10)
 		{
-			cloud->x -= (128 << CSF);
+			cloud->x -= (128 * CSFI);
 			o->state++;
 		}
 		
@@ -173,17 +173,17 @@ void aftermove_balrog_passenger(Object *o)
 				o->sprite = player->sprite;
 				o->frame = 4;
 				
-				o->x = o->linkedobject->x - (2<<CSF);
+				o->x = o->linkedobject->x - (2 * CSFI);
 			}
 			else
 			{
 				o->sprite = SPR_CURLY;
 				o->frame = 7;
 				
-				o->x = o->linkedobject->x + (26<<CSF);
+				o->x = o->linkedobject->x + (26 * CSFI);
 			}
 			
-			o->y = o->linkedobject->y + (14<<CSF);
+			o->y = o->linkedobject->y + (14 * CSFI);
 		}
 		break;
 		
@@ -194,17 +194,17 @@ void aftermove_balrog_passenger(Object *o)
 				o->sprite = SPR_MYCHAR;
 				o->frame = 12;
 				
-				o->x = o->linkedobject->x - (15<<CSF);
+				o->x = o->linkedobject->x - (15 * CSFI);
 			}
 			else
 			{
 				o->sprite = SPR_CURLY;
 				o->frame = 18;
 				
-				o->x = o->linkedobject->x - (4<<CSF);
+				o->x = o->linkedobject->x - (4 * CSFI);
 			}
 			
-			o->y = o->linkedobject->y - (23<<CSF);
+			o->y = o->linkedobject->y - (23 * CSFI);
 		}
 		break;
 	}
@@ -286,8 +286,8 @@ Object *ahchoo;
 	{
 		case 0:
 		{
-			o->x += (16<<CSF);
-			o->y -= (16<<CSF);
+			o->x += (16 * CSFI);
+			o->y -= (16 * CSFI);
 			o->state = 1;
 		}
 		case 1:
@@ -351,7 +351,7 @@ Object *ahchoo;
 				o->frame = 6;	// head-back to sneeze
 				
 				// create sneeze. Itoh is taller.
-				int yoffs = (o->dir == LEFT) ? (16<<CSF) : (8<<CSF);
+				int yoffs = (o->dir == LEFT) ? (16 * CSFI) : (8 * CSFI);
 				ahchoo = CreateObject(o->x, o->y - yoffs, OBJ_AHCHOO);
 				ahchoo->linkedobject = o;
 			}
@@ -403,7 +403,7 @@ void ai_ahchoo(Object *o)
 		case 0:		// rise up "ah..."
 		{
 			if (o->timer < 4)
-				o->y -= (2 << CSF);
+				o->y -= (2 * CSFI);
 			
 			if (o->linkedobject->frame == 7)	// sneezing frame
 			{
@@ -419,8 +419,8 @@ void ai_ahchoo(Object *o)
 		{
 			if (o->timer < 48)
 			{	// shake
-				o->x = o->xmark + (random(-1, 1) << CSF);
-				o->y = o->ymark + (random(-1, 1) << CSF);
+				o->x = o->xmark + (random(-1, 1) * CSFI);
+				o->y = o->ymark + (random(-1, 1) * CSFI);
 			}
 			else
 			{	// return to original pos
@@ -517,7 +517,7 @@ cast_data[] =
 			o->dir = cast_data[o->dirparam].dir;
 			
 			if (cast_data[o->dirparam].tall)
-				o->y -= (4<<CSF);
+				o->y -= (4 * CSFI);
 			
 			// create King's sword
 			if (o->sprite == SPR_KING)

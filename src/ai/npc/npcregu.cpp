@@ -85,7 +85,7 @@ void ai_doctor(Object *o)
 			o->state = 21;
 			o->timer = 0;
 			o->frame = 2;
-			o->ymark = o->y - (32 << CSF);
+			o->ymark = o->y - (32 * CSFI);
 		}
 		case 21:
 		{
@@ -207,7 +207,7 @@ void ai_toroko(Object *o)
 		case 10:	// eeks and falls down
 			o->state = 11;
 			o->frame = 5;
-			o->yinertia = -(2 << CSF);
+			o->yinertia = -(2 * CSFI);
 			sound(SND_ENEMY_SQUEAK);
 			XMOVE(0x100);
 		break;
@@ -357,7 +357,7 @@ void ai_npc_sue(Object *o)
 		// spawn red crystal and call it to us (Undead Core intro)
 		case 15:
 		{
-			o->PushBehind(dr_create_red_crystal(o->x+(128<<CSF), o->y));
+			o->PushBehind(dr_create_red_crystal(o->x+(128 * CSFI), o->y));
 			
 			o->state = 16;
 			o->xinertia = 0;
@@ -365,8 +365,8 @@ void ai_npc_sue(Object *o)
 		}
 		case 16:
 		{
-			crystal_xmark = o->x - (18<<CSF);
-			crystal_ymark = o->y - (8<<CSF);
+			crystal_xmark = o->x - (18 * CSFI);
+			crystal_ymark = o->y - (8 * CSFI);
 		}
 		break;
 		case 17:	// look up (still followed by red crystal)
@@ -375,7 +375,7 @@ void ai_npc_sue(Object *o)
 			o->frame = 12;
 			
 			crystal_xmark = o->x;
-			crystal_ymark = o->y - (8<<CSF);
+			crystal_ymark = o->y - (8 * CSFI);
 		}
 		break;
 		
@@ -391,7 +391,7 @@ void ai_npc_sue(Object *o)
 			ANIMATE(2, 2, 5);
 			XMOVE(0x400);
 			
-			if (o->x < player->x - (8<<CSF))
+			if (o->x < player->x - (8 * CSFI))
 			{
 				o->dir = RIGHT;
 				o->state = 0;
@@ -438,8 +438,8 @@ void aftermove_npc_sue(Object *o)
 	{
 		Object *link = o->sue.carried_by;
 		
-		o->x = ((link->x >> CSF) + sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.x) << CSF;
-		o->y = ((link->y >> CSF) + sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.y) << CSF;
+		o->x = ((link->x / CSFI) + sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.x) * CSFI;
+		o->y = ((link->y / CSFI) + sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.y) * CSFI;
 		
 		o->dir = (link->dir ^ 1);
 	}
@@ -460,7 +460,7 @@ void ai_sue_teleport_in(Object *o)
 	{
 		case 0:
 		{
-			o->x += (6 << CSF);
+			o->x += (6 * CSFI);
 			//o->PushBehind(OBJ_MISERY_STAND);
 			
 			o->timer = 0;
@@ -645,7 +645,7 @@ void ai_kanpachi_fishing(Object *o)
 	}
 	
 	// open eyes when player comes near
-	o->frame = (pdistlx((64<<CSF)) && pdistly2((64<<CSF), (16<<CSF))) ? 1 : 0;
+	o->frame = (pdistlx((64 * CSFI)) && pdistly2((64 * CSFI), (16 * CSFI))) ? 1 : 0;
 }
 
 /*
@@ -672,8 +672,8 @@ void ai_professor_booster(Object *o)
 			sound(SND_TELEPORT);
 			
 			// move into middle of teleporter
-			o->x -= (TILE_W << CSF);
-			o->y += (TILE_H / 2) << CSF;
+			o->x -= (TILE_W * CSFI);
+			o->y += (TILE_H / 2) * CSFI;
 			
 			o->state++;
 			o->timer = 0;

@@ -39,11 +39,11 @@ Object *b;
 	{
 		case 0:		// stopped
 		{
-			b = CreateObject(o->x + (26<<CSF) - (56<<CSF), o->y - (9<<CSF) - (48<<CSF), OBJ_HELICOPTER_BLADE);
+			b = CreateObject(o->x + (26 * CSFI) - (56 * CSFI), o->y - (9 * CSFI) - (48 * CSFI), OBJ_HELICOPTER_BLADE);
 			b->sprite = SPR_HELICOPTER_BLADE_1;
 			b->linkedobject = o;
 			
-			b = CreateObject(o->x - (4<<CSF) - (56<<CSF), o->y - (4<<CSF) - (48<<CSF), OBJ_HELICOPTER_BLADE);
+			b = CreateObject(o->x - (4 * CSFI) - (56 * CSFI), o->y - (4 * CSFI) - (48 * CSFI), OBJ_HELICOPTER_BLADE);
 			b->sprite = SPR_HELICOPTER_BLADE_2;
 			b->linkedobject = o;
 			
@@ -56,7 +56,7 @@ Object *b;
 		
 		case 30:	// blades running, spawn momorin
 		{
-			CreateObject(o->x + (45<<CSF) - (56<<CSF), o->y + (34<<CSF) - (48<<CSF), OBJ_MOMORIN)->dir = LEFT;
+			CreateObject(o->x + (45 * CSFI) - (56 * CSFI), o->y + (34 * CSFI) - (48 * CSFI), OBJ_MOMORIN)->dir = LEFT;
 			
 			o->dir = RIGHT;		// open hatch
 			o->state = 31;
@@ -65,9 +65,9 @@ Object *b;
 		
 		case 40:	// blades running, spawn momorin, santa, and chako (from credits)
 		{
-			CreateObject(o->x + (47<<CSF) - (56<<CSF), o->y + (34<<CSF) - (48<<CSF), OBJ_MOMORIN)->dir = LEFT;
-			CreateObject(o->x + (34<<CSF) - (56<<CSF), o->y + (34<<CSF) - (48<<CSF), OBJ_SANTA)->dir = LEFT;
-			CreateObject(o->x + (21<<CSF) - (56<<CSF), o->y + (34<<CSF) - (48<<CSF), OBJ_CHACO)->dir = LEFT;
+			CreateObject(o->x + (47 * CSFI) - (56 * CSFI), o->y + (34 * CSFI) - (48 * CSFI), OBJ_MOMORIN)->dir = LEFT;
+			CreateObject(o->x + (34 * CSFI) - (56 * CSFI), o->y + (34 * CSFI) - (48 * CSFI), OBJ_SANTA)->dir = LEFT;
+			CreateObject(o->x + (21 * CSFI) - (56 * CSFI), o->y + (34 * CSFI) - (48 * CSFI), OBJ_CHACO)->dir = LEFT;
 			
 			o->dir = RIGHT;		// open hatch
 			o->state = 41;
@@ -102,7 +102,7 @@ void c------------------------------() {}
 
 void ai_igor_balcony(Object *o)
 {
-	if (!pdistlx(SCREEN_WIDTH<<CSF) && !pdistly(SCREEN_HEIGHT<<CSF))
+	if (!pdistlx(SCREEN_WIDTH * CSFI) && !pdistly(SCREEN_HEIGHT * CSFI))
 	{
 		o->state = 1;
 	}
@@ -117,7 +117,7 @@ void ai_igor_balcony(Object *o)
 		{
 			ANIMATE(20, 0, 1);
 			
-			if ((pdistlx(112<<CSF) && pdistly2(48<<CSF, 112<<CSF)) || o->shaketime)
+			if ((pdistlx(112 * CSFI) && pdistly2(48 * CSFI, 112 * CSFI)) || o->shaketime)
 			{
 				o->state = 10;
 			}
@@ -138,7 +138,7 @@ void ai_igor_balcony(Object *o)
 			
 			if ((o->dir == RIGHT && o->blockr) || \
 				(o->dir == LEFT && o->blockl) || \
-				pdistlx(64<<CSF))
+				pdistlx(64 * CSFI))
 			{
 				o->xinertia = 0;
 				o->state = 20;
@@ -271,11 +271,11 @@ void ai_falling_block_spawner(Object *o)
 				
 				if (player->equipmask & EQUIP_BOOSTER20)
 				{
-					x += ((random(-14, 14) * TILE_W) << CSF);
+					x += ((random(-14, 14) * TILE_W) * CSFI);
 				}
 				else
 				{
-					x += ((random(-11, 11) * TILE_H) << CSF);
+					x += ((random(-11, 11) * TILE_H) * CSFI);
 				}
 				
 				block = CreateObject(x, (player->y - MAPY(14)), OBJ_FALLING_BLOCK);
@@ -342,7 +342,7 @@ void ai_falling_block(Object *o)
 		
 		case 10:	// falling
 		{	// allow to pass thru Hell/Balcony ceiling
-			if (o->y > 128<<CSF)
+			if (o->y > 128 * CSFI)
 			{
 				o->flags &= ~FLAG_IGNORE_SOLID;
 				o->state = 11;
@@ -370,7 +370,7 @@ void ai_falling_block(Object *o)
 			o->yinertia += 0x40;
 			LIMITY(0x700);
 			
-			if (o->y > ((map.ysize * TILE_H) << CSF))
+			if (o->y > ((map.ysize * TILE_H) * CSFI))
 			{
 				o->Delete();
 			}

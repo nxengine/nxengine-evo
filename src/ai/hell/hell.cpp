@@ -66,16 +66,16 @@ void ai_bute_flying(Object *o)
 		{
 			if (o->dir == LEFT)
 			{
-				if (player->x > (o->x - (288<<CSF)) && \
-					player->x < (o->x - (272<<CSF)))
+				if (player->x > (o->x - (288 * CSFI)) && \
+					player->x < (o->x - (272 * CSFI)))
 				{
 					o->state = 10;
 				}
 			}
 			else
 			{
-				if (player->x < (o->x + (288<<CSF)) && \
-					player->x > (o->x + (272<<CSF)))
+				if (player->x < (o->x + (288 * CSFI)) && \
+					player->x > (o->x + (272 * CSFI)))
 				{
 					o->state = 10;
 				}
@@ -183,22 +183,22 @@ void ai_bute_falling(Object *o)
 				switch(o->dir)
 				{
 					case LEFT:
-						if (o->CenterX() <= player->CenterX() + (32<<CSF))
+						if (o->CenterX() <= player->CenterX() + (32 * CSFI))
 							o->state = 10;
 					break;
 					
 					case RIGHT:
-						if (o->CenterX() >= player->CenterX() - (32<<CSF))
+						if (o->CenterX() >= player->CenterX() - (32 * CSFI))
 							o->state = 10;
 					break;
 					
 					case UP:
-						if (o->CenterY() <= player->CenterY() + (32<<CSF))
+						if (o->CenterY() <= player->CenterY() + (32 * CSFI))
 							o->state = 10;
 					break;
 					
 					case DOWN:
-						if (o->CenterY() >= player->CenterY() - (32<<CSF))
+						if (o->CenterY() >= player->CenterY() - (32 * CSFI))
 							o->state = 10;
 					break;
 				}
@@ -208,7 +208,7 @@ void ai_bute_falling(Object *o)
 		
 		case 10:
 		{
-			o->y += (4 << CSF);
+			o->y += (4 * CSFI);
 			o->ChangeType(OBJ_BUTE_FLYING);
 			o->state = 10;	// trigger flight immediately
 			
@@ -242,8 +242,8 @@ void ai_bute_sword(Object *o)
 		{
 			FACEPLAYER;
 			
-			if (pdistlx(128<<CSF) && \
-				pdistly2(128<<CSF, 16<<CSF))
+			if (pdistlx(128 * CSFI) && \
+				pdistly2(128 * CSFI, 16 * CSFI))
 			{
 				o->state = 10;
 			}
@@ -282,7 +282,7 @@ void ai_bute_sword(Object *o)
 			ANIMATE(3, 0, 1);
 			XMOVE(0x400);
 			
-			if (pdistlx(40<<CSF))
+			if (pdistlx(40 * CSFI))
 			{
 				o->xinertia /= 2;
 				o->yinertia = -0x300;
@@ -361,7 +361,7 @@ void ai_bute_archer(Object *o)
 			if ((o->dir == LEFT  && player->CenterX() < o->CenterX()) || \
 				(o->dir == RIGHT && player->CenterX() > o->CenterX()))
 			{
-				if (pdistlx(320<<CSF) && pdistly(160<<CSF))
+				if (pdistlx(320 * CSFI) && pdistly(160 * CSFI))
 				{
 					o->state = 10;
 				}
@@ -374,7 +374,7 @@ void ai_bute_archer(Object *o)
 		{
 			FACEPLAYER;
 			
-			if (!pdistlx(224<<CSF) || player->y <= (o->y - (8<<CSF)))
+			if (!pdistlx(224 * CSFI) || player->y <= (o->y - (8 * CSFI)))
 			{
 				o->frame = 4;	// shooting up
 				o->timer2 = 1;
@@ -435,7 +435,7 @@ void ai_bute_archer(Object *o)
 		// after fire, and the "woken up" waiting-for-player state
 		case 40:
 		{
-			if (pdistlx(352<<CSF) && pdistly(240<<CSF))
+			if (pdistlx(352 * CSFI) && pdistly(240 * CSFI))
 			{
 				if (--o->timer < 0)
 					o->state = 10;	// fire again
@@ -587,8 +587,8 @@ static bool run_bute_defeated(Object *o, int hp)
 		}
 		else
 		{
-			o->x -= (4 << CSF);
-			o->y -= (4 << CSF);
+			o->x -= (4 * CSFI);
+			o->y -= (4 * CSFI);
 			o->ChangeType(OBJ_BUTE_DYING);
 			
 			sound(SND_ENEMY_SQUEAK);
@@ -615,7 +615,7 @@ void ai_mesa(Object *o)
 	{
 		case 0:
 		{
-			o->y += (4<<CSF);
+			o->y += (4 * CSFI);
 			o->state = 1;
 		}
 		case 1:
@@ -623,7 +623,7 @@ void ai_mesa(Object *o)
 			ANIMATE(40, 0, 1);
 			FACEPLAYER;
 			
-			if (pdistlx(320<<CSF) && pdistly(160<<CSF))
+			if (pdistlx(320 * CSFI) && pdistly(160 * CSFI))
 			{
 				if (++o->timer > 50)
 					o->state = 10;
@@ -637,8 +637,8 @@ void ai_mesa(Object *o)
 			o->timer = 0;
 			o->frame = 2;	// hand down
 			
-			int x = o->x + ((o->dir == LEFT) ? (7<<CSF) : -(7<<CSF));
-			int y = o->y + (10<<CSF);
+			int x = o->x + ((o->dir == LEFT) ? (7 * CSFI) : -(7 * CSFI));
+			int y = o->y + (10 * CSFI);
 			
 			o->linkedobject = CreateObject(x, y, OBJ_MESA_BLOCK);
 			o->linkedobject->linkedobject = o;
@@ -655,7 +655,7 @@ void ai_mesa(Object *o)
 				{
 					Object *&block = o->linkedobject;
 					
-					block->y = (o->y - (4<<CSF));
+					block->y = (o->y - (4 * CSFI));
 					block->xinertia = (o->dir == RIGHT) ? 0x400 : -0x400;
 					block->yinertia = -0x400;
 					block->state = 1;
@@ -744,13 +744,13 @@ void ai_deleet(Object *o)
 		case 0:
 		{
 			o->state = 1;
-			o->x += (TILE_W / 2) << CSF;
-			o->y += (TILE_H / 2) << CSF;
+			o->x += (TILE_W / 2) * CSFI;
+			o->y += (TILE_H / 2) * CSFI;
 			
 			if (o->dir == LEFT)
-				o->y += (8<<CSF);
+				o->y += (8 * CSFI);
 			else
-				o->x += (8<<CSF);
+				o->x += (8 * CSFI);
 		}
 		case 1:
 		{
@@ -795,16 +795,16 @@ void ai_deleet(Object *o)
 					
 					if (o->dir == LEFT)
 					{
-						int x = (o->x >> CSF) / TILE_W;
-						int y = ((o->y >> CSF) - 8) / TILE_H;
+						int x = (o->x / CSFI) / TILE_W;
+						int y = ((o->y / CSFI) - 8) / TILE_H;
 						
 						map.tiles[x][y] = 0;
 						map.tiles[x][y+1] = 0;
 					}
 					else
 					{
-						int x = ((o->x >> CSF) - 8) / TILE_W;
-						int y = (o->y >> CSF) / TILE_H;
+						int x = ((o->x / CSFI) - 8) / TILE_W;
+						int y = (o->y / CSFI) / TILE_H;
 						
 						map.tiles[x][y] = 0;
 						map.tiles[x+1][y] = 0;
@@ -816,7 +816,7 @@ void ai_deleet(Object *o)
 			
 			if (counter != -1)
 			{
-				CreateObject(o->x, o->y - (8<<CSF), \
+				CreateObject(o->x, o->y - (8 * CSFI), \
 						OBJ_COUNTER_BOMB_NUMBER)->frame = counter;
 			}
 			
@@ -839,8 +839,8 @@ void ai_rolling(Object *o)
 	if (o->state == 0)
 	{
 		// exploding out of blocks (Rollings in Heavy Press area)
-		int mx = (o->CenterX() >> CSF) / TILE_W;
-		int my = (o->CenterY() >> CSF) / TILE_H;
+		int mx = (o->CenterX() / CSFI) / TILE_W;
+		int my = (o->CenterY() / CSFI) / TILE_H;
 		
 		if (map.tiles[mx][my])
 			map_ChangeTileWithSmoke(mx, my, 0, 8);
@@ -906,11 +906,11 @@ void ai_statue_base(Object *o)
 		
 		if (o->dir == LEFT)
 		{
-			o->x += (8 << CSF);
+			o->x += (8 * CSFI);
 		}
 		else if (o->dir == RIGHT)
 		{
-			o->y += (16 << CSF);
+			o->y += (16 * CSFI);
 		}
 	}
 }

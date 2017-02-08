@@ -94,8 +94,8 @@ Object *SpawnObjectAtActionPoint(Object *o, int otype)
 int x, y;
 Object *newObject;
 
-	x = o->x + (sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.x << CSF);
-	y = o->y + (sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.y << CSF);
+	x = o->x + (sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.x * CSFI);
+	y = o->y + (sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.y * CSFI);
 	newObject = CreateObject(x, y, otype);
 	newObject->dir = o->dir;
 	return newObject;
@@ -175,8 +175,8 @@ int x, y, frame;
 	// the p's "up" frames have unusually placed action points so we have to cancel those out
 	if (frame >= 3 && frame <= 5) frame -= 3;
 	
-	x = (player->x >> CSF) + sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.x;
-	y = (player->y >> CSF) + sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.y;
+	x = (player->x / CSFI) + sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.x;
+	y = (player->y / CSFI) + sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.y;
 	y += off_y;
 	
 	if (player->dir == RIGHT)
@@ -190,8 +190,8 @@ int x, y, frame;
 		o->dir = LEFT;
 	}
 	
-	o->x = (x << CSF);
-	o->y = (y << CSF);
+	o->x = (x * CSFI);
+	o->y = (y * CSFI);
 }
 
 
@@ -302,8 +302,8 @@ int dir;
 	{
 		dir = (link->dir ^ o->carry.flip);
 		
-		o->x = ((link->x >> CSF) + sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.x) << CSF;
-		o->y = ((link->y >> CSF) + sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.y) << CSF;
+		o->x = ((link->x / CSFI) + sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.x) * CSFI;
+		o->y = ((link->y / CSFI) + sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.y) * CSFI;
 		o->dir = dir;
 	}
 	else

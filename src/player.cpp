@@ -213,7 +213,7 @@ void HandlePlayer_am(void)
 	//debug("xinertia: %s", strhex(player->xinertia));
 	//debug("yinertia: %s", strhex(player->yinertia));
 	//debug("booststate: %d", player->booststate);
-	//debug("y: %d", player->y>>CSF);
+	//debug("y: %d", player->y / CSFI);
 	//debug("riding %x", player->riding);
 	//debug("block: %d%d%d%d", player->blockl, player->blockr, player->blocku, player->blockd);
 	
@@ -377,7 +377,7 @@ int tile;
 				
 				for(int i=0;i<8;i++)
 				{
-					Object *o = CreateObject(x + (random(-8, 8) << CSF), y, splashtype);
+					Object *o = CreateObject(x + (random(-8, 8) * CSFI), y, splashtype);
 					o->xinertia = random(-0x200, 0x200) + player->xinertia;
 					o->yinertia = random(-0x200, 0x80) - (player->yinertia >> 1);
 				}
@@ -487,7 +487,7 @@ int tile;
 	currentmask = 0;
 	for(i=0;i<9;i++)
 	{
-		//DebugCrosshair(player->x+(currentpoints[i].x<<CSF),player->y+(currentpoints[i].y<<CSF), 255,0,0);
+		//DebugCrosshair(player->x+(currentpoints[i].x * CSFI),player->y+(currentpoints[i].y * CSFI), 255,0,0);
 		
 		if (player->GetAttributes(&currentpoints[i], 1, &tile) & TA_CURRENT)
 		{
@@ -996,8 +996,8 @@ void PBoosterSmokePuff()
 		default:		return;
 	}
 	
-	int x = player->x + (smoke_xoffs[smokedir] << CSF);
-	int y = player->y + (smoke_yoffs[smokedir] << CSF);
+	int x = player->x + (smoke_xoffs[smokedir] * CSFI);
+	int y = player->y + (smoke_yoffs[smokedir] * CSFI);
 	
 	Caret *smoke = effect(x, y, EFFECT_SMOKETRAIL_SLOW);
 	smoke->MoveAtDir(smokedir, 0x200);
@@ -1078,7 +1078,7 @@ Object *o;
 			else if (o->yinertia <= player->yinertia)
 			{
 				// snap his Y right on top if it
-				player->y = o->SolidTop() - (sprites[player->sprite].block_d[0].y << CSF);
+				player->y = o->SolidTop() - (sprites[player->sprite].block_d[0].y * CSFI);
 			}
 		}
 	}
@@ -1114,8 +1114,8 @@ void PRunSolidMushy(Object *o)
 	const int o_top = o->SolidTop();
 	const int o_bottom = o->SolidBottom();
 	
-	static const int MUSHY_MARGIN = (3<<CSF);
-	static const int STAND_MARGIN = (1<<CSF);
+	static const int MUSHY_MARGIN = (3 * CSFI);
+	static const int STAND_MARGIN = (1 * CSFI);
 	static const int REPEL_FORCE = 0x200;
 	
 	// hitting sides of object
@@ -1155,14 +1155,14 @@ void PRunSolidMushy(Object *o)
 			else
 			{
 				// force to top of sprite if we're REALLY far into it
-				int em_fline = o->SolidTop() + (3 << CSF);
+				int em_fline = o->SolidTop() + (3 * CSFI);
 				if (player->SolidBottom() > em_fline)
 				{
 					int over_amt = (em_fline - player->SolidBottom());
-					int dec_amt = (3 << CSF);
+					int dec_amt = (3 * CSFI);
 					
 					if (over_amt < dec_amt) dec_amt = over_amt;
-					if (dec_amt < (1<<CSF)) dec_amt = (1<<CSF);
+					if (dec_amt < (1 * CSFI)) dec_amt = (1 * CSFI);
 					
 					player->apply_yinertia(-dec_amt);
 				}
@@ -1370,7 +1370,7 @@ void PDoRepel(void)
 	// since this function is called from the aftermove, regular player->blockl etc
 	// won't be updated until the following frame, so we always check the attributes
 	// directly here.
-	static const int REPEL_SPEED =	(1<<CSF);
+	static const int REPEL_SPEED =	(1 * CSFI);
 	
 	if (settings->enable_debug_keys && inputs[DEBUG_MOVE_KEY])
 		return;
@@ -1457,9 +1457,9 @@ void PTryActivateScript()
 
 static bool RunScriptAtX(int x)
 {
-	if (RunScriptAtLocation(x, player->y + (8 << CSF)) || \
-		RunScriptAtLocation(x, player->y + (14 << CSF)) || \
-		RunScriptAtLocation(x, player->y + (2 << CSF)))
+	if (RunScriptAtLocation(x, player->y + (8 * CSFI)) || \
+		RunScriptAtLocation(x, player->y + (14 * CSFI)) || \
+		RunScriptAtLocation(x, player->y + (2 * CSFI)))
 	{
 		return true;
 	}
@@ -1610,13 +1610,13 @@ int x, y;
 	// we have to figure out where the gun is being carried, then figure out where the
 	// gun's sprite is drawn relative to that, then finally we can offset in the
 	// shoot point of the gun's sprite.
-	x = player->x + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x << CSF);
-	x -= sprites[spr].frame[frame].dir[player->dir].drawpoint.x << CSF;
-	x += sprites[spr].frame[frame].dir[player->dir].actionpoint.x << CSF;
+	x = player->x + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x * CSFI);
+	x -= sprites[spr].frame[frame].dir[player->dir].drawpoint.x * CSFI;
+	x += sprites[spr].frame[frame].dir[player->dir].actionpoint.x * CSFI;
 	
-	y = player->y + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y << CSF);
-	y -= sprites[spr].frame[frame].dir[player->dir].drawpoint.y << CSF;
-	y += sprites[spr].frame[frame].dir[player->dir].actionpoint.y << CSF;
+	y = player->y + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y * CSFI);
+	y -= sprites[spr].frame[frame].dir[player->dir].drawpoint.y * CSFI;
+	y += sprites[spr].frame[frame].dir[player->dir].actionpoint.y * CSFI;
 	
 	*x_out = x;
 	*y_out = y;
@@ -1636,8 +1636,8 @@ int scr_x, scr_y;
 	player->XPText->UpdatePos(player);
 	
 	// get screen position to draw him at
-	scr_x = (player->x >> CSF) - (map.displayed_xscroll >> CSF);
-	scr_y = (player->y >> CSF) - (map.displayed_yscroll >> CSF);
+	scr_x = (player->x / CSFI) - (map.displayed_xscroll / CSFI);
+	scr_y = (player->y / CSFI) - (map.displayed_yscroll / CSFI);
 	
 	// draw his gun
 	if (player->curWeapon != WPN_NONE && player->curWeapon != WPN_BLADE)

@@ -20,7 +20,7 @@ int degrees;
 	
 	for(degrees=0;degrees<256;degrees++)
 	{
-		sin_table[degrees] = (int)(sin((double)degrees * PIBT) * (1 << CSF));
+		sin_table[degrees] = (int)(sin((double)degrees * PIBT) * (1 * CSFI));
 	}
 	
 	for(degrees=0;degrees<64;degrees++)
@@ -44,7 +44,7 @@ int ratio;
 char k = 0;
 static int avx, avy;
 static int avtimer=0;
-static int avsx=80<<CSF, avsy=60<<CSF;
+static int avsx=80 * CSFI, avsy=60 * CSFI;
 static int avectx, avecty;
 static int lx=-1,ly=-1;
 static char firsttime = 1;
@@ -67,10 +67,10 @@ static char firsttime = 1;
 	
 	
 	if (!avectx && !avecty) avtimer = 0;
-	if (x1 > x2 && avx>>CSF < x2) k++;
-	if (x1 < x2 && avx>>CSF > x2) k++;
-	if (y1 > y2 && avy>>CSF < y2) k++;
-	if (y1 < y2 && avy>>CSF > y2) k++;
+	if (x1 > x2 && avx / CSFI < x2) k++;
+	if (x1 < x2 && avx / CSFI > x2) k++;
+	if (y1 > y2 && avy / CSFI < y2) k++;
+	if (y1 < y2 && avy / CSFI > y2) k++;
 	if (k >= 2) avtimer = 0;
 	if (x1 != lx || y1 != ly) { lx=x1;ly=y1;avtimer=0; }
 	avtimer--;
@@ -78,7 +78,7 @@ static char firsttime = 1;
 	{
 		vector_from_angle(angle, 0xA0, &avectx, &avecty);
 		avtimer = 650;
-		avx = x1<<CSF; avy = y1<<CSF;
+		avx = x1 * CSFI; avy = y1 * CSFI;
 	}
 	avx += avectx;
 	avy += avecty;
@@ -101,7 +101,7 @@ static char firsttime = 1;
 	x = (x1+x2)/2; y = (y1+y2)/2; x+=4; y+=9;
 	sprintf(buf, "%.2f", fratio); font_draw(x,y,buf,0);
 	y+=8; sprintf(buf, "%04x", ratio); font_draw(x,y,buf,0);
-	PlotCircle(avx>>CSF, avy>>CSF, 200, 120, 120, 0, 256, 6);
+	PlotCircle(avx / CSFI, avy / CSFI, 200, 120, 120, 0, 256, 6);
 	
 	flip();
 }
@@ -129,7 +129,7 @@ void vector_from_angle(uint8_t angle, int speed, int *xs, int *ys)
 	if (ys)
 	{
 		*ys = sin_table[angle];
-		*ys *= speed; *ys >>= CSF;
+		*ys *= speed; *ys /= CSFI;
 	}
 	
 	if (xs)
@@ -142,7 +142,7 @@ void vector_from_angle(uint8_t angle, int speed, int *xs, int *ys)
 		// so now we basically are >>= CSFing the value back to it's original 0-1.00, then
 		// multiplying by speed. We're just doing it backwards so as the precision will stay.
 		// which is ok because multiplication and division are on the same level of OoO.
-		*xs *= speed; *xs >>= CSF;
+		*xs *= speed; *xs /= CSFI;
 	}
 }
 
@@ -150,7 +150,7 @@ int xinertia_from_angle(uint8_t angle, int speed)
 {
 	angle += 64;
 	int xs = sin_table[angle];
-	xs *= speed; xs >>= CSF;
+	xs *= speed; xs /= CSFI;
 	
 	return xs;
 }
@@ -158,7 +158,7 @@ int xinertia_from_angle(uint8_t angle, int speed)
 int yinertia_from_angle(uint8_t angle, int speed)
 {
 	int ys = sin_table[angle];
-	ys *= speed; ys >>= CSF;
+	ys *= speed; ys /= CSFI;
 	
 	return ys;
 }
@@ -240,9 +240,9 @@ void ThrowObject(Object *o, int destx, int desty, int rand_variance, int speed)
 // toss object o along angle angle at speed speed
 void ThrowObjectAtAngle(Object *o, uint8_t angle, int speed)
 {
-	o->yinertia = (sin_table[angle] * speed) >> CSF;
+	o->yinertia = (sin_table[angle] * speed) / CSFI;
 	angle += 64;
-	o->xinertia = (sin_table[angle] * speed) >> CSF;
+	o->xinertia = (sin_table[angle] * speed) / CSFI;
 }
 
 

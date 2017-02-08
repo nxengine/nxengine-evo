@@ -107,10 +107,10 @@ void ai_mgun_trail(Object *o)
 		// dissappear as we pass the point it hit at
 		switch(o->shot.dir)
 		{
-			case RIGHT: passed_leader = ((o->Right() >> CSF) >= (o->linkedobject->Right() >> CSF)); break;
-			case LEFT:  passed_leader = ((o->Left() >> CSF) <= (o->linkedobject->Left() >> CSF)); break;
-			case UP:    passed_leader = ((o->Top() >> CSF) <= (o->linkedobject->Top() >> CSF)); break;
-			case DOWN:  passed_leader = ((o->Bottom() >> CSF) >= (o->linkedobject->Bottom() >> CSF)); break;
+			case RIGHT: passed_leader = ((o->Right() / CSFI) >= (o->linkedobject->Right() / CSFI)); break;
+			case LEFT:  passed_leader = ((o->Left() / CSFI) <= (o->linkedobject->Left() / CSFI)); break;
+			case UP:    passed_leader = ((o->Top() / CSFI) <= (o->linkedobject->Top() / CSFI)); break;
+			case DOWN:  passed_leader = ((o->Bottom() / CSFI) >= (o->linkedobject->Bottom() / CSFI)); break;
 		}
 		
 		if (passed_leader)

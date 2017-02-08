@@ -159,7 +159,7 @@ void ai_boulder(Object *o)
 		case 11:
 		{
 			if ((++o->timer % 3) != 0)
-				o->x = o->xmark + (1 << CSF);
+				o->x = o->xmark + (1 * CSFI);
 			else
 				o->x = o->xmark;
 		}

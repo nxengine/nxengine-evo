@@ -28,7 +28,7 @@ void ai_misery_float(Object *o)
 	{
 		case 0:
 			o->state = 1;
-			o->x += (1 << CSF);	// check Undead Core intro to prove this is correct
+			o->x += (1 * CSFI);	// check Undead Core intro to prove this is correct
 			o->xmark = o->x;
 			o->ymark = o->y;
 			o->frame = 0;
@@ -42,7 +42,7 @@ void ai_misery_float(Object *o)
 			o->state = 11;
 			o->timer = 0;
 			o->animframe = 0;
-			o->yinertia = (1<<CSF);
+			o->yinertia = (1 * CSFI);
 		case 11:
 			if (o->y > o->ymark) o->yinertia -= 16;
 			if (o->y < o->ymark) o->yinertia += 16;
@@ -82,7 +82,7 @@ void ai_misery_float(Object *o)
 			if (o->timer == 30)
 			{
 				sound(SND_BUBBLE);
-				CreateObject(o->x, o->y - (16 << CSF), OBJ_MISERYS_BUBBLE);
+				CreateObject(o->x, o->y - (16 * CSFI), OBJ_MISERYS_BUBBLE);
 			}
 			
 			if (o->timer >= 50)
@@ -147,10 +147,10 @@ Object *target;
 				return;
 			}
 			
-			o->xmark = target->x - (6 << CSF);
-			o->ymark = target->y - (6 << CSF);
+			o->xmark = target->x - (6 * CSFI);
+			o->ymark = target->y - (6 * CSFI);
 			
-			ThrowObject(o, o->xmark, o->ymark, 0, (2 << CSF));
+			ThrowObject(o, o->xmark, o->ymark, 0, (2 * CSFI));
 			o->state = 1;
 			
 			// correct values: 0x3F0, 0xAE
@@ -160,8 +160,8 @@ Object *target;
 		case 1:
 			ANIMATE(1, 0, 1);
 			
-			if (abs(o->x - o->xmark) <= (3 << CSF) && \
-				abs(o->y - o->ymark) <= (3 << CSF))
+			if (abs(o->x - o->xmark) <= (3 * CSFI) && \
+				abs(o->y - o->ymark) <= (3 * CSFI))
 			{
 				o->state = 2;
 				o->frame = 2;
@@ -279,7 +279,7 @@ void ai_misery_stand(Object *o)
 				o->timer == 40 || \
 				o->timer == 50)
 			{
-				Object *shot = CreateObject(o->x+(16<<CSF), o->y, OBJ_IGOR_SHOT);
+				Object *shot = CreateObject(o->x+(16 * CSFI), o->y, OBJ_IGOR_SHOT);
 				shot->xinertia = 0x600;
 				shot->yinertia = random(-0x200, 0);
 				

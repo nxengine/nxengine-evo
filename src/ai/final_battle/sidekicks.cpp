@@ -182,13 +182,13 @@ void ai_misery_frenzied(Object *o)
 				
 				if (o->timer3 == OBJ_MISERY_CRITTER)
 				{
-					x = o->x + (random(-64, 64) << CSF);
-					y = o->y + (random(-32, 32) << CSF);
+					x = o->x + (random(-64, 64) * CSFI);
+					y = o->y + (random(-32, 32) * CSFI);
 				}
 				else
 				{
-					x = o->x + (random(-32, 32) << CSF);
-					y = o->y + (random(-64, 64) << CSF);
+					x = o->x + (random(-32, 32) * CSFI);
+					y = o->y + (random(-64, 64) * CSFI);
 				}
 				
 				if (x < MAPX(2)) x = MAPX(2);
@@ -270,12 +270,12 @@ static const int ang_table_right[] = { 0x58, 0x6C, 0x94, 0xA8 };
 	
 	if (o->dir == LEFT)
 	{
-		shot->x += (10 << CSF);
+		shot->x += (10 * CSFI);
 		shot->angle = ang_table_left[angindex];
 	}
 	else
 	{
-		shot->x -= (10 << CSF);
+		shot->x -= (10 * CSFI);
 		shot->angle = ang_table_right[angindex];
 	}
 	
@@ -655,8 +655,8 @@ int x;
 			FACEPLAYER;
 			o->flags &= ~FLAG_SHOOTABLE;
 			
-			if (player->x < o->x) x = player->x - (160<<CSF);
-							 else x = player->x + (160<<CSF);
+			if (player->x < o->x) x = player->x - (160 * CSFI);
+							 else x = player->x + (160 * CSFI);
 			
 			ThrowObject(o, x, player->y, 0, 0x600);
 			set_ignore_solid(o);
@@ -687,8 +687,8 @@ int x;
 // of the room, clears it otherwise.
 static void set_ignore_solid(Object *o)
 {
-	int map_right_half = ((map.xsize * TILE_W) << CSF) / 2;
-	int map_bottom_half = ((map.ysize * TILE_H) << CSF) / 2;
+	int map_right_half = ((map.xsize * TILE_W) * CSFI) / 2;
+	int map_bottom_half = ((map.ysize * TILE_H) * CSFI) / 2;
 	
 	o->flags &= ~FLAG_IGNORE_SOLID;
 	
@@ -770,7 +770,7 @@ static void sidekick_run_defeated(Object *o, int health)
 		{
 			o->yinertia += 0x20;
 			
-			#define FLOOR	(((13 * TILE_H) - 13) << CSF)
+			#define FLOOR	(((13 * TILE_H) - 13) * CSFI)
 			if (o->yinertia > 0 && o->y > FLOOR)
 			{
 				o->y = FLOOR;

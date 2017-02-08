@@ -99,7 +99,7 @@ void ai_null(Object *o)
 		// places where things were getting really crouded with entities.
 		if (o->dir == RIGHT)
 		{
-			o->y += (TILE_H << CSF);
+			o->y += (TILE_H * CSFI);
 			
 			// precedence hack for Boulder Chamber
 			if (game.curmap == STAGE_BOULDER_CHAMBER)
@@ -132,8 +132,8 @@ void ai_hvtrigger(Object *o)
 		// encloses only the object's tile itself.
 		o->hvt.x1 = o->x;
 		o->hvt.y1 = o->y;
-		o->hvt.x2 = o->x + ((TILE_W - 1) << CSF);
-		o->hvt.y2 = o->y + ((TILE_H - 1) << CSF);
+		o->hvt.x2 = o->x + ((TILE_W - 1) * CSFI);
+		o->hvt.y2 = o->y + ((TILE_H - 1) * CSFI);
 		
 		// now expand the trigger box as appropriate
 		if (o->flags & FLAG_SCRIPTONTOUCH)
@@ -144,12 +144,12 @@ void ai_hvtrigger(Object *o)
 		else if (o->hvt.is_horizontal)
 		{
 			o->hvt.x1 = 0;
-			o->hvt.x2 = (map.xsize * TILE_W) << CSF;
+			o->hvt.x2 = (map.xsize * TILE_W) * CSFI;
 		}
 		else
 		{
 			o->hvt.y1 = 0;
-			o->hvt.y2 = (map.ysize * TILE_H) << CSF;
+			o->hvt.y2 = (map.ysize * TILE_H) * CSFI;
 		}
 	}
 	
@@ -179,8 +179,8 @@ void ai_hvtrigger(Object *o)
 // project the Option 1 beam and set the hvtrigger's y1/y2 or x1/x2
 static void hv_project_beam(Object *o)
 {
-int tilex = (o->x >> CSF) / TILE_W;
-int tiley = (o->y >> CSF) / TILE_H;
+int tilex = (o->x / CSFI) / TILE_W;
+int tiley = (o->y / CSFI) / TILE_H;
 int x, y, t;
 	
 	if (!o->hvt.is_horizontal)
@@ -191,7 +191,7 @@ int x, y, t;
 			if (tileattr[t] & TA_SOLID) { y++; break; }
 		}
 		
-		o->hvt.y1 = (y * TILE_H) << CSF;
+		o->hvt.y1 = (y * TILE_H) * CSFI;
 		
 		for(y=tiley;y<map.ysize;y++)
 		{
@@ -199,7 +199,7 @@ int x, y, t;
 			if (tileattr[t] & TA_SOLID) { y--; break; }
 		}
 		
-		o->hvt.y2 = ((y * TILE_H) + (TILE_H - 1)) << CSF;
+		o->hvt.y2 = ((y * TILE_H) + (TILE_H - 1)) * CSFI;
 	}
 	else
 	{
@@ -209,7 +209,7 @@ int x, y, t;
 			if (tileattr[t] & TA_SOLID) { x++; break; }
 		}
 		
-		o->hvt.x1 = (x * TILE_W) << CSF;
+		o->hvt.x1 = (x * TILE_W) * CSFI;
 		
 		for(x=tilex;x<map.xsize;x++)
 		{
@@ -217,7 +217,7 @@ int x, y, t;
 			if (tileattr[t] & TA_SOLID) { x--; break; }
 		}
 		
-		o->hvt.x2 = ((x * TILE_W) + (TILE_W - 1)) << CSF;
+		o->hvt.x2 = ((x * TILE_W) + (TILE_W - 1)) * CSFI;
 	}
 }
 
@@ -241,7 +241,7 @@ void ai_xp(Object *o)
 		{
 			if (o->blockl)
 			{
-				if (o->onscreen || pdistly((SCREEN_HEIGHT - (SCREEN_HEIGHT / 3)) << CSF))
+				if (o->onscreen || pdistly((SCREEN_HEIGHT - (SCREEN_HEIGHT / 3)) * CSFI))
 					sound(SND_XP_BOUNCE);
 				
 				o->xinertia = 0x100;
@@ -267,7 +267,7 @@ void ai_xp(Object *o)
 				return;
 			}
 			
-			if (o->onscreen || pdistlx((SCREEN_WIDTH - (SCREEN_WIDTH / 3)) << CSF))
+			if (o->onscreen || pdistlx((SCREEN_WIDTH - (SCREEN_WIDTH / 3)) * CSFI))
 				sound(SND_XP_BOUNCE);
 			
 			o->yinertia = -0x280;
@@ -340,7 +340,7 @@ void ai_powerup(Object *o)
 			case 102:		// blinking (in left-fall mode)
 				if (++o->timer > 48)
 				{
-					effect(o->CenterX()-(1<<CSF), o->CenterY()-(1<<CSF), EFFECT_BONUSFLASH);
+					effect(o->CenterX()-(1 * CSFI), o->CenterY()-(1 * CSFI), EFFECT_BONUSFLASH);
 					o->Delete();
 					return;
 				}
@@ -361,8 +361,8 @@ void ai_powerup(Object *o)
 	{	// adjust position of map-spawned missiles
 		if (o->type == OBJ_MISSILE)
 		{
-			o->x += (3 << CSF);
-			o->y += (4 << CSF);
+			o->x += (3 * CSFI);
+			o->y += (4 * CSFI);
 		}
 		o->state = -1;
 	}
@@ -412,7 +412,7 @@ bool Handle_Falling_Left(Object *o)
 		
 		if (map.scrolltype == BK_FASTLEFT)
 		{
-			if (o->x < ((5 * TILE_W) << CSF)) o->Delete();		// went off screen in IronH
+			if (o->x < ((5 * TILE_W) * CSFI)) o->Delete();		// went off screen in IronH
 		}
 		
 		if (o->blockl && o->xinertia <= 0) o->xinertia = 0x40;
@@ -437,8 +437,8 @@ void ai_hidden_powerup(Object *o)
 		o->ChangeType((o->dir == LEFT) ? OBJ_HEART : OBJ_MISSILE);
 		if (o->type == OBJ_HEART)
 		{
-			o->x += (3 << CSF);
-			o->y += (4 << CSF);
+			o->x += (3 * CSFI);
+			o->y += (4 * CSFI);
 		}
 	}
 }
@@ -655,7 +655,7 @@ void ai_largedoor(Object *o)
 			if (o->dir==RIGHT)
 			{
 				//o->frame = 1;
-				o->x -= (TILE_W << CSF);
+				o->x -= (TILE_W * CSFI);
 			}
 			o->xmark = o->x;
 		break;
@@ -677,12 +677,12 @@ void ai_largedoor(Object *o)
 			px = (o->timer >> 3);
 			if (o->dir==LEFT)
 			{
-				o->x = o->xmark - (px << CSF);
+				o->x = o->xmark - (px * CSFI);
 				o->clipx1 = px;
 			}
 			else
 			{
-				o->x = o->xmark + (px << CSF);
+				o->x = o->xmark + (px * CSFI);
 				o->clipx2 = (16 - px);
 			}
 			
@@ -747,7 +747,7 @@ void ai_terminal(Object *o)
 		case 0:
 		case 1:
 			o->frame = 0;
-			if (pdistlx(8<<CSF) && pdistly2(16<<CSF, 8<<CSF))
+			if (pdistlx(8 * CSFI) && pdistly2(16 * CSFI, 8 * CSFI))
 			{
 				sound(SND_COMPUTER_BEEP);
 				o->frame = 1;
@@ -780,11 +780,11 @@ void ai_fan_vert(Object *o)
 	ANIMATE(0, 0, 2);
 	
 	// spawn droplet effects
-	if (pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF))
+	if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
 	{
 		if (!random(0, 5))
 		{
-			int x = o->x + (random(4, 12) << CSF);
+			int x = o->x + (random(4, 12) * CSFI);
 			int y = (blowdir == DOWN) ? o->Bottom() : o->y;
 			
 			Object *drop = CreateObject(x, y, OBJ_FAN_DROPLET);
@@ -793,7 +793,7 @@ void ai_fan_vert(Object *o)
 	}
 	
 	// blow player
-	if (pdistlx(8 << CSF) && pdistly(96 << CSF))
+	if (pdistlx(8 * CSFI) && pdistly(96 * CSFI))
 	{
 		if (blowdir == UP && player->y < o->y)
 			player->yinertia -= FAN_BLOW_FORCE;
@@ -815,12 +815,12 @@ void ai_fan_hoz(Object *o)
 	ANIMATE(0, 0, 2);
 	
 	// spawn droplet effects
-	if (pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF))
+	if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
 	{
 		if (!random(0, 5))
 		{
 			int x = (blowdir == LEFT) ? o->x : o->Right();
-			int y = o->y + (random(4, 12) << CSF);
+			int y = o->y + (random(4, 12) * CSFI);
 			
 			Object *drop = CreateObject(x, y, OBJ_FAN_DROPLET);
 			drop->dir = blowdir;
@@ -828,7 +828,7 @@ void ai_fan_hoz(Object *o)
 	}
 	
 	// blow player
-	if (pdistlx(96 << CSF) && pdistly(8 << CSF))
+	if (pdistlx(96 * CSFI) && pdistly(8 * CSFI))
 	{
 		if (blowdir == LEFT && player->x < o->x)
 			player->xinertia -= FAN_BLOW_FORCE;
@@ -859,8 +859,8 @@ void ai_fan_droplet(Object *o)
 			
 			o->dir = RIGHT;		// so frame is correct
 			
-			o->xinertia *= random((2 << CSF), (4 << CSF));
-			o->yinertia *= random((2 << CSF), (4 << CSF));
+			o->xinertia *= random((2 * CSFI), (4 * CSFI));
+			o->yinertia *= random((2 * CSFI), (4 * CSFI));
 		case 1:
 			ANIMATE_FWD(6);
 			if (o->frame > 4) o->Delete();
@@ -885,12 +885,12 @@ void ai_sprinkler(Object *o)
 	{
 		Object *drop;
 		
-		drop = CreateObject(o->CenterX() + (1<<CSF), \
-							o->CenterY() + (1<<CSF), \
+		drop = CreateObject(o->CenterX() + (1 * CSFI), \
+							o->CenterY() + (1 * CSFI), \
 							OBJ_WATER_DROPLET);
 		
-		drop->xinertia = random(-(2 << CSF), (2 << CSF));
-		drop->yinertia = random(-(3 << CSF), 384);
+		drop->xinertia = random(-(2 * CSFI), (2 * CSFI));
+		drop->yinertia = random(-(3 * CSFI), 384);
 	}
 }
 
@@ -898,11 +898,11 @@ void ai_sprinkler(Object *o)
 // generates small splash water droplets
 void ai_droplet_spawner(Object *o)
 {
-	if (pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF))
+	if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
 	{
 		if (!random(0, 80))
 		{
-			CreateObject(o->x + (random(2, (TILE_W - 2)) << CSF), o->y, OBJ_WATER_DROPLET);
+			CreateObject(o->x + (random(2, (TILE_W - 2)) * CSFI), o->y, OBJ_WATER_DROPLET);
 		}
 	}
 }
@@ -943,15 +943,15 @@ Object *ko;
 	{	// spawn smoke (broken motorcycle in Grass)
 		if (!random(0, 40))
 		{
-			ko = CreateObject(o->x + (random(-20, 20) << CSF), o->y, OBJ_SMOKE_CLOUD);
+			ko = CreateObject(o->x + (random(-20, 20) * CSFI), o->y, OBJ_SMOKE_CLOUD);
 			ko->xinertia = 0x100;
 			ko->yinertia = -0x200;
 		}
 	}
 	else
 	{	// spawn "bubbles" (IronH battle)
-		ko = CreateObject(o->x + (random(-160, 160) << CSF), \
-						  o->y + (random(-128, 128) << CSF), \
+		ko = CreateObject(o->x + (random(-160, 160) * CSFI), \
+						  o->y + (random(-128, 128) * CSFI), \
 						  OBJ_FAN_DROPLET);
 		
 		ko->dir = RIGHT;
@@ -1009,13 +1009,13 @@ void ai_straining(Object *o)
 		{
 			if (o->dir == LEFT)
 			{	// curly's straining
-				o->x += (14 << CSF);
-				o->y -= (18 << CSF);
+				o->x += (14 * CSFI);
+				o->y -= (18 * CSFI);
 			}
 			else
 			{	// player's straining
-				o->x = player->x - (6 << CSF);
-				o->y = player->y - (2 << CSF);
+				o->x = player->x - (6 * CSFI);
+				o->y = player->y - (2 * CSFI);
 			}
 			
 			o->state = 1;
@@ -1061,7 +1061,7 @@ void ai_scroll_controller(Object *o)
 		case 10:
 		{
 			o->x = player->x;
-			o->y = player->y - (32 << CSF);
+			o->y = player->y - (32 * CSFI);
 		}
 		break;
 		
@@ -1071,10 +1071,10 @@ void ai_scroll_controller(Object *o)
 		{
 			switch(o->dir)
 			{
-				case LEFT:	o->x -= (2 << CSF); break;
-				case UP:	o->y -= (2 << CSF); break;
-				case RIGHT: o->x += (2 << CSF); break;
-				case DOWN:	o->y += (2 << CSF); break;
+				case LEFT:	o->x -= (2 * CSFI); break;
+				case UP:	o->y -= (2 * CSFI); break;
+				case RIGHT: o->x += (2 * CSFI); break;
+				case DOWN:	o->y += (2 * CSFI); break;
 			}
 			
 			// player is invisible during this part. dragging him along is
@@ -1088,7 +1088,7 @@ void ai_scroll_controller(Object *o)
 		case 30:
 		{
 			o->x = player->x;
-			o->y = player->y + (80 << CSF);
+			o->y = player->y + (80 * CSFI);
 		}
 		break;
 		
@@ -1206,7 +1206,7 @@ void onspawn_spike_small(Object *o)
 	// extraneous and invisible because they are embedded
 	// in the wall, but due to slight engine differences
 	// you can still sometimes get hurt by them in our engine.
-	int tile = map.tiles[(o->CenterX() >> CSF) / TILE_W][(o->CenterY() >> CSF) / TILE_H];
+	int tile = map.tiles[(o->CenterX() / CSFI) / TILE_W][(o->CenterY() / CSFI) / TILE_H];
 	if (tileattr[tile] & TA_SOLID)
 	{
 		stat("onspawn_spike_small: spike %08x embedded in wall, deleting", o);

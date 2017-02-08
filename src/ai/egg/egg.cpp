@@ -45,7 +45,7 @@ void ai_basil(Object *o)
 		{
 			o->xinertia -= 0x40;
 			
-			if (o->blockl || ((player->x - o->x) >= (192 << CSF)))
+			if (o->blockl || ((player->x - o->x) >= (192 * CSFI)))
 			{
 				if (o->blockl) o->xinertia = 0;
 				o->state = 2;
@@ -57,7 +57,7 @@ void ai_basil(Object *o)
 		{
 			o->xinertia += 0x40;
 			
-			if (o->blockr || ((o->x - player->x) >= (192 << CSF)))
+			if (o->blockr || ((o->x - player->x) >= (192 * CSFI)))
 			{
 				if (o->blockr) o->xinertia = 0;
 				o->state = 1;
@@ -189,7 +189,7 @@ void ai_beetle_horiz(Object *o)
 	}
 	else
 	{	// waiting on wall
-		if (abs(o->y - player->y) < (12<<CSF))
+		if (abs(o->y - player->y) < (12 * CSFI))
 		{
 			if ((o->dir == RIGHT && (player->x > o->x)) || \
 				(o->dir == LEFT && (player->x < o->x)))
@@ -219,7 +219,7 @@ void ai_beetle_freefly(Object *o)
 			// has player made it to our position yet?
 			// (we are invisible right now, our position on the map
 			//  is a marker for when we should fly onto the screen)
-			if (pdistlx(TILE_W << CSF))
+			if (pdistlx(TILE_W * CSFI))
 			{
 				o->flags |= (FLAG_SHOOTABLE | FLAG_SOLID_MUSHY);
 				o->damage = 2;
@@ -233,12 +233,12 @@ void ai_beetle_freefly(Object *o)
 				// come on screen
 				if (o->dir == LEFT)
 				{
-					o->x = player->x + (256 << CSF);
+					o->x = player->x + (256 * CSFI);
 					o->xinertia = -0x2FF;
 				}
 				else
 				{
-					o->x = player->x - (256 << CSF);
+					o->x = player->x - (256 * CSFI);
 					o->xinertia = 0x2FF;
 				}
 			}
@@ -285,7 +285,7 @@ void ai_giant_beetle(Object *o)
 			o->state = 1;
 		case 1:
 		{
-			if (pdistlx(TILE_W << CSF))
+			if (pdistlx(TILE_W * CSFI))
 			{
 				o->flags |= FLAG_SHOOTABLE;
 				o->damage = 6;
@@ -298,12 +298,12 @@ void ai_giant_beetle(Object *o)
 				
 				if (o->dir == LEFT)
 				{
-					o->x = player->x + (256 << CSF);
+					o->x = player->x + (256 * CSFI);
 					o->xinertia = -0x2FF;
 				}
 				else
 				{
-					o->x = player->x - (256 << CSF);
+					o->x = player->x - (256 * CSFI);
 					o->xinertia = 0x2FF;
 				}
 			}
@@ -329,7 +329,7 @@ void ai_giant_beetle(Object *o)
 			
 			// if player runs too far away from us reset to our
 			// waiting state and original position.
-			if (!pdistlx((SCREEN_WIDTH + 80) << CSF))
+			if (!pdistlx((SCREEN_WIDTH + 80) * CSFI))
 			{
 				o->state = 0;
 				o->xinertia = 0;

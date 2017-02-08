@@ -786,8 +786,8 @@ int cmdip;
 			break;
 			
 			case OP_MOV:
-				player->x = (parm[0] * TILE_W) << CSF;
-				player->y = (parm[1] * TILE_H) << CSF;
+				player->x = (parm[0] * TILE_W) * CSFI;
+				player->y = (parm[1] * TILE_H) * CSFI;
 				player->xinertia = player->yinertia = 0;
 				player->lookaway = false;
 			break;
@@ -924,8 +924,8 @@ int cmdip;
 				if ((o = FindObjectByID2(parm[0])))
 				{
 					SetCSDir(o, parm[3]);
-					o->x = (parm[1] * TILE_W) << CSF;
-					o->y = (parm[2] * TILE_H) << CSF;
+					o->x = (parm[1] * TILE_W) * CSFI;
+					o->y = (parm[2] * TILE_H) * CSFI;
 				}
 			break;
 			
@@ -1007,8 +1007,8 @@ int cmdip;
 				map.tiles[x][y] = parm[2];
 				
 				// get smoke coords
-				x = ((x * TILE_W) + (TILE_W / 2)) << CSF;
-				y = ((y * TILE_H) + (TILE_H / 2)) << CSF;
+				x = ((x * TILE_W) + (TILE_W / 2)) * CSFI;
+				y = ((y * TILE_H) + (TILE_H / 2)) * CSFI;
 				// when tiles are CMP'd during a PRI the smoke is not visible
 				// until the game is released, so I came up with this scheme
 				// to make that happen. See the "you see a button" destroyable

@@ -101,7 +101,7 @@ void ai_curly_boss(Object *o)
 			{	// time to fire
 				
 				// check if player is trying to jump over
-				if ((abs(o->x - player->x) < (32<<CSF)) && ((player->y + (10 << CSF)) < o->y))
+				if ((abs(o->x - player->x) < (32 * CSFI)) && ((player->y + (10 * CSFI)) < o->y))
 				{	// shoot up instead
 					o->frame = 2;
 					curlyboss_fire(o, UP);
@@ -164,12 +164,12 @@ static void curlyboss_fire(Object *o, int dir)
 	{
 		case LEFT:
 			shot->xinertia = -4096;
-			o->apply_xinertia(1 << CSF);
+			o->apply_xinertia(1 * CSFI);
 		break;
 		
 		case RIGHT:
 			shot->xinertia = 4096;
-			o->apply_xinertia(-(1 << CSF));
+			o->apply_xinertia(-(1 * CSFI));
 		break;
 		
 		case UP:

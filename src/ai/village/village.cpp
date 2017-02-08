@@ -29,14 +29,14 @@ void c------------------------------() {}
 // scared toroko attacking in Shack
 void ai_toroko_shack(Object *o)
 {
-	//debug("Y:%d  Yinertia:%d  blockd:%d  flags:%d", o->y>>CSF, o->yinertia, o->blockd, o->flags);
+	//debug("Y:%d  Yinertia:%d  blockd:%d  flags:%d", o->y/CSFI, o->yinertia, o->blockd, o->flags);
 	
 	switch(o->state)
 	{
 		case 0:
 			o->timer = 0;
-			o->yinertia = -(2 << CSF);
-			o->y -= (2 << CSF);
+			o->yinertia = -(2 * CSFI);
+			o->y -= (2 * CSFI);
 			o->flags |= FLAG_IGNORE_SOLID;
 			o->state = 1;
 		case 1:
@@ -81,7 +81,7 @@ void ai_toroko_shack(Object *o)
 			{
 				o->state = 4;
 				o->frame = 4;
-				o->yinertia = -(2 << CSF);
+				o->yinertia = -(2 * CSFI);
 				o->flags &= ~FLAG_SHOOTABLE;
 				o->damage = 0;
 				o->timer = 0;
@@ -228,7 +228,7 @@ void ai_gravekeeper(Object *o)
 			FACEPLAYER;
 			
 			// start walking when player comes near
-			if (pdistlx(128 << CSF) && pdistly2(48<<CSF, 32<<CSF))
+			if (pdistlx(128 * CSFI) && pdistly2(48 * CSFI, 32 * CSFI))
 			{
 				o->state = 2;
 				o->animtimer = 0;
@@ -251,7 +251,7 @@ void ai_gravekeeper(Object *o)
 			
 			// reached knife range of player?
 			// (no, he doesn't check Y)
-			if (pdistlx(10 << CSF))
+			if (pdistlx(10 * CSFI))
 			{
 				o->state = 3;
 				o->timer = 0;

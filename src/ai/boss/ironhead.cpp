@@ -88,8 +88,8 @@ void IronheadBoss::Run(void)
 			
 			if ((o->timer & 3)==0)
 			{
-				CreateObject((random(15, 18) * TILE_W) << CSF, \
-						  	(random(ARENA_TOP, ARENA_BOTTOM) * TILE_H) << CSF, \
+				CreateObject((random(15, 18) * TILE_W) * CSFI, \
+						  	(random(ARENA_TOP, ARENA_BOTTOM) * TILE_H) * CSFI, \
 						  	OBJ_IRONH_FISHY);
 			}
 		}
@@ -107,7 +107,7 @@ void IronheadBoss::Run(void)
 			else
 			{	// returning from right side of screen
 				o->x = 0x5a000;
-				o->y = (random(ARENA_TOP, ARENA_BOTTOM) * TILE_H) << CSF;
+				o->y = (random(ARENA_TOP, ARENA_BOTTOM) * TILE_H) * CSFI;
 			}
 			
 			o->xmark = o->x;
@@ -166,8 +166,8 @@ void IronheadBoss::Run(void)
 					case 320:
 					{
 						Object *shot = SpawnObjectAtActionPoint(o, OBJ_IRONH_SHOT);
-						shot->xinertia = (random(-3, 0) << CSF);
-						shot->yinertia = (random(-3, 3) << CSF);
+						shot->xinertia = (random(-3, 0) * CSFI);
+						shot->yinertia = (random(-3, 3) * CSFI);
 						sound(SND_EM_FIRE);
 					}
 					break;
@@ -197,10 +197,10 @@ void IronheadBoss::Run(void)
 		}
 		case IRONH_DEFEATED+1:			// retreat back to left...
 		{
-			o->xmark -= (1<<CSF);
+			o->xmark -= (1 * CSFI);
 			
-			o->x = o->xmark + (random(-1, 1) << CSF);
-			o->y = o->ymark + (random(-1, 1) << CSF);
+			o->x = o->xmark + (random(-1, 1) * CSFI);
+			o->y = o->ymark + (random(-1, 1) * CSFI);
 			
 			o->timer++;
 			if ((o->timer & 3)==0) ironh_smokecloud(o);
@@ -228,8 +228,8 @@ static void ironh_smokecloud(Object *o)
 {
 Object *smoke;
 
-	smoke = CreateObject(o->CenterX() + (random(-128, 128)<<CSF), \
-						 o->CenterY() + (random(-64, 64)<<CSF),
+	smoke = CreateObject(o->CenterX() + (random(-128, 128) * CSFI), \
+						 o->CenterY() + (random(-64, 64) * CSFI),
 						 OBJ_SMOKE_CLOUD);
 	
 	smoke->xinertia = random(-128, 128);
@@ -271,7 +271,7 @@ void ai_ironh_fishy(Object *o)
 		{
 			ANIMATE(2, 2, 3);
 			
-			if (o->x < (48<<CSF))
+			if (o->x < (48 * CSFI))
 				o->Delete();
 		}
 		break;
@@ -322,7 +322,7 @@ Object *brick;
 	if (!o->timer)
 	{	// time to spawn a block
 		o->state = 0;
-		brick = CreateObject(o->x, o->y + (random(-20, 20) << CSF), OBJ_IRONH_BRICK);
+		brick = CreateObject(o->x, o->y + (random(-20, 20) * CSFI), OBJ_IRONH_BRICK);
 		brick->dir = o->dir;
 	}
 	else o->timer--;
@@ -351,13 +351,13 @@ void ai_ironh_brick(Object *o)
 	}
 	
 	// bounce off the walls
-	if (o->yinertia < 0 && o->y <= (16<<CSF))
+	if (o->yinertia < 0 && o->y <= (16 * CSFI))
 	{
 		effect(o->CenterX(), o->y, EFFECT_BONKPLUS);
 		o->yinertia = -o->yinertia;
 	}
 	
-	if (o->yinertia > 0 && (o->Bottom() >= (239<<CSF)))
+	if (o->yinertia > 0 && (o->Bottom() >= (239 * CSFI)))
 	{
 		effect(o->CenterX(), o->Bottom(), EFFECT_BONKPLUS);
 		o->yinertia = -o->yinertia;
@@ -365,7 +365,7 @@ void ai_ironh_brick(Object *o)
 	
 	
 	if ((o->xinertia < 0 && (o->x < -0x2000)) ||\
-		(o->x > (map.xsize * TILE_W) << CSF))
+		(o->x > (map.xsize * TILE_W) * CSFI))
 	{
 		o->Delete();
 	}
@@ -394,7 +394,7 @@ void ai_ikachan_spawner(Object *o)
 			o->timer++;
 			if ((o->timer & 3) == 1)
 			{
-				CreateObject(o->x, o->y + ((random(0, 13) * TILE_H) << CSF), OBJ_IKACHAN);
+				CreateObject(o->x, o->y + ((random(0, 13) * TILE_H) * CSFI), OBJ_IKACHAN);
 			}
 		}
 		break;
@@ -448,14 +448,14 @@ void ai_ikachan(Object *o)
 		break;
 	}
 	
-	if (o->x > 720<<CSF) o->Delete();
+	if (o->x > 720 * CSFI) o->Delete();
 }
 
 void ai_motion_wall(Object *o)		// the walls at the top and bottom of the arena
 {
-	o->x -= (6 << CSF);
+	o->x -= (6 * CSFI);
 	
-	if (o->x < (((9 * TILE_W) - 8) << CSF))
-		o->x += (SCREEN_WIDTH + 160 + 32) << CSF;
+	if (o->x < (((9 * TILE_W) - 8) * CSFI))
+		o->x += (SCREEN_WIDTH + 160 + 32) * CSFI;
 }
 

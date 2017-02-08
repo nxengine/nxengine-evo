@@ -385,8 +385,8 @@ extern int flipacceltime;
 		}
 		
 		// get object's onscreen position
-		scr_x = (o->x >> CSF) - (map.displayed_xscroll >> CSF);
-		scr_y = (o->y >> CSF) - (map.displayed_yscroll >> CSF);
+		scr_x = (o->x / CSFI) - (map.displayed_xscroll / CSFI);
+		scr_y = (o->y / CSFI) - (map.displayed_yscroll / CSFI);
 		scr_x -= sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.x;
 		scr_y -= sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.y;
 		

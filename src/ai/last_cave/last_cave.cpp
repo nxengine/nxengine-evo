@@ -45,7 +45,7 @@ void ai_proximity_press_vert(Object *o)
 	{
 		case 0:
 		{
-			if (pdistlx(8<<CSF) && pdistly2(8<<CSF, 128<<CSF) && \
+			if (pdistlx(8 * CSFI) && pdistly2(8 * CSFI, 128 * CSFI) && \
 				!o->blockd)
 			{
 				o->state = 10;
@@ -118,14 +118,14 @@ void ai_critter_hopping_red(Object *o)
 			}
 			else if (++o->timer >= 8)
 			{
-				if (pdistly((5 * TILE_H) << CSF))
+				if (pdistly((5 * TILE_H) * CSFI))
 				{
-					if (pdistlx((6 * TILE_W) << CSF))
+					if (pdistlx((6 * TILE_W) * CSFI))
 					{
 						o->state = 1;
 						o->timer = 0;
 					}
-					else if (pdistlx((9 * TILE_W) << CSF))
+					else if (pdistlx((9 * TILE_W) * CSFI))
 					{
 						o->frame = 1;
 					}
@@ -181,7 +181,7 @@ void ai_lava_drip_spawner(Object *o)
 		case 0:
 		{
 			o->sprite = SPR_LAVA_DRIP;
-			o->x += (4 << CSF);
+			o->x += (4 * CSFI);
 			o->timer = (o->id2 - o->id1);
 			o->state = 1;
 		}
@@ -255,7 +255,7 @@ void ai_red_bat_spawner(Object *o)
 			if (--o->timer < 0)
 			{
 				Object *bat = CreateObject(o->CenterX(), \
-										   o->CenterY() + random(-32<<CSF, 32<<CSF), \
+										   o->CenterY() + random(-32 * CSFI, 32 * CSFI), \
 										   OBJ_RED_BAT);
 				bat->x -= (bat->Width() / 2);
 				bat->y -= (bat->Height() / 2);
@@ -296,7 +296,7 @@ void ai_red_bat(Object *o)
 		break;
 	}
 	
-	if (o->x < 0 || o->x > (map.xsize * TILE_W) << CSF)
+	if (o->x < 0 || o->x > (map.xsize * TILE_W) * CSFI)
 	{
 		effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
 		o->Delete();
@@ -481,9 +481,9 @@ void ai_press_vert(Object *o)
 		case 0:
 		{
 			o->state = 1;
-			o->y -= (4 << CSF);
+			o->y -= (4 * CSFI);
 			
-			if (pdistlx((8<<CSF)) && pdistly2((8<<CSF), (128<<CSF)))
+			if (pdistlx((8 * CSFI)) && pdistly2((8 * CSFI), (128 * CSFI)))
 			{
 				o->state = 5;
 			}

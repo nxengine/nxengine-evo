@@ -43,8 +43,8 @@
 #define STATE_FISHSPAWNER_FIRE		10
 #define STATE_TARGET_FIRE			10
 
-#define DOORS_OPEN_DIST			(32 << CSF)		// how far the doors open
-#define DOORS_OPEN_FISHY_DIST	(20 << CSF)		// how far the doors open during fish-missile phase
+#define DOORS_OPEN_DIST			(32 * CSFI)		// how far the doors open
+#define DOORS_OPEN_FISHY_DIST	(20 * CSFI)		// how far the doors open during fish-missile phase
 
 // the treads start moving at slightly different times
 // which we change direction, etc.
@@ -101,7 +101,7 @@ int i;
 	if (o->state == 0 || (!X.initilized && o->state != STATE_X_APPEAR))
 	{
 		o->hp = 1;
-		o->x = -(SCREEN_WIDTH << CSF);
+		o->x = -(SCREEN_WIDTH * CSFI);
 		return;
 	}
 	
@@ -321,8 +321,8 @@ int i;
 			if ((o->timer % 8) == 0)
 				sound(SND_ENEMY_HURT_BIG);
 			
-			SmokePuff(o->CenterX() + (random(-72, 72) << CSF),
-					  o->CenterY() + (random(-64, 64) << CSF));
+			SmokePuff(o->CenterX() + (random(-72, 72) * CSFI),
+					  o->CenterY() + (random(-64, 64) * CSFI));
 			
 			if (o->timer > 100)
 			{
@@ -338,7 +338,7 @@ int i;
 			game.quaketime = 40;
 			if (++o->timer > 50)
 			{
-				CreateObject(o->x, o->y - (24 << CSF), OBJ_X_DEFEATED);
+				CreateObject(o->x, o->y - (24 * CSFI), OBJ_X_DEFEATED);
 				DeleteMonster();
 				return;
 			}
@@ -491,7 +491,7 @@ void XBoss::run_tread(int index)
 	// determine if player is in a position where he could get run over.
 	if (o->state > STATE_TREAD_STOPPED && o->xinertia != 0)
 	{
-		if (abs(player->y - o->CenterY()) <= (5 << CSF))
+		if (abs(player->y - o->CenterY()) <= (5 * CSFI))
 			o->damage = 10;
 		else
 			o->damage = 0;
@@ -514,22 +514,22 @@ void XBoss::run_body(int i)
 	// ...and place our center pixel at those coordinates.
 	int dx = (sprites[body[i]->sprite].w / 2) - 8;
 	int dy = (sprites[body[i]->sprite].h / 2) - 8;
-	body[i]->x -= dx << CSF;
-	body[i]->y -= dy << CSF;
+	body[i]->x -= dx * CSFI;
+	body[i]->y -= dy * CSFI;
 	
 	// tweaks
 	if (i == UL || i == LL)
 	{
-		body[i]->x -= (6 << CSF);
+		body[i]->x -= (6 * CSFI);
 	}
 	else
 	{
-		body[i]->x += (7 << CSF);
+		body[i]->x += (7 * CSFI);
 	}
 	
 	if (i == LL || i == LR)
 	{
-		body[i]->y += (8 << CSF);
+		body[i]->y += (8 * CSFI);
 	}
 
 }
@@ -573,7 +573,7 @@ void XBoss::run_door(int index)
 		// doors opening all the way
 		case STATE_DOOR_OPENING:
 		{
-			o->xmark += (1 << CSF);
+			o->xmark += (1 * CSFI);
 			
 			if (o->xmark >= DOORS_OPEN_DIST)
 			{
@@ -586,7 +586,7 @@ void XBoss::run_door(int index)
 		// doors opening partially for fish-missile launchers to fire
 		case STATE_DOOR_OPENING_PARTIAL:
 		{
-			o->xmark += (1 << CSF);
+			o->xmark += (1 * CSFI);
 			
 			if (o->xmark >= DOORS_OPEN_FISHY_DIST)
 			{
@@ -599,7 +599,7 @@ void XBoss::run_door(int index)
 		// doors closing
 		case STATE_DOOR_CLOSING:
 		{
-			o->xmark -= (1 << CSF);
+			o->xmark -= (1 * CSFI);
 			if (o->xmark <= 0)
 			{
 				o->xmark = 0;
@@ -643,8 +643,8 @@ void XBoss::run_fishy_spawner(int index)
 			
 			// keep appropriate position relative to main object
 			//                               UL          UR         LL         LR
-			static const int xoffs[]   = { -64 <<CSF,  76 <<CSF, -64 <<CSF,  76 <<CSF };
-			static const int yoffs[]   = {  27 <<CSF,  27 <<CSF, -16 <<CSF, -16 <<CSF };
+			static const int xoffs[]   = { -64 * CSFI,  76 * CSFI, -64 * CSFI,  76 * CSFI };
+			static const int yoffs[]   = {  27 * CSFI,  27 * CSFI, -16 * CSFI, -16 * CSFI };
 			o->x = (mainobject->x + xoffs[index]);
 			o->y = (mainobject->y + yoffs[index]);
 			
@@ -703,8 +703,8 @@ void XBoss::run_target(int index)
 	
 	// keep appropriate position on internals
 	//                               UL          UR         LL         LR
-	static const int xoffs[] = { -22 <<CSF,  28 <<CSF, -15 <<CSF,  17 <<CSF };
-	static const int yoffs[] = { -16 <<CSF, -16 <<CSF,  14 <<CSF,  14 <<CSF };
+	static const int xoffs[] = { -22 * CSFI,  28 * CSFI, -15 * CSFI,  17 * CSFI };
+	static const int yoffs[] = { -16 * CSFI, -16 * CSFI,  14 * CSFI,  14 * CSFI };
 	
 	o->x = internals->x + xoffs[index];
 	o->y = internals->y + yoffs[index];
@@ -729,8 +729,8 @@ int i;
 
 	mainobject->hp = 700;
 	mainobject->state = 1;
-	mainobject->x = (128 * TILE_W) << CSF;
-	mainobject->y = (200 << CSF);
+	mainobject->x = (128 * TILE_W) * CSFI;
+	mainobject->y = (200 * CSFI);
 	mainobject->flags = FLAG_IGNORE_SOLID;
 	
 	// put X behind the flying gaudis
@@ -748,7 +748,7 @@ int i;
 	for(i=0;i<4;i++)
 	{
 		int x = (i == UL || i == LL) ? 0xf8000 : 0x108000;
-		int y = (i == UL || i == UR) ? 0x12000 : (0x20000 - (16 << CSF));
+		int y = (i == UL || i == UR) ? 0x12000 : (0x20000 - (16 * CSFI));
 		int sprite = (i == UL || i == UR) ? SPR_X_TREAD_UPPER : SPR_X_TREAD_LOWER;
 		
 		treads[i] = CreateTread(x, y, sprite);
@@ -933,14 +933,14 @@ void ai_x_defeated(Object *o)
 			}
 			
 			// three-position shake
-			o->x += (o->timer & 2) ? (1 << CSF) : -(1 << CSF);
+			o->x += (o->timer & 2) ? (1 * CSFI) : -(1 * CSFI);
 		}
 		break;
 		
 		case 2:
 		{
 			o->yinertia += 0x40;
-			if (o->y > (map.ysize * TILE_H) << CSF) o->Delete();
+			if (o->y > (map.ysize * TILE_H) * CSFI) o->Delete();
 		}
 		break;
 	}

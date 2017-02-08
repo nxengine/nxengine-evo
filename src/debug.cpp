@@ -85,7 +85,7 @@ void DrawDebug(void)
 			player->hp = player->maxHealth;
 		}
 		
-		debug("%d,%d", (player->x>>CSF)/TILE_W, (player->y>>CSF)/TILE_H);
+		debug("%d,%d", (player->x/CSFI)/TILE_W, (player->y/CSFI)/TILE_H);
 		debug("[%c%c%c%c]", player->blockl?'l':' ', player->blockr?'r':' ', player->blocku?'u':' ', player->blockd?'d':' ');
 		//debug("%d", player->xinertia);
 		//debug("%d", player->yinertia);*/
@@ -153,13 +153,13 @@ void DrawBoundingBoxes()
 
 static void draw_pointlist(Object *o, SIFPointList *points)
 {
-	int xoff = (o->x >> CSF);
-	int yoff = (o->y >> CSF);
+	int xoff = (o->x / CSFI);
+	int yoff = (o->y / CSFI);
 	
 	for(int i=0;i<points->count;i++)
 	{
-		DebugPixel((xoff + points->point[i].x) << CSF, \
-			(yoff + points->point[i].y) << CSF, 255, 0, 255);
+		DebugPixel((xoff + points->point[i].x) * CSFI, \
+			(yoff + points->point[i].y) * CSFI, 255, 0, 255);
 	}
 }
 
@@ -314,10 +314,10 @@ uint8_t r, g, b;
 
 	for(i=0;i<ndebugmarks;i++)
 	{
-		x = (debugmarks[i].x >> CSF) - (map.displayed_xscroll >> CSF);
-		y = (debugmarks[i].y >> CSF) - (map.displayed_yscroll >> CSF);
-		x2 = (debugmarks[i].x2 >> CSF) - (map.displayed_xscroll >> CSF);
-		y2 = (debugmarks[i].y2 >> CSF) - (map.displayed_yscroll >> CSF);
+		x = (debugmarks[i].x / CSFI) - (map.displayed_xscroll / CSFI);
+		y = (debugmarks[i].y / CSFI) - (map.displayed_yscroll / CSFI);
+		x2 = (debugmarks[i].x2 / CSFI) - (map.displayed_xscroll / CSFI);
+		y2 = (debugmarks[i].y2 / CSFI) - (map.displayed_yscroll / CSFI);
 		r = debugmarks[i].r;
 		g = debugmarks[i].g;
 		b = debugmarks[i].b;
@@ -386,8 +386,8 @@ void crosshair(int x, int y)
 	debugHline(y, 0, 255, 0);
 }
 
-void DebugPixelNonCSF(int x, int y, uint8_t r, uint8_t g, uint8_t b) { DebugPixel(x<<CSF,y<<CSF,r,g,b); }
-void DebugCrosshairNonCSF(int x, int y, uint8_t r, uint8_t g, uint8_t b) { DebugCrosshair(x<<CSF,y<<CSF,r,g,b); }
+void DebugPixelNonCSF(int x, int y, uint8_t r, uint8_t g, uint8_t b) { DebugPixel(x * CSFI, y * CSFI, r, g, b); }
+void DebugCrosshairNonCSF(int x, int y, uint8_t r, uint8_t g, uint8_t b) { DebugCrosshair(x * CSFI, y * CSFI, r, g, b); }
 
 void debugVline(int x, uint8_t r, uint8_t g, uint8_t b)
 {
@@ -408,12 +408,12 @@ void debugtile(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
 int x1, y1, x2, y2;
 
-	x *= (TILE_W << CSF);
-	y *= (TILE_H << CSF);
+	x *= (TILE_W * CSFI);
+	y *= (TILE_H * CSFI);
 	
 	x1 = x; y1 = y;
-	x2 = x1 + (TILE_W << CSF);
-	y2 = y1 + (TILE_H << CSF);
+	x2 = x1 + (TILE_W * CSFI);
+	y2 = y1 + (TILE_H * CSFI);
 	AddDebugMark(x1, y1, x2, y2, DM_BOX, r, g, b);
 }
 

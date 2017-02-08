@@ -39,7 +39,7 @@ void onspawn_balrog(Object *o)
 			// I'm not sure why this is otherwise wrong.
 			if (GetCurrentScript() == 600)
 			{
-				o->x -= (6 << CSF);
+				o->x -= (6 * CSFI);
 			}
 		}
 	}
@@ -110,7 +110,7 @@ bool fall = true;
 		case 21:
 		{
 			o->timer2++;
-			o->x += ((o->timer2 >> 1) & 1) ? (1<<CSF) : -(1<<CSF);
+			o->x += ((o->timer2 >> 1) & 1) ? (1 * CSFI) : -(1 * CSFI);
 			
 			if (++o->timer > 100)
 				o->state = 10;
@@ -184,9 +184,9 @@ bool fall = true;
 		case 81:
 		{
 			if (++o->timer & 2)
-				o->x += (1 << CSF);
+				o->x += (1  *  CSFI);
 			else
-				o->x -= (1 << CSF);
+				o->x -= (1  *  CSFI);
 		}
 		break;
 		
@@ -223,10 +223,10 @@ bool fall = true;
 			fall = false;
 			
 			// bust through ceiling
-			int y = ((o->y + (4<<CSF)) >> CSF) / TILE_H;
+			int y = ((o->y + (4 * CSFI)) / CSFI) / TILE_H;
 			if (y < 35 && y >= 0)
 			{
-				int x = (o->CenterX() >> CSF) / TILE_W;
+				int x = (o->CenterX() / CSFI) / TILE_W;
 				
 				if (map.tiles[x][y] != 0)
 				{
@@ -241,7 +241,7 @@ bool fall = true;
 				}
 			}
 			
-			if (o->Bottom() < -(20<<CSF))
+			if (o->Bottom() < -(20 * CSFI))
 			{
 				quake(30, 0);
 				o->Delete();
@@ -336,7 +336,7 @@ void ai_balrog_bust_in(Object *o)
 	{
 		case 0:
 			SmokeClouds(o, 10, 8, 8);
-			o->y += (10 << CSF);
+			o->y += (10 * CSFI);
 			o->yinertia = -0x100;
 			
 			sound(SND_BLOCK_DESTROY);

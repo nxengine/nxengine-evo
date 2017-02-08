@@ -51,13 +51,13 @@ void ai_night_spirit(Object *o)
 			o->state = NS_WAIT;
 			o->nxflags |= NXFLAG_SLOW_WHEN_HURT;
 			o->invisible = true;
-			o->ymark = o->y + (12 << CSF);
+			o->ymark = o->y + (12 * CSFI);
 		}
 		case NS_WAIT:
 		{
-			if (pdistly((TILE_H / 2) << CSF))
+			if (pdistly((TILE_H / 2) * CSFI))
 			{
-				static const int distance = (SCREEN_HEIGHT << CSF);
+				static const int distance = (SCREEN_HEIGHT * CSFI);
 				o->y += (o->dir == RIGHT) ? distance : -distance;
 				
 				o->state = NS_SEEK_PLAYER;
@@ -125,7 +125,7 @@ void ai_night_spirit(Object *o)
 			o->yinertia += (o->y > o->ymark) ? -0x40 : 0x40;
 			LIMITY(0x400);
 			
-			if (abs(o->y - o->ymark) < (SCREEN_HEIGHT/2)<<CSF)
+			if (abs(o->y - o->ymark) < (SCREEN_HEIGHT/2) * CSFI)
 			{
 				o->state = NS_GUARD_SET_POINT;
 			}
@@ -141,7 +141,7 @@ void ai_night_spirit(Object *o)
 			LIMITY(0x400);
 			
 			// and if player appears again...
-			if (pdistly(SCREEN_HEIGHT << CSF))
+			if (pdistly(SCREEN_HEIGHT * CSFI))
 			{	// ..jump out and fire immediately
 				o->state = NS_PREPARE_FIRE;
 				o->timer = 0;
@@ -159,10 +159,10 @@ void ai_night_spirit(Object *o)
 		if (o->blocku) o->yinertia = 0x200;
 		if (o->blockd) o->yinertia = -0x200;
 		
-		//debugHline(o->ymark - (SCREEN_HEIGHT<<CSF), 0, 255, 0);
+		//debugHline(o->ymark - (SCREEN_HEIGHT  * CSFI), 0, 255, 0);
 		
 		// avoid leaving designated area
-		if (abs(o->y - o->ymark) > SCREEN_HEIGHT<<CSF)
+		if (abs(o->y - o->ymark) > SCREEN_HEIGHT * CSFI)
 		{
 			if (o->state != NS_FIRING)
 			{
@@ -306,8 +306,8 @@ void ai_sky_dragon(Object *o)
 			o->frame = 2;
 			o->animtimer = 0;
 			
-			o->xmark = o->x - (6 << CSF);
-			o->ymark = o->y - (16 << CSF);
+			o->xmark = o->x - (6 * CSFI);
+			o->ymark = o->y - (16 * CSFI);
 			
 			o->yinertia = 0;
 		}
@@ -350,7 +350,7 @@ void ai_pixel_cat(Object *o)
 	#ifdef SHOW_DEBUG_KITTY
 	if (o->state == 0)
 	{
-		o->y -= (32 << CSF);
+		o->y -= (32 * CSFI);
 		o->state = 1;
 	}
 	#endif

@@ -237,8 +237,8 @@ SIFPointList *plist;
 	if (o->CheckAttribute(plist, TA_DESTROYABLE, &x, &y))
 	{
 		map.tiles[x][y]--;
-		SmokeCloudsSlow(((x * TILE_W) + (TILE_W / 2)) << CSF, \
-						((y * TILE_H) + (TILE_H / 2)) << CSF, 4);
+		SmokeCloudsSlow(((x * TILE_W) + (TILE_W / 2)) * CSFI, \
+						((y * TILE_H) + (TILE_H / 2)) * CSFI, 4);
 		
 		sound(SND_BLOCK_DESTROY);
 		shot_spawn_effect(o, EFFECT_FISHY);

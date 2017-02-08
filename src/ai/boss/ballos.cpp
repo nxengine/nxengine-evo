@@ -23,7 +23,7 @@
 static int platform_speed;
 static int rotators_left;
 #define FLOOR_Y			0x26000						// Y coord of floor
-#define CRASH_Y			(FLOOR_Y - (40 << CSF))		// Y coord of main when body hits floor
+#define CRASH_Y			(FLOOR_Y - (40 * CSFI))		// Y coord of main when body hits floor
 
 enum EYE_STATES
 {
@@ -77,8 +77,8 @@ void BallosBoss::OnMapEntry(void)
 	main->flags = (FLAG_SHOW_FLOATTEXT | FLAG_SCRIPTONDEATH | \
 				   FLAG_SOLID_BRICK | FLAG_IGNORE_SOLID);
 	
-	main->x = ((map.xsize / 2) * TILE_W) << CSF;
-	main->y = -(64 << CSF);
+	main->x = ((map.xsize / 2) * TILE_W) * CSFI;
+	main->y = -(64 * CSFI);
 	
 	main->damage = 0;
 	main->hp = 800;
@@ -170,7 +170,7 @@ void BallosBoss::RunAftermove()
 	
 	// place shield
 	shield->x = main->x;
-	shield->y = main->y - (44 << CSF);
+	shield->y = main->y - (44 * CSFI);
 	
 	// riding on platform by eye? Player can sort of stay on this platform
 	// when he jumps. We don't do this for the shield up top though, in order that
@@ -189,8 +189,8 @@ void c------------------------------() {}
 */
 
 // left and right maximums during form 1
-static const int F1_LEFT = (88 << CSF);
-static const int F1_RIGHT = (552 << CSF);
+static const int F1_LEFT = (88 * CSFI);
+static const int F1_RIGHT = (552 * CSFI);
 
 // runs arrival of first form as a stage-boss
 void BallosBoss::RunComeDown(Object *o)
@@ -202,7 +202,7 @@ void BallosBoss::RunComeDown(Object *o)
 			o->savedhp = o->hp;
 			
 			o->x = player->CenterX();
-			o->y = -(64 << CSF);
+			o->y = -(64 * CSFI);
 			o->frame = 0;
 			
 			// create the targeter
@@ -238,10 +238,10 @@ void BallosBoss::RunComeDown(Object *o)
 				
 				// player smush damage
 				// (he could only get that low if he had been pushed into the floor)
-				if (player->y > (o->y + (48<<CSF)))
+				if (player->y > (o->y + (48 * CSFI)))
 					hurtplayer(16);
 				
-				SmokeXY(o->x, o->y + (40<<CSF), 16, 40, 0);
+				SmokeXY(o->x, o->y + (40 * CSFI), 16, 40, 0);
 				
 				if (player->blockd)
 					player->yinertia = -0x200;
@@ -313,7 +313,7 @@ void BallosBoss::RunForm1(Object *o)
 			if (passed_ycoord(GREATER_THAN, CRASH_Y))
 			{
 				// player smush damage
-				if (player->y > (o->y + (48<<CSF)))
+				if (player->y > (o->y + (48 * CSFI)))
 					hurtplayer(16);
 				
 				// player hopping from the vibration
@@ -322,10 +322,10 @@ void BallosBoss::RunForm1(Object *o)
 				
 				megaquake(30, SND_MISSILE_HIT);
 				
-				CreateObject(o->x - (12<<CSF), o->y + (52<<CSF), OBJ_BALLOS_BONE_SPAWNER)->dir = LEFT;
-				CreateObject(o->x + (12<<CSF), o->y + (52<<CSF), OBJ_BALLOS_BONE_SPAWNER)->dir = RIGHT;
+				CreateObject(o->x - (12 * CSFI), o->y + (52 * CSFI), OBJ_BALLOS_BONE_SPAWNER)->dir = LEFT;
+				CreateObject(o->x + (12 * CSFI), o->y + (52 * CSFI), OBJ_BALLOS_BONE_SPAWNER)->dir = RIGHT;
 				
-				SmokeXY(o->x, o->y + (40<<CSF), 16, 40, 0);
+				SmokeXY(o->x, o->y + (40 * CSFI), 16, 40, 0);
 				
 				o->yinertia = 0;
 				o->state = AS_PREPARE_JUMP;
@@ -374,10 +374,10 @@ void BallosBoss::RunForm1(Object *o)
 void BallosBoss::RunForm2(Object *o)
 {
 	static const int BS_SPEED = 0x3AA;
-	static const int ARENA_LEFT = (119 << CSF);
-	static const int ARENA_TOP = (119 << CSF);
-	static const int ARENA_RIGHT = (521 << CSF);
-	static const int ARENA_BOTTOM = (233 << CSF);
+	static const int ARENA_LEFT = (119 * CSFI);
+	static const int ARENA_TOP = (119 * CSFI);
+	static const int ARENA_RIGHT = (521 * CSFI);
+	static const int ARENA_BOTTOM = (233 * CSFI);
 	
 	switch(o->state)
 	{
@@ -449,7 +449,7 @@ void BallosBoss::RunForm2(Object *o)
 			if (rotators_left <= 0 && ++o->timer > 3)
 			{
 				// center of room
-				if (o->x >= (312<<CSF) && o->x <= (344<<CSF))
+				if (o->x >= (312 * CSFI) && o->x <= (344 * CSFI))
 				{
 					o->state = CS_ENTER_FORM;
 				}
@@ -485,7 +485,7 @@ void BallosBoss::RunForm2(Object *o)
 // spawns red butes from the sides and his top.
 void BallosBoss::RunForm3(Object *o)
 {
-	static const int YPOSITION = (167 << CSF);
+	static const int YPOSITION = (167 * CSFI);
 	
 	// platform spin speeds and how long they travel at each speed.
 	// it's a repeating pattern.
@@ -563,8 +563,8 @@ void BallosBoss::RunForm3(Object *o)
 			if ((o->timer % 30) == 1)
 			{
 				o->xmark += 2;
-				CreateObject((o->xmark * TILE_W) << CSF, \
-							 FLOOR_Y + (48 << CSF), OBJ_BALLOS_SPIKES);
+				CreateObject((o->xmark * TILE_W) * CSFI, \
+							 FLOOR_Y + (48 * CSFI), OBJ_BALLOS_SPIKES);
 				
 				if (o->xmark == 38)
 					o->state = CS_EXPLODE_BLOODY;
@@ -619,8 +619,8 @@ void BallosBoss::RunForm3(Object *o)
 				case 280:
 				case 290:
 				{
-					SmokeXY(o->x, o->y - (52<<CSF), 4);
-					CreateObject(o->x, o->y - (52<<CSF), OBJ_BUTE_SWORD_RED)->dir = UP;
+					SmokeXY(o->x, o->y - (52 * CSFI), 4);
+					CreateObject(o->x, o->y - (52 * CSFI), OBJ_BUTE_SWORD_RED)->dir = UP;
 					sound(SND_EM_FIRE);
 				}
 				break;
@@ -635,8 +635,8 @@ void BallosBoss::RunForm3(Object *o)
 					{
 						// give some granularity to the coords,
 						// so that they can't overlap too closely.
-						int x = (random(-TILE_W, TILE_W) & ~3) << CSF;
-						int y = (random(2 * TILE_H, 17 * TILE_H) & ~3) << CSF;
+						int x = (random(-TILE_W, TILE_W) & ~3) * CSFI;
+						int y = (random(2 * TILE_H, 17 * TILE_H) & ~3) * CSFI;
 						if (dir == LEFT) x += MAPX(map.xsize - 1);
 						
 						CreateObject(x, y, OBJ_BUTE_ARCHER_RED)->dir = dir;
@@ -649,8 +649,8 @@ void BallosBoss::RunForm3(Object *o)
 			int prob = (o->hp <= 500) ? 4 : 10;
 			if (!random(0, prob))
 			{
-				CreateObject(o->x + random(-40<<CSF, 40<<CSF), \
-							 o->y + random(0, 40<<CSF),
+				CreateObject(o->x + random(-40 * CSFI, 40 * CSFI), \
+							 o->y + random(0, 40 * CSFI),
 							 OBJ_RED_ENERGY)->angle = DOWN;
 			}
 		}
@@ -682,8 +682,8 @@ void BallosBoss::RunDefeated(Object *o)
 		}
 		case 1001:
 		{
-			int x = o->x + random(-60<<CSF, 60<<CSF);
-			int y = o->y + random(-60<<CSF, 60<<CSF);
+			int x = o->x + random(-60 * CSFI, 60 * CSFI);
+			int y = o->y + random(-60 * CSFI, 60 * CSFI);
 			SmokePuff(x, y);
 			effect(x, y, EFFECT_BOOMFLASH);
 			
@@ -820,9 +820,9 @@ void BallosBoss::run_eye(int index)
 			o->state++;
 			
 			if (o->dir == LEFT)
-				SmokeXY(o->x - (4<<CSF), o->y, 10, 4, 4);
+				SmokeXY(o->x - (4 * CSFI), o->y, 10, 4, 4);
 			else
-				SmokeXY(o->x + (4<<CSF), o->y, 10, 4, 4);
+				SmokeXY(o->x + (4 * CSFI), o->y, 10, 4, 4);
 		}
 		break;
 	}
@@ -834,11 +834,11 @@ void BallosBoss::place_eye(int index)
 	Object *o = eye[index];
 	
 	if (o->dir == LEFT)
-		o->x = main->x - (24 << CSF);
+		o->x = main->x - (24 * CSFI);
 	else
-		o->x = main->x + (24 << CSF);
+		o->x = main->x + (24 * CSFI);
 	
-	o->y = main->y - (36 << CSF);
+	o->y = main->y - (36 * CSFI);
 }
 
 void BallosBoss::SetEyeStates(int newstate)
@@ -1037,7 +1037,7 @@ void aftermove_ballos_rotator(Object *o)
 		if (!ballos) return;
 		
 		uint8_t angle = (o->timer2 / 2);
-		int dist = (o->timer3 / 4) << CSF;
+		int dist = (o->timer3 / 4) * CSFI;
 		
 		o->x = ballos->x + (xinertia_from_angle(angle, dist));
 		o->y = ballos->y + (yinertia_from_angle(angle, dist));
@@ -1061,8 +1061,8 @@ static void spawn_impact_puffs(Object *o)
 {
 	Object *ballos = game.stageboss.object;
 	
-	#define SHORT		(8<<CSF)
-	#define LONG		(12<<CSF)
+	#define SHORT		(8 * CSFI)
+	#define LONG		(12 * CSFI)
 	#define HITANGLE	12
 	static const struct
 	{
@@ -1159,7 +1159,7 @@ void ai_ballos_platform(Object *o)
 		{
 			o->yinertia += 0x40;
 			
-			if (o->Top() > (map.ysize * TILE_H) << CSF)
+			if (o->Top() > (map.ysize * TILE_H) * CSFI)
 				o->Delete();
 		}
 		break;
@@ -1182,11 +1182,11 @@ void ai_ballos_platform(Object *o)
 	uint8_t angle = o->timer2 / 4;
 	int xoff, yoff;
 	
-	xoff = xinertia_from_angle(angle, o->timer3 << CSF);
-	yoff = yinertia_from_angle(angle, o->timer3 << CSF);
+	xoff = xinertia_from_angle(angle, o->timer3 * CSFI);
+	yoff = yinertia_from_angle(angle, o->timer3 * CSFI);
 	
 	o->xmark = (xoff / 4) + ballos->x;
-	o->ymark = ((yoff / 4) + (16 << CSF)) + ballos->y;
+	o->ymark = ((yoff / 4) + (16 * CSFI)) + ballos->y;
 	
 	switch(abs(platform_speed))
 	{

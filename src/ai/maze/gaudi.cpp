@@ -47,7 +47,7 @@ void ai_gaudi(Object *o)
 		return;
 	}
 	
-	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
+	if (!(pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI)))
 		return;
 	
 	switch(o->state)
@@ -219,23 +219,23 @@ void ai_gaudi_flying(Object *o)
 	if (o->hp <= (1000 - GAUDI_FLYING_HP))
 	{
 		if (o->dir == LEFT)
-			o->x -= (2 << CSF);
+			o->x -= (2 * CSFI);
 		else
-			o->x += (2 << CSF);
+			o->x += (2 * CSFI);
 		
 		o->ChangeType(OBJ_GAUDI_DYING);
 		ai_gaudi_dying(o);
 		return;
 	}
 	
-	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
+	if (!(pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI)))
 		return;
 	
 	switch(o->state)
 	{
 		case 0:
 		{
-			vector_from_angle(random(0, 255), (1 << CSF), &o->xinertia, &o->yinertia);
+			vector_from_angle(random(0, 255), (1 * CSFI), &o->xinertia, &o->yinertia);
 			o->xmark = o->x + (o->xinertia * 8);
 			o->ymark = o->y + (o->yinertia * 8);
 			
@@ -294,7 +294,7 @@ void ai_gaudi_armored(Object *o)
 		return;
 	}
 	
-	if (!(pdistlx(SCREEN_WIDTH << CSF) && pdistly(SCREEN_HEIGHT << CSF)))
+	if (!(pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI)))
 		return;
 	
 	FACEPLAYER;
@@ -317,7 +317,7 @@ void ai_gaudi_armored(Object *o)
 			
 			if (++o->timer >= 5)
 			{
-				if (pdistlx(192 << CSF) && pdistly(160 << CSF))
+				if (pdistlx(192 * CSFI) && pdistly(160 * CSFI))
 				{	// begin hopping
 					o->state = 10;
 					o->timer = 0;
@@ -360,7 +360,7 @@ void ai_gaudi_armored(Object *o)
 			{
 				// drop sub-pixel precision
 				// (required to maintain stability of back-and-forth sequence).
-				o->y >>= CSF; o->y <<= CSF;
+				o->y /= CSFI; o->y *= CSFI;
 				
 				sound(SND_THUD);
 				o->state = 40;
@@ -405,7 +405,7 @@ void ai_gaudi_armored(Object *o)
 			
 			if (++o->timer >= 2)
 			{
-				//stat("dtt= %d", abs(o->xmark - o->x)>>CSF);
+				//stat("dtt= %d", abs(o->xmark - o->x) / CSFI);
 				o->frame = 0;
 				o->xinertia = 0;
 				

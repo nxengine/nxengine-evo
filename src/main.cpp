@@ -382,8 +382,8 @@ bool freshstart;
 			// switch maps
 			if (load_stage(game.switchstage.mapno)) goto ingame_error;
 
-			player->x = (game.switchstage.playerx * TILE_W) << CSF;
-			player->y = (game.switchstage.playery * TILE_H) << CSF;
+			player->x = (game.switchstage.playerx * TILE_W) * CSFI;
+			player->y = (game.switchstage.playery * TILE_H) * CSFI;
 		}
 		
 		// start the level

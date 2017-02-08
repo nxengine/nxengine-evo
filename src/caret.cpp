@@ -112,8 +112,8 @@ int scr_x, scr_y;
 			// and let SDL's clipping handle it if not.
 			if (!c->invisible && !c->deleted)	// must check deleted again in case handler_function set it
 			{
-				scr_x = (c->x >> CSF) - (map.displayed_xscroll >> CSF);
-				scr_y = (c->y >> CSF) - (map.displayed_yscroll >> CSF);
+				scr_x = (c->x / CSFI) - (map.displayed_xscroll / CSFI);
+				scr_y = (c->y / CSFI) - (map.displayed_yscroll / CSFI);
 				scr_x -= sprites[c->sprite].frame[c->frame].dir[0].drawpoint.x;
 				scr_y -= sprites[c->sprite].frame[c->frame].dir[0].drawpoint.y;
 				
@@ -197,13 +197,13 @@ int i;
 		
 		case EFFECT_GUNFISH_BUBBLE:
 		{
-			c = CreateCaret(x-(3<<CSF), y-(3<<CSF), SPR_GUNFISH_BUBBLE, caret_gunfish_bubble); break;
+			c = CreateCaret(x-(3 * CSFI), y-(3 * CSFI), SPR_GUNFISH_BUBBLE, caret_gunfish_bubble); break;
 		}
 		break;
 		
 		case EFFECT_LAVA_SPLASH:
 		{
-			c = CreateCaret(x-(3<<CSF), y-(3<<CSF), SPR_LAVA_DRIP_SPLASH, caret_gunfish_bubble); break;
+			c = CreateCaret(x-(3 * CSFI), y-(3 * CSFI), SPR_LAVA_DRIP_SPLASH, caret_gunfish_bubble); break;
 		}
 		break;
 		
@@ -220,7 +220,7 @@ int i;
 			for(i=0;i<3;i++)
 			{
 				c = CreateCaret(x, y, SPR_BLOODHIT, caret_animate3);
-				vector_from_angle(random(0, 255), (2<<CSF), &c->xinertia, &c->yinertia);
+				vector_from_angle(random(0, 255), (2 * CSFI), &c->xinertia, &c->yinertia);
 			}
 		}
 		break;
@@ -362,7 +362,7 @@ int spd, stop;
 	{
 		if (c->timer < stop)
 		{
-			c->y -= (spd << CSF);
+			c->y -= (spd * CSFI);
 		}
 	}
 	else
@@ -379,7 +379,7 @@ void caret_qmark(Caret *c)
 	{
 		if (c->timer < 7)
 		{
-			c->y -= (3 << CSF);
+			c->y -= (3 * CSFI);
 		}
 	}
 	else
@@ -399,7 +399,7 @@ void caret_bonusflash(Caret *c)
 void caret_hey(Caret *c)
 {
 	if (++c->timer > 30) c->Delete();
-	if (c->timer < 5) c->y -= (1<<CSF);
+	if (c->timer < 5) c->y -= (1 * CSFI);
 }
 
 

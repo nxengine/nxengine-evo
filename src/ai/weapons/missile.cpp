@@ -157,10 +157,10 @@ void ai_missile_shot(Object *o)
 		case STATE_RECOIL_OVER:
 			switch(o->shot.dir)
 			{
-				case LEFT: if (o->x <= o->xmark2-(2<<CSF)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
-				case RIGHT: if (o->x >= o->xmark2+(2<<CSF)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
-				case UP: if (o->y <= o->ymark2-(2<<CSF)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
-				case DOWN: if (o->y >= o->ymark2+(2<<CSF)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
+				case LEFT: if (o->x <= o->xmark2-(2 * CSFI)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
+				case RIGHT: if (o->x >= o->xmark2+(2 * CSFI)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
+				case UP: if (o->y <= o->ymark2-(2 * CSFI)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
+				case DOWN: if (o->y >= o->ymark2+(2 * CSFI)) o->state = STATE_MISSILE_CAN_EXPLODE; break;
 			}
 		if (o->state != STATE_MISSILE_CAN_EXPLODE)
 			break;
@@ -212,10 +212,10 @@ void ai_missile_shot(Object *o)
 		const int trailspd = 0x400;
 		switch(o->shot.dir)
 		{
-			case LEFT:	trail->xinertia = trailspd;  trail->y -= (2<<CSF); break;
-			case RIGHT: trail->xinertia = -trailspd; trail->y -= (2<<CSF); break;
-			case UP:	trail->yinertia = trailspd;  trail->x -= (1<<CSF); break;
-			case DOWN:	trail->yinertia = -trailspd; trail->x -= (1<<CSF); break;
+			case LEFT:	trail->xinertia = trailspd;  trail->y -= (2 * CSFI); break;
+			case RIGHT: trail->xinertia = -trailspd; trail->y -= (2 * CSFI); break;
+			case UP:	trail->yinertia = trailspd;  trail->x -= (1 * CSFI); break;
+			case DOWN:	trail->yinertia = -trailspd; trail->x -= (1 * CSFI); break;
 		}
 	}
 	
@@ -240,8 +240,8 @@ void ai_missile_boom_spawner(Object *o)
 	}
 	
 	int range = o->shot.boomspawner.range;
-	o->x = o->xmark + (random(-range, range) << CSF);
-	o->y = o->ymark + (random(-range, range) << CSF);
+	o->x = o->xmark + (random(-range, range) * CSFI);
+	o->y = o->ymark + (random(-range, range) * CSFI);
 	
 	effect(o->x, o->y, EFFECT_BOOMFLASH);
 	missilehitsmoke(o);
@@ -254,8 +254,8 @@ void ai_missile_boom_spawner(Object *o)
 
 static void missilehitsmoke(Object *o)
 {
-	int smokex = o->CenterX() - (8 << CSF);
-	int smokey = o->CenterY() - (8 << CSF);
+	int smokex = o->CenterX() - (8 * CSFI);
+	int smokey = o->CenterY() - (8 * CSFI);
 	Object *smoke;
 	
 	for(int i=0;i<2;i++)

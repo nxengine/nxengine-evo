@@ -70,7 +70,7 @@ int rel_x, rel_y;
 
 	if (state == 0)
 	{	// flash getting bigger
-		star->speed += (1 << CSF);
+		star->speed += (1 * CSFI);
 		star->size += star->speed;
 	}
 	else
@@ -89,21 +89,21 @@ int rel_x, rel_y;
 	rel_y = (star->centery - map.displayed_yscroll);
 	
 	// draw a horizontal bar
-	scr_y1 = (rel_y - star->size) >> CSF;
-	scr_y2 = (rel_y + star->size) >> CSF;
+	scr_y1 = (rel_y - star->size) / CSFI;
+	scr_y2 = (rel_y + star->size) / CSFI;
 	FillRect(0, scr_y1, SCREEN_WIDTH, scr_y2, 255, 255, 255);
 	
 	if (star->state == 0)
 	{
 		// draw a vertical bar
-		scr_x1 = (rel_x - starflash.size) >> CSF;
-		scr_x2 = (rel_x + starflash.size) >> CSF;
+		scr_x1 = (rel_x - starflash.size) / CSFI;
+		scr_x2 = (rel_x + starflash.size) / CSFI;
 		FillRect(scr_x1, 0, scr_x2, SCREEN_HEIGHT, 255, 255, 255);
 		
 		// once it's big enough, switch to making it smaller
-		if (star->size > (1280<<CSF))
+		if (star->size > (1280 * CSFI))
 		{
-			star->size = (SCREEN_HEIGHT << CSF);
+			star->size = (SCREEN_HEIGHT * CSFI);
 			star->state = 1;
 		}
 	}

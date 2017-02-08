@@ -17,15 +17,15 @@
 
 
 // position in Hell (note this is the center position, because there is a draw point)
-#define HELL_X			(160<<CSF)
-#define HELL_Y			(74<<CSF)
-#define HELL_FLOOR		(160<<CSF)
-#define HELL_BOTTOM		(480<<CSF)
+#define HELL_X			(160 * CSFI)
+#define HELL_Y			(74 * CSFI)
+#define HELL_FLOOR		(160 * CSFI)
+#define HELL_BOTTOM		(480 * CSFI)
 
 // positions of stuff for Passageway scene
-#define PWAY_X			(160<<CSF)		// X position of corridor
-#define PWAY_TOP		(64<<CSF)		// starting position for falling scene
-#define PWAY_BOTTOM		(413<<CSF)		// resting position after fall
+#define PWAY_X			(160 * CSFI)		// X position of corridor
+#define PWAY_TOP		(64 * CSFI)		// starting position for falling scene
+#define PWAY_BOTTOM		(413 * CSFI)		// resting position after fall
 
 
 INITFUNC(AIRoutines)
@@ -74,9 +74,9 @@ void HeavyPress::Run()
 		case 100:
 		{
 			// get coordinates of the blocks to destroy as it's uncovered
-			uncover_left = (o->Left() >> CSF) / TILE_W;
-			uncover_right = (o->Right() >> CSF) / TILE_W;
-			uncover_y = ((o->Bottom() >> CSF) / TILE_H) + 1;
+			uncover_left = (o->Left() / CSFI) / TILE_W;
+			uncover_right = (o->Right() / CSFI) / TILE_W;
+			uncover_y = ((o->Bottom() / CSFI) / TILE_H) + 1;
 			
 			// create shielding objects for invincibility on either side
 			// don't use puppet 1 because Deleet's use that when they explode.
@@ -174,8 +174,8 @@ void HeavyPress::run_defeated()
 			if ((o->timer % 16) == 0)
 			{
 				sound(SND_BLOCK_DESTROY);
-				SmokePuff(o->x + random(-60<<CSF, 60<<CSF),
-						  o->y + random(-40<<CSF, 40<<CSF));
+				SmokePuff(o->x + random(-60 * CSFI, 60 * CSFI),
+						  o->y + random(-40 * CSFI, 40 * CSFI));
 			}
 			
 			// eye opens
@@ -205,7 +205,7 @@ void HeavyPress::run_defeated()
 				o->yinertia = -0x200;
 				
 				// kill floor
-				int y = (o->Bottom() >> CSF) / TILE_H;
+				int y = (o->Bottom() / CSFI) / TILE_H;
 				for(int x=uncover_left-1;x<=uncover_right+1;x++)
 				{
 					map_ChangeTileWithSmoke(x, y, 0, 1, true);
@@ -266,7 +266,7 @@ void HeavyPress::run_passageway()
 		}
 		case 31:
 		{
-			o->y += (4 << CSF);
+			o->y += (4 * CSFI);
 			
 			if (o->y >= PWAY_BOTTOM)
 			{
@@ -314,7 +314,7 @@ void ai_hp_lightning(Object *o)
 				sound(SND_LIGHTNING_STRIKE);
 				
 				// smoke on floor where it struck
-				SmokeXY(o->CenterX(), o->Bottom() - (7<<CSF), 3, 0, 0);
+				SmokeXY(o->CenterX(), o->Bottom() - (7 * CSFI), 3, 0, 0);
 			}
 		}
 		break;

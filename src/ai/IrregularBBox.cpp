@@ -104,8 +104,8 @@ void IrregularBBox::set_bbox(int index, int x, int y, int w, int h, uint32_t fla
 	if (assoc_object->dir == LEFT)
 		x = sprites[assoc_object->sprite].w - x - w;
 	
-	box->x = assoc_object->x + (x << CSF);
-	box->y = assoc_object->y + (y << CSF);
+	box->x = assoc_object->x + (x * CSFI);
+	box->y = assoc_object->y + (y * CSFI);
 	
 	sprites[box->sprite].bbox.x1 = 0;
 	sprites[box->sprite].bbox.y1 = 0;

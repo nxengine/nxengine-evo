@@ -41,12 +41,12 @@ void ai_critter_shooting_purple(Object *o)
 			o->frame = 0;		// assume not at attention
 			if (o->timer >= 8)
 			{
-				if (pdistlx(96<<CSF) && pdistly2(96<<CSF, 32<<CSF))
+				if (pdistlx(96 * CSFI) && pdistly2(96 * CSFI, 32 * CSFI))
 				{
 					FACEPLAYER;
 					
 					// close enough to attack?
-					if (pdistlx(48<<CSF))
+					if (pdistlx(48 * CSFI))
 					{
 						o->state = STATE_PREPARE_JUMP;
 						o->frame = 0;

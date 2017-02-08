@@ -39,7 +39,7 @@ void ai_doctor_ghost(Object *o)
 		}
 		case 11:
 		{
-			Object *r = CreateObject(o->x, o->y+(128<<CSF), OBJ_RED_ENERGY);
+			Object *r = CreateObject(o->x, o->y+(128 * CSFI), OBJ_RED_ENERGY);
 			r->angle = RIGHT;
 			r->linkedobject = o;
 			
@@ -111,7 +111,7 @@ void ai_red_energy(Object *o)
 				o->timer3 = (limit * 3);	// y limit (form elongated sphere)
 			}
 			
-			int tgtx = o->linkedobject->x + (4<<CSF);
+			int tgtx = o->linkedobject->x + (4 * CSFI);
 			if (o->x < tgtx) 		o->xinertia += o->speed;
 			else if (o->x > tgtx)	o->xinertia -= o->speed;
 			
@@ -139,8 +139,8 @@ void ai_mimiga_caged(Object *o)
 		case 0:
 		{
 			o->state = 1;
-			o->x -= (1 << CSF);
-			o->y -= (2 << CSF);
+			o->x -= (1 * CSFI);
+			o->y -= (2 * CSFI);
 			
 			switch(o->type)
 			{
@@ -149,12 +149,12 @@ void ai_mimiga_caged(Object *o)
 				
 				case OBJ_SANTA_CAGED:
 					o->sprite = SPR_SANTA;
-					o->x += (2 << CSF);
+					o->x += (2 * CSFI);
 				break;
 				
 				default:
 					o->sprite = SPR_MIMIGA_CAGED;
-					o->x += (2 << CSF);
+					o->x += (2 * CSFI);
 				break;
 			}
 		}
@@ -174,7 +174,7 @@ void ai_mimiga_caged(Object *o)
 			o->state = 11;
 			o->frame = 2;
 			
-			Object *h = CreateObject(o->x, o->y-(16<<CSF), OBJ_HEART);
+			Object *h = CreateObject(o->x, o->y-(16 * CSFI), OBJ_HEART);
 			h->state = 1;	// not map-spawned (disappear after a moment)
 		}
 		case 11:

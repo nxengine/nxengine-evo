@@ -50,7 +50,7 @@ void ai_pooh_black(Object *o)
 			o->yinertia = 0xA00;
 			o->flags |= FLAG_IGNORE_SOLID;
 			
-			if (o->y >= (8 * TILE_H) << CSF)
+			if (o->y >= (8 * TILE_H) * CSFI)
 			{
 				o->flags &= ~FLAG_IGNORE_SOLID;
 				o->state = 1;
@@ -98,8 +98,8 @@ void ai_pooh_black(Object *o)
 			// spawn bubbles when hit
 			if (o->shaketime && (o->shaketime & 1))
 			{
-				int x = o->CenterX() + random(-12<<CSF, 12<<CSF);
-				int y = o->CenterY() + random(-12<<CSF, 12<<CSF);
+				int x = o->CenterX() + random(-12 * CSFI, 12 * CSFI);
+				int y = o->CenterY() + random(-12 * CSFI, 12 * CSFI);
 				
 				Object *bubble = CreateObject(x, y, OBJ_POOH_BLACK_BUBBLE);
 				
@@ -128,7 +128,7 @@ void ai_pooh_black(Object *o)
 			if (o->timer == 60)
 			{
 				bubble_xmark = player->CenterX();
-				bubble_ymark = (10000 << CSF);
+				bubble_ymark = (10000 * CSFI);
 			}
 			else if (o->timer < 60)
 			{
@@ -174,8 +174,8 @@ void ai_pooh_black_bubble(Object *o)
 	
 	// adjust bubble target position so that they try to align
 	// their centers with the mark instead of their upper-left corners.
-	int xmark = bubble_xmark - ((sprites[SPR_POOH_BLACK_BUBBLE].w / 2) << CSF);
-	int ymark = bubble_ymark - ((sprites[SPR_POOH_BLACK_BUBBLE].h / 2) << CSF);
+	int xmark = bubble_xmark - ((sprites[SPR_POOH_BLACK_BUBBLE].w / 2) * CSFI);
+	int ymark = bubble_ymark - ((sprites[SPR_POOH_BLACK_BUBBLE].h / 2) * CSFI);
 
 	o->xinertia += (o->x > xmark) ? -0x40 : 0x40;
 	o->yinertia += (o->y > ymark) ? -0x40 : 0x40;
@@ -188,7 +188,7 @@ void ai_pooh_black_bubble(Object *o)
 void ai_pooh_black_dying(Object *o)
 {
 	bubble_xmark = o->CenterX();
-	bubble_ymark = -(10000 << CSF);
+	bubble_ymark = -(10000 * CSFI);
 
 	switch(o->state)
 	{
@@ -232,13 +232,13 @@ void ai_pooh_black_dying(Object *o)
 	
 	if (o->timer & 1)
 	{
-		int x = o->CenterX() + random(-12<<CSF, 12<<CSF);
+		int x = o->CenterX() + random(-12 * CSFI, 12 * CSFI);
 		int y;
 		
 		if (o->state == 2)
-			y = o->y + (o->clipy1 << CSF) + random(-4<<CSF, 4<<CSF);
+			y = o->y + (o->clipy1 * CSFI) + random(-4 * CSFI, 4 * CSFI);
 		else
-			y = o->CenterY() + random(-12<<CSF, 12<<CSF);
+			y = o->CenterY() + random(-12 * CSFI, 12 * CSFI);
 		
 		Object *bubble = CreateObject(x, y, OBJ_POOH_BLACK_BUBBLE);
 		bubble->xinertia = random(-0x200, 0x200);

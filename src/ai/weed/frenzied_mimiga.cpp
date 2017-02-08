@@ -38,7 +38,7 @@ void ai_frenzied_mimiga(Object *o)
 		{	// waiting-- attack once player gets too close or shoots us
 			if (++o->timer > 40)
 			{
-				if (pdistlx(96<<CSF) && pdistly2(96<<CSF, 32<<CSF))
+				if (pdistlx(96 * CSFI) && pdistly2(96 * CSFI, 32 * CSFI))
 				{
 					o->state = 10;
 					o->timer = 0;
@@ -108,7 +108,7 @@ void ai_frenzied_mimiga(Object *o)
 				o->damage = 0;
 				
 				// if player too far away return to wait state
-				if (!pdistlx(144<<CSF) || !pdistly2(144<<CSF, 72<<CSF))
+				if (!pdistlx(144 * CSFI) || !pdistly2(144 * CSFI, 72 * CSFI))
 				{
 					o->state = 0;
 				}

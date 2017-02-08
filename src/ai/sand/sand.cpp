@@ -251,13 +251,13 @@ int pbottom, crocbottom;
 			// track player invisibly underground
 			o->xinertia = (o->CenterX() < player->CenterX()) ? 0x400:-0x400;
 			
-			if (pdistlx(19 << CSF))
+			if (pdistlx(19 * CSFI))
 			{
 				// check if bottoms of player and croc are near
-				pbottom = player->y + (sprites[player->sprite].bbox.y2 << CSF);
-				crocbottom = o->y + (sprites[o->sprite].bbox.y2 << CSF) + 0x600;
+				pbottom = player->y + (sprites[player->sprite].bbox.y2 * CSFI);
+				crocbottom = o->y + (sprites[o->sprite].bbox.y2 * CSFI) + 0x600;
 				
-				if (pbottom <= crocbottom && crocbottom - pbottom < (12 << CSF))
+				if (pbottom <= crocbottom && crocbottom - pbottom < (12 * CSFI))
 				{	// attack!!
 					o->xinertia = 0;
 					o->state = 2;
@@ -385,7 +385,7 @@ void ai_crow(Object *o)
 		case 0:
 		{
 			uint8_t angle = random(0, 255);
-			vector_from_angle(angle, (1<<CSF), &o->xinertia, &o->yinertia);
+			vector_from_angle(angle, (1 * CSFI), &o->xinertia, &o->yinertia);
 			
 			o->xmark = o->x + (o->xinertia * 8);
 			o->ymark = o->y + (o->yinertia * 8);
@@ -488,7 +488,7 @@ Object *skull;
 	// switch over to the main crow AI, but only move up & down
 	o->yinertia = random(-0x200, -0x100);
 	o->xmark = o->x;
-	o->ymark = o->y + random(-(28 << CSF), (10 << CSF));
+	o->ymark = o->y + random(-(28 * CSFI), (10 * CSFI));
 	o->animframe = random(0, 1);
 	o->animtimer = random(0, 4);
 	o->state = 101;
@@ -571,8 +571,8 @@ void ai_skullhead_carried(Object *o)
 			o->frame = 0;
 			
 			// shoot only when player near
-			if ((abs(player->x - o->x) < (130 << CSF)) &&
-				(abs(player->y - o->y) < (100 << CSF)))
+			if ((abs(player->x - o->x) < (130 * CSFI)) &&
+				(abs(player->y - o->y) < (100 * CSFI)))
 			{
 				o->timer++;
 			}
@@ -616,8 +616,8 @@ Object *crow;
 	if (o->linkedobject)
 	{
 		crow = o->linkedobject;
-		o->x = crow->x + (1 << CSF);
-		o->y = crow->y + (21 << CSF);
+		o->x = crow->x + (1 * CSFI);
+		o->y = crow->y + (21 * CSFI);
 		o->dir = crow->dir;
 	}
 }
@@ -702,7 +702,7 @@ Object *foot;
 	{
 		case 0:
 		{
-			o->y += (7 << CSF);
+			o->y += (7 * CSFI);
 			
 			// spawn the feet
 			foot = CreateObject(0, 0, OBJ_SKULLSTEP_FOOT);
@@ -790,9 +790,9 @@ int circle_x, circle_y;
 	o->dir = skull->dir;
 	
 	// spin around
-	vector_from_angle(angle, (10 << CSF), &circle_x, &circle_y);
-	o->x = skull->x + (3 << CSF) + circle_x;
-	o->y = skull->y + (8 << CSF) + circle_y;
+	vector_from_angle(angle, (10 * CSFI), &circle_x, &circle_y);
+	o->x = skull->x + (3 * CSFI) + circle_x;
+	o->y = skull->y + (8 * CSFI) + circle_y;
 	
 	o->frame = (angle >= 20 && angle <= 108) ? 0:1;
 }
@@ -839,15 +839,15 @@ int i;
 	// move us up until we're no longer in the ground
 	for(i=0;i<10;i++)
 	{
-		o->y -= (1<<CSF);
-		skull->y -= (1<<CSF);
+		o->y -= (1 * CSFI);
+		skull->y -= (1 * CSFI);
 		o->UpdateBlockStates(DOWNMASK);
 		if (!o->blockd) break;
 	}
 	
 	// now move us down so we're just touching the ground
-	o->y += (1<<CSF);
-	skull->y += (1<<CSF);
+	o->y += (1 * CSFI);
+	skull->y += (1 * CSFI);
 	
 	// move us in the direction we're facing
 	skull->xinertia += (o->dir==RIGHT) ? 0x80 : -0x80;
@@ -860,9 +860,9 @@ void c------------------------------() {}
 void ai_skeleton(Object *o)
 {
 uint8_t pnear;
-#define SKNEAR_X		(352<<CSF)
-#define SKNEAR_BELOW	(160<<CSF)
-#define SKNEAR_ABOVE	(64<<CSF)
+#define SKNEAR_X		(352 * CSFI)
+#define SKNEAR_BELOW	(160 * CSFI)
+#define SKNEAR_ABOVE	(64 * CSFI)
 	
 	pnear = (pdistlx(SKNEAR_X) && pdistly2(SKNEAR_ABOVE, SKNEAR_BELOW));
 	
@@ -897,7 +897,7 @@ uint8_t pnear;
 			o->state = 21;
 			o->frame = 1;
 			o->timer2 = 0;
-			o->yinertia = -(random(1, 3) << CSF);
+			o->yinertia = -(random(1, 3) * CSFI);
 			
 			// jump towards player, unless we've been hurt; in that case jump away
 			if (!o->shaketime)

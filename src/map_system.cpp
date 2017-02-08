@@ -134,8 +134,8 @@ bool ms_init(int return_to_mode)
 	ms.y = (SCREEN_HEIGHT / 2) - (ms.h / 2);
 	
 	// where will we put the dot?
-	ms.px = ms.x + ((player->x >> CSF) / TILE_W);
-	ms.py = ms.y + ((player->y >> CSF) / TILE_H);
+	ms.px = ms.x + ((player->x / CSFI) / TILE_W);
+	ms.py = ms.y + ((player->y / CSFI) / TILE_H);
 	
 	ms.bannertext = stages[game.curmap].stagename;
 	ms.textx = (SCREEN_WIDTH / 2) - (GetFontWidth(ms.bannertext, 0) / 2);

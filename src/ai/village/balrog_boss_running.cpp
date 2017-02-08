@@ -28,7 +28,7 @@ void ai_balrog_boss_running(Object *o)
 	// try to catch player
 	if (o->state == STATE_CHARGE+1 || o->state == STATE_JUMP)
 	{
-		if ((pdistlx(12 << CSF) && pdistly(8 << CSF)) && o->timer > 8)
+		if ((pdistlx(12 * CSFI) && pdistly(8 * CSFI)) && o->timer > 8)
 		{
 			hurtplayer(2);
 			balrog_grab_player(o);

@@ -55,7 +55,7 @@ void ai_boss_doctor(Object *o)
 	{
 		case 0:
 		{
-			o->y += (8 << CSF);
+			o->y += (8 * CSFI);
 			o->frame = 3;
 			o->state = 1;
 			o->BringToFront();		// make sure in front of doctor_crowned
@@ -156,7 +156,7 @@ void ai_boss_doctor(Object *o)
 		case 31:
 		{
 			o->x = o->xmark;
-			if (++o->timer & 2) o->x += (1 << CSF);
+			if (++o->timer & 2) o->x += (1 * CSFI);
 			
 			if (o->timer > 50)
 			{
@@ -202,8 +202,8 @@ void ai_boss_doctor(Object *o)
 				// can start moving towards it. But, it's important not to
 				// actually move until the last possible second, or we could
 				// drag our floattext along with us (and give away our position).
-				o->xmark = (random(5, 35) * TILE_W) << CSF;
-				o->ymark = (random(5, 7) * TILE_H) << CSF;
+				o->xmark = (random(5, 35) * TILE_W) * CSFI;
+				o->ymark = (random(5, 7) * TILE_H) * CSFI;
 			}
 		}
 		break;
@@ -277,7 +277,7 @@ void ai_boss_doctor(Object *o)
 			
 			o->x = o->xmark;
 			if (!(++o->timer & 2))
-				o->x += (1 << CSF);
+				o->x += (1 * CSFI);
 		}
 		break;
 	}
@@ -310,7 +310,7 @@ void c------------------------------() {}
 // wave shot
 void ai_doctor_shot(Object *o)
 {
-	if (o->x < 0 || o->x > ((map.xsize * TILE_W) << CSF))
+	if (o->x < 0 || o->x > ((map.xsize * TILE_W) * CSFI))
 	{
 		o->Delete();
 		return;
@@ -337,8 +337,8 @@ void ai_doctor_shot(Object *o)
 			o->speed += (o->dir == LEFT) ? -0x15 : 0x15;
 			o->xmark += o->speed;
 			
-			o->x = o->xmark + (xinertia_from_angle(o->angle, o->timer2<<CSF) / 8);
-			o->y = o->ymark + (yinertia_from_angle(o->angle, o->timer2<<CSF) / 2);
+			o->x = o->xmark + (xinertia_from_angle(o->angle, o->timer2 * CSFI) / 8);
+			o->y = o->ymark + (yinertia_from_angle(o->angle, o->timer2 * CSFI) / 2);
 			
 			Object *trail = CreateObject(o->x, o->y, OBJ_DOCTOR_SHOT_TRAIL);
 			trail->sprite = SPR_DOCTOR_SHOT;
@@ -449,8 +449,8 @@ void ai_doctor_crowned(Object *o)
 		{
 			// do this manually instead of a spawn point,
 			// cause he's gonna transform.
-			o->x -= (8 << CSF);
-			o->y -= (16 << CSF);
+			o->x -= (8 * CSFI);
+			o->y -= (16 * CSFI);
 			
 			o->state = 1;
 			crystal_xmark = crystal_ymark = 0;
@@ -493,8 +493,8 @@ void ai_doctor_crowned(Object *o)
 			
 			// spawn the red crystal
 			// one is for when it's behind him, the other is in front.
-			int x = o->x - (6 << CSF);
-			int y = o->y - (8 << CSF);
+			int x = o->x - (6 * CSFI);
+			int y = o->y - (8 * CSFI);
 			
 			dr_create_red_crystal(x, y);
 		}

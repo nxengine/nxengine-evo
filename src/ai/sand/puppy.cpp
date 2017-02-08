@@ -37,7 +37,7 @@ void ai_puppy_wag(Object *o)
 	o->flags |= FLAG_SCRIPTONACTIVATE;
 	
 	// only wag when player is near
-	if (pdistlx(56 << CSF))
+	if (pdistlx(56 * CSFI))
 	{
 		if (++o->animtimer >= 4)
 		{
@@ -84,7 +84,7 @@ void ai_puppy_bark(Object *o)
 			// note: this is also supposed to run at jenka's house when balrog appears
 			// but it's ok:
 			// the player is always near enough because of the way the cutscene is set up
-			if ((abs(o->x - player->x) < (64 << CSF)) && ((abs(o->y - player->y) < (16 << CSF))))
+			if ((abs(o->x - player->x) < (64 * CSFI)) && ((abs(o->y - player->y) < (16 * CSFI))))
 			{
 				if (++o->animtimer > 6)
 				{
@@ -160,14 +160,14 @@ void ai_puppy_run(Object *o)
 			FACEPLAYER;
 			o->frame = 0;		// necessary for randblink
 			
-			if (pdistly2((32 << CSF), (16 << CSF)))
+			if (pdistly2((32 * CSFI), (16 * CSFI)))
 			{
-				if (pdistlx(32 << CSF))
+				if (pdistlx(32 * CSFI))
 				{	// run away!!!
 					FACEAWAYPLAYER;
 					o->state = 10;
 				}
-				else if (pdistlx(96 << CSF))
+				else if (pdistlx(96 * CSFI))
 				{
 					// wag tail
 					if (++o->animtimer >= 4)

@@ -62,10 +62,10 @@ void ai_firewhirr(Object *o)
 			LIMITY(0x200);
 			
 			// inc time-to-fire while player near
-			if (pdistly(80 << CSF))
+			if (pdistly(80 * CSFI))
 			{
-				if (o->dir==LEFT && player->x < o->x && pdistlx(160 << CSF)) o->timer2++;
-				if (o->dir==RIGHT && player->x > o->x && pdistlx(160 << CSF)) o->timer2++;
+				if (o->dir==LEFT && player->x < o->x && pdistlx(160 * CSFI)) o->timer2++;
+				if (o->dir==RIGHT && player->x > o->x && pdistlx(160 * CSFI)) o->timer2++;
 			}
 			
 			// if time to fire, spawn a shot
@@ -107,15 +107,15 @@ void ai_gaudi_egg(Object *o)
 		if (o->dir==LEFT)
 		{	// on floor
 			// align properly with ground
-			o->y -= (4<<CSF);
-			o->x -= (4<<CSF);
+			o->y -= (4 * CSFI);
+			o->x -= (4 * CSFI);
 		}
 		else
 		{	// on ceiling
 			// for the egg @ entrance point that is on a ceiling slope
 			if (!o->blocku)
 			{
-				o->y -= (14 << CSF);
+				o->y -= (14 * CSFI);
 			}
 		}
 		o->state = 1;
@@ -219,8 +219,8 @@ void aftermove_fuzz(Object *o)
 {
 	if (o->state == 0 && o->linkedobject)
 	{
-		vector_from_angle(o->angle, (20 << CSF), &o->x, NULL);
-		vector_from_angle(o->angle, (32 << CSF), NULL, &o->y);
+		vector_from_angle(o->angle, (20 * CSFI), &o->x, NULL);
+		vector_from_angle(o->angle, (32 * CSFI), NULL, &o->y);
 		
 		o->x += o->linkedobject->CenterX() - (o->Width() / 2);
 		o->y += o->linkedobject->CenterY() - (o->Height() / 2);
@@ -368,7 +368,7 @@ void ai_buyobuyo(Object *o)
 			LIMITY(0x400);
 			
 			// move the point we are bobbling around
-			o->xmark += (o->dir == LEFT) ? -(1 << CSF) : (1 << CSF);
+			o->xmark += (o->dir == LEFT) ? -(1 * CSFI) : (1 * CSFI);
 			//debugVline(o->xmark, 0, 0xff, 0);
 			
 			if (++o->timer > 300)

@@ -109,7 +109,7 @@ void ai_boss_doctor_frenzied(Object *o)
 				// "redsplode" attack if possible
 				if ((o->savedhp - o->hp) > 20)
 				{
-					if (pdistlx(48<<CSF) && player->blockd)
+					if (pdistlx(48 * CSFI) && player->blockd)
 						do_redsplode(o);
 				}
 			}
@@ -207,7 +207,7 @@ static void run_jumps(Object *o)
 			
 			if (o->state == STATE_IN_AIR_WITH_GP)
 			{
-				if (pdistlx(8<<CSF) && player->y >= o->y)
+				if (pdistlx(8 * CSFI) && player->y >= o->y)
 				{
 					o->xinertia = 0;
 					o->yinertia = 0x5ff;
@@ -343,8 +343,8 @@ static void run_mega_bats(Object *o)
 			
 			if (o->timer > 20 && (o->timer % 3) == 1)
 			{
-				Object *bat = CreateObject(o->x + (8<<CSF), \
-										   o->y - (4<<CSF), OBJ_DOCTOR_BAT);
+				Object *bat = CreateObject(o->x + (8 * CSFI), \
+										   o->y - (4 * CSFI), OBJ_DOCTOR_BAT);
 				
 				bat->xinertia = random(0x400, 0x800);
 				bat->yinertia = random(-0x200, 0x200);
@@ -352,7 +352,7 @@ static void run_mega_bats(Object *o)
 				
 				if (o->dir == LEFT)
 				{
-					bat->x -= (16 << CSF);
+					bat->x -= (16 * CSFI);
 					bat->xinertia = -bat->xinertia;
 				}
 				
@@ -389,12 +389,12 @@ static void run_teleport(Object *o)
 				
 				// mark the location above player's head where we'll reappear
 				o->xmark = player->x;
-				o->ymark = player->y - (32<<CSF);
+				o->ymark = player->y - (32 * CSFI);
 				
 				// don't be fooled into going off bounds of map
-				#define TP_X_MIN	((4 * TILE_W) << CSF)
-				#define TP_X_MAX	((36 * TILE_W) << CSF)
-				#define TP_Y_MIN	((4 * TILE_W) << CSF)
+				#define TP_X_MIN	((4 * TILE_W) * CSFI)
+				#define TP_X_MAX	((36 * TILE_W) * CSFI)
+				#define TP_Y_MIN	((4 * TILE_W) * CSFI)
 				
 				if (o->xmark < TP_X_MIN) o->xmark = TP_X_MIN;
 				if (o->xmark > TP_X_MAX) o->xmark = TP_X_MAX;
@@ -459,7 +459,7 @@ static void run_init(Object *o)
 			// put ourselves at correct position over the other doctor
 			o->dir = (crystal_xmark > player->x) ? LEFT : RIGHT;
 			
-			o->x = crystal_xmark + ((o->dir == RIGHT) ? (6<<CSF) : -(6<<CSF));
+			o->x = crystal_xmark + ((o->dir == RIGHT) ? (6 * CSFI) : -(6 * CSFI));
 			o->y = crystal_ymark;
 			
 			// make sure we're front of other doctor
@@ -550,7 +550,7 @@ static void run_defeat(Object *o)
 			o->timer++;
 			
 			o->x = o->xmark;
-			if (!(o->timer & 2)) o->x += (1 << CSF);
+			if (!(o->timer & 2)) o->x += (1 * CSFI);
 		}
 		break;
 		
@@ -574,7 +574,7 @@ static void run_defeat(Object *o)
 			
 			// shaking
 			o->x = o->xmark;
-			if (!(o->timer & 2)) o->x += (1 << CSF);
+			if (!(o->timer & 2)) o->x += (1 * CSFI);
 			
 			game.quaketime = 2;
 			
@@ -597,8 +597,8 @@ static void run_defeat(Object *o)
 			{
 				int x, y;
 				
-				x = o->x + (random(-16, 16) << CSF);
-				y = (o->y - o->DrawPointY()) + (o->clipy1 << CSF);
+				x = o->x + (random(-16, 16) * CSFI);
+				y = (o->y - o->DrawPointY()) + (o->clipy1 * CSFI);
 				
 				Object *drip = CreateObject(x, y, OBJ_RED_ENERGY);
 				
@@ -625,7 +625,7 @@ static void run_defeat(Object *o)
 		// script: crystal up and away
 		case 520:
 		{
-			crystal_ymark = -(32 << CSF);
+			crystal_ymark = -(32 * CSFI);
 		}
 		break;
 	}
@@ -656,8 +656,8 @@ static void do_redsplode(Object *o)
 	// big shower of red energy
 	for(int i=0;i<100;i++)
 	{
-		int x = o->x + (random(-16, 16) << CSF);
-		int y = o->y + (random(-16, 16) << CSF);
+		int x = o->x + (random(-16, 16) * CSFI);
+		int y = o->y + (random(-16, 16) * CSFI);
 		
 		Object *spark = CreateObject(x, y, OBJ_RED_ENERGY);
 		
@@ -676,8 +676,8 @@ static void run_red_drip(Object *o)
 {
 	if (random(0, 3) == 2)
 	{
-		int x = o->x + (random(-16, 16) << CSF);
-		int y = o->y + (random(-8, 4) << CSF);
+		int x = o->x + (random(-16, 16) * CSFI);
+		int y = o->y + (random(-8, 4) * CSFI);
 		
 		Object *drip = CreateObject(x, y, OBJ_RED_ENERGY);
 		drip->xinertia = o->xinertia;

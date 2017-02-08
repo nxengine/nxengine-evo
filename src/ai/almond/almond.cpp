@@ -28,7 +28,7 @@ void c------------------------------() {}
 void ai_waterlevel(Object *o)
 {
 /*	debug("WL State: %d", o->state);
-	debug("WL Y: %d", o->y>>CSF);
+	debug("WL Y: %d", o->y / CSFI);
 	debug("WL Timer: %d", o->timer);
 	debug("WLForceUp: %d", map.wlforceup);*/
 	
@@ -44,7 +44,7 @@ void ai_waterlevel(Object *o)
 		case 0:
 			map.waterlevelobject = o;
 			o->state = WL_CALM;
-			o->y += (8<<CSF);
+			o->y += ( 8 * CSFI );
 			o->ymark = o->y;
 			o->yinertia = 0x200;
 		case WL_CALM:	// calm waves around set point
@@ -67,7 +67,7 @@ void ai_waterlevel(Object *o)
 			LIMITY(0x200);
 			
 			// when we reach the top return to normal level
-			if (o->y < (64<<CSF))
+			if (o->y < (64 * CSFI))
 			{
 				o->state = WL_CYCLE;
 			}

@@ -77,19 +77,19 @@ int i;
 	sprites[SPR_SISTERS_HEAD].bbox.y2
 	); exit(1);*/
 	
-	main = CreateObject(((10*TILE_W))<<CSF, ((8*TILE_H)-4)<<CSF, OBJ_SISTERS_MAIN);
+	main = CreateObject(((10*TILE_W)) * CSFI, ((8*TILE_H)-4) * CSFI, OBJ_SISTERS_MAIN);
 	main->invisible = true;
 	
 	for(i=0;i<NUM_SISTERS;i++)
 	{
-		body[i] = CreateObject((64<<CSF) + (50<<CSF)*i, 80<<CSF, OBJ_SISTERS_BODY);
+		body[i] = CreateObject((64 * CSFI) + (50 * CSFI)*i, 80 * CSFI, OBJ_SISTERS_BODY);
 		body[i]->sprite = SPR_SISTERS_BODY;
 		body[i]->damage = SISTERS_DAMAGE;
 	}
 	
 	for(i=0;i<NUM_SISTERS;i++)
 	{
-		head[i] = CreateObject((64<<CSF) + (50<<CSF)*i, 64<<CSF, OBJ_SISTERS_HEAD);
+		head[i] = CreateObject((64 * CSFI) + (50 * CSFI)*i, 64 * CSFI, OBJ_SISTERS_HEAD);
 		head[i]->hp = 1000;
 		head[i]->damage = SISTERS_DAMAGE;
 		
@@ -345,8 +345,8 @@ void SistersBoss::run_body(int index)
 	angle += (256 / NUM_SISTERS) * index;
 	
 	// main's xmark and ymark tell us how far from the center to circle
-	int xoff = xinertia_from_angle(angle, main->xmark << CSF);
-	int yoff = yinertia_from_angle(angle, main->ymark << CSF);
+	int xoff = xinertia_from_angle(angle, main->xmark * CSFI);
+	int yoff = yinertia_from_angle(angle, main->ymark * CSFI);
 	
 	// figure out where we are supposed to be
 	int desired_x = (main->x + xoff) - (main->Width() / 2);
@@ -388,8 +388,8 @@ void SistersBoss::run_head(int index)
 	
 	// stay connected to body
 	o->dir = body[index]->dir;
-	o->x = body[index]->x + ((o->dir==RIGHT) ? (4 << CSF) : -(4 << CSF));
-	o->y = body[index]->y - (4 << CSF);
+	o->x = body[index]->x + ((o->dir==RIGHT) ? (4 * CSFI) : -(4 * CSFI));
+	o->y = body[index]->y - (4 * CSFI);
 	
 	// link hp to main object
 	if (o->hp < 1000)
@@ -550,8 +550,8 @@ void SistersBoss::SpawnScreenSmoke(int count)
 {
 	for(int i=0;i<count;i++)
 	{
-		int x = random(1*TILE_W, 20*TILE_W) << CSF;
-		int y = random(2*TILE_H, 14*TILE_H) << CSF;
+		int x = random(1*TILE_W, 20*TILE_W) * CSFI;
+		int y = random(2*TILE_H, 14*TILE_H) * CSFI;
 		SmokePuff(x, y);
 	}
 }

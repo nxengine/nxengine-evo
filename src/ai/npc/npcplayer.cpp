@@ -107,8 +107,8 @@ static const int pwalkanimframes[] = { 0, 1, 0, 2 };
 		case 61:
 		{
 			o->ymark += 0x100;
-			o->x = o->xmark + (random(-1, 1) << CSF);
-			o->y = o->ymark + (random(-1, 1) << CSF);
+			o->x = o->xmark + (random(-1, 1) * CSFI);
+			o->y = o->ymark + (random(-1, 1) * CSFI);
 		}
 		break;
 		
@@ -159,8 +159,8 @@ void ai_ptelin(Object *o)
 			o->flags &= ~FLAG_IGNORE_SOLID;
 			o->frame = 0;
 			o->timer = 0;
-			o->x += (TILE_W << CSF);
-			o->y += (TILE_H / 2) << CSF;
+			o->x += (TILE_W * CSFI);
+			o->y += (TILE_H / 2) * CSFI;
 			o->state++;
 			
 			// note, it looks sort of like we might be supposed to face left when
@@ -210,8 +210,8 @@ void ai_ptelout(Object *o)
 	{
 		case 0:
 		{
-			o->y -= (TILE_H << CSF);
-			o->ymark = o->y - (8 << CSF);
+			o->y -= (TILE_H * CSFI);
+			o->ymark = o->y - (8 * CSFI);
 			
 			o->frame = 0;
 			o->timer = 0;

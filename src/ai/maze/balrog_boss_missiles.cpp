@@ -37,7 +37,7 @@ void ai_balrog_boss_missiles(Object *o)
 		case STATE_CHARGE+1:
 		case STATE_JUMP_FIRE+1:
 		{
-			if (pdistlx(12<<CSF) && pdistly2(12<<CSF, 8<<CSF))
+			if (pdistlx(12 * CSFI) && pdistly2(12 * CSFI, 8 * CSFI))
 			{
 				balrog_grab_player(o);
 				hurtplayer(5);
@@ -214,10 +214,10 @@ void ai_balrog_missile(Object *o)
 	if (o->state == 0)
 	{
 		// recoil in oppisite direction
-		o->xinertia = random(-2, -1) << CSF;
+		o->xinertia = random(-2, -1) * CSFI;
 		if (o->dir == LEFT) o->xinertia = -o->xinertia;
 		
-		o->yinertia = random(-2, 0) << CSF;
+		o->yinertia = random(-2, 0) * CSFI;
 		
 		o->state = 1;
 	}

@@ -22,7 +22,7 @@ using namespace Sprites;
 
 
 #define MARGIN			48
-#define SCREEN_Y(Y)		( (Y) - (scroll_y >> CSF) )
+#define SCREEN_Y(Y)		( (Y) - (scroll_y / CSFI) )
 #define TEXT_SPACING	5	// X-spacing between letters
 	
 Credits *credits = NULL;
@@ -37,7 +37,7 @@ bool Credits::Init()
 	if (bigimage.Init()) return 1;
 	
 	spawn_y = (SCREEN_HEIGHT + 8);
-	scroll_y = 0 << CSF;
+	scroll_y = 0 * CSFI;
 	
 	xoffset = 0;
 	roll_running = true;
@@ -61,7 +61,7 @@ void c------------------------------() {}
 
 void Credits::Tick()
 {
-	/*debug("scroll_y: %d", scroll_y>>CSF);
+	/*debug("scroll_y: %d", scroll_y/CSFI);
 	debug("spawn_y: %d", spawn_y);
 	debug("scr_spawn_y: %d", SCREEN_Y(spawn_y));
 	debug("trigger: %d", SCREEN_HEIGHT+MARGIN);

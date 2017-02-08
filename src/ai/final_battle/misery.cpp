@@ -150,8 +150,8 @@ static void run_spells(Object *o)
 		{
 			if (++o->timer == 10)
 			{
-				int x = player->x - (8 << CSF);
-				int y = player->y - (64 << CSF);
+				int x = player->x - (8 * CSFI);
+				int y = player->y - (64 * CSFI);
 				CreateObject(x, y, OBJ_FALLING_BLOCK);
 				o->sprite = SPR_BALCONY_BLOCK_LARGE;
 				o->dir = DOWN;	// tell block it was spawned by Misery
@@ -181,7 +181,7 @@ static void run_spells(Object *o)
 			
 			if ((++o->timer % 24) == 0)
 			{
-				CreateObject(o->x, o->y+(4<<CSF), OBJ_MISERY_BALL);
+				CreateObject(o->x, o->y+(4 * CSFI), OBJ_MISERY_BALL);
 				sound(SND_FIREBALL);
 			}
 			
@@ -224,8 +224,8 @@ static void run_teleport(Object *o)
 				// we don't actually move until the last possible second
 				// in order not to bring the floattext/damage numbers with us,
 				// which gives away our position.
-				o->xmark = (random(9, 31) * TILE_W) << CSF;
-				o->ymark = (random(5, 7) * TILE_H) << CSF;
+				o->xmark = (random(9, 31) * TILE_W) * CSFI;
+				o->ymark = (random(5, 7) * TILE_H) * CSFI;
 				
 				CreateObject(o->xmark + 0x2000, o->ymark, OBJ_MISERY_PHASE)->dir = LEFT;
 				CreateObject(o->xmark - 0x2000, o->ymark, OBJ_MISERY_PHASE)->dir = RIGHT;
@@ -256,7 +256,7 @@ static void run_teleport(Object *o)
 				
 				// after tp we can summon the black balls if the player
 				// is far enough away from us that they won't immediately trigger
-				if (abs(player->x - o->x) > 112<<CSF)
+				if (abs(player->x - o->x) > 112 * CSFI)
 				{
 					o->state = STATE_SUMMON_BALLS;
 				}
@@ -288,10 +288,10 @@ static void run_intro(Object *o)
 		{
 			// fixes her position on throne; don't use a spawn point or it'll
 			// glitch when she turns to misery_stand in defeated cinematic
-			o->y += (6 << CSF);
+			o->y += (6 * CSFI);
 			
 			// her initial target height when fight begins
-			o->ymark = (64 << CSF);
+			o->ymark = (64 * CSFI);
 			
 			o->state = 1;
 		}
@@ -348,7 +348,7 @@ static void run_defeated(Object *o)
 		{
 			o->x = o->xmark;
 			if (++o->timer & 2)
-				o->x += (1 << CSF);
+				o->x += (1 * CSFI);
 		}
 		break;
 		
@@ -445,7 +445,7 @@ void aftermove_misery_ring(Object *o)
 	{
 		o->angle += 2;
 		
-		int dist = (o->timer << CSF) / 4;
+		int dist = (o->timer * CSFI) / 4;
 		o->x = o->linkedobject->x + xinertia_from_angle(o->angle, dist);
 		o->y = o->linkedobject->y + yinertia_from_angle(o->angle, dist);
 	}
@@ -487,7 +487,7 @@ void ai_misery_ball(Object *o)
 			LIMITX(0x200);
 			LIMITY(0x200);
 			
-			if (pdistlx(8<<CSF) && player->y > o->y)
+			if (pdistlx(8 * CSFI) && player->y > o->y)
 			{
 				o->state = 10;
 				o->timer = 0;
@@ -518,7 +518,7 @@ void ai_black_lightning(Object *o)
 	if (o->blockd)
 	{
 		effect(o->CenterX(), o->Bottom(), EFFECT_BOOMFLASH);
-		SmokeXY(o->CenterX(), o->Bottom(), 3, o->Width()>>CSF, 4);
+		SmokeXY(o->CenterX(), o->Bottom(), 3, o->Width() / CSFI, 4);
 		o->Delete();
 	}
 }

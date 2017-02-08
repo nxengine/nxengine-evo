@@ -357,11 +357,11 @@ void ai_boss_igor_defeated(Object *o)
 				o->frame = 0;
 				
 				if (o->dir == LEFT)
-					o->x = o->xmark + (12 << CSF);
+					o->x = o->xmark + (12 * CSFI);
 				else
-					o->x = o->xmark + (2 << CSF);
+					o->x = o->xmark + (2 * CSFI);
 				
-				o->y = o->ymark + (12 << CSF);
+				o->y = o->ymark + (12 * CSFI);
 			}
 			else
 			{
@@ -409,8 +409,8 @@ static void smoke_puff(Object *o, bool initial)
 {
 Object *smoke;
 
-	smoke = CreateObject(o->CenterX() + random(-16<<CSF, 16<<CSF),
-						 o->CenterY() + random(-16<<CSF, 16<<CSF),
+	smoke = CreateObject(o->CenterX() + random(-16 * CSFI, 16 * CSFI),
+						 o->CenterY() + random(-16 * CSFI, 16 * CSFI),
 						 OBJ_SMOKE_CLOUD);
 	
 	if (initial)

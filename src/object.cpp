@@ -20,32 +20,32 @@ using namespace Graphics;
 
 //#define CSF 9
 
-int Object::Width()                      { return (sprites[this->sprite].w << CSF); }
-int Object::Height()                     { return (sprites[this->sprite].h << CSF); }
+int Object::Width()                      { return (sprites[this->sprite].w * CSFI); }
+int Object::Height()                     { return (sprites[this->sprite].h * CSFI); }
 
-int Object::BBoxWidth()          { return (((sprites[this->sprite].bbox.x2 - sprites[this->sprite].bbox.x1) + 1) << CSF); }
-int Object::BBoxHeight()         { return (((sprites[this->sprite].bbox.y2 - sprites[this->sprite].bbox.y1) + 1) << CSF); }
+int Object::BBoxWidth()          { return (((sprites[this->sprite].bbox.x2 - sprites[this->sprite].bbox.x1) + 1) * CSFI); }
+int Object::BBoxHeight()         { return (((sprites[this->sprite].bbox.y2 - sprites[this->sprite].bbox.y1) + 1) * CSFI); }
 
 int Object::CenterX()            { return (this->x + (Width() / 2)) - DrawPointX(); }
 int Object::CenterY()            { return (this->y + (Height() / 2)) - DrawPointY(); }
 
-int Object::Left()                       { return (this->x + (sprites[this->sprite].bbox.x1 << CSF)); }
-int Object::Right()                      { return (this->x + (sprites[this->sprite].bbox.x2 << CSF)); }
-int Object::Top()                        { return (this->y + (sprites[this->sprite].bbox.y1 << CSF)); }
-int Object::Bottom()                     { return (this->y + (sprites[this->sprite].bbox.y2 << CSF)); }
+int Object::Left()                       { return (this->x + (sprites[this->sprite].bbox.x1 * CSFI)); }
+int Object::Right()                      { return (this->x + (sprites[this->sprite].bbox.x2 * CSFI)); }
+int Object::Top()                        { return (this->y + (sprites[this->sprite].bbox.y1 * CSFI)); }
+int Object::Bottom()                     { return (this->y + (sprites[this->sprite].bbox.y2 * CSFI)); }
 
-int Object::SolidLeft()          { return (this->x + (sprites[this->sprite].solidbox.x1 << CSF)); }
-int Object::SolidRight()         { return (this->x + (sprites[this->sprite].solidbox.x2 << CSF)); }
-int Object::SolidTop()           { return (this->y + (sprites[this->sprite].solidbox.y1 << CSF)); }
-int Object::SolidBottom()        { return (this->y + (sprites[this->sprite].solidbox.y2 << CSF)); }
+int Object::SolidLeft()          { return (this->x + (sprites[this->sprite].solidbox.x1 * CSFI)); }
+int Object::SolidRight()         { return (this->x + (sprites[this->sprite].solidbox.x2 * CSFI)); }
+int Object::SolidTop()           { return (this->y + (sprites[this->sprite].solidbox.y1 * CSFI)); }
+int Object::SolidBottom()        { return (this->y + (sprites[this->sprite].solidbox.y2 * CSFI)); }
 
-int Object::ActionPointX()       { return (this->x + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.x << CSF)); }
-int Object::ActionPointY()       { return (this->y + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.y << CSF)); }
-int Object::ActionPoint2X()      { return (this->x + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.x << CSF)); }
-int Object::ActionPoint2Y()      { return (this->y + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.y << CSF)); }
+int Object::ActionPointX()       { return (this->x + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.x * CSFI)); }
+int Object::ActionPointY()       { return (this->y + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.y * CSFI)); }
+int Object::ActionPoint2X()      { return (this->x + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.x * CSFI)); }
+int Object::ActionPoint2Y()      { return (this->y + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.y * CSFI)); }
 
-int Object::DrawPointX()         { return (sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.x << CSF); }
-int Object::DrawPointY()         { return (sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.y << CSF); }
+int Object::DrawPointX()         { return (sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.x * CSFI); }
+int Object::DrawPointY()         { return (sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.y * CSFI); }
 
 SIFSprite *Object::Sprite()      { return &sprites[this->sprite]; }
 
@@ -171,12 +171,12 @@ Object * const &o = this;
 	SetType(type);
 	
 	// adjust position so spawn points of old object and new object line up
-	o->x >>= CSF; o->x <<= CSF;
-	o->y >>= CSF; o->y <<= CSF;
-	o->x += (sprites[oldsprite].spawn_point.x << CSF);
-	o->y += (sprites[oldsprite].spawn_point.y << CSF);
-	o->x -= (sprites[this->sprite].spawn_point.x << CSF);
-	o->y -= (sprites[this->sprite].spawn_point.y << CSF);
+	o->x /= CSFI; o->x *= CSFI;
+	o->y /= CSFI; o->y *= CSFI;
+	o->x += (sprites[oldsprite].spawn_point.x * CSFI);
+	o->y += (sprites[oldsprite].spawn_point.y * CSFI);
+	o->x -= (sprites[this->sprite].spawn_point.x * CSFI);
+	o->y -= (sprites[this->sprite].spawn_point.y * CSFI);
 	
 	// added this for when you pick up the puppy in the Deserted House in SZ--
 	// makes objects <CNPed during a <PRI initialize immediately instead of waiting
@@ -241,8 +241,8 @@ uint32_t Object::GetAttributes(const Point *pointlist, int npoints, int *tile)
 int tileno = 0;
 uint32_t attr = 0;
 
-	int xoff = (this->x >> CSF);
-	int yoff = (this->y >> CSF);
+	int xoff = (this->x / CSFI);
+	int yoff = (this->y / CSFI);
 	
 	for(int i=0;i<npoints;i++)
 	{
@@ -257,7 +257,7 @@ uint32_t attr = 0;
 	}
 	
 	// also go underwater if we go under the variable waterlevel in Almond
-	if (map.waterlevelobject && (this->y + (2<<CSF)) > map.waterlevelobject->y)
+	if (map.waterlevelobject && (this->y + (2 * CSFI)) > map.waterlevelobject->y)
 	{
 		attr |= TA_WATER;
 	}
@@ -278,8 +278,8 @@ bool Object::CheckAttribute(const Point *pointlist, int npoints, uint32_t attrma
 {
 int x, y, xoff, yoff;
 
-	xoff = (this->x >> CSF);
-	yoff = (this->y >> CSF);
+	xoff = (this->x / CSFI);
+	yoff = (this->y / CSFI);
 	
 	for(int i=0;i<npoints;i++)
 	{
@@ -308,10 +308,10 @@ int x, y;
 int ox, oy, o2x, o2y;
 SIFSprite *s2 = other->Sprite();
 	
-	ox = (this->x >> CSF);
-	oy = (this->y >> CSF);
-	o2x = (other->x >> CSF);
-	o2y = (other->y >> CSF);
+	ox = (this->x / CSFI);
+	oy = (this->y / CSFI);
+	o2x = (other->x / CSFI);
+	o2y = (other->y / CSFI);
 	
 	for(int i=0;i<npoints;i++)
 	{
@@ -495,20 +495,20 @@ Object * const &o = this;
 	// high speed from becoming embedded in walls
 	if (inertia > 0)
 	{
-		while(inertia > (1<<CSF))
+		while(inertia > (1 * CSFI))
 		{
-			if (movehandleslope(o, (1<<CSF))) return 1;
-			inertia -= (1<<CSF);
+			if (movehandleslope(o, (1 * CSFI))) return 1;
+			inertia -= (1 * CSFI);
 			
 			o->UpdateBlockStates(RIGHTMASK);
 		}
 	}
 	else if (inertia < 0)
 	{
-		while(inertia < -(1<<CSF))
+		while(inertia < -(1 * CSFI))
 		{
-			if (movehandleslope(o, -(1<<CSF))) return 1;
-			inertia += (1<<CSF);
+			if (movehandleslope(o, -(1 * CSFI))) return 1;
+			inertia += (1 * CSFI);
 			
 			o->UpdateBlockStates(LEFTMASK);
 		}
@@ -543,10 +543,10 @@ Object * const &o = this;
 	{
 		if (o->blockd) return 1;
 		
-		while(inertia > (1<<CSF))
+		while(inertia > (1 * CSFI))
 		{
-			o->y += (1<<CSF);
-			inertia -= (1<<CSF);
+			o->y += (1 * CSFI);
+			inertia -= (1 * CSFI);
 			
 			o->UpdateBlockStates(DOWNMASK);
 			if (o->blockd) return 1;
@@ -556,10 +556,10 @@ Object * const &o = this;
 	{
 		if (o->blocku) return 1;
 		
-		while(inertia < -(1<<CSF))
+		while(inertia < -(1 * CSFI))
 		{
-			o->y -= (1<<CSF);
-			inertia += (1<<CSF);
+			o->y -= (1 * CSFI);
+			inertia += (1 * CSFI);
 			
 			o->UpdateBlockStates(UPMASK);
 			if (o->blocku) return 1;
@@ -586,8 +586,8 @@ Object * const &o = this;
 		// at the top or the bottom of the brick: needed when he rides it and falls off, then it
 		// turns around and touches him again. in that case what we actually want to do is push him
 		// to the top, not push him side-to-side.
-		if ((player->SolidBottom() - (2<<CSF)) > o->SolidTop() &&\
-			(player->SolidTop() + (2<<CSF)) < o->SolidBottom())
+		if ((player->SolidBottom() - (2 * CSFI)) > o->SolidTop() &&\
+			(player->SolidTop() + (2 * CSFI)) < o->SolidBottom())
 		{
 			if (xinertia > 0 && player->SolidRight() > o->SolidRight() && solidhitdetect(o, player))
 			{	// pushing player right
@@ -598,7 +598,7 @@ Object * const &o = this;
 				else
 				{
 					// align player's blockl grid with our right side
-					player->x = o->SolidRight() - (sprites[player->sprite].block_l[0].x << CSF);
+					player->x = o->SolidRight() - (sprites[player->sprite].block_l[0].x * CSFI);
 					
 					// get player a xinertia equal to our own. You can see this
 					// with the moving blocks in Labyrinth H.
@@ -615,7 +615,7 @@ Object * const &o = this;
 				else
 				{
 					// align player's blockr grid with our left side
-					player->x = o->SolidLeft() - (sprites[player->sprite].block_r[0].x << CSF);
+					player->x = o->SolidLeft() - (sprites[player->sprite].block_r[0].x * CSFI);
 					
 					// get player a xinertia equal to our own. You can see this
 					// with the moving blocks in Labyrinth H.
@@ -640,7 +640,7 @@ Object * const &o = this;
 			{
 				// align player's blockd grid with our top side so player
 				// doesn't perpetually fall.
-				player->y = o->SolidTop() - (sprites[player->sprite].block_d[0].y << CSF);
+				player->y = o->SolidTop() - (sprites[player->sprite].block_d[0].y * CSFI);
 			}
 		}
 		else if (player->Top() >= o->CenterY() && solidhitdetect(o, player))	// underneath object
@@ -652,7 +652,7 @@ Object * const &o = this;
 					hurtplayer(o->smushdamage);
 				
 				// align his blocku grid with our bottom side
-				player->y = o->SolidBottom() - (sprites[player->sprite].block_u[0].y << CSF);
+				player->y = o->SolidBottom() - (sprites[player->sprite].block_u[0].y * CSFI);
 			}
 		}
 	}
@@ -668,7 +668,7 @@ Object * const &o = this;
 	o->flags &= ~FLAG_IGNORE_SOLID;
 	
 	UpdateBlockStates(DOWNMASK);
-	apply_yinertia(SCREEN_HEIGHT << CSF);
+	apply_yinertia(SCREEN_HEIGHT * CSFI);
 	
 	o->flags = flags;
 	o->blockd = true;
@@ -865,9 +865,9 @@ Object * const &o = this;
 	// clear example of the correct coordinates.
 	if (o->flags & FLAG_SCRIPTONTOUCH)
 	{
-		if (pdistlx(8<<CSF))
+		if (pdistlx(8 * CSFI))
 		{
-			int y = player->y + (6 << CSF);
+			int y = player->y + (6 * CSFI);
 			
 			// player->riding check is for fans in Final Cave
 			if ((y > o->Top() && y < o->Bottom()) || player->riding == o)
@@ -929,7 +929,7 @@ Object * const &o = this;
 int Object::GetAttackDirection()
 {
 Object * const &o = this;
-const int VARIANCE = (5 << CSF);
+const int VARIANCE = (5 * CSFI);
 
 	if (player->riding == o)
 		return UP;

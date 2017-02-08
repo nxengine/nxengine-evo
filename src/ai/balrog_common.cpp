@@ -28,7 +28,7 @@ bool balrog_toss_player_away(Object *o)
 	if (o->substate <= 1)
 	{
 		player->x = o->CenterX() - (player->Width() / 2);
-		player->y = o->y + (4 << CSF);
+		player->y = o->y + (4 * CSFI);
 		player->xinertia = player->yinertia = 0;
 	}
 	

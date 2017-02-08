@@ -77,7 +77,7 @@ void ai_stumpy(Object *o)
 		}
 		case 1:
 		{
-			if (pdistlx(240 << CSF) && pdistly(192 << CSF))
+			if (pdistlx(240 * CSFI) && pdistly(192 * CSFI))
 			{
 				o->state = 2;
 			}
@@ -95,7 +95,7 @@ void ai_stumpy(Object *o)
 			if (++o->timer > 50)
 				o->state = 4;
 			
-			if (!pdistlx(SCREEN_WIDTH<<CSF) || !pdistly(SCREEN_HEIGHT<<CSF))
+			if (!pdistlx(SCREEN_WIDTH * CSFI) || !pdistly(SCREEN_HEIGHT * CSFI))
 				o->state = 0;
 		}
 		break;
@@ -280,7 +280,7 @@ void ai_orangebell_baby(Object *o)
 			o->flags |= FLAG_IGNORE_SOLID;
 			
 			o->timer = 0;							// time until can dive-bomb
-			o->ymark2 = random(-32<<CSF, 32<<CSF);	// unique target point on main bat
+			o->ymark2 = random(-32 * CSFI, 32 * CSFI);	// unique target point on main bat
 			
 			o->state = 1;
 		}
@@ -304,9 +304,9 @@ void ai_orangebell_baby(Object *o)
 			
 			// dive-bomb
 			if (o->timer) o->timer--;
-			if (pdistlx(8 << CSF) && !o->timer)
+			if (pdistlx(8 * CSFI) && !o->timer)
 			{
-				if (player->y > o->y && ((player->y - o->y) < 175<<CSF))
+				if (player->y > o->y && ((player->y - o->y) < 175 * CSFI))
 				{
 					o->xinertia /= 4;
 					o->yinertia = 0;
@@ -345,7 +345,7 @@ void c------------------------------() {}
 void ai_gunfish(Object *o)
 {
 	if (player->Bottom() > o->y && \
-		player->Bottom() < o->Top() + (2<<CSF))
+		player->Bottom() < o->Top() + (2 * CSFI))
 	{	// make sure platform is real solid for him
 		o->flags &= ~FLAG_SOLID_MUSHY;
 		o->flags |= FLAG_SOLID_BRICK;
@@ -386,7 +386,7 @@ void ai_gunfish(Object *o)
 			if (player->Right() < o->Left()) o->dir = LEFT;
 			if (player->Left() > o->Right()) o->dir = RIGHT;
 			
-			if (pdistlx(128<<CSF) && pdistly2(160<<CSF, 20<<CSF))
+			if (pdistlx(128 * CSFI) && pdistly2(160 * CSFI, 20 * CSFI))
 			{
 				if (++o->timer > 80)
 				{
@@ -538,7 +538,7 @@ void ai_droll(Object *o)
 				
 				if (o->blockd)	// already know that yinertia >= 0
 				{
-					o->y >>= CSF; o->y <<= CSF;
+					o->y /= CSFI; o->y *= CSFI;
 					o->xinertia = 0;
 					
 					o->state = 13;
@@ -594,7 +594,7 @@ void ai_droll_guard(Object *o)
 	{
 		case 0:
 		{
-			o->x += (8 << CSF);
+			o->x += (8 * CSFI);
 			o->state = 1;
 		}
 		case 1:
@@ -735,7 +735,7 @@ void onspawn_mimiga_cage(Object *o)
 	else
 		o->sprite = SPR_JAIL2_CAGE;
 	
-	o->x -= (16 << CSF);
+	o->x -= (16 * CSFI);
 }
 
 
@@ -797,7 +797,7 @@ void ai_npc_itoh(Object *o)
 		case 31:
 		{
 			o->x = o->xmark;
-			if (++o->timer & 2) o->x += (1 << CSF);
+			if (++o->timer & 2) o->x += (1 * CSFI);
 		}
 		break;
 		
@@ -903,7 +903,7 @@ void ai_proximity_press_hoz(Object *o)
 	{
 		case 0:
 		{
-			if (o->dir == LEFT) o->x -= (8 << CSF);
+			if (o->dir == LEFT) o->x -= (8 * CSFI);
 			o->xmark = o->x;
 			
 			o->state = 1;
@@ -916,7 +916,7 @@ void ai_proximity_press_hoz(Object *o)
 				{
 					if (player->Right() <= o->x)
 					{
-						if ((o->x - player->Right()) <= (192<<CSF))
+						if ((o->x - player->Right()) <= (192 * CSFI))
 						{
 							o->state = 2;
 							o->frame = 2;
@@ -928,7 +928,7 @@ void ai_proximity_press_hoz(Object *o)
 				{
 					if (player->x >= o->x)
 					{
-						if ((player->x - o->x) <= (192<<CSF))
+						if ((player->x - o->x) <= (192 * CSFI))
 						{
 							o->state = 2;
 							o->frame = 2;
@@ -1087,7 +1087,7 @@ void ai_rocket(Object *o)
 			}
 			else if (o->blockd)
 			{
-				o->y >>= CSF; o->y <<= CSF;
+				o->y /= CSFI; o->y *= CSFI;
 				o->flags |= FLAG_SCRIPTONACTIVATE;
 				o->frame = 0;
 				o->state = 0;

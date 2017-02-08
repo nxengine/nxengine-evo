@@ -98,16 +98,16 @@ void ai_critter(Object *o)
 			
 			if (o->timer >= 8)
 			{
-				int attack_dist = (o->critter.canfly) ? (96 << CSF) : (64 << CSF);
+				int attack_dist = (o->critter.canfly) ? (96 * CSFI) : (64 * CSFI);
 				
 				// close enough to attack?
-				if (pdistlx(attack_dist) && pdistly2(96<<CSF, 48<<CSF))
+				if (pdistlx(attack_dist) && pdistly2(96 * CSFI, 48 * CSFI))
 				{
 					o->state = 2;
 					o->frame = 0;
 					o->timer = 0;
 				}
-				else if (pdistlx(attack_dist + (32<<CSF)) && pdistly2(128<<CSF, 48<<CSF))
+				else if (pdistlx(attack_dist + (32 * CSFI)) && pdistly2(128 * CSFI, 48 * CSFI))
 				{	// no, but close enough to look up at "attention" and watch player
 					FACEPLAYER;
 					o->frame = 1;
@@ -776,7 +776,7 @@ void ai_hey_spawner(Object *o)
 {
 	if (!o->state)
 	{
-		effect(o->x, o->y - (8<<CSF), EFFECT_HEY);
+		effect(o->x, o->y - (8 * CSFI), EFFECT_HEY);
 		o->state = 1;
 	}
 }
@@ -790,7 +790,7 @@ void ai_motorbike(Object *o)
 		break;
 		
 		case 10:	// kazuma and booster mounted
-			o->y -= (sprites[SPR_MOTORBIKE_MOUNTED].h - sprites[SPR_MOTORBIKE].h) << CSF;
+			o->y -= (sprites[SPR_MOTORBIKE_MOUNTED].h - sprites[SPR_MOTORBIKE].h) * CSFI;
 			o->sprite = SPR_MOTORBIKE_MOUNTED;
 			o->state++;
 		break;
@@ -805,8 +805,8 @@ void ai_motorbike(Object *o)
 		}
 		case 21:
 		{
-			o->x = o->xmark + (random(-1, 1) << CSF);
-			o->y = o->ymark + (random(-1, 1) << CSF);
+			o->x = o->xmark + (random(-1, 1) * CSFI);
+			o->y = o->ymark + (random(-1, 1) * CSFI);
 			
 			if (++o->timer > 30)
 				o->state = 30;
@@ -828,7 +828,7 @@ void ai_motorbike(Object *o)
 			o->xinertia += 0x20;
 			o->timer++;
 			
-			o->y = o->ymark + (random(-1, 1) << CSF);
+			o->y = o->ymark + (random(-1, 1) * CSFI);
 			
 			if (o->timer > 10)  o->dir = RIGHT;
 			if (o->timer > 200) o->state = 40;
@@ -840,7 +840,7 @@ void ai_motorbike(Object *o)
 			o->state = 41;
 			o->timer = 2;
 			o->dir = LEFT;
-			o->y -= (48 << CSF);		// move up...
+			o->y -= (48 * CSFI);		// move up...
 			o->xinertia = -0x1000;		// ...and fly fast
 		}
 		case 41:
@@ -908,12 +908,12 @@ void ai_malco(Object *o)
 		case 15:		// shaking
 			if (o->timer & 2)
 			{
-				o->x += (1<<CSF);
+				o->x += (1 * CSFI);
 				sound(SND_DOOR);
 			}
 			else
 			{
-				o->x -= (1<<CSF);
+				o->x -= (1 * CSFI);
 			}
 			if (++o->timer > 50) o->state = 16;
 		break;

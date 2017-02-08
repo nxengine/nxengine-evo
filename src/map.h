@@ -13,8 +13,8 @@
 #define DoesCurrentStageUseSpriteset(SET) \
 	( stages[game.curmap].NPCset1==SET || stages[game.curmap].NPCset2==SET )
 
-#define MAPX(X)		( ( (X) * TILE_W ) << CSF )
-#define MAPY(Y)		( ( (Y) * TILE_H ) << CSF )
+#define MAPX(X)		( ( (X) * TILE_W ) * CSFI )
+#define MAPY(Y)		( ( (Y) * TILE_H ) * CSFI )
 
 struct stMap
 {

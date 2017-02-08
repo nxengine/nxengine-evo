@@ -61,7 +61,7 @@ void ai_dragon_zombie(Object *o)
 			
 			if (--o->timer < 0)		// can fire again yet?
 			{
-				if (pdistlx(112 << CSF))	// player in range?
+				if (pdistlx(112 * CSFI))	// player in range?
 				{
 					o->state = 2;
 					o->timer = 0;
@@ -128,7 +128,7 @@ void ai_falling_spike_small(Object *o)
 		{
 			o->xmark = o->x;
 			
-			if (pdistlx(12 << CSF))
+			if (pdistlx(12 * CSFI))
 				o->state = 1;
 		}
 		break;
@@ -139,7 +139,7 @@ void ai_falling_spike_small(Object *o)
 				o->animtimer = 0;
 			
 			o->x = o->xmark;
-			if (o->animtimer >= 6) o->x += (1 << CSF);
+			if (o->animtimer >= 6) o->x += (1 * CSFI);
 			
 			if (++o->timer > 30)
 			{
@@ -177,7 +177,7 @@ void ai_falling_spike_large(Object *o)
 		{
 			o->xmark = o->x;
 			
-			if (pdistlx(12 << CSF))
+			if (pdistlx(12 * CSFI))
 				o->state = 1;
 		}
 		break;
@@ -189,7 +189,7 @@ void ai_falling_spike_large(Object *o)
 			
 			o->x = o->xmark;
 			if (o->animtimer >= 6)	// scuttle:: big spikes shake in the other direction
-				o->x -= (1 << CSF);
+				o->x -= (1 * CSFI);
 			
 			if (++o->timer > 30)
 			{
@@ -239,7 +239,7 @@ void ai_falling_spike_large(Object *o)
 				sound(SND_BLOCK_DESTROY);
 				SmokeClouds(o, 4, 2, 2);
 				
-				effect(o->CenterX(), o->y + (sprites[o->sprite].block_d[0].y << CSF),
+				effect(o->CenterX(), o->y + (sprites[o->sprite].block_d[0].y * CSFI),
 					EFFECT_STARSOLID);
 			}
 		}
@@ -291,7 +291,7 @@ void ai_counter_bomb(Object *o)
 		
 		case 2:		// ready
 		{
-			if (pdistlx(80 << CSF) || o->shaketime)
+			if (pdistlx(80 * CSFI) || o->shaketime)
 			{
 				o->state = 3;
 				o->timer = 0;
@@ -305,8 +305,8 @@ void ai_counter_bomb(Object *o)
 			{
 				if (o->timer2 < 5)
 				{
-					Object *number = CreateObject(o->CenterX() + (8 << CSF), \
-												  o->y + (16 << CSF), \
+					Object *number = CreateObject(o->CenterX() + (8 * CSFI), \
+												  o->y + (16 * CSFI), \
 												  OBJ_COUNTER_BOMB_NUMBER);
 					
 					number->frame = o->timer2++;
@@ -364,7 +364,7 @@ void ai_counter_bomb_number(Object *o)
 		}
 		case 1:
 		{
-			o->x += (1 << CSF);
+			o->x += (1 * CSFI);
 			if (++o->timer > 8)
 			{
 				o->state = 2;

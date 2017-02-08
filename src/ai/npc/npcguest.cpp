@@ -35,7 +35,7 @@ void ai_chthulu(Object *o)
 	}
 	
 	// open eyes when player comes near
-	o->frame = (pdistlx((48<<CSF)) && pdistly2((48<<CSF), (16<<CSF))) ? 1 : 0;
+	o->frame = (pdistlx((48 * CSFI)) && pdistly2((48 * CSFI), (16 * CSFI))) ? 1 : 0;
 }
 
 
@@ -74,7 +74,7 @@ void ai_yamashita_pavilion(Object *o)
 		}
 		else
 		{	// Sandaime gone
-			o->x -= (TILE_W << CSF);
+			o->x -= (TILE_W * CSFI);
 			o->state = 2;
 			o->frame = 2;
 		}

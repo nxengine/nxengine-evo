@@ -50,8 +50,8 @@ enum BBox_States
 	BM_DISABLED
 };
 
-#define FROG_START_X			((5 * TILE_W) << CSF)
-#define FROG_START_Y			((10 * TILE_H) << CSF)
+#define FROG_START_X			((5 * TILE_W) * CSFI)
+#define FROG_START_Y			((10 * TILE_H) * CSFI)
 
 #define LANDING_SMOKE_COUNT		8
 #define LANDING_SMOKE_YTOP		-4
@@ -68,12 +68,12 @@ enum BBox_States
 
 // offset from top and from left or right (depending on direction facing)
 // to spawn the balrog 'puppet' when we return to balrog form after being defeated.
-#define BALDEATH_X				(12 << CSF)
-#define BALDEATH_Y				(44 << CSF)
+#define BALDEATH_X				(12 * CSFI)
+#define BALDEATH_Y				(44 * CSFI)
 
 // twiddle adjustment to get the proper Y coordinate when switching
 // between normal and jumping sprites.
-#define JUMP_SPRITE_ADJ			(16 << CSF)
+#define JUMP_SPRITE_ADJ			(16 * CSFI)
 
 
 INITFUNC(AIRoutines)
@@ -443,8 +443,8 @@ void BalfrogBoss::RunEntryAnim()
 		// transformation complete: puff away balrog, and appear solid now
 		case STATE_READY:
 		{
-			SmokeXY(o->x + ((sprites[SPR_BALROG_GREEN].w / 2) << CSF), \
-				o->y + (48 << CSF),
+			SmokeXY(o->x + ((sprites[SPR_BALROG_GREEN].w / 2) * CSFI), \
+				o->y + (48 * CSFI),
 				8, 16, 16);
 			
 			o->state++;
@@ -482,7 +482,7 @@ void BalfrogBoss::RunDeathAnim()
 			// at a glance it might seem like this has it alternate
 			// slowly between 2 X coordinates, but in fact, it
 			// alternates quickly between 3.
-			o->x += (o->timer & 2) ? (1 << CSF) : (-1 << CSF);
+			o->x += (o->timer & 2) ? (1 * CSFI) : (-1 * CSFI);
 			
 			if (o->timer > 100)
 			{
@@ -562,7 +562,7 @@ void BalfrogBoss::RunDeathAnim()
 				frog.balrog->yinertia = -0xA00;
 				frog.balrog->flags |= FLAG_IGNORE_SOLID;
 				
-				if (frog.balrog->y < -(100 << CSF))
+				if (frog.balrog->y < -(100 * CSFI))
 				{
 					frog.balrog->Delete();
 					frog.bboxes.destroy();
@@ -602,7 +602,7 @@ Object *child;
 		int x = random(SPAWN_RANGE_LEFT, SPAWN_RANGE_RIGHT);
 		int y = random(SPAWN_RANGE_TOP, SPAWN_RANGE_BOTTOM);
 		
-		child = CreateObject((x*TILE_W)<<CSF, (y*TILE_H)<<CSF, objtype);
+		child = CreateObject((x*TILE_W) * CSFI, (y*TILE_H) * CSFI, objtype);
 		child->dir = DOWN;	// allow fall through ceiling
 	}
 }
@@ -615,8 +615,8 @@ Object *smoke;
 
 	for(int i=0;i<count;i++)
 	{
-		int x = random(o->Left() + (4 << CSF), o->Right() - (4<<CSF));
-		int y = o->Bottom() + random(ytop<<CSF, 4<<CSF);
+		int x = random(o->Left() + (4 * CSFI), o->Right() - (4 * CSFI));
+		int y = o->Bottom() + random(ytop * CSFI, 4 * CSFI);
 		
 		smoke = CreateObject(x, y, OBJ_SMOKE_CLOUD);
 		smoke->xinertia = random(-0x155, 0x155);

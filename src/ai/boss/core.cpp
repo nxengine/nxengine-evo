@@ -89,8 +89,8 @@ void CoreBoss::OnMapEntry(void)
 	o->flags = (FLAG_SHOW_FLOATTEXT | FLAG_IGNORE_SOLID | FLAG_SCRIPTONDEATH);
 	o->id2 = 1000;
 	
-	o->x = (1207 << CSF);
-	o->y = (212 << CSF);
+	o->x = (1207 * CSFI);
+	o->y = (212 * CSFI);
 	o->xinertia = o->yinertia = 0;
 	o->hp = 650;
 	
@@ -225,8 +225,8 @@ int i;
 			{
 				if ((o->timer % 20)==0)
 				{
-					CreateObject(o->x + (random(-48, -16) << CSF), \
-						     	 o->y + (random(-64, 64) << CSF), \
+					CreateObject(o->x + (random(-48, -16) * CSFI), \
+						     	 o->y + (random(-64, 64) * CSFI), \
 							 	 OBJ_CORE_GHOSTIE);
 				}
 			}
@@ -252,8 +252,8 @@ int i;
 		case CORE_GUST+1:
 		{
 			// spawn water droplet effects and push player
-			Object *droplet = CreateObject(player->x + ((random(-50, 150)<<CSF)*2), \
-								   		   player->y + (random(-160, 160)<<CSF),
+			Object *droplet = CreateObject(player->x + ((random(-50, 150) * CSFI)*2), \
+								   		   player->y + (random(-160, 160) * CSFI),
 								   		   OBJ_FAN_DROPLET);
 			droplet->dir = LEFT;
 			player->xinertia -= 0x20;
@@ -263,7 +263,7 @@ int i;
 			// spawn the big white blasts
 			if (o->timer==300 || o->timer==350 || o->timer==400)
 			{
-				EmFireAngledShot(pieces[CFRONT], OBJ_CORE_BLAST, 0, 3<<CSF);
+				EmFireAngledShot(pieces[CFRONT], OBJ_CORE_BLAST, 0, 3 * CSFI);
 				sound(SND_LIGHTNING_STRIKE);
 			}
 			
@@ -308,9 +308,9 @@ int i;
 			}
 			
 			if (o->timer & 2)
-				o->x -= (1 << CSF);
+				o->x -= (1 * CSFI);
 			else
-				o->x += (1 << CSF);
+				o->x += (1 * CSFI);
 			
 			#define CORE_DEATH_TARGET_X		0x7a000
 			#define CORE_DEATH_TARGET_Y		0x16000
@@ -381,7 +381,7 @@ int i;
 		}
 		
 		// move main core towards a spot in front of target
-		o->xinertia += (o->x > (o->xmark + (160<<CSF))) ? -4 : 4;
+		o->xinertia += (o->x > (o->xmark + (160 * CSFI))) ? -4 : 4;
 		o->yinertia += (o->y > o->ymark - (o->Height() / 2)) ? -4 : 4;
 	}
 	
@@ -467,7 +467,7 @@ void ai_core_back(Object *o)
 	Object *core = o->linkedobject;
 	if (!core) { o->Delete(); return; }
 	
-	o->x = core->x + (0x5800 - (8 << CSF));
+	o->x = core->x + (0x5800 - (8 * CSFI));
 	o->y = core->y - 0x5e00;
 }
 
@@ -506,8 +506,8 @@ void ai_minicore(Object *o)
 			o->state = MC_THRUST+1;
 			o->frame = 2;
 			o->timer = 0;
-			o->xmark = core->x + (random(-128, 32) << CSF);
-			o->ymark = core->y + (random(-64, 64) << CSF);
+			o->xmark = core->x + (random(-128, 32) * CSFI);
+			o->ymark = core->y + (random(-64, 64) * CSFI);
 		case MC_THRUST+1:
 			if (++o->timer > 50)
 			{
@@ -531,8 +531,8 @@ void ai_minicore(Object *o)
 			o->state = MC_FIRE+1;
 			o->frame = 2;	// close mouth again
 			o->timer = 0;
-			o->xmark = o->x + (random(24, 48) << CSF);
-			o->ymark = o->y + (random(-4, 4) << CSF);
+			o->xmark = o->x + (random(24, 48) * CSFI);
+			o->ymark = o->y + (random(-4, 4) * CSFI);
 		case MC_FIRE+1:
 			if (++o->timer > 50)
 			{
@@ -541,8 +541,8 @@ void ai_minicore(Object *o)
 			}
 			else if (o->timer==1 || o->timer==3)
 			{
-				// fire at player at speed (2<<CSF) with 2 degrees of variance
-				EmFireAngledShot(o, OBJ_MINICORE_SHOT, 2, 2<<CSF);
+				// fire at player at speed (2 * CSFI) with 2 degrees of variance
+				EmFireAngledShot(o, OBJ_MINICORE_SHOT, 2, 2 * CSFI);
 				sound(SND_EM_FIRE);
 			}
 		break;
@@ -554,7 +554,7 @@ void ai_minicore(Object *o)
 			o->xinertia = o->yinertia = 0;
 		case MC_RETREAT+1:		// retreat back into the abyss
 			o->xinertia += 0x20;
-			if (o->x > ((map.xsize*TILE_W)<<CSF) + 0x4000)
+			if (o->x > ((map.xsize*TILE_W) * CSFI) + 0x4000)
 			{
 				o->Delete();
 			}

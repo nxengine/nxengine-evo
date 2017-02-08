@@ -137,7 +137,7 @@ void ai_balrog_boss_flying(Object *o)
 		
 		case JUMP_END:		// coming down from jump
 		{
-			if ((o->y + (16 << CSF)) < player->y)
+			if ((o->y + (16 * CSFI)) < player->y)
 			{
 				o->damage = 10;
 			}
@@ -159,7 +159,7 @@ void ai_balrog_boss_flying(Object *o)
 				for(int i=0;i<8;i++)
 				{
 					int x = random(o->Left(), o->Right());
-					int y = o->Bottom() - (8 << CSF);
+					int y = o->Bottom() - (8 * CSFI);
 					Object *shot = CreateObject(x, y, OBJ_BALROG_SHOT_BOUNCE);
 					
 					shot->xinertia = random(-0x400, 0x400);

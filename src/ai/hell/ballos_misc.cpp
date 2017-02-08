@@ -66,7 +66,7 @@ void ai_ballos_skull(Object *o)
 					
 					for(int i=0;i<4;i++)
 					{
-						Object *s = SmokePuff(o->x + random(-12<<CSF, 12<<CSF), \
+						Object *s = SmokePuff(o->x + random(-12 * CSFI, 12 * CSFI), \
 											  o->y + 0x2000);
 						
 						s->xinertia = random(-0x155, 0x155);
@@ -82,7 +82,7 @@ void ai_ballos_skull(Object *o)
 		{
 			o->yinertia += 0x40;
 			
-			if (o->Top() >= (map.ysize * TILE_H) << CSF)
+			if (o->Top() >= (map.ysize * TILE_H) * CSFI)
 			{
 				o->Delete();
 			}
@@ -132,7 +132,7 @@ void ai_green_devil_spawner(Object *o)
 			if (--o->timer < 0)
 			{
 				Object *dv = CreateObject(o->x, o->y, OBJ_GREEN_DEVIL, 0, 0, o->dir);
-				dv->xinertia = random(-16<<CSF, 16<<CSF);
+				dv->xinertia = random(-16 * CSFI, 16 * CSFI);
 				
 				o->state = 0;
 			}
@@ -150,7 +150,7 @@ void ai_green_devil(Object *o)
 		{
 			o->flags |= FLAG_SHOOTABLE;
 			o->ymark = o->y;
-			o->yinertia = random(-5<<CSF, 5<<CSF);
+			o->yinertia = random(-5 * CSFI, 5 * CSFI);
 			o->damage = 3;
 			o->state = 1;
 		}
@@ -169,7 +169,7 @@ void ai_green_devil(Object *o)
 			}
 			else
 			{
-				if (o->x > ((map.xsize * TILE_W) << CSF) + o->Width())
+				if (o->x > ((map.xsize * TILE_W) * CSFI) + o->Width())
 					o->Delete();
 			}
 		}
@@ -219,7 +219,7 @@ void ai_bute_sword_red(Object *o)
 			
 			// when player is below them, they come towards him,
 			// when player is above, they sweep away.
-			if (player->CenterY() > (o->y + (24 << CSF)))
+			if (player->CenterY() > (o->y + (24 * CSFI)))
 			{
 				XACCEL(0x10);
 			}
@@ -263,9 +263,9 @@ void ai_bute_archer_red(Object *o)
 			o->ymark = o->y;
 			
 			if (o->dir == LEFT)
-				o->xmark -= (128<<CSF);
+				o->xmark -= (128 * CSFI);
 			else
-				o->xmark += (128<<CSF);
+				o->xmark += (128 * CSFI);
 			
 			o->xinertia = random(-0x400, 0x400);
 			o->yinertia = random(-0x400, 0x400);
@@ -295,7 +295,7 @@ void ai_bute_archer_red(Object *o)
 			ANIMATE(2, 2, 3);
 			
 			if (++o->timer > 300 || \
-				(pdistlx(112<<CSF) && pdistly(16<<CSF)))
+				(pdistlx(112 * CSFI) && pdistly(16 * CSFI)))
 			{
 				o->state = 30;
 			}
@@ -350,7 +350,7 @@ void ai_bute_archer_red(Object *o)
 			ANIMATE(1, 0, 1);
 			XACCEL(-0x20);
 			
-			if (o->Right() < 0 || o->Left() > ((map.xsize * TILE_W) << CSF))
+			if (o->Right() < 0 || o->Left() > ((map.xsize * TILE_W) * CSFI))
 				o->Delete();
 		}
 		break;
@@ -410,8 +410,8 @@ int y;
 				o->timer2++;
 				o->timer = 0;
 				
-				int xa = (o->x >> CSF) / TILE_W;
-				int ya = (o->y >> CSF) / TILE_H;
+				int xa = (o->x / CSFI) / TILE_W;
+				int ya = (o->y / CSFI) / TILE_H;
 				for(y=0;y<20;y++)
 				{
 					// pushing the smoke behind all objects prevents it from covering
@@ -422,8 +422,8 @@ int y;
 				sound(SND_BLOCK_DESTROY);
 				quake(20);
 				
-				if (o->dir == LEFT) o->x -= (TILE_W << CSF);
-							   else o->x += (TILE_W << CSF);
+				if (o->dir == LEFT) o->x -= (TILE_W * CSFI);
+							   else o->x += (TILE_W * CSFI);
 				
 				// reached the solid tile in the center of the throne.
 				// it isn't supposed to cover this tile until after Curly

@@ -53,7 +53,7 @@ void ai_curly(Object *o)
 		case 4:
 		case 11:
 		{
-			if (o->state == 11 && pdistlx(20<<CSF))
+			if (o->state == 11 && pdistlx(20 * CSFI))
 			{
 				o->state = 0;
 				break;
@@ -197,8 +197,8 @@ void ai_curly_carried_shooting(Object *o)
 	
 	// get player center position--
 	// coordinates make more sense when figured this way
-	int px = player->x + (8 << CSF);
-	int py = player->y + (8 << CSF);
+	int px = player->x + (8 * CSFI);
+	int py = player->y + (8 * CSFI);
 	
 	o->dir = player->dir ^ 1;
 	
@@ -210,29 +210,29 @@ void ai_curly_carried_shooting(Object *o)
 		{
 			if (player->blockd)
 			{
-				o->ymark = py - (12 << CSF);
+				o->ymark = py - (12 * CSFI);
 				o->frame = 1;
 			}
 			else
 			{
-				o->ymark = py + (8 << CSF);
+				o->ymark = py + (8 * CSFI);
 				o->frame = 2;
 			}
 		}
 		else
 		{	// player looking down (and implicitly, not blockd)
-			o->ymark = py - (8 << CSF);
+			o->ymark = py - (8 * CSFI);
 			o->frame = 1;
 		}
 	}
 	else	// normal/horizontal
 	{
 		if (player->dir == LEFT)
-			o->xmark = px + (7 << CSF);
+			o->xmark = px + (7 * CSFI);
 		else
-			o->xmark = px - (7 << CSF);
+			o->xmark = px - (7 * CSFI);
 		
-		o->ymark = py - (3 << CSF);
+		o->ymark = py - (3 * CSFI);
 		o->frame = 0;
 	}
 	
@@ -241,7 +241,7 @@ void ai_curly_carried_shooting(Object *o)
 	
 	// bounce as player walks
 	if (player->walking && (player->walkanimframe & 1))
-		o->y -= (1 << CSF);
+		o->y -= (1 * CSFI);
 }
 
 
@@ -258,9 +258,9 @@ void ai_ccs_gun(Object *o)
 		case 0:		// horizontal/normal
 		{
 			if (curly->dir == RIGHT)
-				o->x = curly->x + (8 << CSF);
+				o->x = curly->x + (8 * CSFI);
 			else
-				o->x = curly->x - (8 << CSF);
+				o->x = curly->x - (8 * CSFI);
 			
 			o->y = curly->y;
 		}
@@ -269,14 +269,14 @@ void ai_ccs_gun(Object *o)
 		case 1:		// looking up
 		{
 			o->x = curly->x;
-			o->y = curly->y - (10 << CSF);
+			o->y = curly->y - (10 * CSFI);
 		}
 		break;
 		
 		case 2:		// looking down
 		{
 			o->x = curly->x;
-			o->y = curly->y + (10 << CSF);
+			o->y = curly->y + (10 * CSFI);
 		}
 		break;
 	}

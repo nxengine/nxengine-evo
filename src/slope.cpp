@@ -104,8 +104,8 @@ int x, y, i;
 
 	for(i=0;i<points->count;i++)
 	{
-		x = (o->x >> CSF) + points->point[i].x;
-		y = (o->y >> CSF) + points->point[i].y;
+		x = (o->x / CSFI) + points->point[i].x;
+		y = (o->y / CSFI) + points->point[i].y;
 		if (ReadSlopeTable(x, y)) return 1;
 	}
 	
@@ -121,8 +121,8 @@ int CheckStandOnSlope(Object *o)
 {
 int x, y, st;
 
-	y = (o->y >> CSF) + sprites[o->sprite].slopebox.y2 + 1;
-	x = (o->x >> CSF);
+	y = (o->y / CSFI) + sprites[o->sprite].slopebox.y2 + 1;
+	x = (o->x / CSFI);
 	
 	if ((st = ReadSlopeTable(x + sprites[o->sprite].slopebox.x1, y))) return st;
 	if ((st = ReadSlopeTable(x + sprites[o->sprite].slopebox.x2, y))) return st;
@@ -136,8 +136,8 @@ int CheckBoppedHeadOnSlope(Object *o)
 {
 int x, y, st;
 
-	y = (o->y >> CSF) + sprites[o->sprite].slopebox.y1 - 1;
-	x = (o->x >> CSF);
+	y = (o->y / CSFI) + sprites[o->sprite].slopebox.y1 - 1;
+	x = (o->x / CSFI);
 	
 	// without this, you get stuck in the save area below Gum Door in Grasstown
 	//if (o == player) y += 4;
@@ -195,19 +195,19 @@ char blocked_wall;
 	
 	// check the opposing side at y+1 to see if we were standing on a slope before the move.
 	uint8_t old_floor_slope, old_ceil_slope;
-	old_floor_slope = ReadSlopeTable((newx>>CSF) + opposing_x, \
-									 (newy>>CSF) + sprites[o->sprite].slopebox.y2 + 1);
+	old_floor_slope = ReadSlopeTable((newx / CSFI) + opposing_x, \
+									 (newy / CSFI) + sprites[o->sprite].slopebox.y2 + 1);
 	
-	old_ceil_slope = ReadSlopeTable((newx>>CSF) + opposing_x, \
-									(newy>>CSF) + sprites[o->sprite].slopebox.y1 - 1);
+	old_ceil_slope = ReadSlopeTable((newx / CSFI) + opposing_x, \
+									(newy / CSFI) + sprites[o->sprite].slopebox.y1 - 1);
 	
 	// move the object
 	newx += xinertia;
 	
 	// check the opposing side again and if now we're not standing any more,
 	// we moved down the slope, so add +1 to the object's Y coordinate.
-	if (old_floor_slope && !ReadSlopeTable((newx>>CSF) + opposing_x, \
-										(newy>>CSF) + sprites[o->sprite].slopebox.y2 + 1))
+	if (old_floor_slope && !ReadSlopeTable((newx / CSFI) + opposing_x, \
+										(newy / CSFI) + sprites[o->sprite].slopebox.y2 + 1))
 	{
 		bool walking_down = false;
 		
@@ -233,13 +233,13 @@ char blocked_wall;
 		
 		if (walking_down)
 		{
-			newy += (1<<CSF);
+			newy += (1 * CSFI);
 		}
 	}
 	
 	// the same for ceiling slopes
-	if (old_ceil_slope && !ReadSlopeTable((newx>>CSF) + opposing_x, \
-										(newy>>CSF) + sprites[o->sprite].slopebox.y1 - 1))
+	if (old_ceil_slope && !ReadSlopeTable((newx / CSFI) + opposing_x, \
+										(newy / CSFI) + sprites[o->sprite].slopebox.y1 - 1))
 	{
 		bool moveme = false;
 		
@@ -263,24 +263,24 @@ char blocked_wall;
 		if (moveme)
 		{	// moving down (actually up) the "descending" (closer to real ceil) portion
 			// of a ceiling slope tile. Reverse of floor slope thingy above.
-			newy -= (1<<CSF);
+			newy -= (1 * CSFI);
 		}
 	}
 	
 	// check the coordinate and see if it's inside a slope tile.
 	// if so, move the object up 1 Y pixel.
-	uint8_t moved_into_ceil_slope = ReadSlopeTable((newx>>CSF) + xoff, \
-									(newy>>CSF) + sprites[o->sprite].slopebox.y1);
+	uint8_t moved_into_ceil_slope = ReadSlopeTable((newx / CSFI) + xoff, \
+									(newy / CSFI) + sprites[o->sprite].slopebox.y1);
 	if (moved_into_ceil_slope)
 	{
-		newy += (1<<CSF);
+		newy += (1 * CSFI);
 	}
 	
-	uint8_t moved_into_floor_slope = ReadSlopeTable((newx>>CSF) + xoff, \
-									(newy>>CSF) + sprites[o->sprite].slopebox.y2);
+	uint8_t moved_into_floor_slope = ReadSlopeTable((newx / CSFI) + xoff, \
+									(newy / CSFI) + sprites[o->sprite].slopebox.y2);
 	if (moved_into_floor_slope)
 	{
-		newy -= (1<<CSF);
+		newy -= (1 * CSFI);
 	}
 	
 	// can't move if blocked by a wall. but if we've moved up or down 1px, be sure and update

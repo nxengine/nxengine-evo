@@ -42,7 +42,7 @@ bool island_init(int parameter)
 	island.trees_y = (island.scene_y + sprites[SPR_ISLAND_SCENE].h) - sprites[SPR_ISLAND_TREES].h;
 	
 	island.x = (SCREEN_WIDTH / 2) - (sprites[SPR_ISLAND].w / 2);
-	island.y = (island.scene_y - sprites[SPR_ISLAND].h) << CSF;
+	island.y = (island.scene_y - sprites[SPR_ISLAND].h) * CSFI;
 	
 	return 0;
 }
@@ -79,7 +79,7 @@ void island_tick()
 				sprites[SPR_ISLAND_SCENE].w, sprites[SPR_ISLAND_SCENE].h);
 	
 	draw_sprite(island.scene_x, island.scene_y, SPR_ISLAND_SCENE);
-	draw_sprite(island.x, (island.y>>CSF), SPR_ISLAND);
+	draw_sprite(island.x, (island.y / CSFI), SPR_ISLAND);
 	
 	draw_sprite(island.trees_x, island.trees_y, SPR_ISLAND_TREES);
 	

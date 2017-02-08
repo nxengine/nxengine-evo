@@ -108,8 +108,8 @@ Object *o;
 	objprop[o->type].hurt_sound = SND_CORE_HURT;
 	
 	o->hp = 700;
-	o->x = (592 << CSF);
-	o->y = (120 << CSF);
+	o->x = (592 * CSFI);
+	o->y = (120 * CSFI);
 	o->id2 = 1000;	// defeated script
 	o->flags = (FLAG_SHOW_FLOATTEXT | FLAG_IGNORE_SOLID | FLAG_SCRIPTONDEATH);
 	
@@ -277,7 +277,7 @@ void UDCoreBoss::Run(void)
 			if ((o->timer % 40) == 1)
 			{
 				int i = random(0, 3);
-				int x = rotator[i]->x - (16<<CSF);
+				int x = rotator[i]->x - (16 * CSFI);
 				int y = rotator[i]->y;
 				
 				sound(SND_FUNNY_EXPLODE);
@@ -304,9 +304,9 @@ void UDCoreBoss::Run(void)
 			sound(SND_FUNNY_EXPLODE);
 			
 			// spawn a whole bunch of crazy spinners from the face
-			CreateSpinner(face->x - (16<<CSF), face->y);
-			CreateSpinner(face->x, face->y - (16<<CSF));
-			CreateSpinner(face->x, face->y + (16<<CSF));
+			CreateSpinner(face->x - (16 * CSFI), face->y);
+			CreateSpinner(face->x, face->y - (16 * CSFI));
+			CreateSpinner(face->x, face->y + (16 * CSFI));
 			
 			o->savedhp = o->hp;
 			set_bbox_shootable(true);
@@ -403,7 +403,7 @@ void UDCoreBoss::SpawnFaceSmoke()
 	
 	for(int i=0;i<8;i++)
 	{
-		int x = face->x + random(-16<<CSF, 32<<CSF);
+		int x = face->x + random(-16 * CSFI, 32 * CSFI);
 		int y = main->CenterY();
 		Object *s = SmokePuff(x, y);
 		s->xinertia = random(-0x200, 0x200);
@@ -418,11 +418,11 @@ void UDCoreBoss::SpawnPellet(int dir)
 	int y = main->y;
 	
 	if (dir == UP)
-		y -= (16 << CSF);
+		y -= (16 * CSFI);
 	else
-		y += (16 << CSF);
+		y += (16 * CSFI);
 	
-	CreateObject(main->x - (32<<CSF), y, OBJ_UD_PELLET)->dir = dir;
+	CreateObject(main->x - (32 * CSFI), y, OBJ_UD_PELLET)->dir = dir;
 }
 
 
@@ -495,8 +495,8 @@ bool UDCoreBoss::RunDefeated()
 			if ((o->timer % 8) == 0)
 				sound(SND_MISSILE_HIT);
 			
-			int x = o->x + random(-72<<CSF, 72<<CSF);
-			int y = o->y + random(-64<<CSF, 64<<CSF);
+			int x = o->x + random(-72 * CSFI, 72 * CSFI);
+			int y = o->y + random(-64 * CSFI, 64 * CSFI);
 			SmokePuff(x, y);
 			effect(x, y, EFFECT_BOOMFLASH);
 			
@@ -587,8 +587,8 @@ void UDCoreBoss::run_face(Object *o)
 		break;
 	}
 	
-	o->x = main->x - (36 << CSF);
-	o->y = main->y - (4 << CSF);
+	o->x = main->x - (36 * CSFI);
+	o->y = main->y - (4 * CSFI);
 }
 
 
@@ -608,7 +608,7 @@ void UDCoreBoss::run_front(Object *o)
 		}
 		case 1:
 		{
-			o->x = main->x - (36<<CSF);
+			o->x = main->x - (36 * CSFI);
 			o->y = main->y;
 		}
 		break;
@@ -631,7 +631,7 @@ void UDCoreBoss::run_back(Object *o)
 		}
 		case 1:
 		{
-			o->x = main->x + (44<<CSF);
+			o->x = main->x + (44 * CSFI);
 			o->y = main->y;
 		}
 		break;
@@ -722,8 +722,8 @@ void UDCoreBoss::run_rotator(Object *o)
 		angle += 0xC0;
 	}
 	
-	o->x = (main->x - (8<<CSF)) + xinertia_from_angle(angle, (48<<CSF));
-	o->y = main->y + yinertia_from_angle(angle, (80<<CSF));
+	o->x = (main->x - (8 * CSFI)) + xinertia_from_angle(angle, (48 * CSFI));
+	o->y = main->y + yinertia_from_angle(angle, (80 * CSFI));
 }
 
 void UDCoreBoss::SetRotatorStates(int newstate)
@@ -742,8 +742,8 @@ void UDCoreBoss::move_bboxes()
 {
 	for(int i=0;i<NUM_BBOXES;i++)
 	{
-		bbox[i]->x = main->x + (core_bboxes[i].offset.x << CSF);
-		bbox[i]->y = main->y + (core_bboxes[i].offset.y << CSF);
+		bbox[i]->x = main->x + (core_bboxes[i].offset.x * CSFI);
+		bbox[i]->y = main->y + (core_bboxes[i].offset.y * CSFI);
 	}
 	
 	transfer_damage(bbox[BB_TARGET], main);
@@ -806,7 +806,7 @@ void ai_udmini_platform(Object *o)
 		}
 		case 1:
 		{
-			if (o->x < -(64 << CSF))
+			if (o->x < -(64 * CSFI))
 				o->Delete();
 			
 			if (o->y > o->ymark) o->yinertia -= 0x10;
@@ -831,7 +831,7 @@ void ai_udmini_platform(Object *o)
 			if (hitdetect(o, player))
 			{
 				if ((player->blockl && player->Right() < o->CenterX()) || \
-					(o->yinertia > 0 && player->blockd && player->Top() >= o->CenterY() - (1<<CSF)) || \
+					(o->yinertia > 0 && player->blockd && player->Top() >= o->CenterY() - (1 * CSFI)) || \
 					(o->yinertia < 0 && player->blocku && player->Bottom() < o->CenterY()))
 				{
 					o->flags &= ~FLAG_SOLID_BRICK;
@@ -892,8 +892,8 @@ void ai_ud_pellet(Object *o)
 			o->flags |= FLAG_IGNORE_SOLID;
 			
 			o->sprite = SPR_UD_BANG;
-			o->x -= (4 << CSF);
-			o->y -= (4 << CSF);
+			o->x -= (4 * CSFI);
+			o->y -= (4 * CSFI);
 		}
 		case 3:
 		{
@@ -911,8 +911,8 @@ void ai_ud_pellet(Object *o)
 				smoke->x += o->xinertia;
 			}
 			
-			if (o->CenterX() < (16<<CSF) || \
-				o->CenterX() > (MAPX(map.xsize) - (16<<CSF)))
+			if (o->CenterX() < (16 * CSFI) || \
+				o->CenterX() > (MAPX(map.xsize) - (16 * CSFI)))
 			{
 				o->Delete();
 			}
@@ -928,7 +928,7 @@ void ai_ud_smoke(Object *o)
 	{
 		case 0:
 		{
-			o->xinertia = random(-4, 4) << CSF;
+			o->xinertia = random(-4, 4) * CSFI;
 			o->state = 1;
 		}
 		case 1:
@@ -980,8 +980,8 @@ void ai_ud_spinner(Object *o)
 			o->speed -= 0x15;
 			o->xmark += o->speed;
 			
-			o->x = o->xmark + xinertia_from_angle(o->angle, (4<<CSF));
-			o->y = o->ymark + yinertia_from_angle(o->angle, (6<<CSF));
+			o->x = o->xmark + xinertia_from_angle(o->angle, (4 * CSFI));
+			o->y = o->ymark + yinertia_from_angle(o->angle, (6 * CSFI));
 			
 			CreateObject(o->x, o->y, OBJ_UD_SPINNER_TRAIL);
 			o->BringToFront();
@@ -1006,8 +1006,8 @@ void ai_ud_blast(Object *o)
 	o->xinertia = -0x1000;
 	o->frame ^= 1;
 
-	SmokePuff(o->CenterX() + (random(0, 16) << CSF), \
-			  o->CenterY() + (random(-16, 16) << CSF));
+	SmokePuff(o->CenterX() + (random(0, 16) * CSFI), \
+			  o->CenterY() + (random(-16, 16) * CSFI));
 	
 	if (o->x < -0x4000)
 		o->Delete();

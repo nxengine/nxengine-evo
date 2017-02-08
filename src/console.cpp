@@ -290,9 +290,9 @@ static void __spawn(std::vector<std::string> *args, int num)
 	}
 	
 	// get starting spawn position and spacing
-	int x = player->x + ((player->dir==RIGHT) ? (24 << CSF) : -(24 << CSF));
-	int y = player->y - (16 << CSF);
-	int w = (sprites[objprop[type].sprite].w + 4) << CSF;
+	int x = player->x + ((player->dir==RIGHT) ? (24 * CSFI) : -(24 * CSFI));
+	int y = player->y - (16 * CSFI);
+	int w = (sprites[objprop[type].sprite].w + 4) * CSFI;
 	
 	// create 'em
 	for(i=0;i<count;i++)

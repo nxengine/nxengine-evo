@@ -41,7 +41,7 @@ enum STATES
 #define DMG_RUSH		10		// damage when he is rushing/flying at you
 
 #define RUSH_SPEED		0x800		// how fast he flies
-#define RUSH_DIST		(16<<CSF)	// how close he gets to you before changing direction
+#define RUSH_DIST		(16 * CSFI)	// how close he gets to you before changing direction
 
 #define FLOAT_Y			MAPY(11)	// Y position to rise to during lightning attack
 #define LIGHTNING_Y		MAPY(19)	// Y position lightning strikes hit (i.e., the floor)
@@ -144,7 +144,7 @@ void ai_ballos_priest(Object *o)
 				{
 					o->state = BP_FLY_LR;		// flying left/right
 				}
-				else if (player->y < (o->y + (12 << CSF)))
+				else if (player->y < (o->y + (12 * CSFI)))
 				{
 					o->state = BP_FLY_UP;		// flying up
 				}
@@ -379,12 +379,12 @@ static void spawn_bones(Object *o, int dir)
 int y;
 
 	if (dir == UP)
-		y = (o->y - (12 << CSF));
+		y = (o->y - (12 * CSFI));
 	else
-		y = (o->y + (12 << CSF));
+		y = (o->y + (12 * CSFI));
 	
-	CreateObject(o->x - (12<<CSF), y, OBJ_BALLOS_BONE_SPAWNER)->dir = LEFT;
-	CreateObject(o->x + (12<<CSF), y, OBJ_BALLOS_BONE_SPAWNER)->dir = RIGHT;
+	CreateObject(o->x - (12 * CSFI), y, OBJ_BALLOS_BONE_SPAWNER)->dir = LEFT;
+	CreateObject(o->x + (12 * CSFI), y, OBJ_BALLOS_BONE_SPAWNER)->dir = RIGHT;
 }
 
 /*
@@ -468,7 +468,7 @@ static void run_lightning(Object *o)
 			{
 				if ((o->timer % 10) == 1)
 				{
-					CreateObject((o->timer2 * TILE_W) << CSF, \
+					CreateObject((o->timer2 * TILE_W) * CSFI, \
 								 LIGHTNING_Y, OBJ_BALLOS_TARGET)->dir = LEFT;
 					o->timer2 += 4;
 					
@@ -494,7 +494,7 @@ static void run_intro(Object *o)
 		case 0:
 		{
 			// setup
-			o->y -= (6<<CSF);
+			o->y -= (6 * CSFI);
 			o->dir = LEFT;
 			o->damage = 0;
 			
@@ -502,7 +502,7 @@ static void run_intro(Object *o)
 			o->dirparam = -1;
 			
 			// closed eyes/mouth
-			o->linkedobject = CreateObject(o->x, o->y - (16 << CSF), OBJ_BALLOS_SMILE);
+			o->linkedobject = CreateObject(o->x, o->y - (16 * CSFI), OBJ_BALLOS_SMILE);
 			o->state = 1;
 		}
 		break;
@@ -571,8 +571,8 @@ static void run_defeated(Object *o)
 			LIMITY(0x5ff);
 			
 			o->x = o->xmark;
-			if (++o->timer & 2) o->x += (1 << CSF);
-						   else o->x -= (1 << CSF);
+			if (++o->timer & 2) o->x += (1 * CSFI);
+						   else o->x -= (1 * CSFI);
 			
 			if (o->blockd && o->yinertia >= 0)
 			{
@@ -632,7 +632,7 @@ void ai_ballos_target(Object *o)
 		case 0:
 		{
 			// position to shoot lightning at passed as x,y
-			o->xmark = o->CenterX() - ((sprites[SPR_LIGHTNING].w / 2) << CSF);
+			o->xmark = o->CenterX() - ((sprites[SPR_LIGHTNING].w / 2) * CSFI);
 			o->ymark = o->CenterY();
 			
 			// adjust our Y coordinate to match player's
@@ -682,7 +682,7 @@ void ai_ballos_bone_spawner(Object *o)
 			
 			if ((o->timer % 6) == 1)
 			{
-				int xi = (random(4, 16) << CSF) / 8;
+				int xi = (random(4, 16) * CSFI) / 8;
 				
 				if (o->dir == LEFT)
 					xi = -xi;

@@ -38,8 +38,8 @@ Object *s;
 
 	for(int i=0;i<nclouds;i++)
 	{
-		s = SmokePuff(x + (random(-rangex, rangex) << CSF), \
-			 	      y + (random(-rangey, rangey) << CSF));
+		s = SmokePuff(x + (random(-rangex, rangex) * CSFI), \
+			 	      y + (random(-rangey, rangey) * CSFI));
 		
 		if (push_behind)
 			s->PushBehind(push_behind);
@@ -77,7 +77,7 @@ xmin = xmax = ymin = ymax = xi_min = xi_max = yi_min = yi_max = 0;
 			}
 			else
 			{
-				ymin = ymax = (o->Height() - (2<<CSF));
+				ymin = ymax = (o->Height() - (2 * CSFI));
 				yi_min = -SFAST;
 				yi_max = 0;
 			}
@@ -101,7 +101,7 @@ xmin = xmax = ymin = ymax = xi_min = xi_max = yi_min = yi_max = 0;
 			}
 			else
 			{
-				xmin = xmax = (o->Width() - (2<<CSF));
+				xmin = xmax = (o->Width() - (2 * CSFI));
 				xi_min = -SFAST;
 				xi_max = 0;
 			}
@@ -143,8 +143,8 @@ void SmokeBoomUp(Object *o)
 {
 	for(int i=0;i<8;i++)
 	{
-		CreateObject(o->CenterX() + random(-16<<CSF, 16<<CSF),
-					 o->CenterY() + random(-16<<CSF, 16<<CSF),
+		CreateObject(o->CenterX() + random(-16 * CSFI, 16 * CSFI),
+					 o->CenterY() + random(-16 * CSFI, 16 * CSFI),
 					 OBJ_SMOKE_CLOUD,
 					 random(-0x155, 0x155),
 					 random(-0x600, 0));

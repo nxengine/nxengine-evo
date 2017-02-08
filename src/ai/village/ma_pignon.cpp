@@ -114,7 +114,7 @@ void ai_ma_pignon(Object *o)
 			o->yinertia += 0x80;
 			
 			// for when falling back onscreen after clone attack
-			if (o->y > (8 * TILE_H) << CSF)
+			if (o->y > (8 * TILE_H) * CSFI)
 				o->flags &= ~FLAG_IGNORE_SOLID;
 			else
 				o->blockd = false;
@@ -216,8 +216,8 @@ void ai_ma_pignon(Object *o)
 			
 			if ((++o->timer % 6) == 0)
 			{
-				int x = (random(4, 16) * TILE_W) << CSF;
-				CreateObject(x, (16 << CSF), OBJ_MA_PIGNON_ROCK);
+				int x = (random(4, 16) * TILE_W) * CSFI;
+				CreateObject(x, (16 * CSFI), OBJ_MA_PIGNON_ROCK);
 			}
 			
 			if (o->timer > 30)
@@ -245,7 +245,7 @@ void ai_ma_pignon(Object *o)
 			ANIMATE(0, 9, 11);
 			
 			XMOVE(0x400);
-			if (pdistlx(3 << CSF))
+			if (pdistlx(3 * CSFI))
 			{
 				o->state = MP_Fly_Up;
 				o->timer = 0;
@@ -277,7 +277,7 @@ void ai_ma_pignon(Object *o)
 		{
 			ANIMATE(0, 12, 13);
 			
-			if (o->y < (16<<CSF))
+			if (o->y < (16 * CSFI))
 				o->state = MP_Spawn_Clones;
 		}
 		break;
@@ -296,8 +296,8 @@ void ai_ma_pignon(Object *o)
 			
 			if ((++o->timer % 6) == 0)
 			{
-				int x = (random(4, 16) * TILE_W) << CSF;
-				CreateObject(x, (16 << CSF), OBJ_MA_PIGNON_CLONE);
+				int x = (random(4, 16) * TILE_W) * CSFI;
+				CreateObject(x, (16 * CSFI), OBJ_MA_PIGNON_CLONE);
 			}
 			
 			if (o->timer > 30)
@@ -401,7 +401,7 @@ void ai_ma_pignon_rock(Object *o)
 			o->yinertia += 0x40;
 			LIMITY(0x700);
 			
-			if (o->y > (8 * TILE_H) << CSF)
+			if (o->y > (8 * TILE_H) * CSFI)
 			{
 				o->flags &= ~FLAG_IGNORE_SOLID;
 				
@@ -417,8 +417,8 @@ void ai_ma_pignon_rock(Object *o)
 					// these smoke clouds appear BEHIND the map tiles
 					for(int i=0;i<2;i++)
 					{
-						Object *smoke = CreateObject(o->CenterX() + random(-12<<CSF, 12<<CSF),
-													 o->Bottom()+(16<<CSF), OBJ_SMOKE_CLOUD);
+						Object *smoke = CreateObject(o->CenterX() + random(-12 * CSFI, 12 * CSFI),
+													 o->Bottom()+(16 * CSFI), OBJ_SMOKE_CLOUD);
 						smoke->xinertia = random(-0x155, 0x155);
 						smoke->yinertia = random(-0x600, 0);
 					}
@@ -430,7 +430,7 @@ void ai_ma_pignon_rock(Object *o)
 		case 2:
 		{
 			o->yinertia += 0x40;
-			if (o->y > (map.ysize * TILE_H) << CSF)
+			if (o->y > (map.ysize * TILE_H) * CSFI)
 				o->Delete();
 		}
 		break;
@@ -448,7 +448,7 @@ void ai_ma_pignon_clone(Object *o)
 			o->yinertia += 0x80;
 			LIMITY(0x5ff);
 			
-			if (o->y > (8 * TILE_H) << CSF)
+			if (o->y > (8 * TILE_H) * CSFI)
 			{
 				o->state = 130;
 				o->flags &= ~FLAG_IGNORE_SOLID;

@@ -410,7 +410,7 @@ static void PFirePolarStar(int level)
 	if (level < 2 || CountObjectsOfType(OBJ_POLAR_SHOT) < 2)
 	{
 		int xoff;
-		if (level == 2) xoff = -5<<CSF; else xoff = -4<<CSF;
+		if (level == 2) xoff = -5 * CSFI; else xoff = -4 * CSFI;
 		
 		FireSimpleBulletOffset(OBJ_POLAR_SHOT, B_PSTAR_L1+level, xoff, 0);
 		rumble(0.2,200);
@@ -518,7 +518,7 @@ int xoff, yoff;
 	bullet_type += level;
 	
 	// level 1 & 2 fires just one missile
-	FireSimpleBulletOffset(object_type, bullet_type, -4<<CSF, 0);
+	FireSimpleBulletOffset(object_type, bullet_type, -4 * CSFI, 0);
 	
 	// level 3 fires three missiles, they wave, and are "offset",
 	// so if it's level 3 fire two more missiles.
@@ -528,8 +528,8 @@ int xoff, yoff;
 		static const int recoil_upper[] = { 0x500,  0xd00 };
 		static const int recoil_lower[] = { 0x700,  0x600 };
 		
-		if (player->look==DOWN || player->look==UP) { xoff = (4<<CSF); yoff = 0; }
-											   else { yoff = (4<<CSF); xoff = 0; }
+		if (player->look==DOWN || player->look==UP) { xoff = (4 * CSFI); yoff = 0; }
+											   else { yoff = (4 * CSFI); xoff = 0; }
 		
 		// this one is higher
 		o = FireSimpleBullet(object_type, bullet_type, -xoff, -yoff);
@@ -567,7 +567,7 @@ int count;
 	// you can't see the difference but it makes the shot correctly bounce if
 	// you shoot while flat up against a wall, instead of embedding the fireball
 	// in the wall.
-	Object *fb = FireSimpleBulletOffset(object_types[level], B_FIREBALL1 + level, -8<<CSF, 0);
+	Object *fb = FireSimpleBulletOffset(object_types[level], B_FIREBALL1 + level, -8 * CSFI, 0);
 	fb->dir = player->dir;
 	fb->nxflags &= ~NXFLAG_NO_RESET_YINERTIA;
 	
@@ -605,18 +605,18 @@ static void PFireBlade(int level)
 	{
 		if (dir == RIGHT || dir == LEFT)
 		{
-			y -= (3 << CSF);
-			x += (dir == LEFT) ? (3 << CSF) : -(3 << CSF);
+			y -= (3 * CSFI);
+			x += (dir == LEFT) ? (3 * CSFI) : -(3 * CSFI);
 		}
 	}
 	else
 	{
 		switch(dir)
 		{
-			case RIGHT: x -= (6 << CSF); y -= (3 << CSF); break;
-			case LEFT:  x += (6 << CSF); y -= (3 << CSF); break;
-			case UP:    y += (6 << CSF); break;
-			case DOWN:  y -= (6 << CSF); break;
+			case RIGHT: x -= (6 * CSFI); y -= (3 * CSFI); break;
+			case LEFT:  x += (6 * CSFI); y -= (3 * CSFI); break;
+			case UP:    y += (6 * CSFI); break;
+			case DOWN:  y -= (6 * CSFI); break;
 		}
 	}
 	
@@ -640,7 +640,7 @@ static void PFireSnake(int level)
 	}
 	
 	int object_type = (level == 0) ? OBJ_SNAKE1_SHOT : OBJ_SNAKE23_SHOT;
-	FireSimpleBulletOffset(object_type, B_SNAKE_L1+level, -5<<CSF, 0);
+	FireSimpleBulletOffset(object_type, B_SNAKE_L1+level, -5 * CSFI, 0);
 }
 
 
@@ -664,7 +664,7 @@ static const int max_bubbles[] = { 4, 16, 16 };
 		return;
 	
 	int objtype = (level != 2) ? OBJ_BUBBLER12_SHOT : OBJ_BUBBLER3_SHOT;
-	FireSimpleBulletOffset(objtype, B_BUBBLER_L1+level, -4<<CSF, 0);
+	FireSimpleBulletOffset(objtype, B_BUBBLER_L1+level, -4 * CSFI, 0);
 }
 
 /*
@@ -685,7 +685,7 @@ void c------------------------------() {}
 static void PFireSpur(void)
 {
 	if (can_fire_spur())
-		FireSimpleBulletOffset(OBJ_POLAR_SHOT, B_PSTAR_L3, -4<<CSF, 0);
+		FireSimpleBulletOffset(OBJ_POLAR_SHOT, B_PSTAR_L3, -4 * CSFI, 0);
 }
 
 // fires and handles charged shots
@@ -736,7 +736,7 @@ Weapon *spur = &player->weapons[WPN_SPUR];
 			if (spur->level > 0 && can_fire_spur())
 			{
 				int level = IsWeaponMaxed() ? 2 : (spur->level - 1);
-				FireSimpleBulletOffset(OBJ_SPUR_SHOT, B_SPUR_L1+level, -4<<CSF, 0);
+				FireSimpleBulletOffset(OBJ_SPUR_SHOT, B_SPUR_L1+level, -4 * CSFI, 0);
 			}
 			
 			spur->chargetimer = 0;

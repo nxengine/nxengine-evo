@@ -20,7 +20,7 @@
 #define OMEGA_RISE_HEIGHT			48
 #define OMEGA_SINK_DEPTH			60
 #define OMEGA_WAIT_TIME				7
-#define OMEGA_SPEED					(1<<CSF)
+#define OMEGA_SPEED					(1 * CSFI)
 
 #define OMG_APPEAR					20  // this MUST be 20 because misery sets this to begin the battle
 #define OMG_WAIT					30
@@ -33,8 +33,8 @@
 #define OMG_EXPLODING				100	// start fancy victory animation
 #define OMG_EXPLODED				110 // full-screen flash in progress
 
-#define LEGD_MIN				(25<<CSF)
-#define LEGD_MAX				(46<<CSF)
+#define LEGD_MIN				(25 * CSFI)
+#define LEGD_MAX				(46 * CSFI)
 
 #define OMEGA_DAMAGE			20
 #define HP_TRIGGER_POINT		280
@@ -93,8 +93,8 @@ void OmegaBoss::OnMapEntry(void)
 	omg.leg_descend = LEGD_MIN;
 	pieces[LEFTLEG]->sprite = pieces[RIGHTLEG]->sprite = SPR_OMG_LEG_INAIR;
 	
-	game.stageboss.object->x = ((217 * TILE_W) + 5) << CSF;
-	game.stageboss.object->y = ((14 * TILE_H) - 5) << CSF;
+	game.stageboss.object->x = ((217 * TILE_W) + 5) * CSFI;
+	game.stageboss.object->y = ((14 * TILE_H) - 5) * CSFI;
 	omg.orgx = game.stageboss.object->x;
 	omg.orgy = game.stageboss.object->y;
 	
@@ -287,7 +287,7 @@ void OmegaBoss::Run(void)
 				omg.timer = 0;
 				o->state = OMG_APPEAR;
 				
-				o->x = omg.orgx + (random(-64, 64) << CSF);
+				o->x = omg.orgx + (random(-64, 64) * CSFI);
 				o->y = omg.orgy;
 				omg.movetime = OMEGA_RISE_HEIGHT;
 				
@@ -341,10 +341,10 @@ void OmegaBoss::Run(void)
 				// but bottom of player's bounding box is not...
 				if (player->blockd)
 				{
-					int omg_bottom = o->y + (sprites[o->sprite].solidbox.y2 << CSF);
+					int omg_bottom = o->y + (sprites[o->sprite].solidbox.y2 * CSFI);
 					if (player->y <= omg_bottom)
 					{
-						if (player->y + (sprites[player->sprite].solidbox.y2 << CSF) >= omg_bottom)
+						if (player->y + (sprites[player->sprite].solidbox.y2 * CSFI) >= omg_bottom)
 						{
 							if (hitdetect(o, player))	// easy way to verify the X's are lined up
 							{	// SQUISH!
@@ -375,8 +375,8 @@ void OmegaBoss::Run(void)
 			
 			o->xinertia = o->yinertia = 0;
 			
-			x = o->CenterX() + (random(-48, 48)<<CSF);
-			y = o->CenterY() + (random(-48, 24)<<CSF);
+			x = o->CenterX() + (random(-48, 48) * CSFI);
+			y = o->CenterY() + (random(-48, 24) * CSFI);
 			SmokePuff(x, y);
 			effect(x, y, EFFECT_BOOMFLASH);
 			
@@ -444,10 +444,10 @@ void OmegaBoss::Run(void)
 		o->blockl |= pieces[LEFTLEG]->blockl;
 		o->blockr |= pieces[RIGHTLEG]->blockr;
 		
-		pieces[LEFTLEG]->x = o->x - (4 << CSF); pieces[LEFTLEG]->y = o->y + omg.leg_descend;
-		pieces[RIGHTLEG]->x = o->x + (38 << CSF); pieces[RIGHTLEG]->y = o->y + omg.leg_descend;
-		pieces[LEFTSTRUT]->x = o->x + (9 << CSF); pieces[LEFTSTRUT]->y = o->y + (27 << CSF);
-		pieces[RIGHTSTRUT]->x = o->x + (43 << CSF); pieces[RIGHTSTRUT]->y = o->y + (27 << CSF);
+		pieces[LEFTLEG]->x = o->x - (4 * CSFI); pieces[LEFTLEG]->y = o->y + omg.leg_descend;
+		pieces[RIGHTLEG]->x = o->x + (38 * CSFI); pieces[RIGHTLEG]->y = o->y + omg.leg_descend;
+		pieces[LEFTSTRUT]->x = o->x + (9 * CSFI); pieces[LEFTSTRUT]->y = o->y + (27 * CSFI);
+		pieces[RIGHTSTRUT]->x = o->x + (43 * CSFI); pieces[RIGHTSTRUT]->y = o->y + (27 * CSFI);
 	}
 }
 

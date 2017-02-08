@@ -42,7 +42,7 @@ char wantdir;
 
 /*
 	debug("Curly Console");
-	debug("TGT: [%d,%d] %d", o->xmark>>CSF, o->ymark>>CSF, game.curlytarget.timeleft);
+	debug("TGT: [%d,%d] %d", o->xmark/CSFI, o->ymark/CSFI, game.curlytarget.timeleft);
 	debug("State: %d", o->state);
 	debug("");
 	debug("RPT %d", o->curly.reachptimer);
@@ -125,32 +125,32 @@ if (inputs[DEBUGKEY7]) o->state=999;
 	
 	// hack in case player REALLY leaves her behind. this works because of the way
 	// the level is in a Z shape. first we check to see if the player is on the level below ours.
-	if ((player->y > o->y && ((player->y - o->y) > 160<<CSF)) || o->state==999)
+	if ((player->y > o->y && ((player->y - o->y) > 160 * CSFI)) || o->state==999)
 	{
 		// if we're on the top section, head all the way to right, else if we're on the
 		// middle section, head for the trap door that was destroyed by the button
-		otiley = (o->y >> CSF) / TILE_H;
+		otiley = (o->y / CSFI) / TILE_H;
 		
 		game.curlytarget.timeleft = 0;
 		
 		if (otiley < 22)
 		{
-			o->xmark = ((126 * TILE_W) + 8) << CSF;		// center of big chute on right top
+			o->xmark = ((126 * TILE_W) + 8) * CSFI;		// center of big chute on right top
 		}
 		else if (otiley > 36 && otiley < 47)
 		{	// fell down chute in center of middle section
 			// continue down chute, don't get hung up on sides
-			o->xmark = (26 * TILE_W) << CSF;
+			o->xmark = (26 * TILE_W) * CSFI;
 		}
 		else if (otiley >= 47)
 		{	// bottom section - head for exit door
 			// (this shouldn't ever execute, though, because player can't be lower than this)
-			o->xmark = (81 * TILE_W) << CSF;
+			o->xmark = (81 * TILE_W) * CSFI;
 			seeking_player = 1;		// stop when reach exit door
 		}
 		else
 		{	// on middle section
-			o->xmark = ((7 * TILE_W) + 8) << CSF;		// trap door which was destroyed by switch
+			o->xmark = ((7 * TILE_W) + 8) * CSFI;		// trap door which was destroyed by switch
 		}
 		
 		o->ymark = o->y;
@@ -158,7 +158,7 @@ if (inputs[DEBUGKEY7]) o->state=999;
 	else
 	{
 		// if we get real far away from the player leave the enemies alone and come find him
-		if (!pdistlx(160<<CSF)) game.curlytarget.timeleft = 0;
+		if (!pdistlx(160 * CSFI)) game.curlytarget.timeleft = 0;
 		
 		// if we're attacking an enemy head towards the enemy else return to the player
 		if (game.curlytarget.timeleft)
@@ -180,7 +180,7 @@ if (inputs[DEBUGKEY7]) o->state=999;
 	// do not fall off the middle railing in Almond
 	if (game.curmap == STAGE_ALMOND)
 	{
-		#define END_OF_RAILING		(((72*TILE_W)-8)<<CSF)
+		#define END_OF_RAILING		(((72*TILE_W)-8) * CSFI)
 		if (o->xmark > END_OF_RAILING)
 		{
 			o->xmark = END_OF_RAILING;
@@ -208,7 +208,7 @@ if (inputs[DEBUGKEY7]) o->state=999;
 	
 	// if trying to return to the player then go into a rest state when we've reached him
 	reached_p = 0;
-	if (seeking_player && xdist < (32<<CSF) && ydist < (64<<CSF))
+	if (seeking_player && xdist < (32 * CSFI) && ydist < (64 * CSFI))
 	{
 		if (++o->curly.reachptimer > 80)
 		{
@@ -246,7 +246,7 @@ if (inputs[DEBUGKEY7]) o->state=999;
 		
 		// if our target gets really far away (like p is leaving us behind) and
 		// the above jumping isn't getting us anywhere, activate the Improbable Jump
-		if ((o->blockl || o->blockr) && xdist > (80<<CSF))
+		if ((o->blockl || o->blockr) && xdist > (80 * CSFI))
 		{
 			if (++o->curly.impjumptime > 60)
 			{
@@ -261,7 +261,7 @@ if (inputs[DEBUGKEY7]) o->state=999;
 		else o->curly.impjumptime = 0;
 		
 		// if we're below the target try jumping around randomly
-		if (o->y > o->ymark && (o->y - o->ymark) > (16<<CSF))
+		if (o->y > o->ymark && (o->y - o->ymark) > (16 * CSFI))
 		{
 			if (++o->curly.tryjumptime > 20)
 			{
@@ -308,10 +308,10 @@ if (inputs[DEBUGKEY7]) o->state=999;
 	
 	// look up/down at target
 	o->curly.look = 0;
-	if (!reached_p || abs(o->y - player->y) > (48<<CSF))
+	if (!reached_p || abs(o->y - player->y) > (48 * CSFI))
 	{
-		if (o->y > o->ymark && ydist >= (12<<CSF) && (!seeking_player || ydist >= (80<<CSF))) o->curly.look = UP;
-		else if (o->y < o->ymark && !o->blockd && ydist >= (80<<CSF)) o->curly.look = DOWN;
+		if (o->y > o->ymark && ydist >= (12 * CSFI) && (!seeking_player || ydist >= (80 * CSFI))) o->curly.look = UP;
+		else if (o->y < o->ymark && !o->blockd && ydist >= (80 * CSFI)) o->curly.look = DOWN;
 	}
 	
 	if (o->curly.look == UP) o->frame += 4;
@@ -341,8 +341,8 @@ Object *curly = o->linkedobject;
 Object *shot;
 uint8_t fire;
 int x, y, dir;
-#define SMALLDIST		(32 << CSF)
-#define BIGDIST			(160 << CSF)
+#define SMALLDIST		(32 * CSFI)
+#define BIGDIST			(160 * CSFI)
 
 	if (!curly) { o->Delete(); return; }
 	

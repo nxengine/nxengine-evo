@@ -132,28 +132,28 @@ int x, y;
 	if (widescreen)
 	{
         if (map.xsize * TILE_W<SCREEN_WIDTH && map.ysize * TILE_W<SCREEN_HEIGHT) {
-            map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) << CSF;
-            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) << CSF;
+            map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
+            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
         } else if (map.xsize * TILE_W<SCREEN_WIDTH) {
             if (map.xsize == 25) { // MazeI
-                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 48)) - 8) << CSF;
-                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 48)) - 8) * CSFI;
+                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
             } else { // Others
-                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) << CSF;
-                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
+                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
             }
         } else if (map.ysize * TILE_W<SCREEN_HEIGHT) {
-            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) << CSF;
-            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) << CSF;
+            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
+            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
         } else {
-            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) << CSF;
-            map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
+            map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
         }
 	}
 	else
 	{
-    	map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) << CSF;
-    	map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) << CSF;
+    	map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
+    	map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
 	}
 	
 	stat("load_map: '%s' loaded OK! - %dx%d", fname, map.xsize, map.ysize);
@@ -241,8 +241,8 @@ int nEntities;
 				// hack for skydragon in Fall end cinematic
 				if (type == OBJ_SKY_DRAGON && id2 == 230) y++;
 				
-				Object *o = CreateObject((x * TILE_W) << CSF, \
-										 (y * TILE_H) << CSF, type,
+				Object *o = CreateObject((x * TILE_W) * CSFI, \
+										 (y * TILE_H) * CSFI, type,
 										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
 				
 				o->id1 = id1;
@@ -257,8 +257,8 @@ int nEntities;
 				if (type == OBJ_MOTION_WALL)
 				{
 				    stat("spawning extra motion wall");
-				    o = CreateObject(((x+22) * TILE_W) << CSF, \
-										 (y * TILE_H) << CSF, type,
+				    o = CreateObject(((x+22) * TILE_W) * CSFI, \
+										 (y * TILE_H) * CSFI, type,
 										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
 				    o->id1 = id1;
 				    o->id2 = id2;
@@ -420,13 +420,13 @@ int x, y;
 		break;
 		
 		case BK_FOLLOWFG:
-			map.parscroll_x = (map.displayed_xscroll >> CSF);
-			map.parscroll_y = (map.displayed_yscroll >> CSF);
+			map.parscroll_x = (map.displayed_xscroll / CSFI);
+			map.parscroll_y = (map.displayed_yscroll / CSFI);
 		break;
 		
 		case BK_PARALLAX:
-			map.parscroll_y = (map.displayed_yscroll >> CSF) / 2;
-			map.parscroll_x = (map.displayed_xscroll >> CSF) / 2;
+			map.parscroll_y = (map.displayed_yscroll / CSFI) / 2;
+			map.parscroll_x = (map.displayed_xscroll / CSFI) / 2;
 			map.parscroll_x %= backdrop[map.backdrop]->Width();
 			map.parscroll_y %= backdrop[map.backdrop]->Height();
 			if (map.parscroll_x < 0 ) map.parscroll_x = map.parscroll_x * 2;
@@ -525,7 +525,7 @@ void DrawFastLeftLayered(void)
 		BlitPatternAcross(backdrop[map.backdrop], x, y1, y1, (y2-y1)+1);
 		y1 = (y2 + 1);
 	}
-	int mapy = map.displayed_yscroll >> CSF;
+	int mapy = map.displayed_yscroll / CSFI;
 	if (mapy<0)
 		FillRect(0,0,SCREEN_WIDTH, -mapy,0,0,0);
 }
@@ -607,10 +607,10 @@ int water_x, water_y;
 	if (!map.waterlevelobject)
 		return;
 	
-	water_x = -(map.displayed_xscroll >> CSF);
+	water_x = -(map.displayed_xscroll / CSFI);
 	water_x %= SCREEN_WIDTH;
 	
-	water_y = (map.waterlevelobject->y >> CSF) - (map.displayed_yscroll >> CSF);
+	water_y = (map.waterlevelobject->y / CSFI) - (map.displayed_yscroll / CSFI);
 	
 	// draw the surface and just under the surface
 	BlitPatternAcross(backdrop[map.backdrop], water_x, water_y, 0, 16);
@@ -638,8 +638,8 @@ int mapx, mapy;
 int blit_x, blit_y, blit_x_start;
 int scroll_x, scroll_y;
 	
-	scroll_x = (map.displayed_xscroll >> CSF);
-	scroll_y = (map.displayed_yscroll >> CSF);
+	scroll_x = (map.displayed_xscroll / CSFI);
+	scroll_y = (map.displayed_yscroll / CSFI);
 	
 	mapx = (scroll_x / TILE_W);
 	mapy = (scroll_y / TILE_H);
@@ -687,7 +687,7 @@ const int scroll_adj_rate = (0x2000 / map.scrollspeed);
 	// how many pixels to let player stray from the center of the screen
 	// before we start scrolling. high numbers let him reach closer to the edges,
 	// low numbers keep him real close to the center.
-	#define P_VARY_FROM_CENTER			(64 << CSF)
+	#define P_VARY_FROM_CENTER			(64 * CSFI)
 	
 	if (player->dir == LEFT)
 	{
@@ -703,7 +703,7 @@ const int scroll_adj_rate = (0x2000 / map.scrollspeed);
 	}
 	
 	// compute where the map "wants" to be
-	map.target_x = (player->CenterX() + map.scrollcenter_x) - ((SCREEN_WIDTH / 2) << CSF);
+	map.target_x = (player->CenterX() + map.scrollcenter_x) - ((SCREEN_WIDTH / 2) * CSFI);
 	
 	// Y scrolling
 	if (player->lookscroll == UP)
@@ -728,7 +728,7 @@ const int scroll_adj_rate = (0x2000 / map.scrollspeed);
 		}
 	}
 	
-	map.target_y = (player->CenterY() + map.scrollcenter_y) - ((SCREEN_HEIGHT / 2) << CSF);
+	map.target_y = (player->CenterY() + map.scrollcenter_y) - ((SCREEN_HEIGHT / 2) * CSFI);
 }
 
 void map_scroll_do(void)
@@ -753,13 +753,13 @@ void map_scroll_do(void)
 				// the center ourselves.
 				if (sprites[t->sprite].frame[t->frame].dir[t->dir].drawpoint.equ(0, 0))
 				{
-					map.target_x = map.focus.target->CenterX() - ((SCREEN_WIDTH / 2) << CSF);
-					map.target_y = map.focus.target->CenterY() - ((SCREEN_HEIGHT / 2) << CSF);
+					map.target_x = map.focus.target->CenterX() - ((SCREEN_WIDTH / 2) * CSFI);
+					map.target_y = map.focus.target->CenterY() - ((SCREEN_HEIGHT / 2) * CSFI);
 				}
 				else
 				{
-					map.target_x = map.focus.target->x - ((SCREEN_WIDTH / 2) << CSF);
-					map.target_y = map.focus.target->y - ((SCREEN_HEIGHT / 2) << CSF);
+					map.target_x = map.focus.target->x - ((SCREEN_WIDTH / 2) * CSFI);
+					map.target_y = map.focus.target->y - ((SCREEN_HEIGHT / 2) * CSFI);
 				}
 			}
 		}
@@ -805,13 +805,13 @@ void map_scroll_do(void)
 			if (game.megaquaketime)		// Ballos fight
 			{
 				game.megaquaketime--;
-				pushx = random(-5, 5) << CSF;
-				pushy = random(-3, 3) << CSF;
+				pushx = random(-5, 5) * CSFI;
+				pushy = random(-3, 3) * CSFI;
 			}
 			else
 			{
-				pushx = random(-1, 1) << CSF;
-				pushy = random(-1, 1) << CSF;
+				pushx = random(-1, 1) * CSFI;
+				pushy = random(-1, 1) * CSFI;
 			}
 			
 			map.real_xscroll += pushx;
@@ -827,11 +827,11 @@ void map_scroll_do(void)
 			
 			map.real_yscroll += pushy;
 			if (map.real_yscroll < 0) map.real_yscroll = 0;
-			if (map.real_yscroll > (15 << CSF)) map.real_yscroll = (15 << CSF);
+			if (map.real_yscroll > (15 * CSFI)) map.real_yscroll = (15 * CSFI);
 			
 			map.displayed_yscroll += pushy;
 			if (map.displayed_yscroll < 0) map.displayed_yscroll = 0;
-			if (map.displayed_yscroll > (15 << CSF)) map.displayed_yscroll = (15 << CSF);
+			if (map.displayed_yscroll > (15 * CSFI)) map.displayed_yscroll = (15 * CSFI);
 		}
 		
 		game.quaketime--;
@@ -894,7 +894,7 @@ void c------------------------------() {}
 // scroll position sanity checking
 void map_sanitycheck(void)
 {
-	#define MAP_BORDER_AMT		(8<<CSF)
+	#define MAP_BORDER_AMT		(8 * CSFI)
 	if (map.real_xscroll < MAP_BORDER_AMT) map.real_xscroll = MAP_BORDER_AMT;
 	if (map.real_yscroll < MAP_BORDER_AMT) map.real_yscroll = MAP_BORDER_AMT;
 	if (map.real_xscroll > map.maxxscroll) map.real_xscroll = map.maxxscroll;
@@ -909,8 +909,8 @@ void map_sanitycheck(void)
 
 void map_scroll_jump(int x, int y)
 {
-	map.target_x = x - ((SCREEN_WIDTH / 2) << CSF);
-	map.target_y = y - ((SCREEN_HEIGHT / 2) << CSF);
+	map.target_x = x - ((SCREEN_WIDTH / 2) * CSFI);
+	map.target_y = y - ((SCREEN_HEIGHT / 2) * CSFI);
 	map.real_xscroll = map.target_x;
 	map.real_yscroll = map.target_y;
 	
@@ -959,8 +959,8 @@ void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds, bool boomfl
 	
 	map.tiles[x][y] = newtile;
 	
-	int xa = ((x * TILE_W) + (TILE_W / 2)) << CSF;
-	int ya = ((y * TILE_H) + (TILE_H / 2)) << CSF;
+	int xa = ((x * TILE_W) + (TILE_W / 2)) * CSFI;
+	int ya = ((y * TILE_H) + (TILE_H / 2)) * CSFI;
 	SmokeXY(xa, ya, nclouds, TILE_W/2, TILE_H/2, push_behind);
 	
 	if (boomflash)
@@ -1027,7 +1027,7 @@ Object *FindObjectByID2(int id2)
 	Object *result = ID2Lookup[id2];
 	
 	if (result)
-		staterr("FindObjectByID2: ID2 %04d found: type %s; coords: (%d, %d)", id2, DescribeObjectType(ID2Lookup[id2]->type), ID2Lookup[id2]->x>>CSF,ID2Lookup[id2]->y>>CSF);
+		staterr("FindObjectByID2: ID2 %04d found: type %s; coords: (%d, %d)", id2, DescribeObjectType(ID2Lookup[id2]->type), ID2Lookup[id2]->x / CSFI,ID2Lookup[id2]->y / CSFI);
 	else
 		staterr("FindObjectByID2: no such object %04d", id2);
 	

@@ -81,17 +81,17 @@ static const int trail_damage[] = { 3, 6, 11 };
 	if (o->state == 0)
 	{
 		if (o->shot.level != 2) o->state = 1;
-		if (o->shot.dir == RIGHT) x += (8<<CSF);
-		if (o->shot.dir == DOWN)  y += (8<<CSF);
+		if (o->shot.dir == RIGHT) x += (8 * CSFI);
+		if (o->shot.dir == DOWN)  y += (8 * CSFI);
 	}
 	else
 	{
 		switch(o->shot.dir)
 		{
-			case LEFT:  x += (6<<CSF); break;
-			case RIGHT: x += (2<<CSF); break;
-			case UP:    y += (6<<CSF); break;
-			case DOWN:  y += (2<<CSF); break;
+			case LEFT:  x += (6 * CSFI); break;
+			case RIGHT: x += (2 * CSFI); break;
+			case UP:    y += (6 * CSFI); break;
+			case DOWN:  y += (2 * CSFI); break;
 		}
 	}
 	

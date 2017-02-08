@@ -104,7 +104,7 @@ void ai_bubbler_l3(Object *o)
 	if (o->state == 0)
 	{
 		int bigspeed   = random(0x200, 0x400);
-		int smallspeed = (random(-4, 4) << CSF) / 2;
+		int smallspeed = (random(-4, 4) * CSFI) / 2;
 		
 		switch(o->shot.dir)
 		{
@@ -166,7 +166,7 @@ void ai_bubbler_sharp(Object *o)
 	{
 		o->state = 1;
 		
-		int speed = (random(10, 16) << CSF) / 2;
+		int speed = (random(10, 16) * CSFI) / 2;
 		switch(o->shot.dir)
 		{
 			case LEFT:  o->xinertia = -speed; break;

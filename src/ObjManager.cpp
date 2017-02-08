@@ -42,8 +42,8 @@ Object *o;
 	o->flags = objprop[type].defaultflags;
 	o->DamageText = new FloatText(SPR_REDNUMBERS);
 	
-	o->x = x - (sprites[o->sprite].spawn_point.x << CSF);
-	o->y = y - (sprites[o->sprite].spawn_point.y << CSF);
+	o->x = x - (sprites[o->sprite].spawn_point.x * CSFI);
+	o->y = y - (sprites[o->sprite].spawn_point.y * CSFI);
 	o->dir = dir;
 	o->xinertia = xinertia;
 	o->yinertia = yinertia;
@@ -101,16 +101,16 @@ int32_t rect2x1, rect2y1, rect2x2, rect2y2;
 	s2 = o2->Sprite();
 	
 	// get the bounding rectangle of the first object
-	rect1x1 = o1->x + (s1->bbox.x1 << CSF);
-	rect1x2 = o1->x + (s1->bbox.x2 << CSF);
-	rect1y1 = o1->y + (s1->bbox.y1 << CSF);
-	rect1y2 = o1->y + (s1->bbox.y2 << CSF);
+	rect1x1 = o1->x + (s1->bbox.x1 * CSFI);
+	rect1x2 = o1->x + (s1->bbox.x2 * CSFI);
+	rect1y1 = o1->y + (s1->bbox.y1 * CSFI);
+	rect1y2 = o1->y + (s1->bbox.y2 * CSFI);
 	
 	// get the bounding rectangle of the second object
-	rect2x1 = o2->x + (s2->bbox.x1 << CSF);
-	rect2x2 = o2->x + (s2->bbox.x2 << CSF);
-	rect2y1 = o2->y + (s2->bbox.y1 << CSF);
-	rect2y2 = o2->y + (s2->bbox.y2 << CSF);
+	rect2x1 = o2->x + (s2->bbox.x1 * CSFI);
+	rect2x2 = o2->x + (s2->bbox.x2 * CSFI);
+	rect2y1 = o2->y + (s2->bbox.y1 * CSFI);
+	rect2y2 = o2->y + (s2->bbox.y2 * CSFI);
 	
 	// find out if the rectangles overlap
 	if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1)) return false;
@@ -133,16 +133,16 @@ int32_t rect2x1, rect2y1, rect2x2, rect2y2;
 	s2 = o2->Sprite();
 	
 	// get the bounding rectangle of the first object
-	rect1x1 = o1->x + (s1->solidbox.x1 << CSF);
-	rect1x2 = o1->x + (s1->solidbox.x2 << CSF);
-	rect1y1 = o1->y + (s1->solidbox.y1 << CSF);
-	rect1y2 = o1->y + (s1->solidbox.y2 << CSF);
+	rect1x1 = o1->x + (s1->solidbox.x1 * CSFI);
+	rect1x2 = o1->x + (s1->solidbox.x2 * CSFI);
+	rect1y1 = o1->y + (s1->solidbox.y1 * CSFI);
+	rect1y2 = o1->y + (s1->solidbox.y2 * CSFI);
 	
 	// get the bounding rectangle of the second object
-	rect2x1 = o2->x + (s2->solidbox.x1 << CSF);
-	rect2x2 = o2->x + (s2->solidbox.x2 << CSF);
-	rect2y1 = o2->y + (s2->solidbox.y1 << CSF);
-	rect2y2 = o2->y + (s2->solidbox.y2 << CSF);
+	rect2x1 = o2->x + (s2->solidbox.x1 * CSFI);
+	rect2x2 = o2->x + (s2->solidbox.x2 * CSFI);
+	rect2y1 = o2->y + (s2->solidbox.y1 * CSFI);
+	rect2y2 = o2->y + (s2->solidbox.y2 * CSFI);
 	
 	// find out if the rectangles overlap
 	if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1)) return false;
