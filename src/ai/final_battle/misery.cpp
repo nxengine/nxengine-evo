@@ -115,7 +115,7 @@ static void run_spells(Object *o)
 				o->timer = 0;
 				o->frame = 4;
 				
-				if (++o->timer >= 3)
+				if (++o->timer2 >= 3)
 				{
 					o->state = STATE_SUMMON_BLOCK;
 					o->timer2 = 0;
@@ -152,9 +152,9 @@ static void run_spells(Object *o)
 			{
 				int x = player->x - (8 * CSFI);
 				int y = player->y - (64 * CSFI);
-				CreateObject(x, y, OBJ_FALLING_BLOCK);
-				o->sprite = SPR_BALCONY_BLOCK_LARGE;
-				o->dir = DOWN;	// tell block it was spawned by Misery
+				Object *block = CreateObject(x, y, OBJ_FALLING_BLOCK);
+				block->sprite = SPR_BALCONY_BLOCK_LARGE;
+				block->dir = DOWN;  // tell block it was spawned by Misery
 			}
 			
 			if (o->timer > 30)
