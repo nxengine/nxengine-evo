@@ -161,10 +161,10 @@ void Dialog::Draw()
 	{
 		ODItem *item = (ODItem *)fItems.at(i);
 		
-		if (i < fNumShown)
+		if (i < (unsigned int)fNumShown)
 			DrawItem(x, y, item);
 		
-		if (i == fCurSel)
+		if (i == (unsigned int)fCurSel)
 			draw_sprite(x - 16, y, SPR_WHIMSICAL_STAR, 1);
 		
 		y += GetFontHeight();
