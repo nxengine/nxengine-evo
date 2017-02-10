@@ -29,8 +29,10 @@ It tends to be more portable and use cleaner code.
 * [OSX](https://github.com/isage/nxengine-evo/wiki/Building-OSX-version)
 
 
-## [Running](https://github.com/isage/nxengine-evo/wiki/Running)
+## Running
+ * For source builds see [Running](https://github.com/isage/nxengine-evo/wiki/Running) on wiki.
+ * or just use prepackaged [releases](https://github.com/isage/nxengine-evo/releases)
 
-Look in TODO for upcoming features
+Look in TODO.md for upcoming features
 
 May (and most definitely) contain bugs.
