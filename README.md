@@ -1,8 +1,7 @@
 # NXEngine-evo
 
 
-This is a somewhat rewrite/refactored version of nxengine
-It tends to be more portable and use cleaner code.
+This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sourceforge.net/)
 
 * [Differences](#differences-from-original-nxengine)
 * [Building](#building)
@@ -22,6 +21,7 @@ It tends to be more portable and use cleaner code.
 * smalfont -> smallfont
 * removed built-in data extractor
 * removed replays, as they were buggy/not implemented anyway
+* fixed tons of warnings and undefined behaviour
 
 ## Building
 * [Linux](https://github.com/isage/nxengine-evo/wiki/Building-linux-version)
