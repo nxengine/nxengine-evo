@@ -1,7 +1,8 @@
 # NXEngine-evo
 
-
 This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sourceforge.net/)
+
+![SCreenshot](https://raw.githubusercontent.com/isage/nxengine-evo/master/screenshot.png)
 
 * [Differences](#differences-from-original-nxengine)
 * [Building](#building)
