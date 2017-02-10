@@ -33,6 +33,7 @@ FILE *fp;
 	if (setfile->version != SETTINGS_VERSION)
 	{
 		stat("Wrong settings version %04x.", setfile->version);
+		fclose(fp);
 		return 1;
 	}
 	

@@ -48,7 +48,7 @@ void SIFSprite::CopyFrom(SIFSprite *other)
 
 SIFSprite *SIFSprite::Duplicate()
 {
-	SIFSprite *spr = (SIFSprite *)malloc(sizeof(SIFSprite));
+	SIFSprite *spr = new SIFSprite();
 	spr->CopyFrom(this);
 	
 	return spr;

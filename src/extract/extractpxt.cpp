@@ -196,6 +196,7 @@ int s, c, i;
 			if (fgetl(fp) != 0)
 			{
 				printf("PXT out of sync\n");
+				fclose(fpo);
 				return 1;
 			}
 		}

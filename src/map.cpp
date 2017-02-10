@@ -361,6 +361,8 @@ FILE *fp;
 	//hack to not show ballos in e_Blcn
 	stages[93].bossNo = 0;
 	
+	fclose(fp);
+	
 	return 0;
 }
 
