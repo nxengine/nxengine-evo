@@ -12,6 +12,10 @@
 #define NMAPS			95
 #define DATA_OFFSET		0x937B0
 
+#if defined(_WIN32)
+#define strcasecmp _stricmp
+#endif
+
 struct EXEMapRecord
 {
 	char tileset[32];

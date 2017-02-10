@@ -6,6 +6,11 @@
 #include "extractpxt.h"
 #include "../common/misc.h"
 
+#if defined (_WIN32)
+#include <direct.h>
+#endif
+
+
 
 static struct
 {
@@ -156,7 +161,12 @@ int s, c, i;
 		sprintf(outfilename, "pxt/fx%02x.pxt", snd[s].id);
 		printf("[ %s ]\n", outfilename);
 		
+#if defined(_WIN32) || defined (_WIN64)
+		_mkdir("pxt");
+#else
 		mkdir("pxt", 0755);
+#endif
+
 		FILE *fpo = fopen(outfilename, "wb");
 		if (!fpo)
 		{

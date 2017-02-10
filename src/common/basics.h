@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#ifdef __clang__
+#if defined(__APPLE__) || defined(_WIN32)
 	#define MAXPATHLEN	256
 #else
 	#include <sys/param.h>	// MAXPATHLEN

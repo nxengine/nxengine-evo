@@ -1,7 +1,11 @@
 
 #include "nx.h"
 #include <stdarg.h>
+#if !defined(_WIN32)
 #include <unistd.h>
+#else
+#include <io.h>
+#endif
 #include "graphics/safemode.h"
 //#include "main.h"
 #include "game.h"

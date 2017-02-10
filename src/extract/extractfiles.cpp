@@ -5,9 +5,11 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#ifdef __MINGW32__
-	#include <io.h>
+#if defined (_WIN32)
+#include <direct.h>
+#include <io.h>
 #endif
+
 
 #include "crc.h"
 #include "extractfiles.h"
@@ -112,8 +114,8 @@ void createdir(const char *fname)
 	{
 		*ptr = 0;
 		
-		#ifdef __MINGW32__
-			mkdir(dir);
+		#if defined(_WIN32) || defined(_WIN64)
+			_mkdir(dir);
 		#else
 			mkdir(dir, S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 		#endif

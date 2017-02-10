@@ -25,6 +25,10 @@ using namespace Graphics;
 
 #define Respond		console.Print
 
+#if defined(_WIN32)
+#define strcasecmp _stricmp
+#endif
+
 
 static void __god(std::vector<std::string> *args, int num)
 {

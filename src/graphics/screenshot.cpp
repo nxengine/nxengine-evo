@@ -2,6 +2,8 @@
 #include "graphics.h"
 #include "../common/stat.h"
 #include <malloc.h>
+#include <stdio.h>
+
 
 #include <sys/stat.h>
 namespace Screenshot
