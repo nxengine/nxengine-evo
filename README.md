@@ -4,9 +4,9 @@
 This is a somewhat rewrite/refactored version of nxengine
 It tends to be more portable and use cleaner code.
 
-[Differences](#differences-from-original-nxengine)
-[Building](#building)
-[Running](#running)
+* [Differences](#differences-from-original-nxengine)
+* [Building](#building)
+* [Running](#running)
 
 ## Differences from original nxengine:
 
