@@ -1,0 +1,20 @@
+os:
+  - linux
+  - osx
+
+language: cpp
+sudo: required
+osx_image: xcode6.4
+dist: trusty
+
+script:
+  - cmake .
+  - make
+
+compiler:
+  - clang
+  - gcc
+
+install:
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then source ./travis/linux.install.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ];   then source ./travis/osx.install.sh;   fi
