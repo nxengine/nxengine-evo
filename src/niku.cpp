@@ -50,12 +50,12 @@ int i, j;
 		(result[0] != result[2]) || \
 		(result[0] != result[3]))
 	{
-		stat("niku_load: value mismatch; '%s' corrupt", fname);
+		stat("niku_load: value mismatch; '%s' corrupt", fname.c_str());
 		if (value_out) *value_out = 0;
 	}
 	else
 	{
-		stat("niku_load: loaded value 0x%x from %s", *result, fname);
+		stat("niku_load: loaded value 0x%x from %s", *result, fname.c_str());
 		if (value_out) *value_out = *result;
 	}
 	
