@@ -15,6 +15,11 @@ compiler:
   - clang
   - gcc
 
+matrix:
+  exclude:
+  - os: osx
+    compiler: gcc
+
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then source ./travis/linux.install.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ];   then source ./travis/osx.install.sh;   fi
