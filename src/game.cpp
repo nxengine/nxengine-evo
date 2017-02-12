@@ -455,10 +455,13 @@ bool game_load(int num)
 Profile p;
 
 	stat("game_load: loading savefile %d", num);
-	
-	if (profile_load(GetProfileName(num), &p))
+	char* profile_name = GetProfileName(num);
+	if (profile_load(profile_name, &p))
+	{
+		SDL_free(profile_name);
 		return 1;
-	
+	}
+	SDL_free(profile_name);
 	return game_load(&p);
 }
 
@@ -525,9 +528,14 @@ Profile p;
 	
 	if (game_save(&p))
 		return 1;
-	
-	if (profile_save(GetProfileName(num), &p))
+	char* profile_name = GetProfileName(num);
+	if (profile_save(profile_name, &p))
+	{
+		SDL_free(profile_name);
 		return 1;
+	}
+	
+	SDL_free(profile_name);
 	
 	return 0;
 }

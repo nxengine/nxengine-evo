@@ -1,6 +1,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <SDL.h>
+#include <string>
 #include "common/stat.h"
 #include "common/misc.h"
 
@@ -8,13 +10,6 @@
 	290.rec contains the tick value 4 times, followed by the 4 byte key
 	to decrypt each instance, for a total of 20 bytes.
 */
-
-static const char *getfname()
-{
-	// might do stuff with sprintf here to place it in other subdirectories, etc.
-	// is just here for expansion.
-	return "290.rec";
-}
 
 // load the contents of 290.rec and store in value_out. Returns 0 on success.
 // If there is no such file or an error occurs, writes 0 to value_out.
@@ -25,11 +20,14 @@ uint8_t buffer[20];
 uint32_t *result = (uint32_t *)buffer;
 int i, j;
 
-	const char *fname = getfname();
-	fp = fopen(fname, "rb");
+	char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+	std::string fname = std::string(basepath) + "290.rec";
+	SDL_free(basepath);
+
+	fp = fopen(fname.c_str(), "rb");
 	if (!fp)
 	{
-		stat("niku_load: couldn't open file '%s'", fname);
+		stat("niku_load: couldn't open file '%s'", fname.c_str());
 		if (value_out) *value_out = 0;
 		return 1;
 	}
@@ -70,6 +68,10 @@ bool niku_save(uint32_t value)
 uint8_t buf_byte[20];
 uint32_t *buf_dword = (uint32_t *)buf_byte;
 
+	char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+	std::string fname = std::string(basepath) + "290.rec";
+	SDL_free(basepath);
+
 	// place values
 	buf_dword[0] = value;
 	buf_dword[1] = value;
@@ -94,11 +96,10 @@ uint32_t *buf_dword = (uint32_t *)buf_byte;
 		ptr[3] += key / 2;
 	}
 	
-	const char *fname = getfname();
-	FILE *fp = fopen(fname, "wb");
+	FILE *fp = fopen(fname.c_str(), "wb");
 	if (!fp)
 	{
-		staterr("niku_save: failed to open '%s'", fname);
+		staterr("niku_save: failed to open '%s'", fname.c_str());
 		return 1;
 	}
 	

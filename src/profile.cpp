@@ -1,3 +1,7 @@
+#include <SDL.h>
+#include <string>
+#include <sstream>
+#include <cstdlib>
 
 #include "nx.h"
 #include "profile.h"
@@ -227,18 +231,34 @@ void c------------------------------() {}
 */
 
 // returns the filename for a save file given it's number
-const char *GetProfileName(int num)
+char *GetProfileName(int num)
 {
+    char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+    std::string prof = std::string(basepath);
+    SDL_free(basepath);
+    std::string profile;
 	if (num == 0)
-		return "profile.dat";
+	{
+		profile=std::string(prof+"profile.dat");
+	}
 	else
-		return stprintf("profile%d.dat", num+1);
+	{
+		std::stringstream out;
+		out << (num+1);
+		profile=std::string(prof+"profile"+out.str()+".dat");
+	}
+	char* ret = (char*)SDL_malloc(profile.length()+1);
+	memcpy(ret, profile.c_str(), profile.length()+1);
+	return ret;
 }
 
 // returns whether the given save file slot exists
 bool ProfileExists(int num)
 {
-	return file_exists(GetProfileName(num));
+	char* profile_name = GetProfileName(num);
+	bool ret = file_exists(profile_name);
+	SDL_free(profile_name);
+	return ret;
 }
 
 bool AnyProfileExists()

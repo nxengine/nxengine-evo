@@ -288,13 +288,21 @@ bool inhibit_loadfade = false;
 bool error = false;
 bool freshstart;
 	
-#if defined(_WIN32)
-	_chdir(SDL_GetBasePath());
-#else
-	chdir(SDL_GetBasePath());
-#endif
+	char* basepath = SDL_GetBasePath();
 	
-	SetLogFilename("debug.txt");
+#if defined(_WIN32)
+	_chdir(basepath);
+#else
+	chdir(basepath);
+#endif
+	SDL_free(basepath);
+	
+	char* prefpath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+	std::string logpath = std::string(prefpath) + "debug.log";
+	SDL_free(prefpath);
+	
+	SetLogFilename(logpath.c_str());
+	
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
 		staterr("ack, sdl_init failed: %s.", SDL_GetError());
@@ -332,10 +340,13 @@ bool freshstart;
 	// set null stage just to have something to do while we go to intro
 	game.switchstage.mapno = 0;
 	
-	if (settings->skip_intro && file_exists(GetProfileName(settings->last_save_slot)))
+	char* profile_name = GetProfileName(settings->last_save_slot);
+	if (settings->skip_intro && file_exists(profile_name))
 		game.switchstage.mapno = LOAD_GAME;
 	else
 		game.setmode(GM_INTRO);
+	
+	SDL_free(profile_name);
 	
 	// for debug
 	if (game.paused) { game.switchstage.mapno = 0; game.switchstage.eventonentry = 0; }

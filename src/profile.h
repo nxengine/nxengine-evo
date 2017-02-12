@@ -40,7 +40,7 @@ struct Profile
 
 bool profile_load(const char *pfname, Profile *file);
 bool profile_save(const char *pfname, Profile *file);
-const char *GetProfileName(int num);
+char *GetProfileName(int num);
 bool ProfileExists(int num);
 bool AnyProfileExists();
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <string>
 
 #include "../common/basics.h"
 #include "org.h"
@@ -187,7 +188,10 @@ static bool load_drumtable(const char *pxt_path)		// pxt_path = the path where d
 char fname[80];
 int d;
 FILE *fp;
-static const char *drum_cache = "drum.pcm";
+char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+std::string drum_cache = std::string(basepath) + "drum.pcm";
+SDL_free(basepath);
+
 #define DRUM_VERSION	0x0001
 uint16_t version;
 
@@ -200,14 +204,14 @@ uint16_t version;
 	#else
 		
 		// try and load the drums from cache instead of synthing them
-		fp = fopen(drum_cache, "rb");
+		fp = fopen(drum_cache.c_str(), "rb");
 		if (fp)
 		{
 			// this also checks for correct endianness
 			fread(&version, sizeof(version), 1, fp);
 			if (version != DRUM_VERSION)
 			{
-				printf("%s: version incorrect\n", drum_cache);
+				printf("%s: version incorrect\n", drum_cache.c_str());
 			}
 			else
 			{
@@ -237,7 +241,7 @@ uint16_t version;
 		}
 		
 		// cache the drums for next time
-		fp = fopen(drum_cache, "wb");
+		fp = fopen(drum_cache.c_str(), "wb");
 		if (fp)
 		{
 			version = DRUM_VERSION;

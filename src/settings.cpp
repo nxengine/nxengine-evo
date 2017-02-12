@@ -4,12 +4,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <string>
 #include "settings.h"
 #include "input.h"
 #include "common/stat.h"
 
-
-const char *setfilename = "settings.dat";
 const uint32_t SETTINGS_VERSION = ( ( '1' << 24 ) + ( 'S' << 16 ) + ( 'X' << 8 ) + 'N' );		// serves as both a version and magic
 
 Settings normal_settings;
@@ -19,12 +18,16 @@ static bool tryload(Settings *setfile)
 {
 FILE *fp;
 
+	char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+	std::string path = std::string(basepath) + "settings.dat";
+	SDL_free(basepath);
+
 	stat("Loading settings...");
 	
-	fp = fopen(setfilename, "rb");
+	fp = fopen(path.c_str(), "rb");
 	if (!fp)
 	{
-		stat("Couldn't open file %s.", setfilename);
+		stat("Couldn't open file %s.", path.c_str());
 		return 1;
 	}
 	
@@ -79,14 +82,18 @@ bool settings_save(Settings *setfile)
 {
 FILE *fp;
 
+	char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+	std::string path = std::string(basepath) + "settings.dat";
+	SDL_free(basepath);
+
 	if (!setfile)
 		setfile = &normal_settings;
 	
 	stat("Writing settings...");
-	fp = fopen(setfilename, "wb");
+	fp = fopen(path.c_str(), "wb");
 	if (!fp)
 	{
-		stat("Couldn't open file %s.", setfilename);
+		stat("Couldn't open file %s.", path.c_str());
 		return 1;
 	}
 	

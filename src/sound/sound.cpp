@@ -4,6 +4,7 @@
 */
 #include <stdio.h>
 #include <string.h>
+#include <string>
 
 #include "../nx.h"
 #include "../settings.h"
@@ -39,14 +40,16 @@ static const char bossmusic[] = { 4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 
 
 static const char *pxt_dir = "./data/pxt/";
 static const char *org_dir = "./data/org/";
-static const char *sndcache = "sndcache.pcm";
 static const char *org_wavetable = "./data/wavetable.dat";
 
 bool sound_init(void)
 {
+	char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
+	std::string sndcache = std::string(basepath) + "sndcache.pcm";
+	SDL_free(basepath);
 	if (SSInit()) return 1;
 	if (pxt_init()) return 1;
-	if (pxt_LoadSoundFX(pxt_dir, sndcache, NUM_SOUNDS)) return 1;
+	if (pxt_LoadSoundFX(pxt_dir, sndcache.c_str(), NUM_SOUNDS)) return 1;
 	
 	if (org_init(org_wavetable, pxt_dir, ORG_VOLUME))
 	{

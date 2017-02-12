@@ -91,8 +91,10 @@ void TB_SaveSelect::SetVisible(bool enable, bool saving)
 	memset(fHaveProfile, 0, sizeof(fHaveProfile));
 	for(int i=0;i<fNumFiles;i++)
 	{
-		if (!profile_load(GetProfileName(i), &fProfiles[i]))
+	    char* profile_name = GetProfileName(i);
+		if (!profile_load(profile_name, &fProfiles[i]))
 			fHaveProfile[i] = true;
+		SDL_free(profile_name);
 	}
 	
 	textbox.ClearText();
