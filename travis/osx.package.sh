@@ -22,12 +22,20 @@ cp ../font.ttf NXEngine.app/Contents/Resources
 cp ../smallfont.bmp NXEngine.app/Contents/Resources
 cp ../sprites.sif NXEngine.app/Contents/Resources
 cp ../tilekey.dat NXEngine.app/Contents/Resources
+rm -rf CaveStory
+ls
 
 #bundle libs
 dylibbundler -b -x NXEngine.app/Contents/MacOS/NXEngine -d NXEngine.app/Contents/libs-intel -od -p @executable_path/../libs-intel
 
 #create dmg
+cd ..
+git clone https://github.com/andreyvit/create-dmg
+cd create-dmg
+./create-dmg --volname "NXEngine" --app-drop-link 600 185 NXEngine.dmg ../release/
+curl --upload-file NXEngine.dmg https://transfer.sh/NXEngine.dmg
 
 #upload
+cd ../release
 zip -r NXEngine.zip NXEngine.app
-curl --upload-file NXEngine.zip https://transfer.sh/nxengine
+curl --upload-file NXEngine.zip https://transfer.sh/NXEngine.zip
