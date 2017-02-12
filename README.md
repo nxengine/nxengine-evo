@@ -2,7 +2,9 @@
 
 This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sourceforge.net/)
 
-![SCreenshot](https://raw.githubusercontent.com/isage/nxengine-evo/master/screenshot.png)
+[![Build Status](https://travis-ci.org/isage/nxengine-evo.svg?branch=master)](https://travis-ci.org/isage/nxengine-evo) [![Build status](https://ci.appveyor.com/api/projects/status/csoc1fkqkxoajk64/branch/master?svg=true)](https://ci.appveyor.com/project/isage/nxengine-evo/branch/master)
+
+![Screenshot](https://raw.githubusercontent.com/isage/nxengine-evo/master/screenshot.png)
 
 * [Differences](#differences-from-original-nxengine)
 * [Building](#building)
