@@ -19,7 +19,8 @@ cd CaveStory
 cd ..
 cp -r CaveStory/data NXEngine.app/Contents/Resources
 cp -r CaveStory/org NXEngine.app/Contents/Resources
-cp -r CaveStory/drums NXEngine.app/Contents/Resources
+cp -r CaveStory/stage.dat NXEngine.app/Contents/Resources
+cp -r CaveStory/wavetable.dat NXEngine.app/Contents/Resources
 cp -r CaveStory/pxt NXEngine.app/Contents/Resources
 cp -r ../data NXEngine.app/Contents/Resources
 cp ../font.ttf NXEngine.app/Contents/Resources
