@@ -20,8 +20,7 @@ int main(int argc, char *argv[])
     if (extract_files(fp)) return 1;
     if (extract_stages(fp)) return 1;
     fclose(fp);
-	printf("Extracted. Press any key to continue.\n");
-	getchar();
+    printf("Sucessfully extracted.\n");
     return 0;
 }
 
