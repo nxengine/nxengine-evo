@@ -18,6 +18,9 @@ before_deploy:
 
 deploy:
   - provider: GitHub
+    release: $(APPVEYOR_REPO_TAG_NAME)
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    description: ''
     auth_token:
       secure: h97pF5UVAqhNHG0zxB1Opnsj0oZr8o3Y2VV/gjb4L/Ba1j/2lj1XtHZmPXWEjqBq
     artifact: /NXEngine-.*\.zip/
