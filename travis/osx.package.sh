@@ -30,7 +30,6 @@ cp ../tilekey.dat NXEngine.app/Contents/Resources
 cp ../osx/icons.icns NXEngine.app/Contents/Resources
 cp ../osx/Info.plist NXEngine.app/Contents/
 rm -rf CaveStory
-ls
 
 #bundle libs
 dylibbundler -b -x NXEngine.app/Contents/MacOS/NXEngine -d NXEngine.app/Contents/libs-intel -od -p @executable_path/../libs-intel

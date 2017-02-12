@@ -6,10 +6,8 @@ wget http://www.cavestory.org/downloads/cavestoryen.zip -outfile cavestoryen.zip
 rm .\cavestoryen.zip
 mkdir NXEngine
 
-Write-Host $env:PLATFORM
-
 #prepare and copy data
-if ($env:PLATFORM -eq "Win32") {
+if ($env:PLATFORM -eq "x86") {
   cp ..\bin\Win32\Release\extract_Win32.exe .\CaveStory\
   cp ..\bin\Win32\Release\nx_Win32.exe .\NXEngine\
   cd .\CaveStory\
@@ -35,7 +33,7 @@ cp ..\sprites.sif .\NXEngine\
 cp ..\tilekey.dat .\NXEngine\
 
 
-if ($env:PLATFORM -eq "Win32") {
+if ($env:PLATFORM -eq "x86") {
   #bundle libs
   cp -r ..\win32\ext\runtime\x86 .\NXEngine\
 
