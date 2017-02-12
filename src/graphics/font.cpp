@@ -31,8 +31,8 @@ static const char bitmap_map[] = {		// letter order of bitmap font sheet
 	"'abcdefghijklmnopqrstuvwxyz{|}~"
 };
 
-const char *bmpfontfile = "smallfont.bmp";
-const char *ttffontfile = "font.ttf";
+const char *bmpfontfile = "data/smallfont.bmp";
+const char *ttffontfile = "data/font.ttf";
 
 //static SDL_Surface *sdl_screen = NULL;
 //static SDL_Surface *shadesfc = NULL;

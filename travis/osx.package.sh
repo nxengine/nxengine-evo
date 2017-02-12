@@ -18,15 +18,7 @@ cd CaveStory
 ./extract
 cd ..
 cp -r CaveStory/data NXEngine.app/Contents/Resources
-cp -r CaveStory/org NXEngine.app/Contents/Resources
-cp -r CaveStory/stage.dat NXEngine.app/Contents/Resources
-cp -r CaveStory/wavetable.dat NXEngine.app/Contents/Resources
-cp -r CaveStory/pxt NXEngine.app/Contents/Resources
 cp -r ../data NXEngine.app/Contents/Resources
-cp ../font.ttf NXEngine.app/Contents/Resources
-cp ../smallfont.bmp NXEngine.app/Contents/Resources
-cp ../sprites.sif NXEngine.app/Contents/Resources
-cp ../tilekey.dat NXEngine.app/Contents/Resources
 cp ../osx/icons.icns NXEngine.app/Contents/Resources
 cp ../osx/Info.plist NXEngine.app/Contents/
 rm -rf CaveStory

@@ -158,13 +158,13 @@ int s, c, i;
 		if (!snd[s].id) break;
 		
 		char outfilename[1024];
-		sprintf(outfilename, "pxt/fx%02x.pxt", snd[s].id);
+		sprintf(outfilename, "data/pxt/fx%02x.pxt", snd[s].id);
 		printf("[ %s ]\n", outfilename);
 		
 #if defined(_WIN32) || defined (_WIN64)
-		_mkdir("pxt");
+		_mkdir("data/pxt");
 #else
-		mkdir("pxt", 0755);
+		mkdir("data/pxt", 0755);
 #endif
 
 		FILE *fpo = fopen(outfilename, "wb");

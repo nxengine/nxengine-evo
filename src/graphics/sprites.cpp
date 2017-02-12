@@ -157,7 +157,7 @@ bool Sprites::Init()
 	memset(spritesheet, 0, sizeof(spritesheet));
 	
 	// load sprites info--sheet positions, bounding boxes etc
-	if (load_sif("sprites.sif"))
+	if (load_sif("data/sprites.sif"))
 		return 1;
 	
 	num_spritesheets = sheetfiles.size();

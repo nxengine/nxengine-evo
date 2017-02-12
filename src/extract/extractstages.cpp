@@ -61,7 +61,7 @@ bool extract_stages(FILE *exefp)
 {
 int i;
 
-	printf("[ stage.dat ]\n");
+	printf("[ data/stage.dat ]\n");
 	
 	// load raw data into struct
 	fseek(exefp, DATA_OFFSET, SEEK_SET);
@@ -101,7 +101,7 @@ int i;
 	}
 	
 	// write out
-	FILE *fpo = fopen("stage.dat", "wb");
+	FILE *fpo = fopen("data/stage.dat", "wb");
 	if (!fpo)
 	{
 		printf("failed to open stage.dat for writing\n");

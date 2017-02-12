@@ -37,10 +37,10 @@ const char *org_names[] =
 
 static const char bossmusic[] = { 4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 35, 0 };
 
-static const char *pxt_dir = "./pxt/";
-static const char *org_dir = "./org/";
+static const char *pxt_dir = "./data/pxt/";
+static const char *org_dir = "./data/org/";
 static const char *sndcache = "sndcache.pcm";
-static const char *org_wavetable = "wavetable.dat";
+static const char *org_wavetable = "./data/wavetable.dat";
 
 bool sound_init(void)
 {

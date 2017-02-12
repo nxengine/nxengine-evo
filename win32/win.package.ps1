@@ -20,16 +20,7 @@ cd .\CaveStory\
 cd ..
 
 cp -r .\CaveStory\data\ .\NXEngine\
-cp -r .\CaveStory\org\ .\NXEngine\
-cp -r .\CaveStory\pxt\ .\NXEngine\
-cp .\CaveStory\stage.dat .\NXEngine\
-cp .\CaveStory\wavetable.dat .\NXEngine\
 cp -r -force ..\data\ .\NXEngine\
-cp ..\font.ttf .\NXEngine\
-cp ..\smallfont.bmp .\NXEngine\
-cp ..\sprites.sif .\NXEngine\
-cp ..\tilekey.dat .\NXEngine\
-
 
 if ($env:PLATFORM -eq "x86") {
   #bundle libs

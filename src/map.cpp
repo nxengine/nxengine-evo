@@ -344,10 +344,10 @@ bool load_stages(void)
 {
 FILE *fp;
 
-	fp = fopen("stage.dat", "rb");
+	fp = fopen("./data/stage.dat", "rb");
 	if (!fp)
 	{
-		staterr("%s(%d): failed to open stage.dat", __FILE__, __LINE__);
+		staterr("%s(%d): failed to open data/stage.dat", __FILE__, __LINE__);
 		num_stages = 0;
 		return 1;
 	}
@@ -372,10 +372,10 @@ bool initmapfirsttime(void)
 FILE *fp;
 int i;
 
-	stat("initmapfirsttime: loading tilekey.dat.");
-	if (!(fp = fopen("tilekey.dat", "rb")))
+	stat("initmapfirsttime: loading data/tilekey.dat.");
+	if (!(fp = fopen("data/tilekey.dat", "rb")))
 	{
-		staterr("tilekey.dat is missing!");
+		staterr("data/tilekey.dat is missing!");
 		return 1;
 	}
 	
