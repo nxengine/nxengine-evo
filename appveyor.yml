@@ -20,20 +20,9 @@ deploy:
   - provider: GitHub
     auth_token:
       secure: h97pF5UVAqhNHG0zxB1Opnsj0oZr8o3Y2VV/gjb4L/Ba1j/2lj1XtHZmPXWEjqBq
-    artifact: NXEngine-$(appveyor_repo_tag)-Win32.zip
+    artifact: NXEngine-*.zip
     draft: true
     force_update: true
     prerelease: false
     on:
       appveyor_repo_tag: true
-      platform: x86
-  - provider: GitHub
-    auth_token:
-      secure: h97pF5UVAqhNHG0zxB1Opnsj0oZr8o3Y2VV/gjb4L/Ba1j/2lj1XtHZmPXWEjqBq
-    artifact: NXEngine-$(appveyor_repo_tag)-Win64.zip
-    draft: true
-    force_update: true
-    prerelease: false
-    on:
-      appveyor_repo_tag: true
-      platform: x64
