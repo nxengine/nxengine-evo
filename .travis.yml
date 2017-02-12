@@ -31,6 +31,7 @@ deploy:
   provider: releases
   api_key:
     secure: "SDmI1rknU+c09NwlikEPl0uwpkI+zXHoj38n3pIAKlBxchoycBwoBJpwtRuSQrIT59Sb220xHhjz6WbtHXbko+WlF8Znvd1G9zpIGSopk/gPdbFlGDxbhhBwNqp1YlTGgsHyo2ORaU0KeTyrOBTvZfuzE9tEzK6FrSmL6tXR708="
+  file_glob: true
   file: NXEngine*.dmg
   skip_cleanup: true
   overwrite: true

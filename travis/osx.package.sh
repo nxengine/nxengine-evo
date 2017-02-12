@@ -39,3 +39,4 @@ cd ../release
 zip -r "NXEngine-$TRAVIS_TAG.zip" NXEngine.app
 curl --upload-file "NXEngine-$TRAVIS_TAG.zip" https://transfer.sh/NXEngine.zip
 cd ..
+ls
