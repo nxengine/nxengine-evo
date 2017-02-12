@@ -8,18 +8,16 @@ mkdir NXEngine
 
 #prepare and copy data
 if ($env:PLATFORM -eq "x86") {
-  cp ..\bin\Win32\Release\extract_Win32.exe .\CaveStory\
-  cp ..\bin\Win32\Release\nx_Win32.exe .\NXEngine\
-  cd .\CaveStory\
-  .\extract_Win32.exe
-  cd ..
+  cp ..\bin\Win32\Release\extract_Win32.exe .\CaveStory\extract.exe
+  cp ..\bin\Win32\Release\nx_Win32.exe .\NXEngine\nx.exe
 } else {
-  cp ..\bin\x64\Release\extract_x64.exe .\CaveStory\
-  cp ..\bin\x64\Release\nx_x64.exe .\NXEngine\
-  cd .\CaveStory\
-  .\extract_x64.exe
-  cd ..
+  cp ..\bin\x64\Release\extract_x64.exe .\CaveStory\extract.exe
+  cp ..\bin\x64\Release\nx_x64.exe .\NXEngine\nx.exe
 }
+
+cd .\CaveStory\
+.\extract.exe
+cd ..
 
 cp -r .\CaveStory\data\ .\NXEngine\
 cp -r .\CaveStory\org\ .\NXEngine\
@@ -35,7 +33,7 @@ cp ..\tilekey.dat .\NXEngine\
 
 if ($env:PLATFORM -eq "x86") {
   #bundle libs
-  cp -r ..\win32\ext\runtime\x86 .\NXEngine\
+  cp ..\win32\ext\runtime\x86\* .\NXEngine\
 
   #create zip
   7z a NXEngine-windows-Win32.zip .\NXEngine\
@@ -44,7 +42,7 @@ if ($env:PLATFORM -eq "x86") {
   invoke-webrequest -UseBasicParsing -method put -infile .\NXEngine-windows-Win32.zip https://transfer.sh/NXEngine-windows-Win32.zip
 } else {
   #bundle libs
-  cp -r ..\win32\ext\runtime\x64 .\NXEngine\
+  cp ..\win32\ext\runtime\x64\* .\NXEngine\
 
   #create zip
   7z a NXEngine-windows-Win64.zip .\NXEngine\
