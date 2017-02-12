@@ -22,6 +22,8 @@ cp ../font.ttf NXEngine.app/Contents/Resources
 cp ../smallfont.bmp NXEngine.app/Contents/Resources
 cp ../sprites.sif NXEngine.app/Contents/Resources
 cp ../tilekey.dat NXEngine.app/Contents/Resources
+cp ../osx/icons.icns NXEngine.app/Contents/Resources
+cp ../osx/Info.plist NXEngine.app/Contents/
 rm -rf CaveStory
 ls
 
@@ -32,7 +34,7 @@ dylibbundler -b -x NXEngine.app/Contents/MacOS/NXEngine -d NXEngine.app/Contents
 cd ..
 git clone https://github.com/andreyvit/create-dmg
 cd create-dmg
-./create-dmg --volname "NXEngine" --app-drop-link 600 185 NXEngine.dmg ../release/
+./create-dmg --volname "NXEngine" --window-size 640 480 --app-drop-link 380 205 --background ../osx/bg.png --icon-size 96 --icon "NXEngine" 110 205 NXEngine.dmg ../release/
 curl --upload-file NXEngine.dmg https://transfer.sh/NXEngine.dmg
 
 #upload
