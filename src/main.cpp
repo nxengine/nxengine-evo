@@ -287,6 +287,8 @@ bool inhibit_loadfade = false;
 bool error = false;
 bool freshstart;
 	
+	chdir(SDL_GetBasePath());
+	
 	SetLogFilename("debug.txt");
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 	{
