@@ -5,6 +5,7 @@
 #include <unistd.h>
 #else
 #include <io.h>
+#include <direct.h>
 #endif
 #include "graphics/safemode.h"
 //#include "main.h"
@@ -287,7 +288,11 @@ bool inhibit_loadfade = false;
 bool error = false;
 bool freshstart;
 	
+#if defined(_WIN32)
+	_chdir(SDL_GetBasePath());
+#else
 	chdir(SDL_GetBasePath());
+#endif
 	
 	SetLogFilename("debug.txt");
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
