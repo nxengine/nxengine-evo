@@ -11,7 +11,7 @@ mkdir NXEngine.app/Contents/MacOS
 mkdir NXEngine.app/Contents/Resources
 
 #prepare and copy data
-cp ../bin/extract CaveStory/Doukutsu.exe
+cp ../bin/extract CaveStory/
 cp ../bin/nx NXEngine.app/Contents/MacOS/NXEngine
 cd CaveStory
 ./extract
