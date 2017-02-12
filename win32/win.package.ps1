@@ -2,9 +2,11 @@
 mkdir release
 cd release
 wget http://www.cavestory.org/downloads/cavestoryen.zip -outfile cavestoryen.zip
-7z a .\cavestoryen.zip
+7z x .\cavestoryen.zip
 rm .\cavestoryen.zip
 mkdir NXEngine
+
+Write-Host $env:PLATFORM
 
 #prepare and copy data
 if ($env:PLATFORM -eq "Win32") {
