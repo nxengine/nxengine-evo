@@ -35,6 +35,7 @@ This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sou
 ## Running
  * For source builds see [Running](https://github.com/isage/nxengine-evo/wiki/Running) on wiki.
  * or just use prepackaged [releases](https://github.com/isage/nxengine-evo/releases)
+   (OSX builds are done on 10.10, so that's a minimum requirement, windows builds require [MSVC2015 runtime](https://www.microsoft.com/en-us/download/details.aspx?id=53587)
 
 Look in TODO.md for upcoming features
 
