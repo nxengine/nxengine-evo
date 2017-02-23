@@ -289,7 +289,7 @@ int fsize, i;
 	
 	// get decryption key, which is actually part of the text
 	int keypos = (fsize / 2);
-	int key = buf[keypos];
+	uint8_t key = buf[keypos];
 	
 	// everything EXCEPT the key is encrypted
 	for(i=0;i<keypos;i++) { buf[i] = (buf[i] - key); }
