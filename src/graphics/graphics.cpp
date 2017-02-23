@@ -151,6 +151,8 @@ bool Graphics::InitVideo()
 		return 1;
 	}
 
+	stat("Graphics::InitVideo: using: %s renderer", info.name);
+
 	if (!(info.flags & SDL_RENDERER_TARGETTEXTURE))
 	{
 		staterr("Graphics::InitVideo: SDL_RENDERER_TARGETTEXTURE is not supported");
@@ -173,6 +175,7 @@ bool Graphics::InitVideo()
 bool Graphics::FlushAll()
 {
 	stat("Graphics::FlushAll()");
+	SDL_RenderPresent(renderer);
 	Sprites::FlushSheets();
 	Tileset::Reload();
 	map_flush_graphics();
