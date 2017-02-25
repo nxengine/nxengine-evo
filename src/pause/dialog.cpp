@@ -263,6 +263,7 @@ void Dialog::RunInput()
 	if (buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
 	{
 		int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(ENTERKEY)) ? 1 : -1;
+		if (buttonjustpushed() || justpushed(ENTERKEY)) dir = 0;
 		
 		ODItem *item = NULL;
 		if (fCurSel>=0 && fCurSel<(int)fItems.size())
@@ -271,14 +272,21 @@ void Dialog::RunInput()
 		{
 			if (item->type == OD_DISMISS)
 			{
-				if (dir > 0)
+				if (dir == 0)
 				{
 					sound(SND_MENU_MOVE);
 					if (ondismiss) (*ondismiss)();
 					return;
 				}
 			}
-			else if (item->activate)
+			else if ((item->type == OD_ACTIVATED) && item->activate && (dir == 0))
+			{
+				(*item->activate)(item, dir);
+				
+				if (item->update)
+					(*item->update)(item);
+			}
+			else if ((item->type == OD_CHOICE) && item->activate && (dir != 0))
 			{
 				(*item->activate)(item, dir);
 				

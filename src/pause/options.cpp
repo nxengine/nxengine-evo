@@ -161,19 +161,19 @@ Dialog *dlg = opt.dlg;
 
 	dlg->Clear();
 	
-	dlg->AddItem("Resolution: ", _res_change, _res_get);
-	dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get);
+	dlg->AddItem("Resolution: ", _res_change, _res_get, -1, OD_CHOICE);
+	dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get, -1, OD_CHOICE);
 	dlg->AddItem("Controls", EnterControlsMenu);
 	
 	dlg->AddSeparator();
 	
-	dlg->AddItem("Enable Debug Keys", _debug_change, _debug_get);
-	dlg->AddItem("Save Slots: ", _save_change, _save_get);
+	dlg->AddItem("Debug Keys: ", _debug_change, _debug_get, -1, OD_CHOICE);
+	dlg->AddItem("Save Slots: ", _save_change, _save_get, -1, OD_CHOICE);
 	
 	dlg->AddSeparator();
 	
-	dlg->AddItem("Music: ", _music_change, _music_get);
-	dlg->AddItem("Sound: ", _sound_change, _sound_get);
+	dlg->AddItem("Music: ", _music_change, _music_get, -1, OD_CHOICE);
+	dlg->AddItem("Sound: ", _sound_change, _sound_get, -1, OD_CHOICE);
 	
 	dlg->AddSeparator();
 	dlg->AddDismissalItem();
@@ -262,7 +262,7 @@ void _debug_change(ODItem *item, int dir)
 
 void _debug_get(ODItem *item)
 {
-	static const char *strs[] = { "", " =" };
+	static const char *strs[] = { "Off", "On" };
 	strcpy(item->suffix, strs[settings->enable_debug_keys]);
 }
 
@@ -330,7 +330,7 @@ Dialog *dlg = opt.dlg;
 
 	dlg->Clear();
 	sound(SND_MENU_MOVE);
-	dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get);
+	dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get, -1, OD_CHOICE);
 	dlg->AddItem("Left", _edit_control, _upd_control, LEFTKEY);
 	dlg->AddItem("Right", _edit_control, _upd_control, RIGHTKEY);
 	dlg->AddItem("Up", _edit_control, _upd_control, UPKEY);

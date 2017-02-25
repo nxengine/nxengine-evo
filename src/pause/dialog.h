@@ -10,9 +10,10 @@ struct ODItem;
 
 enum OD_TYPES
 {
-	OD_CHOICE,
+	OD_ACTIVATED,
 	OD_SEPARATOR,
-	OD_DISMISS
+	OD_DISMISS,
+	OD_CHOICE
 };
 
 class Dialog : public FocusHolder
@@ -28,7 +29,7 @@ public:
 	
 	ODItem *AddItem(const char *text, \
 					void (*activate)(ODItem *, int)=NULL, \
-					void (*update)(ODItem *)=NULL, int id=-1, int type=OD_CHOICE);
+					void (*update)(ODItem *)=NULL, int id=-1, int type=OD_ACTIVATED);
 	ODItem *AddSeparator();
 	ODItem *AddDismissalItem(const char *text = NULL);
 	
