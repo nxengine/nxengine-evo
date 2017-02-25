@@ -245,22 +245,37 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 
 const Graphics::gres_t* Graphics::GetRes()
 {
-    static const Graphics::gres_t res[] = {
+    static Graphics::gres_t res[] = {
+        //      description, screen_w, screen_h, render_w, render_h, scale_factor, widescreen, enabled
         // 4:3
-        {(char*)"---", 0, 0, 0, 0, 1, false },
-        {(char*)"320x240", 320, 240, 320, 240, 1, false },
-        {(char*)"640x480", 640, 480, 320, 240, 2, false },
-//        {(char*)"800x600", 800, 600, 320, 240, 2.5, false }, //requires float scalefactor
-        {(char*)"1024x768", 1024, 768, 340, 256, 3, false },
-        {(char*)"1280x1024", 1280, 1024, 320, 256, 4, false },
-        {(char*)"1600x1200", 1600, 1200, 320, 240, 5, false },
+        {(char*)"---",       0,        0,        0,        0,        1,            false,      true },
+        {(char*)"320x240",   320,      240,      320,      240,      1,            false,      true },
+        {(char*)"640x480",   640,      480,      320,      240,      2,            false,      true },
+//        {(char*)"800x600",   800,      600,      320,      240,      2.5,          false,      true }, //requires float scalefactor
+        {(char*)"1024x768",  1024,     768,      340,      256,      3,            false,      true },
+        {(char*)"1280x1024", 1280,     1024,     320,      256,      4,            false,      true },
+        {(char*)"1600x1200", 1600,     1200,     320,      240,      5,            false,      true },
         // widescreen
-        {(char*)"480x272", 480, 272, 480, 272, 1, true },
-        {(char*)"1366x768", 1366, 768, 455, 256, 3, true },
-        {(char*)"1440x900", 1440, 900, 480, 300, 3, true },
-        {(char*)"1920x1080", 1920, 1080, 480, 270, 4, true },
+        {(char*)"480x272",   480,      272,      480,      272,      1,            true,       true },
+        {(char*)"1366x768",  1366,     768,      455,      256,      3,            true,       true },
+        {(char*)"1440x900",  1440,     900,      480,      300,      3,            true,       true },
+        {(char*)"1920x1080", 1920,     1080,     480,      270,      4,            true,       true },
         {NULL}
     };
+
+    SDL_DisplayMode dm;
+    SDL_GetDesktopDisplayMode(0, &dm);
+
+    stat("DW: %d, DH: %d",dm.w, dm.h);
+    for (int i=0;res[i].name;i++)
+    {
+        if (res[i].width>(uint32_t)dm.w || res[i].height>(uint32_t)dm.h)
+        {
+            stat("Disabling %s",res[i].name);
+
+            res[i].enabled=false;
+        }
+    }
 
     return res;
 }

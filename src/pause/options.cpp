@@ -217,6 +217,13 @@ int newres;
 	newres = (settings->resolution + dir);
 	if (newres >= numres) newres = 1;
 	if (newres < 1) newres = (numres - 1);
+	const gres_t* res = Graphics::GetRes();
+	while(!res[newres].enabled)
+	{
+	    newres += dir;
+	    if (newres >= numres) newres = 1;
+	    if (newres < 1) newres = (numres - 1);
+	}
 	
 	if (!Graphics::SetResolution(newres, true))
 	{

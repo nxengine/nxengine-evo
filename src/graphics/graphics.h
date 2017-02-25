@@ -23,6 +23,7 @@ namespace Graphics
         uint32_t base_height;
         uint32_t scale;
         bool widescreen;
+        bool enabled;
     } gres_t;
 
 	extern int SCREEN_WIDTH;
