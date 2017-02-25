@@ -186,6 +186,8 @@ void Graphics::SetFullscreen(bool enable)
 {
 	SDL_ShowCursor(!enable);
 	SDL_SetWindowFullscreen(window, (enable ? SDL_WINDOW_FULLSCREEN : 0));
+	Graphics::FlushAll();
+
 }
 
 // change the video mode to one of the available resolution codes, currently:
