@@ -67,7 +67,6 @@ static bool create_shade_sfc(void)
 	
 	int wd = (Graphics::SCREEN_WIDTH * SCALE);
 	int ht = whitefont.letters[(unsigned char)'M']->h;
-	
 	SDL_PixelFormat* pxformat = SDL_AllocFormat(screen->Format()->format);
 	if (!pxformat)
 	{
@@ -175,8 +174,12 @@ bool error = false;
 	
 	error = error || create_shade_sfc();
 	if (error) return 1;
-	
+
+	#ifdef CONFIG_ENABLE_TTF
 	fontheight = (whitefont.letters[(unsigned char)'M']->h / SCALE);
+	#else
+	fontheight = (whitefont.letters[(unsigned char)'M']->h);
+	#endif
 	initilized = true;
 	return 0;
 }
@@ -554,8 +557,13 @@ SDL_Rect srcrect;
 			// dstrect with final clipping rectangle.
 			dstrect.x = x;
 			dstrect.y = y;
+			#ifdef CONFIG_ENABLE_TTF
 			dstrect.w = letter->w;
 			dstrect.h = letter->h;
+			#else
+			dstrect.w = letter->w * SCALE;
+			dstrect.h = letter->h * SCALE;
+			#endif
 
 			srcrect.x = 0;
 			srcrect.y = 0;
@@ -582,7 +590,11 @@ SDL_Rect srcrect;
 			else
 			{
 				if (letter)
+#ifdef CONFIG_ENABLE_TTF
 					x += letter->w;
+#else
+					x += letter->w * SCALE;
+#endif
 			}
 		}
 	}
@@ -655,7 +667,7 @@ int wd;
 	dstrect.y = y;
 	dstrect.w = srcrect.w;
 	dstrect.h = srcrect.h;
-	
+
 	// TODO FONT
 	//SDL_BlitSurface(shadesfc, &srcrect, sdl_screen, &dstrect);
 
