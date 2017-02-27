@@ -3,7 +3,6 @@
 #include "../stdai.h"
 #include "../ai.h"
 #include "../sym/smoke.h"
-#include "../egg/egg.h"	// for ai_beetle_horiz
 #include "../sand/puppy.h"
 #include "../../ObjManager.h"
 #include "../../caret.h"
@@ -18,7 +17,7 @@
 
 INITFUNC(AIRoutines)
 {
-	ONTICK(OBJ_BEETLE_BROWN, ai_beetle_horiz);
+	ONTICK(OBJ_BEETLE_BROWN, ai_beetle_horizwait);
 	
 	ONTICK(OBJ_POLISH, ai_polish);
 	ONDEATH(OBJ_POLISH, ondeath_polish);
@@ -1080,5 +1079,64 @@ static const uint8_t mimiga_walk_frames[5] = { 0, 2, 0, 3 };
 	o->yinertia += 0x20;
 	LIMITY(0x5ff);
 	LIMITX(0x1ff);
+}
+
+/*
+void c------------------------------() {}
+*/
+
+void ai_beetle_horizwait(Object *o)
+{
+	enum { FLYING = 0, ON_WALL = 1 };
+	
+	if (o->state == FLYING)
+	{
+		if (++o->animtimer == 2)
+		{
+			o->animtimer = 0;
+			o->animframe ^= 1;
+		}
+		
+		o->frame = (o->animframe + 1);
+		
+		if (o->dir == RIGHT)
+		{
+			o->xinertia += 0x50;
+			if (o->xinertia > 0x32c) o->xinertia = 0x32c;
+			
+			if (o->blockr)
+			{
+				o->dir = LEFT;
+				o->state = ON_WALL;
+				o->frame = 0;
+				o->xinertia = 0;
+			}
+		}
+		else
+		{
+			o->xinertia -= 0x50;
+			if (o->xinertia < -0x32c) o->xinertia = -0x32c;
+			
+			if (o->blockl)
+			{
+				o->dir = RIGHT;
+				o->state = ON_WALL;
+				o->frame = 0;
+				o->xinertia = 0;
+			}
+		}
+	}
+	else
+	{	// waiting on wall
+		if (abs(o->y - player->y) < (12 * CSFI))
+		{
+			if ((o->dir == RIGHT && (player->x > o->x)) || \
+				(o->dir == LEFT && (player->x < o->x)))
+			{
+				o->animframe = 0;
+				o->state = FLYING;
+			}
+		}
+	}
 }
 
