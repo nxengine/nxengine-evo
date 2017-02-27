@@ -82,7 +82,7 @@ void TB_StageSelect::Draw(void)
 	fWarpY -= WARP_Y_SPEED;
 	if (fWarpY < WARP_Y) fWarpY = WARP_Y;
 	
-	draw_sprite(WARP_X, fWarpY, SPR_TEXT_WARP, 0);
+	draw_sprite(WARP_X + ((SCREEN_WIDTH - 320) / 2), fWarpY, SPR_TEXT_WARP, 0);
 	
 	// draw teleporter locations
 	int nslots = CountActiveSlots();
