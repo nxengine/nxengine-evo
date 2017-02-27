@@ -61,7 +61,7 @@ void PInitFirstTime()
 	player->weapons[WPN_MGUN].SetRechargeRate(5, 5, 5);
 	
 	player->weapons[WPN_BUBBLER].SetFireRate(0, 7, 7);
-	player->weapons[WPN_BUBBLER].SetRechargeRate(20, 1, 1);
+	player->weapons[WPN_BUBBLER].SetRechargeRate(20, 2, 2);
 	
 	player->curWeapon = WPN_NONE;
 	
