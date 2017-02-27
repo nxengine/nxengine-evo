@@ -6,6 +6,7 @@
 */
 
 #include "ItemImage.h"
+#include "../graphics/graphics.h"
 #include "../graphics/sprites.h"
 using namespace Sprites;
 #include "TextBox.h"
@@ -51,13 +52,13 @@ void TB_ItemImage::Draw(void)
 	if (++fYOffset > desty) fYOffset = desty;
 	
 	// draw the box frame
-	TextBox::DrawFrame(ITEMBOX_X, ITEMBOX_Y, ITEMBOX_W, ITEMBOX_H);
+	TextBox::DrawFrame(ITEMBOX_X + ((Graphics::SCREEN_WIDTH - 320) / 2), ITEMBOX_Y, ITEMBOX_W, ITEMBOX_H);
 	
 	// draw the item
 	int x = ITEMBOX_X + ((ITEMBOX_W / 2) - (sprites[fSprite].w / 2));
 	if (sprites[fSprite].w == 14) x--;		// hack for ArmsIcons
 	
-	draw_sprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
+	draw_sprite(x + ((Graphics::SCREEN_WIDTH - 320) / 2), ITEMBOX_Y + fYOffset, fSprite, fFrame);
 }
 
 
