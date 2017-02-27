@@ -57,7 +57,7 @@ void TextBox::ResetState(void)
 	fTextYOffset = 0;
 	
 	fTextTimer = 0;
-	fCanSpeedUp = false;
+	fCanSpeedUp = true;
 	
 	fCursorVisible = false;
 	fCursorTimer = 0;
