@@ -171,6 +171,7 @@ void ai_beetle_horiz(Object *o)
 				o->state = ON_WALL;
 				o->frame = 0;
 				o->xinertia = 0;
+				o->timer = 1 * 60;	// 1 second
 			}
 		}
 		else
@@ -184,19 +185,16 @@ void ai_beetle_horiz(Object *o)
 				o->state = ON_WALL;
 				o->frame = 0;
 				o->xinertia = 0;
+				o->timer = 1 * 60;	// 1 second
 			}
 		}
 	}
 	else
 	{	// waiting on wall
-		if (abs(o->y - player->y) < (12 * CSFI))
+		if (o->timer-- == 0)
 		{
-			if ((o->dir == RIGHT && (player->x > o->x)) || \
-				(o->dir == LEFT && (player->x < o->x)))
-			{
-				o->animframe = 0;
-				o->state = FLYING;
-			}
+			o->animframe = 0;
+			o->state = FLYING;
 		}
 	}
 }

@@ -19,5 +19,6 @@ void ai_skullstep_foot(Object *o);
 void skullstep_do_step(Object *o, Object *skull, int angle);
 void ai_skeleton(Object *o);
 void ai_curlys_mimigas(Object *o);
+void ai_beetle_horizwait(Object *o);
 
 #endif
