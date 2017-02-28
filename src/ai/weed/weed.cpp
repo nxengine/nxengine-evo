@@ -57,6 +57,7 @@ void ai_critter(Object *o)
 				o->critter.jumpheight = 0x2800;
 				o->critter.jumpgrav = 0x1C;
 				o->critter.falldmg = 12;
+				o->critter.canfly = true;
 			}
 			else
 			{
@@ -161,7 +162,7 @@ void ai_critter(Object *o)
 		{
 			// enter flying phase as we start to come down or
 			// if we hit the ceiling.
-			if (o->yinertia > 0x100 || o->blocku)
+			if (o->yinertia > 0x100 && !o->blocku)
 			{
 				// during flight we will sine-wave oscilliate around this position
 				o->ymark = (o->y - o->critter.jumpheight);
@@ -218,6 +219,9 @@ landed: ;
 				o->xinertia = 0;
 				
 				sound(SND_THUD);
+
+				if (o->type == OBJ_POWER_CRITTER)
+					quake(30);
 			}
 		}
 		break;
