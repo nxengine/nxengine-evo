@@ -617,13 +617,13 @@ int limit;
 		//		of a high inertia when he hit it
 		if (player->blockr)
 		{
-			limit = (player->dir == RIGHT) ? 0x180 : 0;
+			limit = (pinputs[RIGHTKEY]) ? 0x180 : 0;
 			if (player->xinertia > limit) player->xinertia = limit;
 		}
 		
 		if (player->blockl)
 		{
-			limit = (player->dir == LEFT) ? -0x180 : 0;
+			limit = (pinputs[LEFTKEY]) ? -0x180 : 0;
 			if (player->xinertia < limit) player->xinertia = limit;
 		}
 	}
