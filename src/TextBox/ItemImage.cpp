@@ -14,8 +14,8 @@ using namespace Sprites;
 #define ITEMBOX_W			76
 #define ITEMBOX_H			32
 
-#define ITEMBOX_X			128
-#define ITEMBOX_Y			120
+#define ITEMBOX_X			(Graphics::SCREEN_WIDTH / 2) - 32
+#define ITEMBOX_Y			(Graphics::SCREEN_HEIGHT / 2)
 
 /*
 void c------------------------------() {}
@@ -52,13 +52,13 @@ void TB_ItemImage::Draw(void)
 	if (++fYOffset > desty) fYOffset = desty;
 	
 	// draw the box frame
-	TextBox::DrawFrame(ITEMBOX_X + ((Graphics::SCREEN_WIDTH - 320) / 2), ITEMBOX_Y, ITEMBOX_W, ITEMBOX_H);
+	TextBox::DrawFrame(ITEMBOX_X, ITEMBOX_Y, ITEMBOX_W, ITEMBOX_H);
 	
 	// draw the item
 	int x = ITEMBOX_X + ((ITEMBOX_W / 2) - (sprites[fSprite].w / 2));
 	if (sprites[fSprite].w == 14) x--;		// hack for ArmsIcons
 	
-	draw_sprite(x + ((Graphics::SCREEN_WIDTH - 320) / 2), ITEMBOX_Y + fYOffset, fSprite, fFrame);
+	draw_sprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
 }
 
 

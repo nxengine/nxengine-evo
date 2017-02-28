@@ -17,8 +17,8 @@ using namespace Graphics;
 #include "../autogen/sprites.h"
 using namespace Sprites;
 
-#define WARP_X			128
-#define WARP_Y			46
+#define WARP_X			(SCREEN_WIDTH / 2) - 32
+#define WARP_Y			(SCREEN_HEIGHT / 2) - 74
 
 #define WARP_Y_START	(WARP_Y + 8)
 #define WARP_Y_SPEED	1
@@ -82,7 +82,7 @@ void TB_StageSelect::Draw(void)
 	fWarpY -= WARP_Y_SPEED;
 	if (fWarpY < WARP_Y) fWarpY = WARP_Y;
 	
-	draw_sprite(WARP_X + ((SCREEN_WIDTH - 320) / 2), fWarpY, SPR_TEXT_WARP, 0);
+	draw_sprite(WARP_X, fWarpY, SPR_TEXT_WARP, 0);
 	
 	// draw teleporter locations
 	int nslots = CountActiveSlots();
