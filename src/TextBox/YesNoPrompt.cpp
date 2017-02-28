@@ -18,8 +18,8 @@ enum
 	STATE_NO_SELECTED
 };
 
-#define YESNO_X				216
-#define YESNO_Y				144
+#define YESNO_X				(Graphics::SCREEN_WIDTH / 2) + 56
+#define YESNO_Y				(Graphics::SCREEN_HEIGHT / 2) + 22
 #define YESNO_POP_SPEED		4
 
 /*
@@ -55,17 +55,14 @@ void TB_YNJPrompt::Draw()
 	if (!fVisible)
 		return;
 
-	int yes_no_x = YESNO_X + ((Graphics::SCREEN_WIDTH - 320) / 2);
-	int yes_no_y = fCoords.y + ((Graphics::SCREEN_HEIGHT - 240) / 2);
-	
-	draw_sprite(yes_no_x, yes_no_y, SPR_YESNO, 0, 0);
+	draw_sprite(YESNO_X, fCoords.y, SPR_YESNO, 0, 0);
 	
 	// draw hand selector
 	if (fState == STATE_YES_SELECTED || \
 		fState == STATE_NO_SELECTED)
 	{
 		int xoff = (fState == STATE_YES_SELECTED) ? -4 : 37;
-		draw_sprite(yes_no_x+xoff, yes_no_y+12, SPR_YESNOHAND, 0, 0);
+		draw_sprite(YESNO_X+xoff, fCoords.y+12, SPR_YESNOHAND, 0, 0);
 	}
 	
 	switch(fState)
