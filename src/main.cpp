@@ -7,7 +7,6 @@
 #include <io.h>
 #include <direct.h>
 #endif
-#include "graphics/safemode.h"
 //#include "main.h"
 #include "game.h"
 #include "map.h"
@@ -47,17 +46,7 @@ static void fatal(const char *str)
 {
 	staterr("fatal: '%s'", str);
 	
-	if (!safemode::init())
-	{
-		safemode::moveto(SM_UPPER_THIRD);
-		safemode::print("Fatal Error");
-		
-		safemode::moveto(SM_CENTER);
-		safemode::print("%s", str);
-		
-		safemode::run_until_key();
-		safemode::close();
-	}
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", str, NULL);
 }
 
 static bool check_data_exists()
@@ -67,18 +56,7 @@ char fname[MAXPATHLEN];
 	sprintf(fname, "%s/npc.tbl", data_dir);
 	if (file_exists(fname)) return 0;
 	
-	if (!safemode::init())
-	{
-		safemode::moveto(SM_UPPER_THIRD);
-		safemode::print("Fatal Error");
-		
-		safemode::moveto(SM_CENTER);
-		safemode::print("Missing \"%s\" directory.", data_dir);
-		safemode::print("Please copy it over from a Doukutsu installation.");
-		
-		safemode::run_until_key();
-		safemode::close();
-	}
+	fatal("Missing \"data\" directory.\nPlease copy it over from a Doukutsu installation.");
 	
 	return 1;
 }
@@ -317,9 +295,9 @@ bool freshstart;
 	// so we know the initial screen resolution.
 	settings_load();
 	
-	if (Graphics::init(settings->resolution)) { staterr("Failed to initialize graphics."); return 1; }
+	if (Graphics::init(settings->resolution)) { fatal("Failed to initialize graphics."); return 1; }
 	Graphics::SetFullscreen(settings->fullscreen);
-	if (font_init()) { staterr("Failed to load font."); return 1; }
+	if (font_init()) { fatal("Failed to load font."); return 1; }
 	
 	
 	if (check_data_exists())
