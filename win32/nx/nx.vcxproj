@@ -253,7 +253,6 @@
     <ClCompile Include="..\..\src\graphics\graphics.cpp" />
     <ClCompile Include="..\..\src\graphics\nxsurface.cpp" />
     <ClCompile Include="..\..\src\graphics\pngfuncs.cpp" />
-    <ClCompile Include="..\..\src\graphics\safemode.cpp" />
     <ClCompile Include="..\..\src\graphics\screenshot.cpp" />
     <ClCompile Include="..\..\src\graphics\sprites.cpp" />
     <ClCompile Include="..\..\src\graphics\tileset.cpp" />
@@ -392,7 +391,6 @@
     <ClInclude Include="..\..\src\graphics\nxsurface.h" />
     <ClInclude Include="..\..\src\graphics\nx_icon.h" />
     <ClInclude Include="..\..\src\graphics\pngfuncs.h" />
-    <ClInclude Include="..\..\src\graphics\safemode.h" />
     <ClInclude Include="..\..\src\graphics\screenshot.h" />
     <ClInclude Include="..\..\src\graphics\sprites.h" />
     <ClInclude Include="..\..\src\graphics\tileset.h" />
