@@ -4,7 +4,6 @@
 
 // this decodes and encodes the main sprites[] array of SIFSprite structures.
 
-class DBuffer;
 #include "sif.h"
 
 

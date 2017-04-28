@@ -235,7 +235,6 @@
     <ClCompile Include="..\..\src\ai\weed\weed.cpp" />
     <ClCompile Include="..\..\src\autogen\AssignSprites.cpp" />
     <ClCompile Include="..\..\src\caret.cpp" />
-    <ClCompile Include="..\..\src\common\DBuffer.cpp" />
     <ClCompile Include="..\..\src\common\InitList.cpp" />
     <ClCompile Include="..\..\src\common\misc.cpp" />
     <ClCompile Include="..\..\src\common\stat.cpp" />
@@ -371,7 +370,6 @@
     <ClInclude Include="..\..\src\caret.h" />
     <ClInclude Include="..\..\src\common\basics.h" />
     <ClInclude Include="..\..\src\common\bufio.h" />
-    <ClInclude Include="..\..\src\common\DBuffer.h" />
     <ClInclude Include="..\..\src\common\InitList.h" />
     <ClInclude Include="..\..\src\common\llist.h" />
     <ClInclude Include="..\..\src\common\misc.h" />

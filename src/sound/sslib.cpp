@@ -61,10 +61,7 @@ int bytestogo;
 int c;
 int i;
 
-#if SDL_VERSION_ATLEAST(1, 3, 0)
-	/* Need to initialize the stream in SDL 1.3+ */
 	memset(stream, spec.silence, len);
-#endif
 
 	// get data for all channels and add it to the mix
 	for(c=0;c<SS_NUM_CHANNELS;c++)

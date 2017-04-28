@@ -4,7 +4,7 @@
 #include "nx.h"
 #include "tsc.h"
 #include <map>
-#include "common/DBuffer.h"
+#include <vector>
 #include "inventory.h"
 #include "ObjManager.h"
 #include "niku.h"
@@ -35,12 +35,10 @@ struct ScriptPage
 	// a variable-length array of pointers to compiled script code
 	// for each script in the page; their indexes in this array
 	// correspond to their script numbers.
-	std::map<uint16_t, DBuffer *> scripts;
+	std::map<uint16_t, std::vector<uint8_t>> scripts;
 	
 	void Clear()
 	{
-	    for (std::map<uint16_t,DBuffer*>::iterator it=scripts.begin(); it!=scripts.end(); ++it)
-			delete it->second;	// it's safe to delete NULL, so no check here
 		scripts.clear();
 	}
 };
@@ -331,7 +329,7 @@ int i = 0;
 	return atoi(num);
 }
 
-static void ReadText(DBuffer *script, const char **buf, const char *buf_end)
+static void ReadText(std::vector<uint8_t> *script, const char **buf, const char *buf_end)
 {
 	while(*buf <= buf_end)
 	{
@@ -343,10 +341,10 @@ static void ReadText(DBuffer *script, const char **buf, const char *buf_end)
 		}
 		
 		if (ch != 10)
-			script->Append8(ch);
+			script->push_back(ch);
 	}
 	
-	script->Append8('\0');
+	script->push_back('\0');
 }
 
 // compile a tsc file--a set of scripts in raw text format--into 'bytecode',
@@ -355,7 +353,7 @@ bool tsc_compile(const char *buf, int bufsize, int pageno)
 {
 ScriptPage *page = &script_pages[pageno];
 const char *buf_end = (buf + (bufsize - 1));
-DBuffer *script = NULL;
+std::vector<uint8_t> *script = NULL;
 char cmdbuf[4] = { 0 };
 
 	//stat("<> tsc_compile bufsize = %d pageno = %d", bufsize, pageno);
@@ -368,7 +366,7 @@ char cmdbuf[4] = { 0 };
 		{	// start of a scriptzz
 			if (script)
 			{
-				script->Append8(OP_END);
+				script->push_back(OP_END);
 				script = NULL;
 			}
 			
@@ -394,8 +392,8 @@ char cmdbuf[4] = { 0 };
 			}
 			else
 			{
-				script = new DBuffer;
-				page->scripts[scriptno] = script;
+				page->scripts.insert(std::pair<uint16_t, std::vector<uint8_t>>(scriptno,{}));
+				script = &(page->scripts[scriptno]);
 			}
 		}
 		else if (ch == '<' && script)
@@ -409,7 +407,7 @@ char cmdbuf[4] = { 0 };
 			if (cmd == -1) return 1;
 			
 			//stat("Command '%s', parameters %d", cmdbuf, cmd_table[cmd].nparams);
-			script->Append8(cmd);
+			script->push_back(cmd);
 			
 			// read all parameters expected by that command
 			int nparams = cmd_table[cmd].nparams;
@@ -417,8 +415,8 @@ char cmdbuf[4] = { 0 };
 			{
 				int val = ReadNumber(&buf, buf_end);
 				
-				script->Append8(val >> 8);
-				script->Append8(val & 0xff);
+				script->push_back(val >> 8);
+				script->push_back(val & 0xff);
 				
 				// colon between params
 				if (i < (nparams - 1))
@@ -428,14 +426,14 @@ char cmdbuf[4] = { 0 };
 		else if (script)
 		{	// text for message boxes
 			buf--;
-			script->Append8(OP_TEXT);
+			script->push_back(OP_TEXT);
 			ReadText(script, &buf, buf_end);
 		}
 		
 	}
 	
 	if (script)
-		script->Append8(OP_END);
+		script->push_back(OP_END);
 	
 	return 0;
 }
@@ -482,7 +480,6 @@ void c------------------------------() {}
 const uint8_t *FindScriptData(int scriptno, int pageno, int *page_out)
 {
     ScriptPage *page = &script_pages[pageno];
-    DBuffer *script;
 
     if (page->scripts.find(scriptno) == page->scripts.end())
 	{
@@ -495,11 +492,10 @@ const uint8_t *FindScriptData(int scriptno, int pageno, int *page_out)
 			return NULL;
 		}
 	}
-	script = page->scripts.find(scriptno)->second;
 
 	
 	if (page_out) *page_out = pageno;
-	return script->Data();
+	return &(page->scripts.find(scriptno)->second.front());
 }
 
 

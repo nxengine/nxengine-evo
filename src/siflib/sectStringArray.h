@@ -3,7 +3,6 @@
 #define _SECT_STRINGARRAY_H
 #include <string>
 #include <vector>
-class DBuffer;
 
 // the SectStringArray handler decodes sif sections which consist of an array
 // of pascal strings. This includes SIF_SECTION_SHEETS and SIF_SECTION_DIRECTORY.
