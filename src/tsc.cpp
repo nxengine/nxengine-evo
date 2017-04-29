@@ -35,7 +35,7 @@ struct ScriptPage
 	// a variable-length array of pointers to compiled script code
 	// for each script in the page; their indexes in this array
 	// correspond to their script numbers.
-	std::map<uint16_t, std::vector<uint8_t>> scripts;
+	std::map<uint16_t, std::vector<uint8_t> > scripts;
 	
 	void Clear()
 	{
@@ -392,7 +392,7 @@ char cmdbuf[4] = { 0 };
 			}
 			else
 			{
-				page->scripts.insert(std::pair<uint16_t, std::vector<uint8_t>>(scriptno,{}));
+				page->scripts.insert(std::pair<uint16_t, std::vector<uint8_t> >(scriptno,{}));
 				script = &(page->scripts[scriptno]);
 			}
 		}

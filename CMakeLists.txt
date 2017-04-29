@@ -69,7 +69,7 @@ if(USE_TTF)
     add_definitions(-DCONFIG_ENABLE_TTF)
 endif(USE_TTF)
 
-add_definitions("-Wall")
+add_definitions("-Wall -std=c++11")
 add_executable(nx ${SOURCES})
 target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${PNG_LIBRARY})
 
