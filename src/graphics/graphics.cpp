@@ -239,6 +239,7 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	}
 	current_res = r;
 	if (Graphics::FlushAll()) return 1;
+	recalc_map_offsets();
 	return 0;
 }
 

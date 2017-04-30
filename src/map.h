@@ -147,6 +147,6 @@ void map_show_map_name();
 void map_draw_map_name(void);
 void AnimateMotionTiles(void);
 Object *FindObjectByID2(int id2);
-
+void recalc_map_offsets();
 
 #endif

@@ -160,6 +160,36 @@ int x, y;
 	return 0;
 }
 
+void recalc_map_offsets()
+{
+	if (widescreen)
+	{
+        if (map.xsize * TILE_W<SCREEN_WIDTH && map.ysize * TILE_W<SCREEN_HEIGHT) {
+            map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
+            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
+        } else if (map.xsize * TILE_W<SCREEN_WIDTH) {
+            if (map.xsize == 25) { // MazeI
+                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 48)) - 8) * CSFI;
+                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+            } else { // Others
+                map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
+                map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+            }
+        } else if (map.ysize * TILE_W<SCREEN_HEIGHT) {
+            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
+            map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
+        } else {
+            map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
+            map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+        }
+	}
+	else
+	{
+    	map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
+    	map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+	}
+
+}
 
 // load a PXE (entity list for a map)
 bool load_entities(const char *fname)
