@@ -299,7 +299,10 @@ void _sound_get(ODItem *item)
 
 void _music_change(ODItem *item, int dir)
 {
-	music_set_enabled((settings->music_enabled + 1) % 3);
+	int result = settings->music_enabled + dir;
+	if (result < 0) result = 2;
+	if (result > 2) result = 0;
+	music_set_enabled(result);
 	sound(SND_MENU_SELECT);
 }
 
@@ -311,13 +314,16 @@ void _music_get(ODItem *item)
 
 void _tracks_change(ODItem *item, int dir)
 {
-	music_set_newmusic(settings->new_music ^ 1);
+	int result = settings->new_music + dir;
+	if (result < 0) result = 2;
+	if (result > 2) result = 0;
+	music_set_newmusic(result);
 	sound(SND_MENU_SELECT);
 }
 
 void _tracks_get(ODItem *item)
 {
-	static const char *strs[] = { "Old", "New" };
+	static const char *strs[] = { "Old", "New", "Remastered" };
 	strcpy(item->suffix, strs[settings->new_music]);
 }
 

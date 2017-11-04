@@ -100,7 +100,7 @@ bool sound_is_playing(int snd);
 void StartStreamSound(int freq);
 void StartPropSound(void);
 void StopLoopSounds(void);
-void music(int songno, int pos = 0);
+void music(int songno, bool resume = false);
 bool should_music_play(int songno, int musicmode);
 bool music_is_boss(int songno);
 void music_set_enabled(int newstate);

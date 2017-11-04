@@ -948,6 +948,7 @@ void orgMusicPlayer(void *udata, Uint8 *stream, int len)
 // start the currently-loaded track playing at beat startbeat.
 bool org_start(int startbeat)
 {
+    printf("startbeat: %d\n", startbeat);
 	org_stop();		// stop any old music
 	
 	// set all the note-tracking stuff to starting values

@@ -393,6 +393,9 @@
     <ClCompile Include="..\..\src\sound\ogg.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\sound\ogg11.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -807,6 +810,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\sound\ogg.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sound\ogg11.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>

@@ -743,7 +743,7 @@ int cmdip;
 			
 			case OP_SOU: sound(parm[0]); break;
 			case OP_CMU: music(parm[0]); break;
-			case OP_RMU: music(music_lastsong(), music_lastsongpos()); break;
+			case OP_RMU: music(music_lastsong(), true); break;
 			case OP_FMU: music_fade(); break;
 			
 			case OP_SSS: StartStreamSound(parm[0]); break;

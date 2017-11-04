@@ -16,7 +16,7 @@ struct Settings
 	bool enable_debug_keys;
 	bool sound_enabled;
 	int music_enabled;
-	bool new_music;
+	uint8_t new_music;
 	
 	bool skip_intro;
 	bool rumble;
