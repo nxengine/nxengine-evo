@@ -56,12 +56,20 @@ bool sound_init(void)
 		staterr("Unable to init mixer.");
 		return 1;
 	}
+
+#if SDL_MIXER_PATCHLEVEL >= 2
+	if (Mix_OpenAudioDevice(SAMPLE_RATE, AUDIO_S16, 2, 2048, NULL, 0) == -1)
+	{
+		staterr("Unable to init mixer.");
+		return 1;
+	}
+#else
 	if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16, 2, 2048) == -1)
 	{
 		staterr("Unable to init mixer.");
 		return 1;
 	}
-	
+#endif
 	Mix_AllocateChannels(64);
 	
 	Mix_ChannelFinished(pxtSoundDone);
