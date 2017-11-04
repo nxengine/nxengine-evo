@@ -11,8 +11,9 @@ set (nx_VERSION_MINOR 4)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-find_package(SDL2)
-find_package(SDL2_ttf)
+find_package(SDL2  REQUIRED)
+find_package(SDL2_ttf  REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 find_package(PNG)
 
 include_directories(${SDL2_INCLUDE_DIR})
@@ -71,7 +72,7 @@ endif(USE_TTF)
 
 add_definitions("-Wall -std=c++11")
 add_executable(nx ${SOURCES})
-target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${PNG_LIBRARY})
+target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2TTF_LIBRARY} ${SDL_MIXER_LIBRARY} ${PNG_LIBRARY})
 
 add_executable(extract ${EXTR_SOURCES})
 

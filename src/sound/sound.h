@@ -2,6 +2,8 @@
 #ifndef __SOUND_H_
 #define __SOUND_H_
 
+#define SAMPLE_RATE 22050
+
 #define SND_MENU_MOVE		1
 #define SND_MSG		2
 #define SND_BONK_HEAD		3
@@ -92,16 +94,20 @@ bool sound_init(void);
 void sound_close(void);
 void sound(int snd);
 void sound_loop(int snd);
+void sound_loop_resampled(int snd, int percent);
 void sound_stop(int snd);
 bool sound_is_playing(int snd);
 void StartStreamSound(int freq);
 void StartPropSound(void);
 void StopLoopSounds(void);
-void music(int songno);
+void music(int songno, int pos = 0);
 bool should_music_play(int songno, int musicmode);
 bool music_is_boss(int songno);
 void music_set_enabled(int newstate);
 int music_cursong();
 int music_lastsong();
+int music_lastsongpos();
+void music_fade();
+void music_run_fade();
 
 #endif

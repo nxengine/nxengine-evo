@@ -163,10 +163,7 @@ static int frameskip = 0;
 		SDL_Delay(20);
 	}
 	
-	// immediately after a game tick is when we have the most amount of time before
-	// the game needs to run again. so now's as good a time as any for some
-	// BGM audio processing, wouldn't you say?
-	org_run();
+	music_run_fade();
 }
 
 void AppMinimized(void)

@@ -48,7 +48,7 @@ struct stNoteChannel
 
 struct stNote
 {
-	int beat;			// beat no. that note starts on
+	uint32_t beat;			// beat no. that note starts on
 	uint8_t note;			// 00 - 5F, starts on a C
 	uint8_t length;		// in beats
 	uint8_t volume;		// 00 - F8
@@ -84,15 +84,18 @@ struct stSong
 	int samples_per_beat;			// # of samples in each beat
 	int note_closing_samples;		// # of samples of note to generate at the last beat of a note
 	
-	int loop_start, loop_end;
+	uint32_t loop_start, loop_end;
 	
 	stInstrument instrument[16];
 	
-	int beat;
+	uint32_t beat;
 	char haslooped;
 	
 	bool fading;
 	uint32_t last_fade_time;
+	uint32_t last_pos;
+	uint32_t last_gen_tick;
+	uint32_t last_gen_beat;
 };
 
 int org_init(const char *wavetable_fname, const char *drum_pxt_dir, int org_volume);
@@ -103,7 +106,7 @@ void org_stop(void);
 bool org_is_playing(void);
 void org_fade(void);
 void org_set_volume(int newvolume);
-void org_run(void);
+void org_run_fade(void);
 
 #endif
 

@@ -449,7 +449,7 @@ void CoreBoss::StartWaterStream(void)
 		map.wlforcestate = WL_UP;
 	
 	game.quaketime = 100;
-	StartStreamSound(400);
+	StartStreamSound(1000);
 }
 
 void CoreBoss::StopWaterStream(void)

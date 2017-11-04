@@ -1,5 +1,6 @@
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +10,8 @@
 #include "../common/basics.h"
 #include "org.h"
 #include "pxt.h"			// for loading drums
-#include "sslib.h"			// SAMPLE_RATE
+//#include "sslib.h"			// SAMPLE_RATE
+#include "sound.h"			// SAMPLE_RATE
 #include "../common/stat.h"
 #include "../common/misc.h"
 
@@ -18,7 +20,7 @@
 #define DRUM_PXT
 
 #ifdef DRUM_PXT
-	#define drumK		22050
+	#define drumK		SAMPLE_RATE
 #else
 	#define drumK		30050
 #endif
@@ -39,10 +41,7 @@ static struct
 {
 	signed short *samples;		// pointer to the raw PCM sound data
 	int firstbeat;				// beat # of the first beat contained in this chunk
-} final_buffer[2];
-
-static uint8_t current_buffer;
-static bool buffers_full;
+} final_buffer;
 
 static int OrgVolume;
 
@@ -306,14 +305,14 @@ int org_init(const char *wavetable_fname, const char *drum_pxt_dir, int org_volu
 {
 int i;
 	
-	SSReserveChannel(ORG_CHANNEL);
+	//SSReserveChannel(ORG_CHANNEL);
 	OrgVolume = org_volume;
 	
 	// set all buffer pointers and things to NULL, so if something fails to load,
 	// we won't crash on org_close.
 	memset(drumtable, 0, sizeof(drumtable));
 	for(i=0;i<16;i++) note_channel[i].outbuffer = NULL;
-	for(i=0;i<2;i++) final_buffer[i].samples = NULL;
+	final_buffer.samples = NULL;
 	
 	init_pitch();
 	if (load_wavetable(wavetable_fname)) return 1;
@@ -331,8 +330,7 @@ int i;
 	for(i=0;i<16;i++)
 		if (note_channel[i].outbuffer) free(note_channel[i].outbuffer);
 	
-	for(i=0;i<2;i++)
-		if (final_buffer[i].samples) free(final_buffer[i].samples);
+	if (final_buffer.samples) free(final_buffer.samples);
 }
 
 void org_close(void)
@@ -377,11 +375,8 @@ int i;
 	}
 	
 	// initialize the final (mixed) output buffers
-	for(i=0;i<2;i++)
-	{
-		final_buffer[i].samples = (signed short *)malloc(outbuffer_size_bytes);
-		//memset(final_buffer[i].samples, 0, outbuffer_size_bytes);
-	}
+	final_buffer.samples = (signed short *)malloc(outbuffer_size_bytes);
+	memset(final_buffer.samples, 0, outbuffer_size_bytes);
 	
 	return 0;
 }
@@ -403,6 +398,7 @@ int i, j;
 	
 	fseek(fp, 0x06, SEEK_SET);
 	
+	song.last_pos=0;
 	song.ms_per_beat = fgeti(fp);
 	song.steps_per_bar = fgetc(fp);
 	song.beats_per_step = fgetc(fp);
@@ -478,27 +474,6 @@ int i, j;
 	return init_buffers();
 }
 
-/*
-void c------------------------------() {}
-*/
-
-// callback from sslib when a buffer is finished playing.
-static void OrgBufferFinished(int channel, int buffer_no)
-{
-	buffers_full = false;
-}
-
-
-// start whichever buffer is queued to play next, and flag the other one as needing
-// to be filled
-static void queue_final_buffer(void)
-{
-	SSEnqueueChunk(ORG_CHANNEL, final_buffer[current_buffer].samples, buffer_samples,
-						current_buffer, OrgBufferFinished);
-	
-	current_buffer ^= 1;
-}
-
 // adds num_samples samples of silence to the output buffer of channel "m".
 static void silence_gen(stNoteChannel *chan, int num_samples)
 {
@@ -545,7 +520,7 @@ signed short *final;
 	
 	// go up to samples*2 because we're mixing the stereo audio output from calls to WAV_Synth
 	len = buffer_samples * 2;
-	final = final_buffer[current_buffer].samples;
+	final = final_buffer.samples;
 	
 	//stat("mixing %d samples", len);
 	for(cursample=0;cursample<len;cursample++)
@@ -889,7 +864,9 @@ int out_position;
 	//stat("generate_music: cb=%d buffer_beats=%d", current_buffer, buffer_beats);
 	
 	// save beat # of the first beat in buffer for calculating current beat for TrackFuncs
-	final_buffer[current_buffer].firstbeat = song.beat;
+	final_buffer.firstbeat = song.beat;
+	song.last_gen_beat = song.beat;
+	song.last_gen_tick = SDL_GetTicks();
 	
 	// clear all the channel buffers
 	for(m=0;m<16;m++)
@@ -919,6 +896,7 @@ int out_position;
 		
 		if (++song.beat >= song.loop_end)
 		{
+			//Reset play time, taking into account loop start
 			song.beat = song.loop_start;
 			song.haslooped = true;
 			
@@ -936,6 +914,37 @@ int out_position;
 }
 
 
+void orgMusicPlayer(void *udata, Uint8 *stream, int len)
+{
+	SDL_AudioFormat format;
+	int frequency, channels;
+
+	Mix_QuerySpec(&frequency, &format, &channels);
+
+//    stSong* song  = (stSong*)udata;
+
+	SDL_memset(stream, 0, len);
+	Uint8* tmp = (Uint8*)malloc(len);
+
+	Uint8 *ptr = (Uint8*)final_buffer.samples;
+	int idx = song.last_pos;
+	for (int i =0; i < len; i++)
+	{
+		if (idx>=buffer_samples*4)
+		{
+			generate_music();
+			idx=0;
+		}
+		
+		tmp[i] = ptr[idx];
+		idx++;
+	}
+	song.last_pos = idx;
+	
+	SDL_MixAudioFormat(stream, tmp, format, len, song.volume);
+	free(tmp);
+}
+
 // start the currently-loaded track playing at beat startbeat.
 bool org_start(int startbeat)
 {
@@ -944,6 +953,7 @@ bool org_start(int startbeat)
 	// set all the note-tracking stuff to starting values
 	song.beat = startbeat;
 	song.haslooped = false;
+	song.last_pos = 0;
 	
 	for(int i=0;i<16;i++)
 	{
@@ -960,13 +970,10 @@ bool org_start(int startbeat)
 	song.fading = false;
 	
 	song.volume = OrgVolume;
-	SSSetVolume(ORG_CHANNEL, song.volume);
 	
 	// kickstart the first buffer
-	current_buffer = 0;
 	generate_music();
-	queue_final_buffer();
-	buffers_full = 0;				// tell org_run to generate the other buffer right away
+	Mix_HookMusic(orgMusicPlayer, &song);
 	
 	return 0;
 }
@@ -975,11 +982,24 @@ bool org_start(int startbeat)
 // pause/stop playback of the current song
 void org_stop(void)
 {
+	extern int lastsongpos;
 	if (song.playing)
 	{
+		/* Okay, this is hackish, and still misses a beat or two.
+		   Sadly, there's no better way on SDL, because it writes
+		   to audio device in bulk and there's no way of knowing
+		   how many samples actually played.
+		*/
+		uint32_t delta = SDL_GetTicks() - song.last_gen_tick;
+		uint32_t beats = (double)delta / (double)song.ms_per_beat;
+		uint32_t cur_beat = song.last_gen_beat + beats;
+		if (cur_beat >= song.loop_end)
+		{
+		    cur_beat = song.loop_start + (cur_beat - song.loop_end);
+		}
+		lastsongpos = cur_beat;
 		song.playing = false;
-		// cancel whichever buffer is playing
-		SSAbortChannel(ORG_CHANNEL);
+		Mix_HookMusic(NULL,NULL);
 	}
 }
 
@@ -1000,12 +1020,13 @@ void org_set_volume(int newvolume)
 	if (newvolume != song.volume)
 	{
 		song.volume = newvolume;
-		SSSetVolume(ORG_CHANNEL, newvolume);
+		//SSSetVolume(ORG_CHANNEL, newvolume);
 	}
 }
 
-static void runfade()
+void org_run_fade()
 {
+	if (!song.fading) return;
 	uint32_t curtime = SDL_GetTicks();
 	if ((curtime - song.last_fade_time) >= 25)
 	{
@@ -1023,47 +1044,4 @@ static void runfade()
 		song.last_fade_time = curtime;
 	}
 }
-
-/*
-void c------------------------------() {}
-*/
-
-
-
-
-
-/*
-void c------------------------------() {}
-*/
-
-
-
-
-
-
-
-
-
-void org_run(void)
-{
-	if (!song.playing)
-		return;
-	
-	// keep both buffers queued. if one of them isn't queued, then it's time to
-	// generate more music for it and queue it back on.
-	if (!buffers_full)
-	{
-		generate_music();				// generate more music into current_buffer
-		
-		queue_final_buffer();			// enqueue current_buffer and switch buffers
-		buffers_full = true;			// both buffers full again until OrgBufferFinished called
-	}
-	
-	if (song.fading) runfade();
-}
-
-
-
-
-
 

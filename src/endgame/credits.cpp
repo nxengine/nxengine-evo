@@ -149,7 +149,7 @@ CredCommand cmd;
 		break;
 		
 		case CC_MUSIC:		 music(cmd.parm); break;
-		case CC_FADE_MUSIC:	 org_fade(); break;
+		case CC_FADE_MUSIC:	 music_fade(); break;
 		
 		case CC_END:		 roll_running = false; break;
 		

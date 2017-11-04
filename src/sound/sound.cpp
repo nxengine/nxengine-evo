@@ -5,13 +5,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
+#include <SDL_mixer.h>
 
 #include "../nx.h"
 #include "../settings.h"
 #include "../game.h"
 #include "pxt.h"
 #include "org.h"
-#include "sslib.h"
+//#include "sslib.h"
 #include "sound.h"
 #include "../common/stat.h"
 
@@ -20,6 +21,7 @@
 #define MUSIC_BOSS_ONLY	2
 static int lastsong = 0;		// this holds the previous song, for <RMU
 static int cursong = 0;
+int lastsongpos = 0;
 
 // there are more than this around 9b; those are drums and are loaded by the org module
 #define NUM_SOUNDS		0x75
@@ -33,7 +35,7 @@ const char *org_names[] =
 	"fanfale3", "tyrant", "run", "jenka1", "labyrinth", "access", "oppression", "geothermal",
 	"theme", "oside", "heroend", "scorching", "quiet", "lastcave", "balcony", "charge",
 	"lastbattle", "credits", "zombie", "breakdown", "hell", "jenka2", "waterway", "seal",
-	"toroko", "white", "azarashi", NULL
+	"toroko", "white", NULL
 };
 
 static const char bossmusic[] = { 4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 35, 0 };
@@ -47,8 +49,24 @@ bool sound_init(void)
 	char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
 	std::string sndcache = std::string(basepath) + "sndcache.pcm";
 	SDL_free(basepath);
-	if (SSInit()) return 1;
+//	if (SSInit()) return 1;
+	if (Mix_Init(MIX_INIT_OGG) == -1)
+	{
+		staterr("Unable to init mixer.");
+		return 1;
+	}
+	if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16, 2, 2048) == -1)
+	{
+		staterr("Unable to init mixer.");
+		return 1;
+	}
+	
+	Mix_AllocateChannels(64);
+	
+	Mix_ChannelFinished(pxtSoundDone);
+	
 	if (pxt_init()) return 1;
+	
 	if (pxt_LoadSoundFX(pxt_dir, sndcache.c_str(), NUM_SOUNDS)) return 1;
 	
 	if (org_init(org_wavetable, pxt_dir, ORG_VOLUME))
@@ -63,7 +81,9 @@ bool sound_init(void)
 void sound_close(void)
 {
 	pxt_freeSoundFX();
-	SSClose();
+	Mix_CloseAudio();
+	Mix_Quit();
+//	SSClose();
 }
 
 /*
@@ -87,6 +107,14 @@ void sound_loop(int snd)
 	pxt_Play(-1, snd, -1);
 }
 
+void sound_loop_resampled(int snd, int percent)
+{
+	if (!settings->sound_enabled)
+		return;
+	
+	pxt_PlayResampled(-1, snd, -1, percent);
+}
+
 void sound_stop(int snd)
 {
 	pxt_Stop(snd);
@@ -98,12 +126,10 @@ bool sound_is_playing(int snd)
 }
 
 
-void StartStreamSound(int freq)
+void StartStreamSound(int percent)
 {
-	// pxt_ChangePitch(SND_STREAM1, some_formula);
-	// pxt_ChangePitch(SND_STREAM2, some_other_formula);
-	sound_loop(SND_STREAM1);
-	sound_loop(SND_STREAM2);
+	sound_loop_resampled(SND_STREAM1, percent);
+	sound_loop_resampled(SND_STREAM2, percent+100);
 }
 
 void StartPropSound(void)
@@ -122,7 +148,7 @@ void StopLoopSounds(void)
 void c------------------------------() {}
 */
 
-static void start_track(int songno)
+static void start_track(int songno, int pos)
 {
 char fname[MAXPATHLEN];
 
@@ -138,12 +164,12 @@ char fname[MAXPATHLEN];
 	
 	if (!org_load(fname))
 	{
-		org_start(0);
+		org_start(pos);
 	}
 }
 
 
-void music(int songno)
+void music(int songno, int pos)
 {
 	if (songno == cursong)
 		return;
@@ -160,7 +186,7 @@ void music(int songno)
 		return;
 	}
 	
-	start_track(songno);
+	start_track(songno,pos);
 }
 
 
@@ -200,15 +226,17 @@ void music_set_enabled(int newstate)
 		if (play != org_is_playing())
 		{
 			if (play)
-				start_track(cursong);
+				start_track(cursong,0);
 			else
 				org_stop();
 		}
 	}
 }
 
+void music_fade() { org_fade(); }
 
 int music_cursong()		{ return cursong; }
 int music_lastsong() 	{ return lastsong; }
-
+int music_lastsongpos() 	{ return lastsongpos; }
+void music_run_fade() { org_run_fade(); }
 

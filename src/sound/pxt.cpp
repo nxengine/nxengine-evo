@@ -2,6 +2,7 @@
 // PXT sound file player
 // see bottom of file for info on how to use this module
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <stdio.h>
 #include <math.h>			// for sin()
 #include <stdlib.h>
@@ -9,7 +10,8 @@
 
 #include "../config.h"
 #include "pxt.h"
-#include "sslib.h"
+#include "sound.h"
+//#include "sslib.h"
 #include "../common/stat.h"
 #include "../common/misc.h"
 
@@ -21,20 +23,21 @@
 
 
 
-#define WHITE_LEN		22050
+#define WHITE_LEN		SAMPLE_RATE
 int8_t white[WHITE_LEN];
 
 // the final sounds ready to play (after pxt_PrepareToPlay)
 static struct
 {
-	int16_t *buffer;
-	int len;
-	int loops_left;
-	void (*DoneCallback)(int, int);
-	int channel;
+	Mix_Chunk* chunk = NULL;
+	Mix_Chunk* resampled = NULL;
+	unsigned int resampled_rate = SAMPLE_RATE;
+	int channel = -1;
 } sound_fx[256];
-int load_top;
 
+static int slots[64];
+
+static int load_top;
 
 static struct
 {
@@ -62,6 +65,7 @@ inline void GETWAVEBYTE(stPXWave* wave, int& out)
 
 
 static unsigned int rng_seed = 0;
+
 static unsigned short rand_next(void)
 {
 	rng_seed *= 0x343fd;
@@ -72,11 +76,11 @@ static unsigned short rand_next(void)
 
 static void GenerateSineModel(unsigned char *table)
 {
-double twopi = 6.283184000f;
-double ratio = 256.00f;
-double rat64 = 64.00f;
-double reg;
-int i;
+	double twopi = 6.283184000f;
+	double ratio = 256.00f;
+	double rat64 = 64.00f;
+	double reg;
+	int i;
 
 	for(i=0;i<256;i++)
 	{
@@ -93,7 +97,7 @@ int i;
 
 static void GenerateTriangleModel(unsigned char *table)
 {
-int i, f;
+	int i, f;
 
 	for(i=0;i<64;i++) table[i] = i;
 	
@@ -115,7 +119,7 @@ int i, f;
 
 static void GenerateSawUpModel(unsigned char *table)
 {
-int i;
+	int i;
 
 	for(i=0;i<256;i++)
 		table[i] = (i >> 1) - 0x40;
@@ -124,7 +128,7 @@ int i;
 
 static void GenerateSawDownModel(unsigned char *table)
 {
-int i;
+	int i;
 
 	for(i=0;i<256;i++)
 		table[i] = 0x40 - (i >> 1);
@@ -133,7 +137,7 @@ int i;
 
 static void GenerateSquareModel(unsigned char *table)
 {
-int i;
+	int i;
 
 	for(i=0;i<128;i++) table[i] = 0x40;
 	for(;i<256;i++) table[i] = (uint8_t)-0x40;
@@ -142,8 +146,8 @@ int i;
 
 static void GenerateRandModel(unsigned char *table)
 {
-int i;
-signed char k;
+	int i;
+	signed char k;
 
 	rng_seed = 0;
 	
@@ -158,7 +162,7 @@ signed char k;
 
 void GenerateWhiteModel(void)
 {
-int i;
+	int i;
 
 	seedrand(0xa42c1911);
 	
@@ -168,7 +172,7 @@ int i;
 
 static void GeneratePulseModel(unsigned char *table)
 {
-int i;
+	int i;
 
 	for(i=0;i<192;i++) table[i] = 0x40;
 	for(;i<256;i++) table[i] = (uint8_t)-0x40;
@@ -179,8 +183,8 @@ int i;
 // must call this before doing any rendering
 char pxt_init(void)
 {
-static int inited = 0;
-int i;
+	static int inited = 0;
+	int i;
 
 	if (inited)
 	{
@@ -197,7 +201,7 @@ int i;
 
 char pxt_initsynth(void)
 {
-static int synth_inited = 0;
+	static int synth_inited = 0;
 	if (synth_inited) return 0; else synth_inited = 1;
 	
 	GenerateSineModel(wave[MOD_SINE].table);
@@ -245,8 +249,8 @@ void pxt_SetDefaultEnvelope(stPXEnvelope *env)
 // the envelope must be ready before CreateAudio can be used.
 void GenerateEnvelope(stPXEnvelope *env, char *buffer)
 {
-double curenv, envinc;
-int i;
+	double curenv, envinc;
+	int i;
 
 	curenv = env->initial;
 	envinc = (double)(env->val[0] - env->initial) / env->time[0];
@@ -286,19 +290,19 @@ int i;
 // call GenerateEnvelope first.
 static void CreateAudio(stPXChannel *chan)
 {
-// store all the commonly-used pointers
-stPXWave *main = &chan->main;
-stPXWave *pitch = &chan->pitch;
-stPXWave *pitch2 = &chan->pitch2;
-stPXWave *volume = &chan->volume;
-unsigned char *envbuffer = chan->envbuffer;
-int size_blocks = chan->size_blocks;
-// var defs
-int i, j;
-int output, bm, bm2, volmod;
-double phaseval;
-int e;
-double env_acc, env_inc;
+	// store all the commonly-used pointers
+	stPXWave *main = &chan->main;
+	stPXWave *pitch = &chan->pitch;
+	stPXWave *pitch2 = &chan->pitch2;
+	stPXWave *volume = &chan->volume;
+	unsigned char *envbuffer = chan->envbuffer;
+	int size_blocks = chan->size_blocks;
+	// var defs
+	int i, j;
+	int output, bm, bm2, volmod;
+	double phaseval;
+	int e;
+	double env_acc, env_inc;
 
 	// we generate twice the buf size and average it down afterwards for increased precision.
 	// this is what pixtone does, and although I'm not sure if that's why; it really does
@@ -438,8 +442,8 @@ double env_acc, env_inc;
 // allocate all the buffers needed for the given sound
 static char AllocBuffers(stPXSound *snd)
 {
-int topbufsize = 64;
-int i;
+	int topbufsize = 64;
+	int i;
 
 	FreePXTBuf(snd);
 	
@@ -477,10 +481,10 @@ int i;
 // generate 8-bit signed PCM audio from a PXT sound, put it in it's final_buffer.
 char pxt_Render(stPXSound *snd)
 {
-int i, s;
-signed short mixed_sample;
-signed short *middle_buffer;
-int bufsize;
+	int i, s;
+	signed short mixed_sample;
+	signed short *middle_buffer;
+	int bufsize;
 
 	bufsize = AllocBuffers(snd);
 	if (bufsize==-1) return 1;			// error
@@ -537,12 +541,12 @@ int bufsize;
 // sets up the Mix_Chunk.
 void pxt_PrepareToPlay(stPXSound *snd, int slot)
 {
-int value;
-int ap;
-int i;
-signed char *buffer = snd->final_buffer;
-signed short *outbuffer;
-int malc_size;
+	int value;
+	int ap;
+	int i;
+	signed char *buffer = snd->final_buffer;
+	signed short *outbuffer;
+	int malc_size;
 
 	// convert the buffer from 8-bit mono signed to 16-bit stereo signed
 	malc_size = (snd->final_size * 2 * 2);
@@ -559,88 +563,80 @@ int malc_size;
 	}
 	
 	
-	sound_fx[slot].buffer = outbuffer;
-	sound_fx[slot].len = snd->final_size;
+//	sound_fx[slot].buffer = outbuffer;
+//	sound_fx[slot].len = snd->final_size;
+	sound_fx[slot].chunk = Mix_QuickLoad_RAW((Uint8*)outbuffer, malc_size);
+	
 	//lprintf("pxt ready to play in slot %d\n", slot);
 }
 
-// quick-and-dirty function to raise or lower the pitch of a sound.
-// I say quick-and-dirty because it also changes the length.
-// We need this for the "SSS" (Stream Sound) which is supposed to
-// have adjustable pitch.
-void pxt_ChangePitch(stPXSound *snd, double factor)
+void pxtSoundDone(int channel)
 {
-signed char *inbuffer = snd->final_buffer;
-int insize = snd->final_size;
-
-	int outsize = (int)((double)insize * factor);
-	signed char *outbuffer = (signed char *)malloc(outsize);
-	if (factor == 0) factor = 0.001;
-	
-	for(int i=0;i<outsize;i++)
-		outbuffer[i] = inbuffer[(int)((double)i / factor)];
-	
-	free(snd->final_buffer);
-	snd->final_buffer = outbuffer;
-	snd->final_size = outsize;
+    if (slots[channel] != -1)
+    {
+      sound_fx[slots[channel]].channel=-1;
+    }
 }
 
-
-// begins playing the pxt in the given slot.
-// the SSChannel is returned.
-// on error, returns -1.
 int pxt_Play(int chan, int slot, char loop)
 {
-	return pxt_PlayWithCallback(chan, slot, loop, NULL);
-}
-
-static void pxtSoundDone(int chan, int slot)
-{
-	sound_fx[slot].channel = -1;
-	if (sound_fx[slot].DoneCallback)
+	if (sound_fx[slot].chunk)
 	{
-		(*sound_fx[slot].DoneCallback)(chan, slot);
-	}
-}
+		chan = Mix_PlayChannel(chan, sound_fx[slot].chunk, loop);
+		sound_fx[slot].channel = chan;
+		slots[chan]=slot;
 
-static void pxtLooper(int chan, int slot)
-{
-	if (sound_fx[slot].loops_left)
-	{
-		SSEnqueueChunk(chan, sound_fx[slot].buffer, sound_fx[slot].len, slot, pxtLooper);
+		if (chan < 0)
+		{
+			staterr("pxt_Play: SSPlayChunk returned error");
+		}
+		return chan;
 	}
 	else
 	{
-		pxtSoundDone(chan, slot);
+		staterr("pxt_Play: sound slot 0x%02x not rendered", slot);
+		return -1;
 	}
-	
-	if (sound_fx[slot].loops_left > 0) sound_fx[slot].loops_left--;
 }
 
-
-int pxt_PlayWithCallback(int chan, int slot, char loop, void (*FinishedCB)(int, int))
+int pxt_PlayResampled(int chan, int slot, char loop, int percent)
 {
-	if (sound_fx[slot].buffer)
+	if (sound_fx[slot].chunk)
 	{
-		// locking the audio here ensures that sound won't finish before we get down
-		// below and finish setting it's params.
-		SSLockAudio();
-		if (loop)
+		unsigned int resampled_rate = SAMPLE_RATE * (percent / 100);
+
+		if (resampled_rate != sound_fx[slot].resampled_rate)
 		{
-			chan = SSPlayChunk(chan, sound_fx[slot].buffer, sound_fx[slot].len, slot, pxtLooper);
-			SSEnqueueChunk(chan, sound_fx[slot].buffer, sound_fx[slot].len, slot, pxtLooper);
+			SDL_AudioCVT cvt;
 			
-			sound_fx[slot].loops_left = (loop==-1) ? -1 : (loop - 1);
+			if (SDL_BuildAudioCVT(&cvt, AUDIO_S16, 2, SAMPLE_RATE, AUDIO_S16, 2, resampled_rate) == -1)
+			{
+				staterr("SDL_BuildAudioCVT: %s\n",SDL_GetError());
+			}
+			cvt.len = sound_fx[slot].chunk->alen;
+			cvt.buf = (Uint8 *) SDL_malloc(cvt.len * cvt.len_mult);
+			memcpy(cvt.buf, sound_fx[slot].chunk->abuf, sound_fx[slot].chunk->alen);
+			
+			if (SDL_ConvertAudio(&cvt) == -1)
+			{
+				printf("SDL_ConvertAudio: %s\n",Mix_GetError());
+			}
+			if (sound_fx[slot].resampled != NULL)
+			{
+				delete sound_fx[slot].resampled;
+			}
+			sound_fx[slot].resampled = new Mix_Chunk;
+			sound_fx[slot].resampled->allocated=sound_fx[slot].chunk->allocated;
+			sound_fx[slot].resampled->abuf = (Uint8 *) SDL_malloc(cvt.len_cvt);
+			sound_fx[slot].resampled->alen = cvt.len_cvt;
+			sound_fx[slot].resampled->volume = 128;
+			memcpy(sound_fx[slot].resampled->abuf, cvt.buf, cvt.len_cvt);
+			SDL_free(cvt.buf);
 		}
-		else
-		{
-			chan = SSPlayChunk(chan, sound_fx[slot].buffer, sound_fx[slot].len, slot, pxtSoundDone);
-		}
-		
-		sound_fx[slot].DoneCallback = FinishedCB;
+		chan = Mix_PlayChannel(chan, sound_fx[slot].resampled, loop);
 		sound_fx[slot].channel = chan;
-		SSUnlockAudio();
-		
+		slots[chan]=slot;
+
 		if (chan < 0)
 		{
 			staterr("pxt_Play: SSPlayChunk returned error");
@@ -656,13 +652,15 @@ int pxt_PlayWithCallback(int chan, int slot, char loop, void (*FinishedCB)(int, 
 
 
 void pxt_Stop(int slot)
-{	/// possible threading issues here? i'm not sure if it's important enough
-	/// i don't want to lock the audio because i'm worried that when the sound is aborted
-	/// it could end up being left locked during the user's sound done callback.
+{
 	if (sound_fx[slot].channel != -1)
 	{
-		sound_fx[slot].loops_left = 0;
-		SSAbortChannel(sound_fx[slot].channel);
+		Mix_HaltChannel(sound_fx[slot].channel);
+		if (sound_fx[slot].channel != -1)
+		{
+			slots[sound_fx[slot].channel]=-1;
+		}
+
 	}
 }
 
@@ -676,10 +674,10 @@ char pxt_IsPlaying(int slot)
 // if succesful, returns 0.
 static char LoadFXCache(const char *fname, int top)
 {
-FILE *fp;
-int slot;
-uint32_t magick;
-stPXSound snd;
+	FILE *fp;
+	int slot;
+	uint32_t magick;
+	stPXSound snd;
 
 	fp = fopen(fname, "rb");
 	if (!fp)
@@ -744,10 +742,10 @@ stPXSound snd;
 // if cache_name is specified the pcm audio data is cached under the given filename.
 char pxt_LoadSoundFX(const char *path, const char *cache_name, int top)
 {
-char fname[80];
-int slot;
-stPXSound snd;
-FILE *fp = NULL;
+	char fname[80];
+	int slot;
+	stPXSound snd;
+	FILE *fp = NULL;
 
 	stat("Loading Sound FX...");
 	load_top = top;
@@ -785,10 +783,10 @@ FILE *fp = NULL;
 		// dirty hack; lower the pitch of the Stream Sounds
 		// to match the way they actually sound in the game
 		// with the SSS0400 command.
-		if (slot == 40)
-			pxt_ChangePitch(&snd, 5.0f);
-		if (slot == 41)
-			pxt_ChangePitch(&snd, 6.0f);
+///		if (slot == 40)
+//			pxt_ChangePitch(&snd, 5.0f);
+//		if (slot == 41)
+//			pxt_ChangePitch(&snd, 6.0f);
 		
 		// save the rendered audio to cache
 		if (fp)
@@ -816,52 +814,18 @@ FILE *fp = NULL;
 
 void pxt_freeSoundFX(void)
 {
-int i;
+	int i;
 	for(i=0;i<=load_top;i++)
 	{
-		if (sound_fx[i].buffer)
+		if (sound_fx[i].chunk)
 		{
-			free(sound_fx[i].buffer);
-			sound_fx[i].buffer = NULL;
+			Mix_FreeChunk(sound_fx[i].chunk);
+			sound_fx[i].chunk = NULL;
+//			free(sound_fx[i].buffer);
+//			sound_fx[i].buffer = NULL;
 		}
 	}
 }
-
-void pxt_FreeSound(int slot)
-{
-	if (sound_fx[slot].buffer)
-	{
-		free(sound_fx[slot].buffer);
-		sound_fx[slot].buffer = NULL;
-	}
-}
-
-/*
-char pxt_init(void)
-{
-int start;
-
-	//lprintf("Loading sound FX...\n");
-	start = SDL_GetTicks();
-	if (LoadSoundFX("pxt/", "fx.pcm", 0xa0)) return 1;
-	lprintf("time = %d\n", SDL_GetTicks() - start);
-	
-	pxt_Play(0x1e);
-	
-	snd = pxt_load("pxt/fx11.pxt");
-	if (snd)
-	{
-		render_pxt(snd);
-		
-		pxt_PrepareToPlay(snd, 4);
-		pxt_Play(4);
-		
-		debugshowsound(snd);
-	}
-	
-	return 0;
-}*/
-
 
 // free all the internal buffers of a PXSound
 void FreePXTBuf(stPXSound *snd)
@@ -921,12 +885,12 @@ uint8_t ch;
 // read a .pxt file into memory and return a stPXSound ready to be rendered.
 char pxt_load(const char *fname, stPXSound *snd)
 {
-FILE *fp;
-char load_extended_section = 0;
-char ch;
-int i, cc;
-
-
+	FILE *fp;
+	char load_extended_section = 0;
+	char ch;
+	int i, cc;
+	
+	
 	fp = fopen(fname, "rb");
 	if (!fp) { staterr("pxt_load: file '%s' not found.", fname); return 1; }
 	
@@ -1014,140 +978,6 @@ error: ;
 	return 1;
 }
 
-static void SaveComponent(FILE *fp, const char *name, stPXWave *pxw)
-{
-char spaces[40];
-int nspaces;
 
-	nspaces = 6 - strlen(name);
-	if (nspaces) memset(spaces, ' ', nspaces);
-	spaces[nspaces] = 0;
-	
-	fprintf(fp, "%s_model %s:%d\r\n", name, spaces, pxw->model_no);
-	fprintf(fp, "%s_freq  %s:%.2f\r\n", name, spaces, pxw->repeat);
-	fprintf(fp, "%s_top   %s:%d\r\n", name, spaces, pxw->volume);
-	fprintf(fp, "%s_offset%s:%d\r\n", name, spaces, pxw->offset);
-}
-
-static void SaveComponentMachine(FILE *fp, stPXWave *pxw, char trailcomma)
-{
-	fprintf(fp, "%d,%.2f,%d,%d", pxw->model_no, pxw->repeat, pxw->volume, pxw->offset);
-	if (trailcomma) fprintf(fp, ",");
-}
-
-static void SaveEnvVertice(FILE *fp, stPXEnvelope *env, int v)
-{
-	fprintf(fp, "%cx      :%d\r\n", v+'a', env->time[v]);
-	fprintf(fp, "%cy      :%d\r\n", v+'a', env->val[v]);
-}
-
-/*
-	how to use it--it's pretty easy
-	
-	First you have to load (parse) the pxt file you want to play.
-	You can do this with pxt_load() which will read a pxt file and set up your stPXSound
-	structure with the proper values as spec'd in the file.
-	
-	Then you must synthesize or *render* the sound. First make sure the synthesizer
-	is initialized by calling pxt_init & pxt_initsynth.
-	
-	Send your stPXSound through render_pxt. Now it includes 8-bit signed PCM audio
-	in final_buffer.
-	
-	But maybe you want it in a format SDL_mixer can play easier? No problem, call pxt_PrepareToPlay.
-	Give it your sound and a *slot number* from 0-255 which is like a sound id as would be used in
-	a game. You can free (pxt_freebuffers) that old 8-bit data now if you like and in fact entirely
-	throw away the stPXSound as it has nothing to do with pxt_Play. When you're ready to
-	play the sound give pxt_Play the slot number you picked and it will return to you the
-	SDL_mixer channel number if successful.
-	
-	Oh yeah, you can also load a whole directory full of pxt's, up to some max slot #,
-	by using pxt_LoadSoundFX. This function also has the bonus that first, you don't have to
-	do any of the above stuff, it does it all for you and you can just call pxt_Play straight away.
-	Secondly, you can give it a filename for a cache file and it will cache all the sounds after
-	it builds them so that they load quicker next time.
-*/
-
-
-
-char pxt_save(const char *fname, stPXSound *snd)
-{
-FILE *fp;
-int i, j;
-
-	fp = fopen(fname, "wb");
-	if (!fp)
-	{
-		stat("save_pxt: unable to open '%s'", fname);
-		return 1;
-	}
-	
-	for(i=0;i<PXT_NO_CHANNELS;i++)
-	{
-		fprintf(fp, "use  :%d\r\n", snd->chan[i].enabled);
-		fprintf(fp, "size :%d\r\n", snd->chan[i].size_blocks);
-		
-		SaveComponent(fp, "main", &snd->chan[i].main);
-		SaveComponent(fp, "pitch", &snd->chan[i].pitch);
-		SaveComponent(fp, "volume", &snd->chan[i].volume);
-		
-		fprintf(fp, "initialY:%d\r\n", snd->chan[i].envelope.initial);
-		for(j=0;j<PXENV_NUM_VERTICES;j++)
-		{
-			SaveEnvVertice(fp, &snd->chan[i].envelope, j);
-		}
-		
-		fprintf(fp, "\r\n");
-	}
-	
-	// save "machine-readable" section
-	for(i=0;i<PXT_NO_CHANNELS;i++)
-	{
-		fprintf(fp, "{");
-		
-		fprintf(fp, "%d,%d,", snd->chan[i].enabled, snd->chan[i].size_blocks);
-		
-		SaveComponentMachine(fp, &snd->chan[i].main, 1);
-		SaveComponentMachine(fp, &snd->chan[i].pitch, 1);
-		SaveComponentMachine(fp, &snd->chan[i].volume, 1);
-		
-		fprintf(fp, "%d,", snd->chan[i].envelope.initial);
-		for(j=0;j<PXENV_NUM_VERTICES-1;j++)
-		{
-			fprintf(fp, "%d,%d,", snd->chan[i].envelope.time[j], snd->chan[i].envelope.val[j]);
-		}
-		fprintf(fp, "%d,%d", snd->chan[i].envelope.time[j], snd->chan[i].envelope.val[j]);
-		
-		fprintf(fp, "},\r\n");
-	}
-	
-	// save "extended" section-- original PixTone seems really picky about
-	// trying to put anything it doesn't know about into the normal section
-	
-	// machine readable pitch2
-	fprintf(fp, "\r\n-> {");
-	for(i=0;i<PXT_NO_CHANNELS;i++)
-	{
-		SaveComponentMachine(fp, &snd->chan[i].pitch2, (i+1<PXT_NO_CHANNELS));
-	}
-	fprintf(fp, "},\r\n");
-	
-	// machine readable extra envelope vertices
-	fprintf(fp, "-> {255,0,255,0,255,0,255,0},\r\n");
-	
-	// human readable copy
-	fprintf(fp, "\r\n");
-	for(i=0;i<PXT_NO_CHANNELS;i++)
-	{
-		SaveComponent(fp, "pitch2", &snd->chan[i].pitch);
-		fprintf(fp, "dx      :255\r\n");
-		fprintf(fp, "dy      :0\r\n");
-		fprintf(fp, "\r\n");
-	}
-	
-	fclose(fp);
-	stat("pxt save ok '%s'", fname);
-	return 0;
-}
 
 

@@ -76,17 +76,14 @@ char pxt_Render(stPXSound *snd);
 void pxt_PrepareToPlay(stPXSound *snd, int slot);
 void pxt_ChangePitch(stPXSound *snd, double factor);
 int pxt_Play(int chan, int slot, char loop);
-int pxt_PlayWithCallback(int chan, int slot, char loop, void (*FinishedCB)(int, int));
+int pxt_PlayResampled(int chan, int slot, char loop, int percent);
 void pxt_Stop(int slot);
 char pxt_IsPlaying(int slot);
 char pxt_LoadSoundFX(const char *path, const char *cache_name, int top);
 void pxt_freeSoundFX(void);
-void pxt_FreeSound(int slot);
 void FreePXTBuf(stPXSound *snd);
 char pxt_load(const char *fname, stPXSound *snd);
-char pxt_save(const char *fname, stPXSound *snd);
-
-
+void pxtSoundDone(int channel);
 
 #endif
 
