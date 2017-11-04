@@ -244,7 +244,16 @@ SDL_Surface *letter;
 	
 	char str[2];
 	str[1] = 0;
-	
+
+	uint32_t transp = SDL_ALPHA_TRANSPARENT;
+
+	SDL_PixelFormat* pxformat = SDL_AllocFormat(screen->Format()->format);
+	if (!pxformat)
+	{
+		staterr("InitBitmapChars: SDL_AllocFormat failed: %s", SDL_GetError());
+		return 1;
+	}
+
 	for(int i=1;i<NUM_LETTERS_RENDERED;i++)
 	{
 		str[0] = i;
@@ -256,11 +265,26 @@ SDL_Surface *letter;
 			return 1;
 		}
 		
-		Uint32 format = screen->Format()->format;
-		letters[i] = SDL_ConvertSurfaceFormat(letter, format, SDL_RLEACCEL);
+		letters[i] = SDL_CreateRGBSurface(0, letter->w, letter->h,
+							pxformat->BitsPerPixel, pxformat->Rmask, pxformat->Gmask,
+							pxformat->Bmask, pxformat->Amask);
+		if (!letters[i])
+		{
+			staterr("InitChars: failed to create surface for character %d: %s", i, SDL_GetError());
+			SDL_FreeFormat(pxformat);
+			SDL_FreeSurface(letter);
+			return 1;
+		}
+
+		SDL_FillRect(letters[i], NULL, transp);
+		SDL_SetColorKey(letters[i], SDL_TRUE, transp);
+		
+		SDL_BlitSurface(letter, NULL, letters[i], NULL);
 
 		SDL_FreeSurface(letter);
 	}
+	
+	SDL_FreeFormat(pxformat);
 	
 	return 0;
 }
@@ -335,6 +359,8 @@ SDL_Rect dstrect;
 		SDL_FreeSurface(top);
 		SDL_FreeSurface(bottom);
 	}
+	
+	SDL_FreeFormat(pxformat);
 	
 	return 0;
 }
