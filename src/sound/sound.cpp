@@ -12,7 +12,7 @@
 #include "../game.h"
 #include "pxt.h"
 #include "org.h"
-//#include "sslib.h"
+#include "ogg.h"
 #include "sound.h"
 #include "../common/stat.h"
 
@@ -42,6 +42,7 @@ static const char bossmusic[] = { 4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 
 
 static const char *pxt_dir = "./data/pxt/";
 static const char *org_dir = "./data/org/";
+static const char *ogg_dir = "./data/ogg/";
 static const char *org_wavetable = "./data/wavetable.dat";
 
 bool sound_init(void)
@@ -168,6 +169,23 @@ char fname[MAXPATHLEN];
 	}
 }
 
+static void start_ogg_track(int songno, int pos)
+{
+	char fname[MAXPATHLEN];
+
+	if (songno == 0)
+	{
+		ogg_stop();
+		return;
+	}
+	
+	strcpy(fname, ogg_dir);
+	strcat(fname, org_names[songno]);
+	strcat(fname, ".ogg");
+
+	ogg_start(fname,pos);
+}
+
 
 void music(int songno, int pos)
 {
@@ -182,11 +200,24 @@ void music(int songno, int pos)
 	if (songno != 0 && !should_music_play(songno, settings->music_enabled))
 	{
 		stat("Not playing track %d because music_enabled is %d", songno, settings->music_enabled);
-		org_stop();
+		if (settings->new_music)
+		{
+			ogg_stop();
+		}
+		else
+		{
+			org_stop();
+		}
 		return;
 	}
-	
-	start_track(songno,pos);
+	if (settings->new_music)
+	{
+		start_ogg_track(songno,pos);
+	}
+	else
+	{
+		start_track(songno,pos);
+	}
 }
 
 
@@ -223,20 +254,76 @@ void music_set_enabled(int newstate)
 		settings->music_enabled = newstate;
 		bool play = should_music_play(cursong, newstate);
 		
-		if (play != org_is_playing())
+		if (settings->new_music)
 		{
-			if (play)
-				start_track(cursong,0);
-			else
-				org_stop();
+			if (play != ogg_is_playing())
+			{
+				if (play)
+					start_ogg_track(cursong,0);
+				else
+					ogg_stop();
+			}
+		}
+		else
+		{
+			if (play != org_is_playing())
+			{
+				if (play)
+					start_track(cursong,0);
+				else
+					org_stop();
+			}
 		}
 	}
 }
 
-void music_fade() { org_fade(); }
+void music_set_newmusic(int newstate)
+{
+	if (newstate != settings->new_music)
+	{
+		stat("music_set_newmusic(%d)", newstate);
+		
+		settings->new_music = newstate;
+
+		if (newstate)
+		{
+			org_stop();
+			start_ogg_track(cursong,0);
+		}
+		else
+		{
+			ogg_stop();
+			start_track(cursong,0);
+		}
+	}
+}
+
+void music_fade()
+{
+	if (settings->new_music)
+	{
+		ogg_fade();
+	}
+	else
+	{
+		org_fade();
+	}
+}
 
 int music_cursong()		{ return cursong; }
 int music_lastsong() 	{ return lastsong; }
 int music_lastsongpos() 	{ return lastsongpos; }
-void music_run_fade() { org_run_fade(); }
+
+void music_run_fade()
+{
+	if (settings->new_music)
+	{
+		ogg_run_fade();
+	}
+	else
+	{
+		org_run_fade();
+	}
+
+}
 

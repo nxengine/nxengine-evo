@@ -33,6 +33,8 @@ void _sound_change(ODItem *item, int dir);
 void _sound_get(ODItem *item);
 void _music_change(ODItem *item, int dir);
 void _music_get(ODItem *item);
+void _tracks_change(ODItem *item, int dir);
+void _tracks_get(ODItem *item);
 static void EnterControlsMenu(ODItem *item, int dir);
 static void _upd_control(ODItem *item);
 static void _edit_control(ODItem *item, int dir);
@@ -173,6 +175,7 @@ Dialog *dlg = opt.dlg;
 	dlg->AddSeparator();
 	
 	dlg->AddItem("Music: ", _music_change, _music_get, -1, OD_CHOICE);
+	dlg->AddItem("Tracks: ", _tracks_change, _tracks_get, -1, OD_CHOICE);
 	dlg->AddItem("Sound: ", _sound_change, _sound_get, -1, OD_CHOICE);
 	
 	dlg->AddSeparator();
@@ -304,6 +307,18 @@ void _music_get(ODItem *item)
 {
 	static const char *strs[] = { "Off", "On", "Boss Only" };
 	strcpy(item->suffix, strs[settings->music_enabled]);
+}
+
+void _tracks_change(ODItem *item, int dir)
+{
+	music_set_newmusic(settings->new_music ^ 1);
+	sound(SND_MENU_SELECT);
+}
+
+void _tracks_get(ODItem *item)
+{
+	static const char *strs[] = { "Old", "New" };
+	strcpy(item->suffix, strs[settings->new_music]);
 }
 
 
