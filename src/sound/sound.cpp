@@ -30,11 +30,11 @@ int lastsongpos = 0;
 const char *org_names[] =
 {
 	NULL,
-	"egg", "safety", "gameover", "gravity", "grasstown", "meltdown2", "eyesofflame",
-	"gestation", "town", "fanfale1", "balrog", "cemetary", "plant", "pulse", "fanfale2",
-	"fanfale3", "tyrant", "run", "jenka1", "labyrinth", "access", "oppression", "geothermal",
-	"theme", "oside", "heroend", "scorching", "quiet", "lastcave", "balcony", "charge",
-	"lastbattle", "credits", "zombie", "breakdown", "hell", "jenka2", "waterway", "seal",
+	"wanpaku", "anzen", "gameover", "gravity", "weed", "mdown2", "fireeye",
+	"vivi", "mura", "fanfale1", "ginsuke", "cemetery", "plant", "kodou", "fanfale3",
+	"fanfale2", "dr", "escape", "jenka", "maze", "access", "ironh", "grand",
+	"curly", "oside", "requiem", "wanpak2", "quiet", "lastcave", "balcony", "lastbtl",
+	"lastbt3", "ending", "zonbie", "bdown", "hell", "jenka2", "marine", "ballos",
 	"toroko", "white", NULL
 };
 
