@@ -7,4 +7,4 @@
 * drop out sif and use original data
 * make compatible with nicalis version
 * use wavs for drums?
-* rewrite soundlib to use SDL_mixer
+* rewrite renderer using modern OpenGL(ES)
