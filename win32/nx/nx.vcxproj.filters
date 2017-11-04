@@ -216,9 +216,6 @@
     <ClCompile Include="..\..\src\caret.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\DBuffer.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\common\InitList.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -262,9 +259,6 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\pngfuncs.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphics\safemode.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\screenshot.cpp">
@@ -366,9 +360,6 @@
     <ClCompile Include="..\..\src\sound\sound.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sound\sslib.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\stageboss.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -397,6 +388,9 @@
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\tsc.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\sound\ogg.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>
@@ -620,9 +614,6 @@
     <ClInclude Include="..\..\src\common\bufio.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\common\DBuffer.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\common\InitList.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -678,9 +669,6 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\graphics\pngfuncs.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\graphics\safemode.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\graphics\screenshot.h">
@@ -785,9 +773,6 @@
     <ClInclude Include="..\..\src\sound\sound.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\sound\sslib.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\stageboss.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -819,6 +804,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\version.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\sound\ogg.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
