@@ -208,13 +208,27 @@ static void start_ogg11_track(int songno, bool resume)
 		return;
 	}
 	
-	strcpy(fname_intro, ogg11_dir);
-	strcat(fname_intro, org_names[songno]);
-	strcat(fname_intro, "_intro.ogg");
+	// There's no intro/loop for lastbtl
+	if (strstr(org_names[songno], "lastbtl"))
+	{
+		strcpy(fname_intro, ogg11_dir);
+		strcat(fname_intro, org_names[songno]);
+		strcat(fname_intro, ".ogg");
 
-	strcpy(fname_loop, ogg11_dir);
-	strcat(fname_loop, org_names[songno]);
-	strcat(fname_loop, "_loop.ogg");
+		strcpy(fname_loop, ogg11_dir);
+		strcat(fname_loop, org_names[songno]);
+		strcat(fname_loop, ".ogg");
+	}
+	else
+	{
+		strcpy(fname_intro, ogg11_dir);
+		strcat(fname_intro, org_names[songno]);
+		strcat(fname_intro, "_intro.ogg");
+
+		strcpy(fname_loop, ogg11_dir);
+		strcat(fname_loop, org_names[songno]);
+		strcat(fname_loop, "_loop.ogg");
+	}
 
 	ogg11_start(fname_intro, fname_loop, resume ? music_lastsongpos() : 0, resume ? songlooped : false);
 }
