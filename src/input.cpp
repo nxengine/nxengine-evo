@@ -337,16 +337,12 @@ int ino;//, key;
 			    {
 			        last_sdl_action.jaxis = evt.jaxis.axis;
 			        last_sdl_action.jaxis_value = evt.jaxis.value;
-			        ino = input_get_action_axis(evt.jaxis.axis,evt.jaxis.value);//mappings[key];
-			        for (int i=0;i<INPUT_COUNT;i++)
-			        {
-			            if (mappings[i].jaxis!=-1)
-			                inputs[i] = false;
-			        }
-			
-				    if (ino != -1)
-					    inputs[ino] = true;
 			    }
+			    ino = input_get_action_axis(evt.jaxis.axis,evt.jaxis.value);//mappings[key];
+			    inputs[ino] = false;
+			
+				if (ino != -1 && (evt.jaxis.value > 20000 || evt.jaxis.value < -20000))
+					inputs[ino] = true;
 			}
 			break;
 
