@@ -350,6 +350,7 @@ int i;
 void PHandleAttributes(void)
 {
 static const Point pattrpoints[] = { {8, 8}, {8, 14} };
+static const Point hurt_bottom_attrpoint =   {8, 7};
 unsigned int attr;
 int tile;
 
@@ -461,6 +462,16 @@ int tile;
 	// add in the bottom pattrpoint, but don't let it set the "water" bit.
 	// only the top pattrpoint can set "water".
 	attr |= (player->GetAttributes(&pattrpoints[1], 1, &tile) & ~TA_WATER);
+	
+	// If the tile has "hurt" bit, we recheck it with the the different bottom attrpoint.
+	// This fixes bottom spikes in water level, last cave... Standart bottom attrpoint
+	// allows intersection with spike only for 1 pixel, but origianl game allows 8 pixels 
+	// of safe intersection.
+	if (attr & TA_HURTS_PLAYER)
+	{
+		attr &= ~TA_HURTS_PLAYER;
+		attr |= (player->GetAttributes(&hurt_bottom_attrpoint, 1, &tile) & ~TA_WATER);
+	}
 	
 	if (attr & TA_HURTS_PLAYER)
 		hurtplayer(10);
