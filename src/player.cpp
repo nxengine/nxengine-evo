@@ -428,6 +428,7 @@ int tile;
 					else
 					{	// nope sorry buddy, no such luck this time
 						Object *o = CreateObject(player->x, player->y, OBJ_NULL);
+						o->state = 1; // so ai doesn't fire
 						o->sprite = SPR_PDROWNED;
 						o->dir = player->dir;
 						
