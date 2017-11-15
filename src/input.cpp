@@ -164,7 +164,6 @@ int input_get_action_axis(int32_t jaxis, int32_t jvalue)
   return -1;
 }
 
-
 const char *input_get_name(int index)
 {
 static const char *input_names[] =
@@ -333,20 +332,37 @@ int ino;//, key;
 
 			case SDL_JOYAXISMOTION:
 			{
+			    // this only used for control remapping.
+			    // for actual in-game handling see below.
 			    if (evt.jaxis.value > 20000 || evt.jaxis.value < -20000) //dead zone
 			    {
 			        last_sdl_action.jaxis = evt.jaxis.axis;
 			        last_sdl_action.jaxis_value = evt.jaxis.value;
 			    }
-			    ino = input_get_action_axis(evt.jaxis.axis,evt.jaxis.value);//mappings[key];
-			    inputs[ino] = false;
-			
-				if (ino != -1 && (evt.jaxis.value > 20000 || evt.jaxis.value < -20000))
-					inputs[ino] = true;
 			}
 			break;
 
 		}
+	}
+	
+	// handle gamepad sticks
+	
+	for (int i=0;i<INPUT_COUNT;i++)
+	{
+		if( mappings[i].jaxis >= 0 ) // reset all mapped axises
+		{
+			inputs[i] = false;
+		}
+	}
+	
+	// now get current values of all axises
+	for (int ax=0;ax<SDL_JoystickNumAxes(joy);ax++)
+	{
+		int value = SDL_JoystickGetAxis(joy, ax);
+		ino = input_get_action_axis(ax, value); // this returns actual mapping for axis direction
+		
+		if (ino != -1 && (value > 20000 || value < -20000))
+			inputs[ino] = true;
 	}
 }
 
