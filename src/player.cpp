@@ -402,7 +402,7 @@ int tile;
 		player->decelspeed = 0x19;
 		// was set at 0x280 but I believe that makes it impossible to clear one of the long
 		// spike jumps in River
-		player->jumpvelocity = 0x2c0;
+		player->jumpvelocity = 0x280; //0x2c0;
 		
 		// decrement air left
 		if (player->equipmask & EQUIP_AIRTANK)
