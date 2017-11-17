@@ -1423,7 +1423,7 @@ void PDoRepel(void)
 			//debug("REPEL [down]");
 		}
 	}
-	
+	*/
 	// do repel up
 	if (player->CheckAttribute(player->repel_d, player->nrepel_d, TA_SOLID_PLAYER))
 	{
@@ -1433,7 +1433,7 @@ void PDoRepel(void)
 			//debug("REPEL [up]");
 		}
 	}
-	*/
+	
 }
 
 /*
