@@ -147,6 +147,7 @@ const TSCCommandTable cmd_table[] =
 	{"XX1", 1},
 	{"YNJ", 1},
 	{"ZAM", 0},
+	{"ACH", 1},
 };
 
 unsigned char codealphabet[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123+-" };
@@ -1228,6 +1229,9 @@ int cmdip;
 			
 			case OP_CIL:
 				credit_clear_image();
+			break;
+			
+			case OP_ACH:
 			break;
 			
 			default:
