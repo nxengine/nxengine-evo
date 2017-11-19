@@ -122,7 +122,7 @@ bool Game::initlevel()
 		PSelectFrame();
 		
 		stat("-- Starting on-entry script %d", game.switchstage.eventonentry);
-		StartScript(game.switchstage.eventonentry);
+		tsc.StartScript(game.switchstage.eventonentry);
 		game.switchstage.eventonentry = 0;
 	}
 	
@@ -224,7 +224,7 @@ void Game::tick(void)
 	else
 	{
 		// run scripts
-		RunScripts();
+		tsc.RunScripts();
 		
 		// call the tick function for the current game mode
 		tickfunctions[game.mode].OnTick();
@@ -252,7 +252,7 @@ void Game::reset()
 {
 	memset(inputs, 0, sizeof(inputs));
 	StopLoopSounds();
-	StopScripts();
+	tsc.StopScripts();
 	
 	game.pause(false);
 	game.setmode(GM_INTRO, 0, true);

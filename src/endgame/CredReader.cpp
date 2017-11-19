@@ -1,5 +1,6 @@
 
 #include "../nx.h"
+#include "../game.h"
 #include "CredReader.h"
 #include "../tsc.h"
 #include "../common/stat.h"
@@ -29,7 +30,7 @@ bool CredReader::ReadCommand(CredCommand *cmd)
 	memset(cmd, 0, sizeof(CredCommand));
 	cmd->type = -1;
 	
-	if (!data)
+	if (data.empty())
 	{
 		staterr("CredReader: ReadNextCommand called but file is not loaded!");
 		return 1;
@@ -124,7 +125,7 @@ void c------------------------------() {}
 
 CredReader::CredReader()
 {
-	data = NULL;
+	data = "";
 	dataindex = 0;
 }
 
@@ -132,11 +133,11 @@ bool CredReader::OpenFile(void)
 {
 char fname[MAXPATHLEN];
 
-	if (data) CloseFile();
+	if (!data.empty()) CloseFile();
 	sprintf(fname, "%s/Credit.tsc", data_dir);
 	
-	data = tsc_decrypt(fname, &datalen);
-	if (!data)
+	data = game.tsc.Decrypt(fname, &datalen);
+	if (data.empty())
 	{
 		staterr("CredReader: couldn't open '%s'!", fname);
 		return 1;
@@ -151,10 +152,10 @@ void CredReader::CloseFile()
 {
 	stat("CredReader: closing file");
 	
-	if (data)
+	if (!data.empty())
 	{
-		free(data);
-		data = NULL;
+//		free(data);
+		data = "";
 		datalen = 0;
 	}
 }

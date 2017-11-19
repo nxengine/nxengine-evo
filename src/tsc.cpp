@@ -5,6 +5,7 @@
 #include "tsc.h"
 #include <map>
 #include <vector>
+#include <fstream>
 #include "inventory.h"
 #include "ObjManager.h"
 #include "niku.h"
@@ -26,24 +27,6 @@
 
 // which textbox options are enabled by the "<TUR" script command.
 #define TUR_PARAMS		(TB_LINE_AT_ONCE | TB_VARIABLE_WIDTH_CHARS | TB_CURSOR_NEVER_SHOWN)
-
-static ScriptInstance curscript;
-static int lastammoinc = 0;
-
-struct ScriptPage
-{
-	// a variable-length array of pointers to compiled script code
-	// for each script in the page; their indexes in this array
-	// correspond to their script numbers.
-	std::map<uint16_t, std::vector<uint8_t> > scripts;
-	
-	void Clear()
-	{
-		scripts.clear();
-	}
-};
-
-ScriptPage script_pages[NUM_SCRIPT_PAGES];
 
 /*
 void c------------------------------() {}
@@ -203,99 +186,113 @@ static int MnemonicToOpcode(char *str)
 void c------------------------------() {}
 */
 
-bool tsc_init(void)
+TSC::TSC()
 {
-char fname[MAXPATHLEN];
 
-	GenLTC();
-	curscript.running = false;
-	//for(int i=0;i<NUM_SCRIPT_PAGES;i++)
-	
-	// load the "common" TSC scripts available to all maps
-	sprintf(fname, "%s/Head.tsc", data_dir);
-	if (tsc_load(fname, SP_HEAD)) return 1;
-	
-	// load the inventory screen scripts
-	sprintf(fname, "%s/ArmsItem.tsc", data_dir);
-	if (tsc_load(fname, SP_ARMSITEM)) return 1;
-	
-	// load stage select/teleporter scripts
-	sprintf(fname, "%s/StageSelect.tsc", data_dir);
-	if (tsc_load(fname, SP_STAGESELECT)) return 1;
-	
-	return 0;
 }
 
-void tsc_close(void)
+TSC::~TSC()
+{
+
+}
+
+bool TSC::Init(void)
+{
+	GenLTC();
+	_curscript.running = false;
+	
+	std::string fname = data_dir;
+	fname += "/Head.tsc";
+	// load the "common" TSC scripts available to all maps
+	if (!Load(fname, ScriptPages::SP_HEAD)) return false;
+	
+
+	fname = data_dir;
+	fname += "/ArmsItem.tsc";
+	// load the inventory screen scripts
+	if (!Load(fname, ScriptPages::SP_ARMSITEM)) return false;
+	
+	fname = data_dir;
+	fname += "/StageSelect.tsc";
+	// load stage select/teleporter scripts
+	if (!Load(fname, ScriptPages::SP_STAGESELECT)) return false;
+	
+	return true;
+}
+
+void TSC::Close(void)
 {
 	// free all loaded scripts
 	for(int i=0;i<NUM_SCRIPT_PAGES;i++)
-		script_pages[i].Clear();
+		_script_pages[i].Clear();
 }
 
 // load a tsc file and return the highest script # in the file
-bool tsc_load(const char *fname, int pageno)
+bool TSC::Load(const std::string& fname, ScriptPages pageno)
 {
-ScriptPage *page = &script_pages[pageno];
+ScriptPage *page = &_script_pages[(int)pageno];
 int fsize;
-char *buf;
+std::string buf;
 bool result;
 
-	stat("tsc_load: loading '%s' to page %d", fname, pageno);
-	if (curscript.running && curscript.pageno == pageno)
-		StopScript(&curscript);
+	stat("tsc_load: loading '%s' to page %d", fname.c_str(), pageno);
+	if (_curscript.running && _curscript.pageno == (int)pageno)
+		StopScript(&_curscript);
 	
 	page->Clear();
 	
 	// load the raw script text
-	buf = tsc_decrypt(fname, &fsize);
-	if (!buf)
+	buf = Decrypt(fname, &fsize);
+	if (buf.empty())
 	{
-		staterr("tsc_load: failed to load file: '%s'", fname);
-		return 1;
+		staterr("tsc_load: failed to load file: '%s'", fname.c_str());
+		return false;
 	}
 	
 	// now "compile" all the scripts in the TSC
 	//int top_script = CompileScripts(buf, fsize, base);
-	result = tsc_compile(buf, fsize, pageno);
-	free(buf);
+	result = Compile(buf.c_str(), fsize, pageno);
 	
 	return result;
 }
 
 
-char *tsc_decrypt(const char *fname, int *fsize_out)
+std::string TSC::Decrypt(const std::string& fname, int *fsize_out)
 {
-FILE *fp;
-int fsize, i;
+    int fsize, i;
+    std::ifstream ifs;
 
-	fp = fopen(fname, "rb");
-	if (!fp)
-	{
-		staterr("tsc_decrypt: no such file: '%s'!", fname);
-		return NULL;
-	}
-	
-	fseek(fp, 0, SEEK_END);
-	fsize = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-	
-	// load file
-	char *buf = (char *)malloc(fsize+1);
-	fread(buf, fsize, 1, fp);
-	buf[fsize] = 0;
-	fclose(fp);
-	
-	// get decryption key, which is actually part of the text
-	int keypos = (fsize / 2);
-	uint8_t key = buf[keypos];
-	
-	// everything EXCEPT the key is encrypted
-	for(i=0;i<keypos;i++) { buf[i] = (buf[i] - key); }
-	for(i++;i<fsize;i++)  { buf[i] = (buf[i] - key); }
-	
-	if (fsize_out) *fsize_out = fsize;
-	return buf;
+    ifs.open (fname, std::ifstream::binary);
+
+    if (!ifs)
+    {
+        staterr("tsc_decrypt: no such file: '%s'!", fname);
+        return "";
+    }
+
+    ifs.seekg (0, ifs.end);
+    fsize = ifs.tellg();
+    ifs.seekg (0, ifs.beg);
+
+    // load file
+    char *buf = new char[fsize+1];
+    ifs.read(buf, fsize);
+    buf[fsize] = 0;
+    ifs.close();
+
+    // get decryption key, which is actually part of the text
+    int keypos = (fsize / 2);
+    uint8_t key = buf[keypos];
+
+    // everything EXCEPT the key is encrypted
+    for(i=0;i<keypos;i++) { buf[i] = (buf[i] - key); }
+    for(i++;i<fsize;i++)  { buf[i] = (buf[i] - key); }
+
+    if (fsize_out) *fsize_out = fsize;
+
+    std::string ret(buf);
+    delete[] buf;
+    return ret;
 }
 
 /*
@@ -350,14 +347,14 @@ static void ReadText(std::vector<uint8_t> *script, const char **buf, const char 
 
 // compile a tsc file--a set of scripts in raw text format--into 'bytecode',
 // and place the finished scripts into the given page.
-bool tsc_compile(const char *buf, int bufsize, int pageno)
+bool TSC::Compile(const char *buf, int bufsize, ScriptPages pageno)
 {
-ScriptPage *page = &script_pages[pageno];
+ScriptPage *page = &_script_pages[(int)pageno];
 const char *buf_end = (buf + (bufsize - 1));
 std::vector<uint8_t> *script = NULL;
 char cmdbuf[4] = { 0 };
 
-	//stat("<> tsc_compile bufsize = %d pageno = %d", bufsize, pageno);
+	stat("<> tsc_compile bufsize = %d pageno = %d", bufsize, pageno);
 	
 	while(buf <= buf_end)
 	{
@@ -375,7 +372,7 @@ char cmdbuf[4] = { 0 };
 			if (scriptno >= 10000 || scriptno < 0)
 			{
 				staterr("tsc_compile: invalid script number: %d", scriptno);
-				return 1;
+				return false;
 			}
 			
 			// skip the CR after the script #
@@ -405,7 +402,7 @@ char cmdbuf[4] = { 0 };
 			cmdbuf[2] = nextchar(&buf, buf_end);
 			
 			int cmd = MnemonicToOpcode(cmdbuf);
-			if (cmd == -1) return 1;
+			if (cmd == -1) return false;
 			
 			//stat("Command '%s', parameters %d", cmdbuf, cmd_table[cmd].nparams);
 			script->push_back(cmd);
@@ -436,7 +433,7 @@ char cmdbuf[4] = { 0 };
 	if (script)
 		script->push_back(OP_END);
 	
-	return 0;
+	return true;
 }
 
 
@@ -444,30 +441,30 @@ char cmdbuf[4] = { 0 };
 void c------------------------------() {}
 */
 
-void RunScripts(void)
+void TSC::RunScripts(void)
 {
-	if (curscript.running)
-		ExecScript(&curscript);
+	if (_curscript.running)
+		ExecScript(&_curscript);
 }
 
-void StopScripts(void)
+void TSC::StopScripts(void)
 {
-	if (curscript.running)
-		StopScript(&curscript);
+	if (_curscript.running)
+		StopScript(&_curscript);
 }
 
-int GetCurrentScript(void)
+int TSC::GetCurrentScript(void)
 {
-	if (curscript.running)
-		return curscript.scriptno;
+	if (_curscript.running)
+		return _curscript.scriptno;
 	
 	return -1;
 }
 
-ScriptInstance *GetCurrentScriptInstance()
+ScriptInstance *TSC::GetCurrentScriptInstance()
 {
-	if (curscript.running)
-		return &curscript;
+	if (_curscript.running)
+		return &_curscript;
 	
 	return NULL;
 }
@@ -478,15 +475,18 @@ void c------------------------------() {}
 
 // returns a pointer to the executable data/bytecode of the given script.
 // handles looking on head, etc.
-const uint8_t *FindScriptData(int scriptno, int pageno, int *page_out)
+const uint8_t *TSC::FindScriptData(int scriptno, ScriptPages pageno, ScriptPages *page_out)
 {
-    ScriptPage *page = &script_pages[pageno];
+    ScriptPage *page = &_script_pages[(int)pageno];
+
+    stat("Looking for script #%04d in %d (%d)", scriptno, (int)pageno, page->scripts.size());
 
     if (page->scripts.find(scriptno) == page->scripts.end())
 	{
-		if (pageno != SP_HEAD)
+		if (pageno != ScriptPages::SP_HEAD)
 		{	// try to find the script in head.tsc
-			return FindScriptData(scriptno, SP_HEAD, page_out);
+			stat("Looking for script #%04d in head", scriptno);
+			return FindScriptData(scriptno, ScriptPages::SP_HEAD, page_out);
 		}
 		else
 		{
@@ -500,43 +500,43 @@ const uint8_t *FindScriptData(int scriptno, int pageno, int *page_out)
 }
 
 
-ScriptInstance *StartScript(int scriptno, int pageno)
+bool TSC::StartScript(int scriptno, ScriptPages pageno)
 {
 const uint8_t *program;
-int found_pageno;
+ScriptPages found_pageno;
 
 	program = FindScriptData(scriptno, pageno, &found_pageno);
 	if (!program)
 	{
 		staterr("StartScript: no script at position #%04d page %d!", scriptno, pageno);
-		return NULL;
+		return false;
 	}
 	
 	// don't start regular map scripts (e.g. hvtrigger) if player is dead
-	if (player->dead && found_pageno != SP_HEAD)
+	if (player->dead && found_pageno != ScriptPages::SP_HEAD)
 	{
 		stat("Not starting script %d; player is dead", scriptno);
-		return NULL;
+		return false;
 	}
 	
 	// set the script
-	memset(&curscript, 0, sizeof(ScriptInstance));
+	memset(&_curscript, 0, sizeof(ScriptInstance));
 	
-	curscript.program = program;
-	curscript.scriptno = scriptno;
-	curscript.pageno = found_pageno;
+	_curscript.program = program;
+	_curscript.scriptno = scriptno;
+	_curscript.pageno = (int)found_pageno;
 	
-	curscript.ynj_jump = -1;
-	curscript.running = true;
+	_curscript.ynj_jump = -1;
+	_curscript.running = true;
 	
 	textbox.ResetState();
 	stat("  - Started script %04d", scriptno);
 	
 	RunScripts();
-	return &curscript;
+	return true;
 }
 
-void StopScript(ScriptInstance *s)
+void TSC::StopScript(ScriptInstance *s)
 {
 	if (!s->running)
 		return;
@@ -559,16 +559,17 @@ void StopScript(ScriptInstance *s)
 void c------------------------------() {}
 */
 
-bool JumpScript(int newscriptno, int pageno)
+bool TSC::JumpScript(int newscriptno, ScriptPages pageno)
 {
-ScriptInstance *s = &curscript;
+ScriptInstance *s = &_curscript;
 
-	if (pageno == -1)
-		pageno = s->pageno;
+	if (pageno == ScriptPages::SP_NULL)
+		pageno = (ScriptPages)s->pageno;
 	
 	stat("JumpScript: moving to script #%04d page %d", newscriptno, pageno);
 	
-	s->program = FindScriptData(newscriptno, pageno, &s->pageno);
+	s->program = FindScriptData(newscriptno, pageno, &pageno);
+	s->pageno = (int)pageno;
 	s->scriptno = newscriptno;
 	s->ip = 0;
 	
@@ -598,7 +599,7 @@ ScriptInstance *s = &curscript;
 	return 0;
 }
 
-void ExecScript(ScriptInstance *s)
+void TSC::ExecScript(ScriptInstance *s)
 {
 char debugbuffer[256];
 int cmd;
@@ -830,7 +831,7 @@ int cmdip;
 			}
 			break;
 			
-			case OP_AMPLUS: GetWeapon(parm[0], parm[1]); lastammoinc = parm[1]; break;
+			case OP_AMPLUS: GetWeapon(parm[0], parm[1]); _lastammoinc = parm[1]; break;
 			case OP_AMMINUS: LoseWeapon(parm[0]); break;
 			case OP_TAM: TradeWeapon(parm[0], parm[1], parm[2]); break;
 			case OP_AMJ: JUMP_IF(player->weapons[parm[0]].hasWeapon); break;
@@ -913,14 +914,14 @@ int cmdip;
 			}
 			break;
 			
-			case OP_ANP: NPCDo(parm[0], parm[1], parm[2], DoANP); break;
-			case OP_CNP: NPCDo(parm[0], parm[1], parm[2], DoCNP); break;
-			case OP_DNP: NPCDo(parm[0], parm[1], parm[2], DoDNP); break;
+			case OP_ANP: _NPCDo(parm[0], parm[1], parm[2], _DoANP); break;
+			case OP_CNP: _NPCDo(parm[0], parm[1], parm[2], _DoCNP); break;
+			case OP_DNP: _NPCDo(parm[0], parm[1], parm[2], _DoDNP); break;
 			
 			case OP_MNP:	// move object X to (Y,Z) with direction W
 				if ((o = FindObjectByID2(parm[0])))
 				{
-					SetCSDir(o, parm[3]);
+					_SetCSDir(o, parm[3]);
 					o->x = (parm[1] * TILE_W) * CSFI;
 					o->y = (parm[2] * TILE_H) * CSFI;
 				}
@@ -960,7 +961,7 @@ int cmdip;
 			break;
 			
 			case OP_MM0: player->xinertia = 0; break;
-			case OP_MYD: SetPDir(parm[0]); break;
+			case OP_MYD: _SetPDir(parm[0]); break;
 			case OP_MYB:
 			{
 				player->lookaway = 0;
@@ -1184,7 +1185,7 @@ int cmdip;
 			case OP_NUM:
 			{	// seems to show the last value that was used with "AM+"
 				char buf[16];
-				sprintf(buf, "%d", lastammoinc);
+				sprintf(buf, "%d", _lastammoinc);
 				
 				textbox.AddText(buf);
 			}
@@ -1248,22 +1249,7 @@ int cmdip;
 	}
 }
 
-/*
-void c------------------------------() {}
-*/
-
-int CVTDir(int csdir)
-{
-const int cdir_to_nxdir[4] = { LEFT, UP, RIGHT, DOWN };
-
-	if (csdir >= 0 && csdir < 4)
-		return cdir_to_nxdir[csdir];
-	
-	staterr("CVTDir: invalid direction %d, returning LEFT", csdir);
-	return LEFT;
-}
-
-const char *DescribeCSDir(int csdir)
+std::string _DescribeCSDir(int csdir)
 {
 	switch(csdir)
 	{
@@ -1273,14 +1259,14 @@ const char *DescribeCSDir(int csdir)
 		case 3: return "DOWN";
 		case 4: return "FACE_PLAYER";
 		case 5: return "NO_CHANGE";
-		default: return stprintf("Invalid CS Dir %d", csdir);
+		default: return "Invalid CS Dir"+std::to_string(csdir);
 	}
 }
 
 // converts from a CS direction (0123 = left,up,right,down)
 // into a NXEngine direction (0123 = right,left,up,down),
 // and applies the converted direction to the object.
-void SetCSDir(Object *o, int csdir)
+void _SetCSDir(Object *o, int csdir)
 {
 	if (csdir < 4)
 	{
@@ -1310,7 +1296,7 @@ void SetCSDir(Object *o, int csdir)
 	o->dirparam = csdir;
 }
 
-void SetPDir(int d)
+void _SetPDir(int d)
 {
 	if (d == 3)
 	{	// look away
@@ -1322,7 +1308,7 @@ void SetPDir(int d)
 		
 		if (d < 10)
 		{	// set direction - left/right/up/down
-			SetCSDir(player, d);
+			_SetCSDir(player, d);
 		}
 		else
 		{	// face the object in parm
@@ -1344,7 +1330,7 @@ void c------------------------------() {}
 */
 
 // call action_function on all NPCs with id2 matching "id2".
-void NPCDo(int id2, int p1, int p2, void (*action_function)(Object *o, int p1, int p2))
+void TSC::_NPCDo(int id2, int p1, int p2, void (*action_function)(Object *o, int p1, int p2))
 {
 	// make a list first, as during <CNP, changing the
 	// object type may call BringToFront and break stuff
@@ -1366,7 +1352,7 @@ void NPCDo(int id2, int p1, int p2, void (*action_function)(Object *o, int p1, i
 	
 }
 
-void DoANP(Object *o, int p1, int p2)		// ANIMATE (set) object's state to p1 and set dir to p2
+void TSC::_DoANP(Object *o, int p1, int p2)		// ANIMATE (set) object's state to p1 and set dir to p2
 {
 	#ifdef TRACE_SCRIPT
 		stat("ANP: Obj %08x (%s): setting state: %d and dir: %s", \
@@ -1374,10 +1360,10 @@ void DoANP(Object *o, int p1, int p2)		// ANIMATE (set) object's state to p1 and
 	#endif
 	
 	o->state = p1;
-	SetCSDir(o, p2);
+	_SetCSDir(o, p2);
 }
 
-void DoCNP(Object *o, int p1, int p2)		// CHANGE object to p1 and set dir to p2
+void TSC::_DoCNP(Object *o, int p1, int p2)		// CHANGE object to p1 and set dir to p2
 {
 	#ifdef TRACE_SCRIPT
 		stat("CNP: Obj %08x changing from %s to %s, new dir = %s",
@@ -1386,11 +1372,11 @@ void DoCNP(Object *o, int p1, int p2)		// CHANGE object to p1 and set dir to p2
 	
 	// Must set direction BEFORE changing type, so that the Carried Puppy object
 	// gets priority over the direction to use while the game is <PRI'd.
-	SetCSDir(o, p2);
+	_SetCSDir(o, p2);
 	o->ChangeType(p1);
 }
 
-void DoDNP(Object *o, int p1, int p2)		// DELETE object
+void TSC::_DoDNP(Object *o, int p1, int p2)		// DELETE object
 {
 	#ifdef TRACE_SCRIPT
 		stat("DNP: %08x (%s) deleted", o, DescribeObjectType(o->type));
@@ -1399,41 +1385,6 @@ void DoDNP(Object *o, int p1, int p2)		// DELETE object
 	o->Delete();
 }
 
-/*
-void c------------------------------() {}
-*/
-
-// delimit real newlines in 'in' to "\n"'s.
-void crtoslashn(const char *in, char *out)
-{
-int i, j;
-
-	for(i=j=0;in[i];i++)
-	{
-		if (in[i] == 13)
-		{
-			out[j++] = '\\';
-			out[j++] = 'n';
-		}
-		else
-		{
-			out[j++] = in[i];
-		}
-	}
-	
-	out[j] = 0;
-}
-
-bool contains_non_cr(const char *str)
-{
-	for(int i=0;str[i];i++)
-	{
-		if (str[i] != '\r' && str[i] != '\n')
-			return true;
-	}
-	
-	return false;
-}
 
 
 

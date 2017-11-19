@@ -160,7 +160,7 @@ int start;
 		// when the script hit the <SVP, it froze itself in an artifical <WAI9999
 		// waiting for us to complete. Now unfreeze it so can say "Game saved.",
 		// or for loading, just end.
-		ScriptInstance *s = GetCurrentScriptInstance();
+		ScriptInstance *s = game.tsc.GetCurrentScriptInstance();
 		if (s) s->delaytimer = 0;
 	}
 }

@@ -2,6 +2,8 @@
 #ifndef _CREDITS_READER_H
 #define _CREDITS_READER_H
 
+#include <string>
+
 enum CC
 {
 	CC_TEXT			= '[',
@@ -42,7 +44,7 @@ private:
 	void unget();
 	char peek();
 
-	char *data;
+	std::string data;
 	int dataindex, datalen;
 };
 

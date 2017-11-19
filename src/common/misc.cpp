@@ -10,6 +10,7 @@
 #include "basics.h"
 #include "misc.h"
 #include "stat.h"
+#include "../game.h"
 
 void stat(const char *fmt, ...);
 
@@ -396,5 +397,46 @@ void fbooleanflush(FILE *fp)
 	boolmask_w = 1;
 }
 
+// delimit real newlines in 'in' to "\n"'s.
+void crtoslashn(const std::string& in, std::string& out)
+{
+    int i, j;
 
+    for(i=j=0;in[i];i++)
+    {
+        if (in[i] == 13)
+        {
+            out[j++] = '\\';
+            out[j++] = 'n';
+        }
+        else
+        {
+            out[j++] = in[i];
+        }
+    }
+
+    out[j] = 0;
+}
+
+bool contains_non_cr(const std::string& str)
+{
+    for(int i=0;str[i];i++)
+    {
+        if (str[i] != '\r' && str[i] != '\n')
+        return true;
+    }
+
+    return false;
+}
+
+int CVTDir(int csdir)
+{
+    const int cdir_to_nxdir[4] = { LEFT, UP, RIGHT, DOWN };
+
+    if (csdir >= 0 && csdir < 4)
+        return cdir_to_nxdir[csdir];
+
+    staterr("CVTDir: invalid direction %d, returning LEFT", csdir);
+    return LEFT;
+}
 

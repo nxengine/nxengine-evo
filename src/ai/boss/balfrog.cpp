@@ -587,7 +587,7 @@ void c------------------------------() {}
 void ondeath_balfrog(Object *o)
 {
 	o->flags &= ~FLAG_SHOOTABLE;
-	StartScript(1000);
+	game.tsc.StartScript(1000);
 }
 
 /*

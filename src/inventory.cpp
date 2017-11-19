@@ -184,7 +184,7 @@ int x, y, w, i, c;
 
 static void ExitInventory(void)
 {
-	StopScripts();
+	game.tsc.StopScripts();
 	game.setmode(GM_NORMAL);
 	memset(inputs, 0, sizeof(inputs));
 }
@@ -197,7 +197,7 @@ char toggle = 0;
 
 	if (inv.lockinput)
 	{
-		if (GetCurrentScript()==-1) inv.lockinput = 0;
+		if (game.tsc.GetCurrentScript()==-1) inv.lockinput = 0;
 		else return;
 	}
 	
@@ -289,7 +289,7 @@ char toggle = 0;
 	{
 		selector->lastsel = selector->cursel;
 		
-		StartScript(selector->items[selector->cursel] + selector->scriptbase, SP_ARMSITEM);
+		game.tsc.StartScript(selector->items[selector->cursel] + selector->scriptbase, TSC::ScriptPages::SP_ARMSITEM);
 	}
 	
 	
@@ -305,7 +305,7 @@ char toggle = 0;
 	{
 		if (justpushed(JUMPKEY))
 		{	// bring up "more info" or "equip" script for this item
-			StartScript(selector->items[selector->cursel] + selector->scriptbase + 1000, SP_ARMSITEM);
+			game.tsc.StartScript(selector->items[selector->cursel] + selector->scriptbase + 1000, TSC::ScriptPages::SP_ARMSITEM);
 			inv.lockinput = 1;
 		}
 		

@@ -1,6 +1,13 @@
 #ifndef _TSC_H
 #define _TSC_H
+
+#include <string>
+#include <vector>
+#include <map>
 #include "object.h"
+
+
+#define NUM_SCRIPT_PAGES 4
 // TSC running script instance; there is only ever one running at once
 // but I generalized it as if there might be more just for good style.
 struct ScriptInstance
@@ -24,43 +31,71 @@ struct ScriptInstance
 	bool wait_standing;					// if 1 pauses script until player touches ground
 };
 
-// script "pages", like namespaces, for the different tsc files
-enum ScriptPages
+
+struct ScriptPage
 {
-	SP_HEAD,							// head.tsc common scripts
-	SP_MAP,								// map scripts
-	SP_ARMSITEM,						// inventory screen
-	SP_STAGESELECT,						// scripts for Arthur's House teleporter
-	
-	NUM_SCRIPT_PAGES
+        // a variable-length array of pointers to compiled script code
+        // for each script in the page; their indexes in this array
+        // correspond to their script numbers.
+        std::map<uint16_t, std::vector<uint8_t> > scripts;
+
+        void Clear()
+        {
+                scripts.clear();
+        }
 };
 
-ScriptInstance *StartScript(int scriptno, int pageno=SP_MAP);
-void StopScript(ScriptInstance *s);
-bool JumpScript(int newscriptno, int pageno=-1);
 
-void Clear();
-bool tsc_init(void);
-void tsc_close(void);
-bool tsc_load(const char *fname, int pageno);
-char *tsc_decrypt(const char *fname, int *fsize_out);
-bool tsc_compile(const char *buf, int bufsize, int pageno);
-void RunScripts(void);
-void StopScripts(void);
-int GetCurrentScript(void);
-ScriptInstance *GetCurrentScriptInstance();
-const uint8_t *FindScriptData(int scriptno, int pageno, int *page_out);
-void ExecScript(ScriptInstance *s);
-const char *DescribeCSDir(int csdir);
-void SetCSDir(Object *o, int csdir);
-void SetPDir(int d);
-void NPCDo(int id2, int p1, int p2, void (*action_function)(Object *o, int p1, int p2));
-void DoANP(Object *o, int p1, int p2);
-void DoCNP(Object *o, int p1, int p2);
-void DoDNP(Object *o, int p1, int p2);
-void crtoslashn(const char *in, char *out);
-bool contains_non_cr(const char *str);
 
+
+class TSC {
+
+public:
+    // script "pages", like namespaces, for the different tsc files
+    enum class ScriptPages : signed
+    {
+        SP_NULL = -1,  // head.tsc common scripts
+        SP_HEAD = 0,  // head.tsc common scripts
+        SP_MAP = 1,  // map scripts
+        SP_ARMSITEM = 2,  // inventory screen
+        SP_STAGESELECT = 3  // scripts for Arthur's House teleporter
+    };
+
+    TSC();
+    virtual ~TSC();
+
+    bool StartScript(int scriptno, ScriptPages pageno=ScriptPages::SP_MAP);
+    void StopScript(ScriptInstance *s);
+    bool JumpScript(int newscriptno, ScriptPages pageno=ScriptPages::SP_MAP);
+
+    void Clear();
+    bool Init(void);
+    void Close(void);
+    bool Load(const std::string& fname, ScriptPages pageno);
+    std::string Decrypt(const std::string& fname, int *fsize_out);
+    bool Compile(const char* buf, int bufsize, ScriptPages pageno);
+    void RunScripts(void);
+    void StopScripts(void);
+    int GetCurrentScript(void);
+    ScriptInstance *GetCurrentScriptInstance();
+    const uint8_t *FindScriptData(int scriptno, ScriptPages pageno, ScriptPages *page_out);
+    void ExecScript(ScriptInstance *s);
+
+private:
+    ScriptInstance _curscript;
+    int _lastammoinc = 0;
+    ScriptPage _script_pages[NUM_SCRIPT_PAGES];
+
+    static void _NPCDo(int id2, int p1, int p2, void (*action_function)(Object *o, int p1, int p2));
+    static void _DoANP(Object *o, int p1, int p2);
+    static void _DoCNP(Object *o, int p1, int p2);
+    static void _DoDNP(Object *o, int p1, int p2);
+
+};
+
+std::string _DescribeCSDir(int csdir);
+void _SetCSDir(Object *o, int csdir);
+void _SetPDir(int d);
 
 // globally-accessible scripts in head.tsc
 #define SCRIPT_NULL				0
@@ -172,6 +207,6 @@ bool contains_non_cr(const char *str);
 
 #define OP_TEXT		0xfa		// mine, denotes start of text
 
-int CVTDir(int csdir);
+
 
 #endif

@@ -6,6 +6,7 @@
 #include "stageboss.h"
 #include "TextBox/TextBox.h"
 #include "ObjManager.h"
+#include "tsc.h"
 
 enum Directions
 {
@@ -70,6 +71,8 @@ struct Game
 	
 	uint32_t counter;	// Nikumaru counter value
 	
+	TSC tsc;
+	
 	struct
 	{
 		bool god;
@@ -119,18 +122,18 @@ struct Game
 // ---------------------------------------
 
 	// static member functions--not private (Game is an object, not a namespace)
-	static bool init();
-	static bool initlevel();
-	static bool createplayer();
+	bool init();
+	bool initlevel();
+	bool createplayer();
 	
-	static void switchmap(int mapno, int scriptno=0, int px=0, int py=0);
-	static void reset();
+	void switchmap(int mapno, int scriptno=0, int px=0, int py=0);
+	void reset();
 	
-	static bool setmode(int newmode, int param=0, bool force=false);
-	static bool pause(int pausemode, int param=0);
-	static void tick();
+	bool setmode(int newmode, int param=0, bool force=false);
+	bool pause(int pausemode, int param=0);
+	void tick();
 	
-	static void close();
+	void close();
 };
 
 // NPC flags definitions

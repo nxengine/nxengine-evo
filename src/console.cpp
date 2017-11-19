@@ -48,7 +48,7 @@ static void __script(std::vector<std::string> *args, int num)
 	if (player->movementmode == MOVEMODE_NORMAL)
 		map_focus(NULL);
 	
-	if (StartScript(num))
+	if (game.tsc.StartScript(num))
 	{
 		Respond("Script %04d started.", num);
 	}

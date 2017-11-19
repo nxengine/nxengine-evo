@@ -306,11 +306,11 @@ bool freshstart;
 	if (sound_init()) { fatal("Failed to initialize sound."); return 1; }
 	if (trig_init()) { fatal("Failed trig module init."); return 1; }
 	
-	if (tsc_init()) { fatal("Failed to initialize script engine."); return 1; }
 	if (textbox.Init()) { fatal("Failed to initialize textboxes."); return 1; }
 	if (Carets::init()) { fatal("Failed to initialize carets."); return 1; }
 	
 	if (game.init()) return 1;
+	if (!game.tsc.Init()) { fatal("Failed to initialize script engine."); return 1; }
 	game.setmode(GM_NORMAL);
 	// set null stage just to have something to do while we go to intro
 	game.switchstage.mapno = 0;
@@ -395,6 +395,7 @@ bool freshstart;
 	}
 	
 shutdown: ;
+	game.tsc.Close();
 	game.close();
 	Carets::close();
 	
@@ -402,7 +403,6 @@ shutdown: ;
 	input_close();
 	font_close();
 	sound_close();
-	tsc_close();
 	textbox.Deinit();
 	return error;
 	

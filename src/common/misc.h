@@ -1,7 +1,8 @@
 #ifndef __MISC_H_
 #define __MISC_H_
 #include <cstdio>
-#include <stdint.h>
+#include <cstdint>
+#include <string>
 
 uint16_t fgeti(FILE *fp);
 uint32_t fgetl(FILE *fp);
@@ -36,5 +37,11 @@ void fresetboolean(void);
 char fbooleanread(FILE *fp);
 void fbooleanwrite(char bit, FILE *fp);
 void fbooleanflush(FILE *fp);
+
+
+int CVTDir(int csdir);
+
+void crtoslashn(const std::string& in, std::string& out);
+bool contains_non_cr(const std::string& str);
 
 #endif

@@ -511,7 +511,7 @@ void ai_ballos_priest(Object *o)
 	/*if (o->state < 1000)
 	{
 		FindObjectByID2(500)->Delete();
-		StartScript(900);
+		game.tsc.StartScript(900);
 		return;
 	}*/
 	
