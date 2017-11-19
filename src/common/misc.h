@@ -26,7 +26,6 @@ int filesize(FILE *fp);
 bool file_exists(const char *fname);
 char *stprintf(const char *fmt, ...);
 int random(int min, int max);
-uint32_t getrand();
 void seedrand(uint32_t newseed);
 bool strbegin(const char *bigstr, const char *smallstr);
 bool strcasebegin(const char *bigstr, const char *smallstr);
