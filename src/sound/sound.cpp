@@ -44,7 +44,7 @@ static const char bossmusic[] = { 4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 
 
 static const char *pxt_dir = "./data/pxt/";
 static const char *org_dir = "./data/org/";
-static const char *ogg_dir = "./data/ogg/";
+static const char *ogg_dir = "./data/Ogg/";
 static const char *ogg11_dir = "./data/Ogg11/";
 static const char *org_wavetable = "./data/wavetable.dat";
 
