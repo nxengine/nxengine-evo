@@ -201,7 +201,7 @@ void debug_draw(void)
 		
 		int x = (SCREEN_WIDTH - 8) - GetFontWidth(text, 0, true);
 		int y = 4 + (i * (GetFontHeight() + 1));
-		font_draw_shaded(x, y, text, 0, &greenfont);
+		font_draw(x, y, text, 0, &greenfont);
 	}
 }
 

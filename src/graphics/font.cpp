@@ -34,11 +34,6 @@ static const char bitmap_map[] = {		// letter order of bitmap font sheet
 const char *bmpfontfile = "data/smallfont.bmp";
 const char *ttffontfile = "data/font.ttf";
 
-//static SDL_Surface *sdl_screen = NULL;
-//static SDL_Surface *shadesfc = NULL;
-static SDL_Texture* tshadesfc = NULL;
-static int shadesfc_h = 0;
-
 static bool initilized = false;
 static bool rendering = true;
 static bool shrink_spaces = true;
@@ -46,69 +41,9 @@ static int fontheight = 0;
 
 NXFont whitefont;
 NXFont greenfont;
-NXFont bluefont;		// used for "F3:Options" text on pause screen
 NXFont shadowfont;		// white letters w/ drop shadow
 
 extern SDL_Renderer * renderer;
-
-/*
-void c------------------------------() {}
-*/
-
-// create the shadesfc, used by font_draw_shaded. It's just a big long black surface
-// with 50% per-surface alpha applied, that we can use to darken the background.
-static bool create_shade_sfc(void)
-{
-	if (tshadesfc)
-	{
-		SDL_DestroyTexture(tshadesfc);
-		tshadesfc = NULL;
-	}
-	
-	int wd = (Graphics::SCREEN_WIDTH * SCALE);
-	int ht = whitefont.letters[(unsigned char)'M']->h;
-	SDL_PixelFormat* pxformat = SDL_AllocFormat(screen->Format()->format);
-	if (!pxformat)
-	{
-		staterr("InitBitmapChars: SDL_AllocFormat failed: %s", SDL_GetError());
-		return 1;
-	}
-	SDL_Surface* shadesfc = SDL_CreateRGBSurface(0, wd, ht,
-							pxformat->BitsPerPixel, pxformat->Rmask, pxformat->Gmask,
-							pxformat->Bmask, pxformat->Amask);
-	
-	if (!shadesfc)
-	{
-		staterr("create_shade_sfc: failed to create surface: %s", SDL_GetError());
-		SDL_FreeFormat(pxformat);
-		return 1;
-	}
-	
-	SDL_FillRect(shadesfc, NULL, SDL_ALPHA_TRANSPARENT);
-
-	Uint8 alpha_value = 128;
-	if (shadesfc->format->Amask) {
-		alpha_value = 0xFF;
-	}
-	SDL_SetSurfaceAlphaMod(shadesfc, alpha_value);
-	SDL_SetSurfaceBlendMode(shadesfc, SDL_BLENDMODE_BLEND);
-
-	
-	tshadesfc = SDL_CreateTextureFromSurface(renderer, shadesfc);
-	if (!shadesfc)
-	{
-		staterr("create_shade_sfc: failed to create surface: %s", SDL_GetError());
-		SDL_FreeSurface(shadesfc);
-		return 1;
-	}
-
-	SDL_FreeSurface(shadesfc);
-	shadesfc_h = ht;
-
-	return tshadesfc == NULL;
-}
-
-
 
 bool font_init(void)
 {
@@ -132,7 +67,6 @@ bool error = false;
 		
 		error = error || whitefont.InitBitmapChars(sheet, fgindex, 0xffffff);
 		error = error || greenfont.InitBitmapChars(sheet, fgindex, 0x00ff80);
-		error = error || bluefont.InitBitmapChars(sheet, fgindex, 0xa0b5de);
 		error = error || shadowfont.InitBitmapCharsShadowed(sheet, fgindex, 0xffffff, 0x000000);
 	}
 	#ifdef CONFIG_ENABLE_TTF
@@ -160,7 +94,6 @@ bool error = false;
 		
 		error = error || whitefont.InitChars(font, 0xffffff);
 		error = error || greenfont.InitChars(font, 0x00ff80);
-		error = error || bluefont.InitChars(font, 0xa0b5de);
 		error = error || shadowfont.InitCharsShadowed(font, 0xffffff, 0x000000);
 		
 		TTF_CloseFont(font);
@@ -169,10 +102,8 @@ bool error = false;
 
 	error = error || whitefont.InitTextures();
 	error = error || greenfont.InitTextures();
-	error = error || bluefont.InitTextures();
 	error = error || shadowfont.InitTextures();
 	
-	error = error || create_shade_sfc();
 	if (error) return 1;
 
 	#ifdef CONFIG_ENABLE_TTF
@@ -195,7 +126,6 @@ bool font_reload()
 	
 	whitefont.free();
 	greenfont.free();
-	bluefont.free();
 	shadowfont.free();
 	
 	return font_init();
@@ -667,47 +597,6 @@ int font_draw(int x, int y, const char *text, int spacing, NXFont *font)
 	return (text_draw(x, y, text, spacing, font) / SCALE);
 }
 
-// draw a text string with a 50% dark border around it
-int font_draw_shaded(int x, int y, const char *text, int spacing, NXFont *font)
-{
-SDL_Rect srcrect, dstrect;
-int wd;
-
-	x *= SCALE;
-	y *= SCALE;
-	spacing *= SCALE;
-	
-	// get full-res width of final text
-	rendering = false;
-	shrink_spaces = false;
-	
-	srcrect.x = 0;
-	srcrect.y = 0;
-	srcrect.h = shadesfc_h;
-	srcrect.w = text_draw(0, 0, text, spacing, font);
-	
-	rendering = true;
-	
-	// shade
-	dstrect.x = x;
-	dstrect.y = y;
-	dstrect.w = srcrect.w;
-	dstrect.h = srcrect.h;
-
-	// TODO FONT
-	//SDL_BlitSurface(shadesfc, &srcrect, sdl_screen, &dstrect);
-
-	if (Graphics::is_set_clip())
-		Graphics::clip(srcrect, dstrect);
-
-	SDL_RenderCopy(renderer, tshadesfc, &srcrect, &dstrect);
-	
-	// draw the text on top as normal
-	wd = text_draw(x, y, text, spacing, font);
-	
-	shrink_spaces = true;
-	return (wd / SCALE);
-}
 
 
 

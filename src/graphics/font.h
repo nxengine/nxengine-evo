@@ -41,11 +41,9 @@ private:
 
 extern NXFont whitefont;
 extern NXFont greenfont;
-extern NXFont bluefont;		// used for "F3:Options" text on pause screen
 extern NXFont shadowfont;	// white letters w/ drop shadow
 
 int font_draw(int x, int y, const char *text, int spacing=0, NXFont *font=&whitefont);
-int font_draw_shaded(int x, int y, const char *text, int spacing=0, NXFont *font=&whitefont);
 
 int GetFontWidth(const char *text, int spacing=0, bool is_shaded=false);
 int GetFontHeight();
