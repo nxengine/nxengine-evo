@@ -266,7 +266,7 @@ std::string TSC::Decrypt(const std::string& fname, int *fsize_out)
 
     if (!ifs)
     {
-        staterr("tsc_decrypt: no such file: '%s'!", fname);
+        staterr("tsc_decrypt: no such file: '%s'!", fname.c_str());
         return "";
     }
 
