@@ -1014,7 +1014,7 @@ const char *map_get_stage_name(int mapno)
 // show map name for "ticks" ticks
 void map_show_map_name()
 {
-	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(map_get_stage_name(game.curmap), 0) / 2);
+	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(map_get_stage_name(game.curmap)) / 2);
 	game.showmapnametime = 120;
 }
 
@@ -1022,7 +1022,7 @@ void map_draw_map_name(void)
 {
 	if (game.showmapnametime)
 	{
-		font_draw(game.mapname_x, 84, map_get_stage_name(game.curmap), 0, &shadowfont);
+		font_draw(game.mapname_x, 84, map_get_stage_name(game.curmap), 0xFFFFFF, true);
 		game.showmapnametime--;
 	}
 }

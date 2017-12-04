@@ -283,19 +283,18 @@ void TextBox::DrawTextBox()
 	}
 	
 	// draw text lines (the 4th line is for the first char shown on the new line during scrolling)
-	int char_spacing = (fFlags & TB_VARIABLE_WIDTH_CHARS) ? 0 : 6;
 	int y = (text_top + fTextYOffset);
 	
 	for(int i=0;i<MSG_NLINES;i++)
 	{
 		int lineWidth = \
-			font_draw(text_x, y, fLines[i], char_spacing);
+			font_draw(text_x, y, fLines[i]);
 		
 		// draw the cursor
 		if (i == fCurLine && fCursorTimer < 7)
 		{
 			int x = (text_x + lineWidth);
-			FillRect(x, y, x+4, y+10,  255,255,255);
+			FillRect(x, y, x+4, y+GetFontBase(),  255,255,255);
 		}
 		
 		y += MSG_LINE_SPACING;

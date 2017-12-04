@@ -180,12 +180,11 @@ const int w = fCoords.w - 33;
 	draw_sprite(x+sidewd+repeatwd, y, SPR_SAVESELECTOR_SIDES, frame, RIGHT);
 	
 	y += 4;
-	const int FONT_SPACING = 5;
 	
 	if (fHaveProfile[index])
 	{
 		const char *stage = map_get_stage_name(p->stage);
-		font_draw(x+8, y-1, stage, FONT_SPACING);
+		font_draw(x+8, y-1, stage);
 		
 		// draw health.
 		DrawHealth(x+w, y, p);
@@ -193,8 +192,8 @@ const int w = fCoords.w - 33;
 	else if (fCurSel == index)
 	{
 		const char *str = "available";
-		int fx = (w / 2) - (GetFontWidth(str, FONT_SPACING) / 2);
-		font_draw(x+fx, y-1, str, FONT_SPACING);
+		int fx = (w / 2) - (GetFontWidth(str) / 2);
+		font_draw(x+fx, y-1, str);
 	}
 }
 

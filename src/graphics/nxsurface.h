@@ -6,11 +6,7 @@
 #include "../common/basics.h"
 
 // scaling factor for the graphics
-#ifdef CONFIG_MUTABLE_SCALE
-	extern int SCALE;
-#else
-	#define SCALE		1
-#endif
+extern int SCALE;
 
 class NXSurface;
 extern NXSurface *screen;

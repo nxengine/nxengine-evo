@@ -31,12 +31,12 @@ Message::Message(const char *msg, const char *msg2)
 	fMsg = strdup(msg);
 	fMsg2 = strdup(msg2 ? msg2 : "");
 	
-	fMsgX = MESSAGE_X + ((MESSAGE_W / 2) - (GetFontWidth(fMsg, 0) / 2));
+	fMsgX = MESSAGE_X + ((MESSAGE_W / 2) - (GetFontWidth(fMsg) / 2));
 	
 	if (fMsg2[0])
 	{
 		fMsgY = MESSAGE_Y + 10;
-		fMsg2X = MESSAGE_X + ((MESSAGE_W / 2) - (GetFontWidth(fMsg2, 0) / 2));
+		fMsg2X = MESSAGE_X + ((MESSAGE_W / 2) - (GetFontWidth(fMsg2) / 2));
 		fMsg2Y = fMsgY + GetFontHeight() + 4;
 		fShowDelay = 0;
 	}
@@ -76,10 +76,10 @@ void Message::Draw()
 		return;
 	}
 	
-	font_draw(fMsgX, fMsgY, fMsg, 0);
+	font_draw(fMsgX, fMsgY, fMsg);
 	
 	if (fMsg2[0])
-		font_draw(fMsg2X, fMsg2Y, fMsg2, 0);
+		font_draw(fMsg2X, fMsg2Y, fMsg2);
 }
 
 

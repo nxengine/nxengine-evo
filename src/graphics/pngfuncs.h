@@ -21,11 +21,7 @@
    you can find other examples on http://marsnomercy.org
 */
 
-//#include <png.h>
 #include <SDL.h>
 
-//Not used there but causes libpng compiling error
-//static int png_colortype_from_surface(SDL_Surface *surface);
-//void png_user_warn(png_structp ctx, png_const_charp str);
-//void png_user_error(png_structp ctx, png_const_charp str);
 int png_save_surface(char *filename, SDL_Surface *surf);
+SDL_Surface* png_load_surface(const char *filename);

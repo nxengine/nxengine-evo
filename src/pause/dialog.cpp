@@ -185,15 +185,15 @@ char text[132];
 	if (item->raligntext[0])
 	{
 		int rx = (fCoords.x + fCoords.w) - 10;
-		rx -= GetFontWidth(item->raligntext, 5);
-		font_draw(rx, y, item->raligntext, 5);
+		rx -= GetFontWidth(item->raligntext);
+		font_draw(rx, y, item->raligntext);
 		
 		// ... ellipses if too long
 		int maxx = (rx - 4);
 		//FillRect(maxx, 0, maxx, SCREEN_HEIGHT, 0,255,0);
 		for(;;)
 		{
-			int wd = GetFontWidth(text, 0);
+			int wd = GetFontWidth(text);
 			if (x+wd < maxx) break;
 			
 			int len = strlen(text);
@@ -206,12 +206,12 @@ char text[132];
 		}
 	}
 	
-	font_draw(x, y, text, 0);
+	font_draw(x, y, text);
 	
 	// for key remaps
 	if (item->righttext[0])
 	{
-		font_draw((fCoords.x + fCoords.w) - 62, y, item->righttext, 0);
+		font_draw((fCoords.x + fCoords.w) - 62, y, item->righttext);
 	}
 }
 

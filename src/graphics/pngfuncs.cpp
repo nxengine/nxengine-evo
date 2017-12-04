@@ -22,6 +22,7 @@
 */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <png.h>
 #include "pngfuncs.h"
 
@@ -110,4 +111,81 @@ int png_save_surface(char *filename, SDL_Surface *surf)
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 
 	return 0;
+}
+
+SDL_Surface* png_load_surface(const char *name)
+{
+    png_structp png_ptr;
+    png_infop info_ptr;
+    unsigned int sig_read = 0;
+    int color_type, interlace_type;
+    FILE *fp;
+
+    Uint32 Rmask = 0x00FF0000;
+    Uint32 Gmask = 0x0000FF00;
+    Uint32 Bmask = 0x000000FF;
+    Uint32 Amask = 0xFF000000;
+
+    if ((fp = fopen(name, "rb")) == NULL)
+    {
+        printf("1\n");
+
+        return NULL;
+    }
+
+    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,
+                                     NULL, png_user_error, png_user_warn);
+
+    if (png_ptr == NULL) {
+            printf("2\n");
+    fclose(fp);
+        return NULL;
+    }
+
+    info_ptr = png_create_info_struct(png_ptr);
+    if (info_ptr == NULL) {
+        printf("3\n");
+        fclose(fp);
+        png_destroy_read_struct(&png_ptr, NULL, NULL);
+        return NULL;
+    }
+    if (setjmp(png_jmpbuf(png_ptr))) {
+        printf("4\n");
+        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+        fclose(fp);
+        return NULL;
+    }
+
+    png_init_io(png_ptr, fp);
+
+    png_set_sig_bytes(png_ptr, sig_read);
+
+    png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_PACKING | PNG_TRANSFORM_EXPAND, NULL);
+
+    png_uint_32 width, height;
+    int bit_depth;
+    png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
+                 &interlace_type, NULL, NULL);
+
+    unsigned int row_bytes = png_get_rowbytes(png_ptr, info_ptr);
+
+    SDL_Surface* surface =  SDL_CreateRGBSurface(0, width, height, 32, Rmask, Gmask, Bmask, Amask);
+
+    if (surface == NULL)
+    {
+        printf("5 %s: %d\n", SDL_GetError(), bit_depth);
+        return NULL;
+    }
+
+    png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
+
+    for (unsigned int i = 0; i < height; i++) {
+        memcpy(((uint8_t*)surface->pixels)+(row_bytes * i), row_pointers[i], row_bytes);
+    }
+
+    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+    fclose(fp);
+
+    return surface;
+
 }

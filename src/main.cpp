@@ -75,8 +75,8 @@ void update_fps()
 	char fpstext[64];
 	sprintf(fpstext, "%d fps", fps);
 	
-	int x = (SCREEN_WIDTH - 4) - GetFontWidth(fpstext, 0, true);
-	font_draw(x, 4, fpstext, 0, &greenfont);
+	int x = (SCREEN_WIDTH - 4) - GetFontWidth(fpstext, true);
+	font_draw(x, 4, fpstext, 0x00FF00, true);
 }
 
 static inline void run_tick()
@@ -133,7 +133,7 @@ static int frameskip = 0;
 		{
 			char buf[1024];
 			sprintf(buf, "[] Tick %d", framecount++);
-			font_draw(4, (SCREEN_HEIGHT-GetFontHeight()-4), buf, 0, &greenfont);
+			font_draw(4, (SCREEN_HEIGHT-GetFontHeight()-4), buf, 0x00FF00, true);
 			can_tick = false;
 		}
 		

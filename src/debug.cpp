@@ -199,9 +199,9 @@ void debug_draw(void)
 	{
 		const char *text = DebugList.at(i).c_str();
 		
-		int x = (SCREEN_WIDTH - 8) - GetFontWidth(text, 0, true);
+		int x = (SCREEN_WIDTH - 8) - GetFontWidth(text, true);
 		int y = 4 + (i * (GetFontHeight() + 1));
-		font_draw(x, y, text, 0, &greenfont);
+		font_draw(x, y, text, 0x00FF00, true);
 	}
 }
 

@@ -67,7 +67,7 @@ int x1, y1, x2, y2;
 static void draw_banner(void)
 {
 	FillRect(0, BANNER_TOP, SCREEN_WIDTH, BANNER_BTM, NXColor(0, 0, 0));
-	font_draw(ms.textx, ms.texty, ms.bannertext, 0);
+	font_draw(ms.textx, ms.texty, ms.bannertext);
 }
 
 
@@ -138,7 +138,7 @@ bool ms_init(int return_to_mode)
 	ms.py = ms.y + ((player->y / CSFI) / TILE_H);
 	
 	ms.bannertext = stages[game.curmap].stagename;
-	ms.textx = (SCREEN_WIDTH / 2) - (GetFontWidth(ms.bannertext, 0) / 2);
+	ms.textx = (SCREEN_WIDTH / 2) - (GetFontWidth(ms.bannertext) / 2);
 	ms.texty = BANNER_TOP+3;
 	
 	return 0;

@@ -6,9 +6,7 @@
 #include "graphics.h"
 #include "nxsurface.h"
 
-#ifdef CONFIG_MUTABLE_SCALE
-	int SCALE = 3;
-#endif
+int SCALE = 3;
 
 extern SDL_Renderer * renderer;
 
@@ -53,11 +51,7 @@ NXSurface::~NXSurface()
 // static function, and requires a reload of all surfaces
 void NXSurface::SetScale(int factor)
 {
-	#ifdef CONFIG_MUTABLE_SCALE
-		SCALE = factor;
-	#else
-		staterr("NXSurface::SetScale: CONFIG_MUTABLE_SCALE not set");
-	#endif
+	SCALE = factor;
 }
 
 /*

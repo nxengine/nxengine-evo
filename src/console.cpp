@@ -762,7 +762,7 @@ void DebugConsole::Draw()
 
 void DebugConsole::DrawText(const char *text)
 {
-	font_draw(4, (SCREEN_HEIGHT - 16), text);
+	font_draw(4, (SCREEN_HEIGHT - 16), text, 0xFFAAAA, true);
 }
 
 /*

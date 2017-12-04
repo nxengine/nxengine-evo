@@ -23,7 +23,6 @@ using namespace Sprites;
 
 #define MARGIN			48
 #define SCREEN_Y(Y)		( (Y) - (scroll_y / CSFI) )
-#define TEXT_SPACING	5	// X-spacing between letters
 	
 Credits *credits = NULL;
 
@@ -120,7 +119,7 @@ CredCommand cmd;
 			// varying font sizes can lead to it being a little bit off
 			if (strstr(line->text, "The End"))
 			{
-				line->x = (SCREEN_WIDTH / 2) - (GetFontWidth(line->text, TEXT_SPACING) / 2);
+				line->x = (SCREEN_WIDTH / 2) - (GetFontWidth(line->text) / 2);
 			}
 			
 			spawn_y += 1;
@@ -205,12 +204,11 @@ bool Credits::DrawLine(CredLine *line)
 	if (line->image)
 	{
 		draw_sprite(x - 24, y - 8, SPR_CASTS, line->image);
-		//DrawBox(x, y, x+GetFontWidth(line->text, TEXT_SPACING), y+8,  56, 0, 0);
+		//DrawBox(x, y, x+GetFontWidth(line->text), y+8,  56, 0, 0);
 	}
 	
-	//int font_draw(int x, int y, const char *string, int font_spacing)
 	//DrawRect(x, y, x+63, y+8, 128, 0, 0);
-	font_draw(x, y, line->text, TEXT_SPACING);
+	font_draw(x, y, line->text);
 	
 	return false;
 }
