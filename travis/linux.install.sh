@@ -8,5 +8,5 @@ sudo apt-get install -qq libsdl2-dev
 sudo apt-get install -qq libsdl2-mixer-dev
 sudo apt-get install -qq libpng-dev
 sudo apt-get install g++-6
-export CC=g++-6
+export CC=gcc-6
 export CXX=g++-6
