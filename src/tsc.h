@@ -62,7 +62,7 @@ public:
     };
 
     TSC();
-    virtual ~TSC();
+    ~TSC();
 
     bool StartScript(int scriptno, ScriptPages pageno=ScriptPages::SP_MAP);
     void StopScript(ScriptInstance *s);
