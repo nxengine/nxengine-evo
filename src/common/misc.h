@@ -4,6 +4,16 @@
 #include <cstdint>
 #include <string>
 
+enum Directions
+{
+        RIGHT   = 0,
+        LEFT    = 1,
+        UP              = 2,
+        DOWN    = 3,
+        CENTER  = 5
+};
+
+
 uint16_t fgeti(FILE *fp);
 uint32_t fgetl(FILE *fp);
 void fputi(uint16_t word, FILE *fp);

@@ -1,6 +1,20 @@
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env:
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+
+    - os: linux
+      compiler: clang
+
+    - os: osx
+      compiler: clang
 
 language: cpp
 sudo: required
@@ -11,18 +25,12 @@ script:
   - cmake .
   - make
 
-compiler:
-  - clang
-  - gcc
-
-matrix:
-  exclude:
-  - os: osx
-    compiler: gcc
+before_install:
+  - eval "${MATRIX_EVAL}"
 
 install:
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then source ./travis/linux.install.sh; fi
-- if [ "$TRAVIS_OS_NAME" == "osx" ];   then source ./travis/osx.install.sh;   fi
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then source ./travis/linux.install.sh; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ];   then source ./travis/osx.install.sh;   fi
 
 before_deploy:
 - if [ "$TRAVIS_OS_NAME" == "osx" ];   then source ./travis/osx.package.sh;   fi

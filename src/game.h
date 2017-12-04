@@ -8,15 +8,6 @@
 #include "ObjManager.h"
 #include "tsc.h"
 
-enum Directions
-{
-	RIGHT	= 0,
-	LEFT	= 1,
-	UP		= 2,
-	DOWN	= 3,
-	CENTER	= 5
-};
-
 #define GAME_FPS		50
 
 // for UpdateBlockedStates

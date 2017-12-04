@@ -10,7 +10,7 @@
 #include "basics.h"
 #include "misc.h"
 #include "stat.h"
-#include "../game.h"
+//#include "../game.h"
 
 void stat(const char *fmt, ...);
 

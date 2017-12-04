@@ -252,6 +252,9 @@
     <ClCompile Include="..\..\src\graphics\font.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\graphics\bmfont.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\graphics\graphics.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -660,6 +663,9 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\graphics\font.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\graphics\bmfont.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\graphics\graphics.h">
