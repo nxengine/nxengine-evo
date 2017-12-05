@@ -126,6 +126,7 @@ void TextBox::AddText(const std::string& str)
 // clear all text in the message box
 void TextBox::ClearText()
 {
+	fCharsWaiting.clear();
 	for(int i=0;i<MSG_NLINES;i++)
 	{
 		fLines[i].clear();
