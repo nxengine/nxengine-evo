@@ -2,6 +2,8 @@
 #ifndef _TEXTBOX_H
 #define _TEXTBOX_H
 #include <stdint.h>
+#include <string>
+#include <array>
 #include "YesNoPrompt.h"
 #include "ItemImage.h"
 #include "StageSelect.h"
@@ -37,8 +39,8 @@ public:
 	void SetVisible(bool enable, uint8_t flags = TB_DEFAULTS);
 	void ResetState();
 	
-	void AddText(const char *str);
-	void SetText(const char *str);
+	void AddText(const std::string& str);
+	void SetText(const std::string& str);
 	void ClearText();
 	
 	void SetFace(int newface);
@@ -73,7 +75,7 @@ private:
 	int fFaceXOffset;		// for face slide-in animation
 	
 	// currently visible lines
-	char fLines[MSG_NLINES][80];
+	std::array<std::string, MSG_NLINES> fLines;
 	int fCurLine;
 	int fCurLineLen;
 	
@@ -82,8 +84,7 @@ private:
 	int fTextYOffset;
 	
 	// chars waiting to be added
-	char fCharsWaiting[256];
-	uint8_t fCWHead, fCWTail;
+	std::string fCharsWaiting;
 	
 	int fTextTimer;
 	bool fCanSpeedUp;

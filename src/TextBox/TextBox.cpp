@@ -7,6 +7,7 @@
 #include "../graphics/graphics.h"
 #include "../graphics/sprites.h"
 #include "../autogen/sprites.h"
+#include <iostream>
 using namespace Graphics;
 using namespace Sprites;
 
@@ -110,13 +111,15 @@ void c------------------------------() {}
 
 // add the specified text into the message buffer
 // so it starts appearing.
-void TextBox::AddText(const char *str)
+void TextBox::AddText(const std::string& str)
 {
 	if (!fVisible)
 		return;
-	
-	for(int i=0;str[i];i++)
-		fCharsWaiting[fCWHead++] = str[i];
+
+	for(auto ch: str)
+	{
+		fCharsWaiting.push_back(ch);
+	}
 }
 
 
@@ -124,12 +127,13 @@ void TextBox::AddText(const char *str)
 void TextBox::ClearText()
 {
 	for(int i=0;i<MSG_NLINES;i++)
-		fLines[i][0] = 0;
+	{
+		fLines[i].clear();
+	}
 	
 	fCurLine = 0;
 	fCurLineLen = 0;
 	fTextTimer = 0;
-	fCWHead = fCWTail = 0;
 	
 	fTextYOffset = 0;
 	fScrolling = false;
@@ -138,7 +142,7 @@ void TextBox::ClearText()
 }
 
 
-void TextBox::SetText(const char *str)
+void TextBox::SetText(const std::string& str)
 {
 	ClearText();
 	AddText(str);
@@ -175,7 +179,7 @@ bool TextBox::IsVisible(void)
 // returns true if a message box is up AND is still displaying letters
 bool TextBox::IsBusy(void)
 {
-	return (fVisible && (fCWHead != fCWTail));
+	return (fVisible && (!fCharsWaiting.empty()));
 }
 
 /*
@@ -216,6 +220,7 @@ void TextBox::DrawTextBox()
 	// in the middle of scrolling a line up?
 	if (fScrolling)
 	{
+
 		fTextYOffset -= (MSG_LINE_SPACING / 4);
 		if (fTextYOffset <= -MSG_LINE_SPACING)
 		{
@@ -225,17 +230,17 @@ void TextBox::DrawTextBox()
 			
 			for(int i=0;i<MSG_NLINES-1;i++)
 			{
-				strcpy(fLines[i], fLines[i+1]);
+				fLines[i] = fLines[i+1];
 			}
 			
-			fLines[MSG_NLINES-1][0] = 0;
+			fLines[MSG_NLINES-1].clear();
 			fCurLine = (MSG_NLINES - 2);
 			fCurLineLen = 1;
 		}
 	}
 	else
 	{	// add text into the box
-		if (fCWHead != fCWTail)
+		if (!fCharsWaiting.empty())
 		{
 			if (++fTextTimer >= 4)
 			{
@@ -310,10 +315,12 @@ void TextBox::AddNextChar(void)
 {
 	bool line_at_once = (fFlags & TB_LINE_AT_ONCE);
 	int maxlinelen = GetMaxLineLen();
-	
-	while(fCWHead != fCWTail)
+
+	while(!fCharsWaiting.empty())
 	{
-		char ch = fCharsWaiting[fCWTail++];
+		auto ch = fCharsWaiting[0];
+		fCharsWaiting.erase(0,1);
+
 		if (ch == 10) continue;	// ignore LF's, we look only for CR
 		
 		// go to next line on CR's, or wrap text if needed
@@ -337,8 +344,9 @@ void TextBox::AddNextChar(void)
 		if (!line_at_once && ch != 13)
 			sound(SND_MSG);
 		
-		fLines[fCurLine][fCurLineLen++] = ch;
-		fLines[fCurLine][fCurLineLen] = 0;
+		fCurLineLen++;
+		fLines[fCurLine].push_back(ch);
+//		fLines[fCurLine][fCurLineLen] = 0;
 		
 		if (fCurLine >= MSG_NLINES - 1)
 		{	// went over bottom of box

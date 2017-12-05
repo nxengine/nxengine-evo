@@ -13,7 +13,7 @@
 
 #include "bmfont.h"
 
-#define SHADOW_OFFSET		2		// distance of drop shadows
+#define SHADOW_OFFSET		1		// distance of drop shadows
 
 static bool initilized = false;
 static bool rendering = true;
@@ -49,13 +49,13 @@ bool font_reload()
 
 
 // draw a text string
-int font_draw(int x, int y, const char *text, uint32_t color, bool is_shaded)
+int font_draw(int x, int y, const std::string& text, uint32_t color, bool is_shaded)
 {
 	x *= SCALE;
 	y *= SCALE;
 
 	int orgx = x;
-	int i;
+	int i = 0;
 	SDL_Rect dstrect;
 	SDL_Rect shdrect;
 	SDL_Rect srcrect;
@@ -66,18 +66,16 @@ int font_draw(int x, int y, const char *text, uint32_t color, bool is_shaded)
 	g = ((color >> 8) & 0xFF);
 	b = ((color) & 0xFF);
 	
-	for(i=0;text[i];i++)
+	for(auto ch: text)
 	{
-		uint8_t ch = text[i];
 		BMFont::Glyph glyph = whitefnt.glyph(ch);
-        SDL_Texture* atlas = whitefnt.atlas(glyph.atlasid);
+		SDL_Texture* atlas = whitefnt.atlas(glyph.atlasid);
 
 		if (ch == '=' && game.mode != GM_CREDITS)
 		{
 			if (rendering)
 			{
-				int yadj = (SCALE==1) ? 1:2;
-				Sprites::draw_sprite((x/SCALE), (y/SCALE)+yadj, SPR_TEXTBULLET);
+				Sprites::draw_sprite((x/SCALE), (y/SCALE)+1, SPR_TEXTBULLET);
 			}
 		}
 		else if (rendering && ch != ' ')
@@ -94,6 +92,7 @@ int font_draw(int x, int y, const char *text, uint32_t color, bool is_shaded)
 
 			if (Graphics::is_set_clip())
 				Graphics::clip(srcrect, dstrect);
+			// TODO: I'm not sure, but it looks like original text is outlined, not shadowed
 			if (is_shaded)
 			{
 				shdrect.x = x+glyph.xoffset+SHADOW_OFFSET;
@@ -114,10 +113,15 @@ int font_draw(int x, int y, const char *text, uint32_t color, bool is_shaded)
 			x += (SCALE == 1) ? 5 : 10;
 			if (i & 1) x++;
 		}
+		else if (ch == '=' && game.mode != GM_CREDITS)
+		{
+			x += 7*SCALE;
+		}
 		else
 		{
 			x += glyph.xadvance;
 		}
+		i++;
 	}
 	
 	// return the final width of the text drawn
@@ -125,7 +129,7 @@ int font_draw(int x, int y, const char *text, uint32_t color, bool is_shaded)
 }
 
 
-int GetFontWidth(const char *text, bool is_shaded)
+int GetFontWidth(const std::string& text, bool is_shaded)
 {
 int wd;
 
