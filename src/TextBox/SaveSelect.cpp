@@ -184,7 +184,7 @@ const int w = fCoords.w - 33;
 	if (fHaveProfile[index])
 	{
 		const char *stage = map_get_stage_name(p->stage);
-		font_draw(x+8, y-1, stage);
+		font_draw(x+8, y-1, _(stage));
 		
 		// draw health.
 		DrawHealth(x+w, y, p);
@@ -192,8 +192,8 @@ const int w = fCoords.w - 33;
 	else if (fCurSel == index)
 	{
 		const char *str = "available";
-		int fx = (w / 2) - (GetFontWidth(str) / 2);
-		font_draw(x+fx, y-1, str);
+		int fx = (w / 2) - (GetFontWidth(_(str)) / 2);
+		font_draw(x+fx, y-1, _(str));
 	}
 }
 

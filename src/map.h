@@ -1,7 +1,10 @@
 #ifndef _MAP_H
 #define _MAP_H
+
+#include <string>
 #include "object.h"
 #include "graphics/tileset.h"
+
 #define MAX_MOTION_TILES			20
 
 #define MAP_MAXSIZEX				300
@@ -121,9 +124,9 @@ void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds=4, bool boom
 //#endif
 
 bool load_stage(int stage_no);
-bool load_map(const char *fname);
-bool load_entities(const char *fname);
-bool load_tileattr(const char *fname);
+bool load_map(const std::string& fname);
+bool load_entities(const std::string& fname);
+bool load_tileattr(const std::string& fname);
 bool load_stages(void);
 bool initmapfirsttime(void);
 void initmap(void);

@@ -13,8 +13,8 @@ struct oggSong
 	uint32_t last_pos;
 };
 
-char ogg_load(char *fname);
-bool ogg_start(char *fname, int startbeat);
+char ogg_load(const std::string& fname);
+bool ogg_start(const std::string& fname, int startbeat);
 void ogg_stop(void);
 bool ogg_is_playing(void);
 void ogg_fade(void);

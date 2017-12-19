@@ -16,6 +16,7 @@
 #include "ogg11.h"
 #include "sound.h"
 #include "../common/stat.h"
+#include "../ResourceManager.h"
 
 #define MUSIC_OFF		0
 #define MUSIC_ON		1
@@ -42,11 +43,9 @@ const char *org_names[] =
 
 static const char bossmusic[] = { 4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 35, 0 };
 
-static const char *pxt_dir = "./data/pxt/";
-static const char *org_dir = "./data/org/";
-static const char *ogg_dir = "./data/Ogg/";
-static const char *ogg11_dir = "./data/Ogg11/";
-static const char *org_wavetable = "./data/wavetable.dat";
+static const char *org_dir = "org/";
+static const char *ogg_dir = "Ogg/";
+static const char *ogg11_dir = "Ogg11/";
 
 bool sound_init(void)
 {
@@ -79,9 +78,9 @@ bool sound_init(void)
 	
 	if (pxt_init()) return 1;
 	
-	if (pxt_LoadSoundFX(pxt_dir, sndcache.c_str(), NUM_SOUNDS)) return 1;
+	if (pxt_LoadSoundFX(ResourceManager::getInstance()->getPathForDir("pxt/"), sndcache, NUM_SOUNDS)) return 1;
 	
-	if (org_init(org_wavetable, pxt_dir, ORG_VOLUME))
+	if (org_init(ResourceManager::getInstance()->getLocalizedPath("wavetable.dat"), ResourceManager::getInstance()->getPathForDir("pxt/"), ORG_VOLUME))
 	{
 		staterr("Music failed to initialize");
 		return 1;
@@ -174,7 +173,7 @@ char fname[MAXPATHLEN];
 	strcat(fname, org_names[songno]);
 	strcat(fname, ".org");
 	
-	if (!org_load(fname))
+	if (!org_load(ResourceManager::getInstance()->getLocalizedPath(fname)))
 	{
 		org_start(resume ? music_lastsongpos() : 0);
 	}
@@ -194,7 +193,7 @@ static void start_ogg_track(int songno, bool resume)
 	strcat(fname, org_names[songno]);
 	strcat(fname, ".ogg");
 
-	ogg_start(fname, resume ? music_lastsongpos() : 0);
+	ogg_start(ResourceManager::getInstance()->getLocalizedPath(fname), resume ? music_lastsongpos() : 0);
 }
 
 static void start_ogg11_track(int songno, bool resume)
@@ -230,7 +229,7 @@ static void start_ogg11_track(int songno, bool resume)
 		strcat(fname_loop, "_loop.ogg");
 	}
 
-	ogg11_start(fname_intro, fname_loop, resume ? music_lastsongpos() : 0, resume ? songlooped : false);
+	ogg11_start(ResourceManager::getInstance()->getLocalizedPath(fname_intro), ResourceManager::getInstance()->getLocalizedPath(fname_loop), resume ? music_lastsongpos() : 0, resume ? songlooped : false);
 }
 
 

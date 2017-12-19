@@ -22,6 +22,7 @@ struct Settings
 	bool rumble;
 	
 	in_action input_mappings[INPUT_COUNT];
+	char language[256];
 };
 
 bool settings_load(Settings *settings=NULL);

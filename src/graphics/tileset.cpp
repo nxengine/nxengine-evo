@@ -4,13 +4,13 @@
 #include <cstdio>
 #include "../nx.h"
 #include "../config.h"
+#include "../ResourceManager.h"
 
 #include "graphics.h"
 #include "tileset.h"
 using namespace Graphics;
 
 extern const char *tileset_names[];		// from stagedata.cpp
-extern const char *stage_dir;			// from main
 
 static NXSurface *tileset;
 static int current_tileset = -1;
@@ -44,11 +44,11 @@ char fname[MAXPATHLEN];
 			current_tileset = -1;
 		}
 		
-		sprintf(fname, "%s/Prt%s.pbm", stage_dir, tileset_names[new_tileset]);
+		sprintf(fname, "Stage/Prt%s.pbm", tileset_names[new_tileset]);
 		
 		// always use SDL_DisplayFormat on tilesets; they need to come out of 8-bit
 		// so that we can replace the destroyable star tiles without them palletizing.
-		tileset = NXSurface::FromFile(fname, true, true);
+		tileset = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), true, true);
 		if (!tileset)
 		{
 			return 1;

@@ -69,13 +69,13 @@ static void draw_title()
 	int cx = (SCREEN_WIDTH / 2) - 32;
 	int cy = (SCREEN_HEIGHT / 2) + 8;
 
-    const char* mymenus[] = {"New game","Load Game", "Options", "Quit"};
+    const char* mymenus[] = {"New game","Load game", "Options", "Quit"};
 
 	TextBox::DrawFrame(cx-32,cy-16,128,80);
 
 	for(int i=0;i<=3;i++)
 	{
-	    font_draw(cx+10,cy,mymenus[i]);
+	    font_draw(cx+10,cy, _(mymenus[i]));
 		if (i == title.cursel)
 		{
 			draw_sprite(cx - 16, cy - 1, title.sprite, title.selframe);

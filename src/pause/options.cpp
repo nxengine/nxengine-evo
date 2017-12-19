@@ -10,10 +10,10 @@ using namespace Options;
 #include "../game.h"
 #include "../sound/sound.h"
 #include "../common/misc.h"
+#include "../ResourceManager.h"
 
 #include "../graphics/graphics.h"
-
-
+#include "../graphics/font.h"
 
 std::vector<void*> optionstack;
 
@@ -24,6 +24,9 @@ void _res_get(ODItem *item);
 void _res_change(ODItem *item, int dir);
 void _fullscreen_get(ODItem *item);
 void _fullscreen_change(ODItem *item, int dir);
+
+void _lang_get(ODItem *item);
+void _lang_change(ODItem *item, int dir);
 
 void _debug_change(ODItem *item, int dir);
 void _debug_get(ODItem *item);
@@ -168,15 +171,20 @@ Dialog *dlg = opt.dlg;
 	dlg->AddItem("Controls", EnterControlsMenu);
 	
 	dlg->AddSeparator();
-	
+
+#if defined(DEBUG)
 	dlg->AddItem("Debug Keys: ", _debug_change, _debug_get, -1, OD_CHOICE);
 	dlg->AddItem("Save Slots: ", _save_change, _save_get, -1, OD_CHOICE);
 	
 	dlg->AddSeparator();
-	
+#endif
+
 	dlg->AddItem("Music: ", _music_change, _music_get, -1, OD_CHOICE);
 	dlg->AddItem("Tracks: ", _tracks_change, _tracks_get, -1, OD_CHOICE);
 	dlg->AddItem("Sound: ", _sound_change, _sound_get, -1, OD_CHOICE);
+
+	if (game.mode == GM_TITLE)
+		dlg->AddItem("Language: ", _lang_change, _lang_get, -1, OD_CHOICE);
 	
 	dlg->AddSeparator();
 	dlg->AddDismissalItem();
@@ -210,6 +218,7 @@ void _res_get(ODItem *item)
 }
 
 
+
 void _res_change(ODItem *item, int dir)
 {
 int numres = Graphics::GetResCount();
@@ -241,6 +250,46 @@ int newres;
 		sound(SND_GUN_CLICK);
 	}
 }
+
+void _lang_get(ODItem *item)
+{
+	std::vector<std::string> langs = ResourceManager::getInstance()->languages();
+	for (auto &l: langs)
+	{
+	    if (strcmp(settings->language, l.c_str()) == 0)
+	    {
+	        strcpy(item->suffix, l.c_str());
+	    }
+	}
+}
+
+void _lang_change(ODItem *item, int dir)
+{
+	std::vector<std::string> langs = ResourceManager::getInstance()->languages();
+	unsigned int i;
+	for (auto &l: langs)
+	{
+	    if (strcmp(settings->language, l.c_str()) == 0)
+	        break;
+	    i++;
+	}
+	i+=dir;
+	if (i<0)
+	{
+	    i = langs.size()-1;
+	}
+	if (i>=langs.size())
+	{
+	    i = 0;
+	}
+	memset(settings->language,0,256);
+    strncpy(settings->language,langs[i].c_str(), 255);
+    game.lang->load();
+    font_reload();
+    game.tsc.Init();
+    Graphics::FlushAll();
+}
+
 
 void _fullscreen_get(ODItem *item)
 {
@@ -357,7 +406,7 @@ Dialog *dlg = opt.dlg;
 	dlg->AddItem("Up", _edit_control, _upd_control, UPKEY);
 	dlg->AddItem("Down", _edit_control, _upd_control, DOWNKEY);
 	
-	dlg->AddSeparator();
+//	dlg->AddSeparator();
 	
 	dlg->AddItem("Jump", _edit_control, _upd_control, JUMPKEY);
 	dlg->AddItem("Fire", _edit_control, _upd_control,  FIREKEY);

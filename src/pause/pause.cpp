@@ -3,6 +3,7 @@
 #include "pause.h"
 #include "../graphics/font.h"
 #include "../input.h"
+#include "../screeneffect.h"
 
 
 #include "../game.h"
@@ -48,7 +49,7 @@ bool pause_init(int param)
 	dlg->AddItem("Resume", _resume);
 	dlg->AddItem("Options", _options);
 	dlg->AddItem("Reset", _reset);
-	dlg->AddItem("Exit", _exit);
+	dlg->AddItem("Quit", _exit);
 	dlg->SetSelection(mm_cursel);
 	dlg->ShowFull();
 	dlg->SetSize(100,70);
@@ -57,6 +58,8 @@ bool pause_init(int param)
 
 void pause_tick()
 {
+	DrawScene();
+	fade.Draw();
 	dlg->RunInput();
 	dlg->Draw();
 	

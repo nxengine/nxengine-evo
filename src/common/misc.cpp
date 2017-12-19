@@ -391,7 +391,7 @@ void fbooleanflush(FILE *fp)
 }
 
 // delimit real newlines in 'in' to "\n"'s.
-void crtoslashn(const std::string& in, std::string& out)
+void crtoslashn(char* in, char* out)
 {
     int i, j;
 

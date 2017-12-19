@@ -10,8 +10,8 @@
 #include "../siflib/sectSprites.h"
 #include "../siflib/sectStringArray.h"
 #include "../autogen/sprites.h"
-#include "../dirnames.h"
 #include "../settings.h"
+#include "../ResourceManager.h"
 using namespace Graphics;
 
 #include "sprites.h"
@@ -107,7 +107,7 @@ static void create_slope_boxes()
 }
 
 
-static bool load_sif(const char *fname)
+static bool load_sif(const std::string& fname)
 {
 SIFLoader sif;
 uint8_t *sheetdata, *spritesdata;
@@ -118,13 +118,13 @@ int sheetdatalength, spritesdatalength;
 	
 	if (!(sheetdata = sif.FindSection(SIF_SECTION_SHEETS, &sheetdatalength)))
 	{
-		staterr("load_sif: file '%s' missing SIF_SECTION_SHEETS", fname);
+		staterr("load_sif: file '%s' missing SIF_SECTION_SHEETS", fname.c_str());
 		return 1;
 	}
 	
 	if (!(spritesdata = sif.FindSection(SIF_SECTION_SPRITES, &spritesdatalength)))
 	{
-		staterr("load_sif: file '%s' missing SIF_SECTION_SPRITES", fname);
+		staterr("load_sif: file '%s' missing SIF_SECTION_SPRITES", fname.c_str());
 		return 1;
 	}
 	
@@ -157,7 +157,7 @@ bool Sprites::Init()
 	memset(spritesheet, 0, sizeof(spritesheet));
 	
 	// load sprites info--sheet positions, bounding boxes etc
-	if (load_sif("data/sprites.sif"))
+	if (load_sif(ResourceManager::getInstance()->getLocalizedPath("sprites.sif")))
 		return 1;
 	
 	num_spritesheets = sheetfiles.size();
@@ -192,11 +192,8 @@ static void LoadSheetIfNeeded(int sheetno)
 {
 	if (!spritesheet[sheetno])
 	{
-		char pbm_name[MAXPATHLEN];
-		
-		sprintf(pbm_name, "%s/%s", data_dir, sheetfiles.at(sheetno).c_str());
 		spritesheet[sheetno] = new NXSurface;
-		spritesheet[sheetno]->LoadImage(pbm_name, true);
+		spritesheet[sheetno]->LoadImage(ResourceManager::getInstance()->getLocalizedPath(sheetfiles.at(sheetno)), true);
 		
 	}
 }

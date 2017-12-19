@@ -50,7 +50,7 @@ void fbooleanflush(FILE *fp);
 
 int CVTDir(int csdir);
 
-void crtoslashn(const std::string& in, std::string& out);
+void crtoslashn(char* in, char* out);
 bool contains_non_cr(const std::string& str);
 
 #endif

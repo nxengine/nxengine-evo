@@ -7,6 +7,7 @@
 #include "../graphics/graphics.h"
 #include "../graphics/sprites.h"
 #include "../autogen/sprites.h"
+#include "../common/utf8.h"
 #include <iostream>
 using namespace Graphics;
 using namespace Sprites;
@@ -115,11 +116,7 @@ void TextBox::AddText(const std::string& str)
 {
 	if (!fVisible)
 		return;
-
-	for(auto ch: str)
-	{
-		fCharsWaiting.push_back(ch);
-	}
+	fCharsWaiting.append(str);
 }
 
 
@@ -319,8 +316,9 @@ void TextBox::AddNextChar(void)
 
 	while(!fCharsWaiting.empty())
 	{
-		auto ch = fCharsWaiting[0];
-		fCharsWaiting.erase(0,1);
+		std::string::iterator it = fCharsWaiting.begin();
+		char32_t ch = utf8::next(it, fCharsWaiting.end());
+		fCharsWaiting.erase(fCharsWaiting.begin(),it);
 
 		if (ch == 10) continue;	// ignore LF's, we look only for CR
 		
@@ -346,8 +344,7 @@ void TextBox::AddNextChar(void)
 			sound(SND_MSG);
 		
 		fCurLineLen++;
-		fLines[fCurLine].push_back(ch);
-//		fLines[fCurLine][fCurLineLen] = 0;
+		utf8::append(ch, std::back_inserter(fLines[fCurLine]));
 		
 		if (fCurLine >= MSG_NLINES - 1)
 		{	// went over bottom of box

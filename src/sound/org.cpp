@@ -145,13 +145,13 @@ signed short *abuf;
 
 #else
 
-static bool load_drum_pxt(char *fname, int d)
+static bool load_drum_pxt(const std::string& fname, int d)
 {
 int i;
 signed short sample;
 stPXSound snd;
 
-	stat("load_drum: loading %s into drum index %d", fname, d);
+	stat("load_drum: loading %s into drum index %d", fname.c_str(), d);
 	
 	if (pxt_load(fname, &snd)) return 1;
 	pxt_Render(&snd);
@@ -160,7 +160,7 @@ stPXSound snd;
 	drumtable[d].samples = (signed short *)malloc(snd.final_size * 2);		// *2 - it is 16-bit
 	
 	#ifndef QUIET
-		stat("drum0%X [%s]: %d samples", d, fname, drumtable[d].nsamples);
+		stat("drum0%X [%s]: %d samples", d, fname.c_str(), drumtable[d].nsamples);
 	#endif
 	
 	// read data out of pxt's render result and put it into our drum sample table
@@ -182,7 +182,7 @@ stPXSound snd;
 
 
 
-static bool load_drumtable(const char *pxt_path)		// pxt_path = the path where drum pxt files can be found
+static bool load_drumtable(const std::string& pxt_path)		// pxt_path = the path where drum pxt files can be found
 {
 char fname[80];
 int d;
@@ -234,7 +234,7 @@ uint16_t version;
 		{
 			if (drum_pxt[d])
 			{
-				sprintf(fname, "%sfx%02x.pxt", pxt_path, drum_pxt[d]);
+				sprintf(fname, "%sfx%02x.pxt", pxt_path.c_str(), drum_pxt[d]);
 				if (load_drum_pxt(fname, d)) return 1;
 			}
 		}
@@ -265,7 +265,7 @@ uint16_t version;
 
 
 
-static bool load_wavetable(const char *fname)
+static bool load_wavetable(const std::string& fname)
 {
 int wav, sampl;
 FILE *fp;
@@ -273,7 +273,7 @@ FILE *fp;
 signed char buffer[BUF_SIZE + 1];
 signed char *ptr;
 
-	fp = fopen(fname, "rb");
+	fp = fopen(fname.c_str(), "rb");
 	if (!fp)
 	{
 		stat("Unable to open wavetable.dat!!");
@@ -301,7 +301,7 @@ void c------------------------------() {}
 */
 
 
-int org_init(const char *wavetable_fname, const char *drum_pxt_dir, int org_volume)
+int org_init(const std::string& wavetable_fname, const std::string& drum_pxt_dir, int org_volume)
 {
 int i;
 	
@@ -382,19 +382,19 @@ int i;
 }
 
 
-char org_load(char *fname)
+char org_load(const std::string& fname)
 {
 static const char *magic = "Org-02";
 char buf[8];
 FILE *fp;
 int i, j;
 
-	fp = fopen(fname, "rb");
-	if (!fp) { stat("org_load: no such file: '%s'", fname); return 1; }
+	fp = fopen(fname.c_str(), "rb");
+	if (!fp) { stat("org_load: no such file: '%s'", fname.c_str()); return 1; }
 	
 	for(i=0;i<6;i++) { buf[i] = fgetc(fp); } buf[i] = 0;
 	if (strcmp(buf, magic)) { stat("org-load: not an org file (got '%s')", buf); fclose(fp); return 1; }
-	stat("%s: %s detected", fname, magic);
+	stat("%s: %s detected", fname.c_str(), magic);
 	
 	fseek(fp, 0x06, SEEK_SET);
 	

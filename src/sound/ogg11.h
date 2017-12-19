@@ -2,6 +2,8 @@
 #ifndef _OGG11_H
 #define _OGG11_H
 
+#include <string>
+
 struct ogg11Song
 {
 	Mix_Music *intro;
@@ -14,8 +16,8 @@ struct ogg11Song
 	uint32_t last_pos;
 };
 
-char ogg11_load(char *fname_intro,char *fname_loop);
-bool ogg11_start(char *fname_intro, char *fname_loop, int startbeat, bool loop);
+char ogg11_load(const std::string& name_intro, const std::string& fname_loop);
+bool ogg11_start(const std::string& fname_intro, const std::string& fname_loop, int startbeat, bool loop);
 void ogg11_stop(void);
 bool ogg11_is_playing(void);
 void ogg11_fade(void);

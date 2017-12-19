@@ -90,6 +90,9 @@ int i;
 	// create the player object--note that the player is NOT destroyed on map change
 	if (game.createplayer()) return 1;
 	
+	lang=new I18N();
+	lang->load();
+	
 	return 0;
 }
 
@@ -215,6 +218,7 @@ bool Game::pause(int pausemode, int param)
 
 void Game::tick(void)
 {
+    ClearScreen(BLACK);
 	debug_clear();
 	
 	if (game.paused)

@@ -98,9 +98,9 @@ struct stSong
 	uint32_t last_gen_beat;
 };
 
-int org_init(const char *wavetable_fname, const char *drum_pxt_dir, int org_volume);
+int org_init(const std::string& wavetable_fname, const std::string& drum_pxt_dir, int org_volume);
 void org_close(void);
-char org_load(char *fname);
+char org_load(const std::string& fname);
 bool org_start(int startbeat);
 void org_stop(void);
 bool org_is_playing(void);

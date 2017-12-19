@@ -52,7 +52,7 @@ void SIFLoader::CloseFile()
 void c------------------------------() {}
 */
 
-bool SIFLoader::LoadHeader(const char *filename)
+bool SIFLoader::LoadHeader(const std::string& filename)
 {
 FILE *fp;
 uint32_t magick;
@@ -60,11 +60,11 @@ uint32_t magick;
 	ClearIndex();
 	
 	if (fFP) fclose(fFP);
-	fp = fFP = fopen(filename, "rb");
+	fp = fFP = fopen(filename.c_str(), "rb");
 	
 	if (!fp)
 	{
-		staterr("SIFLoader::LoadHeader: failed to open file '%s'", filename);
+		staterr("SIFLoader::LoadHeader: failed to open file '%s'", filename.c_str());
 		return 1;
 	}
 	

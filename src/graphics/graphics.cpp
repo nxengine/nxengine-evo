@@ -10,9 +10,9 @@
 #include "tileset.h"
 #include "sprites.h"
 #include "font.h"
-#include "../dirnames.h"
 #include "../map.h"
 #include "../version.h"
+#include "../ResourceManager.h"
 #include "nx_icon.h"
 
 SDL_Window * window = NULL;
@@ -328,10 +328,8 @@ NXRect srcrect, dstrect;
 void Graphics::ShowLoadingScreen()
 {
 NXSurface loading;
-char fname[MAXPATHLEN];
-	
-	sprintf(fname, "%s/Loading.pbm", data_dir);
-	if (loading.LoadImage(fname))
+
+	if (loading.LoadImage(ResourceManager::getInstance()->getLocalizedPath("Loading.pbm")))
 		return;
 	
 	int x = (Graphics::SCREEN_WIDTH / 2) - (loading.Width() / 2);

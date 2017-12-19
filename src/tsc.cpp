@@ -20,10 +20,10 @@
 #include "map.h"
 #include "player.h"
 #include "endgame/credits.h"
-#include "dirnames.h"
 #include "screeneffect.h"
 #include "settings.h"
 #include "console.h"
+#include "ResourceManager.h"
 
 // which textbox options are enabled by the "<TUR" script command.
 #define TUR_PARAMS		(TB_LINE_AT_ONCE | TB_VARIABLE_WIDTH_CHARS | TB_CURSOR_NEVER_SHOWN)
@@ -201,21 +201,14 @@ bool TSC::Init(void)
 	GenLTC();
 	_curscript.running = false;
 	
-	std::string fname = data_dir;
-	fname += "/Head.tsc";
 	// load the "common" TSC scripts available to all maps
-	if (!Load(fname, ScriptPages::SP_HEAD)) return false;
+	if (!Load(ResourceManager::getInstance()->getLocalizedPath("Head.tsc"), ScriptPages::SP_HEAD)) return false;
 	
-
-	fname = data_dir;
-	fname += "/ArmsItem.tsc";
 	// load the inventory screen scripts
-	if (!Load(fname, ScriptPages::SP_ARMSITEM)) return false;
+	if (!Load(ResourceManager::getInstance()->getLocalizedPath("ArmsItem.tsc"), ScriptPages::SP_ARMSITEM)) return false;
 	
-	fname = data_dir;
-	fname += "/StageSelect.tsc";
 	// load stage select/teleporter scripts
-	if (!Load(fname, ScriptPages::SP_STAGESELECT)) return false;
+	if (!Load(ResourceManager::getInstance()->getLocalizedPath("StageSelect.tsc"), ScriptPages::SP_STAGESELECT)) return false;
 	
 	return true;
 }

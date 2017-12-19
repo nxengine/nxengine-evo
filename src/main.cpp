@@ -27,11 +27,8 @@ using namespace Graphics;
 #include "caret.h"
 #include "console.h"
 #include "screeneffect.h"
+#include "ResourceManager.h"
 
-
-const char *data_dir = "data";
-const char *stage_dir = "data/Stage";
-const char *pic_dir = "data/endpic";
 
 int fps = 0;
 static int fps_so_far = 0;
@@ -49,7 +46,7 @@ static void fatal(const char *str)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", str, NULL);
 }
 
-static bool check_data_exists()
+/*static bool check_data_exists()
 {
 char fname[MAXPATHLEN];
 
@@ -59,7 +56,7 @@ char fname[MAXPATHLEN];
 	fatal("Missing \"data\" directory.\nPlease copy it over from a Doukutsu installation.");
 	
 	return 1;
-}
+}*/
 
 void update_fps()
 {
@@ -292,15 +289,17 @@ bool freshstart;
 	// so we know the initial screen resolution.
 	settings_load();
 	
+	(void)ResourceManager::getInstance();
+	
 	if (Graphics::init(settings->resolution)) { fatal("Failed to initialize graphics."); return 1; }
 	Graphics::SetFullscreen(settings->fullscreen);
 	if (font_init()) { fatal("Failed to load font."); return 1; }
 	
 	
-	if (check_data_exists())
-	{
-		return 1;
-	}
+//	if (check_data_exists())
+//	{
+//		return 1;
+//	}
 	
 	Graphics::ShowLoadingScreen();
 	if (sound_init()) { fatal("Failed to initialize sound."); return 1; }

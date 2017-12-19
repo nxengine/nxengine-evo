@@ -12,10 +12,10 @@
 #include "../console.h"
 #include "../player.h"
 #include "../map.h"
-#include "../dirnames.h"
 #include "../graphics/graphics.h"
 #include "../graphics/sprites.h"
 #include "../autogen/sprites.h"
+#include "../ResourceManager.h"
 using namespace Graphics;
 using namespace Sprites;
 
@@ -295,12 +295,12 @@ char fname[MAXPATHLEN];
 	for(int i=0;i<MAX_BIGIMAGES;i++)
 	{
 	    if (i>0 && i<4 && game.flags[1020])
-		sprintf(fname, "%s/credit%02dm.bmp", pic_dir, i);
+		sprintf(fname, "endpic/credit%02dm.bmp", i);
 		else
-		sprintf(fname, "%s/credit%02d.bmp", pic_dir, i);
+		sprintf(fname, "endpic/credit%02d.bmp", i);
 		if (file_exists(fname))
 		{
-			images[i] = NXSurface::FromFile(fname, false);
+			images[i] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
 			if (!images[i])
 				staterr("BigImage::Init: image '%s' exists but seems corrupt!", fname);
 			else

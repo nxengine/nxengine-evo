@@ -7,6 +7,7 @@
 #include "TextBox/TextBox.h"
 #include "ObjManager.h"
 #include "tsc.h"
+#include "i18n/translate.h"
 
 #define GAME_FPS		50
 
@@ -63,6 +64,7 @@ struct Game
 	uint32_t counter;	// Nikumaru counter value
 	
 	TSC tsc;
+	I18N* lang;
 	
 	struct
 	{
@@ -156,6 +158,7 @@ struct Game
 #define NXFLAG_SLOW_WHEN_HURT		(NXFLAG_SLOW_X_WHEN_HURT | NXFLAG_SLOW_Y_WHEN_HURT)
 
 extern Game game;
+#define _(x) game.lang->translate(x)
 extern TextBox textbox;
 
 extern Object *onscreen_objects[MAX_OBJECTS];

@@ -7,6 +7,7 @@
 #include "graphics.h"
 #include "../game.h"
 #include "../common/stat.h"
+#include "../common/utf8.h"
 
 #include "sprites.h"
 #include "../autogen/sprites.h"
@@ -66,8 +67,10 @@ int font_draw(int x, int y, const std::string& text, uint32_t color, bool is_sha
 	g = ((color >> 8) & 0xFF);
 	b = ((color) & 0xFF);
 	
-	for(auto ch: text)
+	std::string::const_iterator it = text.begin();
+	while(it != text.end())
 	{
+		char32_t ch = utf8::next(it, text.end());
 		BMFont::Glyph glyph = whitefnt.glyph(ch);
 		SDL_Texture* atlas = whitefnt.atlas(glyph.atlasid);
 

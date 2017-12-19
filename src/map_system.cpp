@@ -67,7 +67,7 @@ int x1, y1, x2, y2;
 static void draw_banner(void)
 {
 	FillRect(0, BANNER_TOP, SCREEN_WIDTH, BANNER_BTM, NXColor(0, 0, 0));
-	font_draw(ms.textx, ms.texty, ms.bannertext);
+	font_draw(ms.textx, ms.texty, _(ms.bannertext));
 }
 
 

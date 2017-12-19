@@ -4,7 +4,7 @@
 #include "CredReader.h"
 #include "../tsc.h"
 #include "../common/stat.h"
-#include "../dirnames.h"
+#include "../ResourceManager.h"
 
 /*
 CREDITS FORMAT (credit.tsc)
@@ -131,27 +131,21 @@ CredReader::CredReader()
 
 bool CredReader::OpenFile(void)
 {
-char fname[MAXPATHLEN];
-
 	if (!data.empty()) CloseFile();
-	sprintf(fname, "%s/Credit.tsc", data_dir);
-	
-	data = game.tsc.Decrypt(fname, &datalen);
+
+	data = game.tsc.Decrypt(ResourceManager::getInstance()->getLocalizedPath("Credit.tsc"), &datalen);
 	if (data.empty())
 	{
-		staterr("CredReader: couldn't open '%s'!", fname);
+		staterr("CredReader: couldn't open 'Credits.tsc'!");
 		return 1;
 	}
 	
-	stat("CredReader: '%s' loaded ok!", fname);
 	dataindex = 0;
 	return 0;
 }
 
 void CredReader::CloseFile()
 {
-	stat("CredReader: closing file");
-	
 	if (!data.empty())
 	{
 //		free(data);

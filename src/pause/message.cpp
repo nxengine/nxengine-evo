@@ -8,6 +8,7 @@
 using namespace Graphics;
 #include "../TextBox/TextBox.h"
 #include "../input.h"
+#include "../game.h"
 
 
 using namespace Options;
@@ -76,10 +77,10 @@ void Message::Draw()
 		return;
 	}
 	
-	font_draw(fMsgX, fMsgY, fMsg);
+	font_draw(fMsgX, fMsgY, _(fMsg));
 	
 	if (fMsg2[0])
-		font_draw(fMsg2X, fMsg2Y, fMsg2);
+		font_draw(fMsg2X, fMsg2Y, _(fMsg2));
 }
 
 

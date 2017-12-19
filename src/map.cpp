@@ -6,7 +6,6 @@
 #include "ObjManager.h"
 #include "caret.h"
 #include "debug.h"
-#include "dirnames.h"
 #include "graphics/graphics.h"
 #include "graphics/font.h"
 #include "graphics/sprites.h"
@@ -21,6 +20,7 @@ using namespace Tileset;
 #include "game.h"
 #include "player.h"
 #include "settings.h"
+#include "ResourceManager.h"
 
 
 stMap map;
@@ -43,7 +43,6 @@ unsigned int tilekey[MAX_TILES];			// mapping from tile codes -> tile attributes
 // tile attributes (pxa), and script (tsc).
 bool load_stage(int stage_no)
 {
-char stage[MAXPATHLEN];
 char fname[MAXPATHLEN];
 
 	stat(" >> Entering stage %d: '%s'.", stage_no, stages[stage_no].stagename);
@@ -61,19 +60,18 @@ char fname[MAXPATHLEN];
 	// get the base name of the stage without extension
 	const char *mapname = stages[stage_no].filename;
 	if (!strcmp(mapname, "lounge")) mapname = "Lounge";
-	sprintf(stage, "%s/%s", stage_dir, mapname);
 	
-	sprintf(fname, "%s.pxm", stage);
-	if (load_map(fname)) return 1;
+	sprintf(fname, "Stage/%s.pxm", mapname);
+	if (load_map(ResourceManager::getInstance()->getLocalizedPath(fname))) return 1;
 	
-	sprintf(fname, "%s/%s.pxa", stage_dir, tileset_names[stages[stage_no].tileset]);
-	if (load_tileattr(fname)) return 1;
+	sprintf(fname, "Stage/%s.pxa", tileset_names[stages[stage_no].tileset]);
+	if (load_tileattr(ResourceManager::getInstance()->getLocalizedPath(fname))) return 1;
 	
-	sprintf(fname, "%s.pxe", stage);
-	if (load_entities(fname)) return 1;
+	sprintf(fname, "Stage/%s.pxe", mapname);
+	if (load_entities(ResourceManager::getInstance()->getLocalizedPath(fname))) return 1;
 	
-	sprintf(fname, "%s.tsc", stage);
-	if (!game.tsc.Load(fname, TSC::ScriptPages::SP_MAP)) return 1;
+	sprintf(fname, "Stage/%s.tsc", mapname);
+	if (!game.tsc.Load(ResourceManager::getInstance()->getLocalizedPath(fname), TSC::ScriptPages::SP_MAP)) return 1;
 	map_set_backdrop(stages[stage_no].bg_no);
 	map.scrolltype = stages[stage_no].scroll_type;
 	map.motionpos = 0;
@@ -86,21 +84,21 @@ void c------------------------------() {}
 */
 
 // load a PXM map
-bool load_map(const char *fname)
+bool load_map(const std::string& fname)
 {
 FILE *fp;
 int x, y;
 
-	fp = fopen(fname, "rb");
+	fp = fopen(fname.c_str(), "rb");
 	if (!fp)
 	{
-		staterr("load_map: no such file: '%s'", fname);
+		staterr("load_map: no such file: '%s'", fname.c_str());
 		return 1;
 	}
 	
 	if (!fverifystring(fp, "PXM"))
 	{
-		staterr("load_map: invalid map format: '%s'", fname);
+		staterr("load_map: invalid map format: '%s'", fname.c_str());
 		return 1;
 	}
 	
@@ -156,7 +154,7 @@ int x, y;
     	map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
 	}
 	
-	stat("load_map: '%s' loaded OK! - %dx%d", fname, map.xsize, map.ysize);
+	stat("load_map: '%s' loaded OK! - %dx%d", fname.c_str(), map.xsize, map.ysize);
 	return 0;
 }
 
@@ -192,7 +190,7 @@ void recalc_map_offsets()
 }
 
 // load a PXE (entity list for a map)
-bool load_entities(const char *fname)
+bool load_entities(const std::string& fname)
 {
 FILE *fp;
 int i;
@@ -202,18 +200,18 @@ int nEntities;
 	Objects::DestroyAll(false);
 	FloatText::ResetAll();
 	
-	stat("load_entities: reading in %s", fname);
+	stat("load_entities: reading in %s", fname.c_str());
 	// now we can load in the new objects
-	fp = fopen(fname, "rb");
+	fp = fopen(fname.c_str(), "rb");
 	if (!fp)
 	{
-		staterr("load_entities: no such file: '%s'", fname);
+		staterr("load_entities: no such file: '%s'", fname.c_str());
 		return 1;
 	}
 	
 	if (!fverifystring(fp, "PXE"))
 	{
-		staterr("load_entities: not a PXE: '%s'", fname);
+		staterr("load_entities: not a PXE: '%s'", fname.c_str());
 		return 1;
 	}
 	
@@ -326,7 +324,7 @@ int nEntities;
 */
 
 // loads a pxa (tileattr) file
-bool load_tileattr(const char *fname)
+bool load_tileattr(const std::string& fname)
 {
 FILE *fp;
 int i;
@@ -334,11 +332,11 @@ unsigned char tc;
 
 	map.nmotiontiles = 0;
 	
-	stat("load_pxa: reading in %s", fname);
-	fp = fopen(fname, "rb");
+	stat("load_pxa: reading in %s", fname.c_str());
+	fp = fopen(fname.c_str(), "rb");
 	if (!fp)
 	{
-		staterr("load_pxa: no such file: '%s'", fname);
+		staterr("load_pxa: no such file: '%s'", fname.c_str());
 		return 1;
 	}
 	
@@ -374,7 +372,7 @@ bool load_stages(void)
 {
 FILE *fp;
 
-	fp = fopen("./data/stage.dat", "rb");
+	fp = fopen(ResourceManager::getInstance()->getLocalizedPath("stage.dat").c_str(), "rb");
 	if (!fp)
 	{
 		staterr("%s(%d): failed to open data/stage.dat", __FILE__, __LINE__);
@@ -403,7 +401,7 @@ FILE *fp;
 int i;
 
 	stat("initmapfirsttime: loading data/tilekey.dat.");
-	if (!(fp = fopen("data/tilekey.dat", "rb")))
+	if (!(fp = fopen(ResourceManager::getInstance()->getLocalizedPath("tilekey.dat").c_str(), "rb")))
 	{
 		staterr("data/tilekey.dat is missing!");
 		return 1;
@@ -429,8 +427,7 @@ void c------------------------------() {}
 // loads a backdrop into memory, if it hasn't already been loaded
 static bool LoadBackdropIfNeeded(int backdrop_no)
 {
-char fname[MAXPATHLEN];
-
+std::string fname;
 	// load backdrop now if it hasn't already been loaded
 	if (!backdrop[backdrop_no])
 	{
@@ -438,24 +435,25 @@ char fname[MAXPATHLEN];
 		bool use_chromakey = (backdrop_no == 8);
 		if (widescreen)
 		{
-		    if (backdrop_no == 9) {
-		        if (sprintf(fname, "%s/%s.pbm", data_dir, "bkMoon480fix") < 0) {
-		            staterr("Error opening bkMoon480fix file");
-		        }
-		    } else if (backdrop_no == 10) {
-		        if (sprintf(fname, "%s/%s.pbm", data_dir, "bkFog480fix")) {
-		            staterr("Error opening bkFog480fix file");
-		        }
-		    }   else {
-		        sprintf(fname, "%s/%s.pbm", data_dir, backdrop_names[backdrop_no]);
+		    if (backdrop_no == 9)
+		    {
+		        fname = "bkMoon480fix.pbm";
+		    }
+		    else if (backdrop_no == 10)
+		    {
+		        fname = "bkFog480fix.pbm";
+		    }
+		    else
+		    {
+		        fname = std::string(backdrop_names[backdrop_no]) + ".pbm";
 		    }
 		}
 		else
 		{
-		    sprintf(fname, "%s/%s.pbm", data_dir, backdrop_names[backdrop_no]);
+		    fname = std::string(backdrop_names[backdrop_no]) + ".pbm";
 		}
 		
-		backdrop[backdrop_no] = NXSurface::FromFile(fname, use_chromakey);
+		backdrop[backdrop_no] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), use_chromakey);
 		if (!backdrop[backdrop_no])
 		{
 			staterr("Failed to load backdrop '%s'", fname);
@@ -716,7 +714,7 @@ void c------------------------------() {}
 // map scrolling code
 void scroll_normal(void)
 {
-const int scroll_adj_rate = (0x2000 / map.scrollspeed);
+const int scroll_adj_rate = ((double)0x2000 / (double)map.scrollspeed);
 	
 	// how many pixels to let player stray from the center of the screen
 	// before we start scrolling. high numbers let him reach closer to the edges,
@@ -809,8 +807,8 @@ void map_scroll_do(void)
 		}
 	}
 	
-	map.real_xscroll += (map.target_x - map.real_xscroll) / map.scrollspeed;
-	map.real_yscroll += (map.target_y - map.real_yscroll) / map.scrollspeed;
+	map.real_xscroll += (double)(map.target_x - map.real_xscroll) / (double)map.scrollspeed;
+	map.real_yscroll += (double)(map.target_y - map.real_yscroll) / (double)map.scrollspeed;
 	
 	map.displayed_xscroll = (map.real_xscroll + map.phase_adj);
 	map.displayed_yscroll = map.real_yscroll;	// we don't compensate on Y, because player falls > 2 pixels per frame
@@ -1006,7 +1004,7 @@ void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds, bool boomfl
 const char *map_get_stage_name(int mapno)
 {
 	if (mapno == STAGE_KINGS)
-		return "";//Studio Pixel Presents";
+		return "";//"Studio Pixel Presents";
 	
 	return stages[mapno].stagename;
 }
@@ -1022,7 +1020,7 @@ void map_draw_map_name(void)
 {
 	if (game.showmapnametime)
 	{
-		font_draw(game.mapname_x, 84, map_get_stage_name(game.curmap), 0xFFFFFF, true);
+		font_draw(game.mapname_x, 84, _(map_get_stage_name(game.curmap)), 0xFFFFFF, true);
 		game.showmapnametime--;
 	}
 }

@@ -672,17 +672,17 @@ char pxt_IsPlaying(int slot)
 
 // attempts to load all the PXT's out of the given cache file.
 // if succesful, returns 0.
-static char LoadFXCache(const char *fname, int top)
+static char LoadFXCache(const std::string& fname, int top)
 {
 	FILE *fp;
 	int slot;
 	uint32_t magick;
 	stPXSound snd;
 
-	fp = fopen(fname, "rb");
+	fp = fopen(fname.c_str(), "rb");
 	if (!fp)
 	{
-		stat("LoadFXCache: audio cache %s not exist", fname);
+		stat("LoadFXCache: audio cache %s does not exist", fname.c_str());
 		return 1;
 	}
 	
@@ -692,7 +692,7 @@ static char LoadFXCache(const char *fname, int top)
 	fread(&magick, sizeof(magick), 1, fp);
 	if (magick != PXCACHE_MAGICK)
 	{
-		stat("LoadFXCache: %s is incorrect format: expected %08x, got %08x", fname, PXCACHE_MAGICK, magick);
+		stat("LoadFXCache: %s is incorrect format: expected %08x, got %08x", fname.c_str(), PXCACHE_MAGICK, magick);
 		fclose(fp);
 		return 1;
 	}
@@ -740,7 +740,7 @@ static char LoadFXCache(const char *fname, int top)
 // render all pxt files under "path" up to slot "top".
 // get them all ready to play in their sound slots.
 // if cache_name is specified the pcm audio data is cached under the given filename.
-char pxt_LoadSoundFX(const char *path, const char *cache_name, int top)
+char pxt_LoadSoundFX(const std::string& path, const std::string& cache_name, int top)
 {
 	char fname[80];
 	int slot;
@@ -750,7 +750,7 @@ char pxt_LoadSoundFX(const char *path, const char *cache_name, int top)
 	stat("Loading Sound FX...");
 	load_top = top;
 	
-	if (cache_name)
+	if (!cache_name.empty())
 	{
 		// try to load the cache if we can
 		if (LoadFXCache(cache_name, top) == 0)
@@ -758,10 +758,10 @@ char pxt_LoadSoundFX(const char *path, const char *cache_name, int top)
 			return 0;
 		}
 		
-		fp = fopen(cache_name, "wb");
+		fp = fopen(cache_name.c_str(), "wb");
 		if (!fp)
 		{
-			staterr("LoadSoundFX: failed open: '%s'", cache_name);
+			staterr("LoadSoundFX: failed open: '%s'", cache_name.c_str());
 			return 1;
 		}
 		
@@ -775,7 +775,7 @@ char pxt_LoadSoundFX(const char *path, const char *cache_name, int top)
 	
 	for(slot=1;slot<=top;slot++)
 	{
-		sprintf(fname, "%sfx%02x.pxt", path, slot);
+		sprintf(fname, "%sfx%02x.pxt", path.c_str(), slot);
 		
 		if (pxt_load(fname, &snd)) continue;
 		pxt_Render(&snd);
@@ -803,7 +803,7 @@ char pxt_LoadSoundFX(const char *path, const char *cache_name, int top)
 	
 	if (fp)
 	{
-		stat(" - created %s; %d bytes", cache_name, ftell(fp));
+		stat(" - created %s; %d bytes", cache_name.c_str(), ftell(fp));
 		fclose(fp);
 	}
 	
@@ -883,7 +883,7 @@ uint8_t ch;
 
 
 // read a .pxt file into memory and return a stPXSound ready to be rendered.
-char pxt_load(const char *fname, stPXSound *snd)
+char pxt_load(const std::string& fname, stPXSound *snd)
 {
 	FILE *fp;
 	char load_extended_section = 0;
@@ -891,8 +891,8 @@ char pxt_load(const char *fname, stPXSound *snd)
 	int i, cc;
 	
 	
-	fp = fopen(fname, "rb");
-	if (!fp) { staterr("pxt_load: file '%s' not found.", fname); return 1; }
+	fp = fopen(fname.c_str(), "rb");
+	if (!fp) { staterr("pxt_load: file '%s' not found.", fname.c_str()); return 1; }
 	
 	//lprintf("pxt_load: reading %s...\n", fname);
 	

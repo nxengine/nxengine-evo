@@ -17,10 +17,10 @@ static ogg11Song song;
 static bool do_loop = false;
 static bool looped = false;
 
-char ogg11_load(char *fname_intro, char *fname_loop)
+char ogg11_load(const std::string& fname_intro, const std::string& fname_loop)
 {
 	song.intro=NULL;
-	song.intro=Mix_LoadMUS(fname_intro);
+	song.intro=Mix_LoadMUS(fname_intro.c_str());
 	if (!song.intro)
 	{
 		staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
@@ -28,13 +28,13 @@ char ogg11_load(char *fname_intro, char *fname_loop)
 	}
 
 	song.loop=NULL;
-	song.loop=Mix_LoadMUS(fname_loop);
+	song.loop=Mix_LoadMUS(fname_loop.c_str());
 	if (!song.loop)
 	{
 		staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
 		return 1;
 	}
-    printf("ogg11_load: %s, %s\n", fname_intro, fname_loop);
+    stat("ogg11_load: %s, %s\n", fname_intro.c_str(), fname_loop.c_str());
 	return 0;
 }
 
@@ -47,17 +47,14 @@ void musicFinished11()
 	// This seems to work, but needs extensive testing.
 
 	looped = true;
-	printf("looped\n");
 	song.last_pos = SDL_GetTicks();
 	Mix_PlayMusic(song.loop,0);
 }
 
 
 // start the currently-loaded track playing at beat startbeat.
-bool ogg11_start(char *fname_intro, char *fname_loop, int startbeat, bool loop)
+bool ogg11_start(const std::string& fname_intro, const std::string& fname_loop, int startbeat, bool loop)
 {
-    printf("startbeat: %d\n", startbeat);
-    printf("looped: %d\n", loop);
 	ogg11_stop();		// stop any old music
 	
 	ogg11_load(fname_intro, fname_loop);
@@ -114,7 +111,6 @@ void ogg11_stop(void)
 			song.loop=NULL;
 		}
 		lastsongpos = SDL_GetTicks()-song.last_pos;
-		printf("lastsongpos = %d\n",lastsongpos);
 	}
 }
 

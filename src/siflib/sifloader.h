@@ -3,6 +3,7 @@
 #define _SIFLOADER_H
 
 #include <vector>
+#include <string>
 #include <stdint.h>
 
 #define SIF_MAX_GROUPS			255		// limitation of SECTION_GROUPS format
@@ -55,7 +56,7 @@ public:
 	
 	// open a file handle to the given .sif and load the header and
 	// section index into memory.
-	bool LoadHeader(const char *filename);
+	bool LoadHeader(const std::string& filename);
 	
 	// return a pointer to the section data of type 'type',
 	// or NULL if the file doesn't have a section of that type.

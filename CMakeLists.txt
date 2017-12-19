@@ -28,6 +28,7 @@ file(GLOB IN_SOURCES "src/intro/[a-zA-Z]*.cpp")
 file(GLOB PA_SOURCES "src/pause/[a-zA-Z]*.cpp")
 file(GLOB SL_SOURCES "src/siflib/[a-zA-Z]*.cpp")
 file(GLOB SN_SOURCES "src/sound/[a-zA-Z]*.cpp")
+file(GLOB I18N_SOURCES "src/i18n/[a-zA-Z]*.cpp")
 file(GLOB EXTR_SOURCES "src/extract/[a-zA-Z]*.cpp")
 set(EXTR_SOURCES
     ${EXTR_SOURCES}
@@ -50,10 +51,10 @@ set(SOURCES
     ${PA_SOURCES}
     ${SL_SOURCES}
     ${SN_SOURCES}
+    ${I18N_SOURCES}
 )
 
 option(DEBUG "build application with debug traces" OFF) # OFF is the default
-option(MUTABLE_SCALE "build application with changable scale" ON) # OFF is the default
 
 if(DEBUG)
   add_definitions(-DTRACE_SCRIPT)

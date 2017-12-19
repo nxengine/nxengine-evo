@@ -16,10 +16,10 @@
 static oggSong song;
 static bool do_loop = 0;
 
-char ogg_load(char *fname)
+char ogg_load(const std::string& fname)
 {
 	song.music=NULL;
-	song.music=Mix_LoadMUS(fname);
+	song.music=Mix_LoadMUS(fname.c_str());
 	if (!song.music)
 	{
 		staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
@@ -38,7 +38,7 @@ void musicFinished()
 
 
 // start the currently-loaded track playing at beat startbeat.
-bool ogg_start(char* fname, int startbeat)
+bool ogg_start(const std::string& fname, int startbeat)
 {
 	ogg_stop();		// stop any old music
 	

@@ -4,9 +4,9 @@
 #include "pngfuncs.h"
 #include <fstream>
 #include <iostream>
+#include "../ResourceManager.h"
 
 
-extern const char *data_dir;
 extern SDL_Renderer * renderer;
 
 BMFont::BMFont() : _height(0), _base(0) {}
@@ -19,7 +19,8 @@ bool BMFont::load(const std::string& font)
     //special empty glyph
     _glyphs[0] = BMFont::Glyph{0,0,0,0,0,0,0,0,0};
 
-    std::string path=std::string(data_dir)+"/"+font;
+    std::string path=ResourceManager::getInstance()->getLocalizedPath(font);
+    stat("Loading font file %s", path.c_str());
     std::ifstream fl;
     fl.open(path, std::ifstream::in | std::ifstream::binary);
     if (fl.is_open()) {
@@ -45,7 +46,7 @@ bool BMFont::load(const std::string& font)
 
         for (auto atlas : fontdef["pages"])
         {
-            std::string atlaspath=std::string(data_dir)+"/"+atlas.get<std::string>();
+            std::string atlaspath=ResourceManager::getInstance()->getLocalizedPath(atlas.get<std::string>());
             SDL_Surface* surf = png_load_surface(atlaspath.c_str());
             _atlases.push_back(SDL_CreateTextureFromSurface(renderer, surf));
             SDL_FreeSurface(surf);

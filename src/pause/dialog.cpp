@@ -1,6 +1,7 @@
 
 #include "../nx.h"
 #include "dialog.h"
+#include "../game.h"
 #include "../graphics/graphics.h"
 using namespace Graphics;
 #include "../graphics/font.h"
@@ -27,16 +28,16 @@ Dialog::Dialog()
     if (widescreen)
     {
         DLG_X = ((SCREEN_WIDTH / 2) - 110);
-        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
         DLG_W = 240;
-        DLG_H = 180;
+        DLG_H = 200;
     }
     else
     {
         DLG_X = ((SCREEN_WIDTH / 2) - 88);
-        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
         DLG_W = 190;
-        DLG_H = 180;
+        DLG_H = 200;
     }
 
 	onclear = NULL;
@@ -74,16 +75,16 @@ void Dialog::UpdateSizePos()
     if (widescreen)
     {
         DLG_X = ((SCREEN_WIDTH / 2) - 110);
-        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
         DLG_W = 240;
-        DLG_H = 180;
+        DLG_H = 200;
     }
     else
     {
         DLG_X = ((SCREEN_WIDTH / 2) - 88);
-        DLG_Y = ((SCREEN_HEIGHT / 2) - 90);
+        DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
         DLG_W = 190;
-        DLG_H = 180;
+        DLG_H = 200;
     }
 
     fCoords.x = DLG_X;
@@ -156,7 +157,7 @@ void Dialog::Draw()
 	TextBox::DrawFrame(fCoords.x, fCoords.y, fCoords.w, fCoords.h);
 	
 	int x = fTextX;
-	int y = (fCoords.y + 18);
+	int y = (fCoords.y + GetFontBase());
 	for(unsigned int i=0;i<fItems.size();i++)
 	{
 		ODItem *item = (ODItem *)fItems.at(i);
@@ -165,9 +166,11 @@ void Dialog::Draw()
 			DrawItem(x, y, item);
 		
 		if (i == (unsigned int)fCurSel)
-			draw_sprite(x - 16, y, SPR_WHIMSICAL_STAR, 1);
-		
-		y += GetFontHeight();
+			draw_sprite(x - 16, y+1, SPR_WHIMSICAL_STAR, 1);
+		if (item->type == OD_SEPARATOR)
+			y += 5;
+		else
+			y += GetFontHeight();
 	}
 	
 	if (fNumShown < 99)
@@ -176,18 +179,18 @@ void Dialog::Draw()
 
 void Dialog::DrawItem(int x, int y, ODItem *item)
 {
-char text[132];
+char text[264];
 
-	strcpy(text, item->text);
-	strcat(text, item->suffix);
+	strcpy(text, _(item->text).c_str());
+	strcat(text, _(item->suffix).c_str());
 	
 	// comes first because it can trim the text on the left side if needed
 	if (item->raligntext[0])
 	{
 		int rx = (fCoords.x + fCoords.w) - 10;
-		rx -= GetFontWidth(item->raligntext);
-		font_draw(rx, y, item->raligntext);
-		
+		rx -= GetFontWidth(_(item->raligntext));
+		font_draw(rx, y, _(item->raligntext));
+		/*
 		// ... ellipses if too long
 		int maxx = (rx - 4);
 		//FillRect(maxx, 0, maxx, SCREEN_HEIGHT, 0,255,0);
@@ -203,7 +206,7 @@ char text[132];
 			text[len-2] = '.';
 			text[len-3] = '.';
 			text[len-4] = '.';
-		}
+		}*/
 	}
 	
 	font_draw(x, y, text);
