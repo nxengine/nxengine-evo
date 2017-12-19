@@ -26,6 +26,7 @@
 #include <string.h>
 #include <png.h>
 #include "pngfuncs.h"
+#include "../common/stat.h"
 
 
 static int png_colortype_from_surface(SDL_Surface *surface)
@@ -40,16 +41,20 @@ static int png_colortype_from_surface(SDL_Surface *surface)
 	return colortype;
 }
 
+void user_read_fn(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+	fread(data, 1, length, (FILE*)(png_get_progressive_ptr(png_ptr))) ;
+}
 
 void png_user_warn(png_structp ctx, png_const_charp str)
 {
-	fprintf(stderr, "libpng: warning: %s\n", str);
+	staterr("libpng: warning: %s\n", str);
 }
 
 
 void png_user_error(png_structp ctx, png_const_charp str)
 {
-	fprintf(stderr, "libpng: error: %s\n", str);
+	staterr("libpng: error: %s\n", str);
 }
 
 
@@ -64,7 +69,7 @@ int png_save_surface(char *filename, SDL_Surface *surf)
 	/* Opening output file */
 	fp = fopen(filename, "wb");
 	if (fp == NULL) {
-		perror("fopen error");
+		staterr("fopen error");
 		return -1;
 	}
 
@@ -72,7 +77,7 @@ int png_save_surface(char *filename, SDL_Surface *surf)
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, 
 		NULL, png_user_error, png_user_warn);
 	if (png_ptr == NULL) {
-		printf("png_create_write_struct error!\n");
+		staterr("png_create_write_struct error!\n");
 		fclose(fp);
 		return -1;
 	}
@@ -80,7 +85,7 @@ int png_save_surface(char *filename, SDL_Surface *surf)
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == NULL) {
 		png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-		printf("png_create_info_struct error!\n");
+		staterr("png_create_info_struct error!\n");
 		fclose(fp);
 		exit(-1);
 	}
@@ -120,7 +125,7 @@ SDL_Surface* png_load_surface(const char *name)
     png_infop info_ptr;
     unsigned int sig_read = 0;
     int color_type, interlace_type;
-    FILE *fp;
+    FILE *fp = NULL;
 
     Uint32 Rmask = 0x00FF0000;
     Uint32 Gmask = 0x0000FF00;
@@ -129,7 +134,7 @@ SDL_Surface* png_load_surface(const char *name)
 
     if ((fp = fopen(name, "rb")) == NULL)
     {
-        printf("1\n");
+        staterr("Can't open file\n");
 
         return NULL;
     }
@@ -138,26 +143,27 @@ SDL_Surface* png_load_surface(const char *name)
                                      NULL, png_user_error, png_user_warn);
 
     if (png_ptr == NULL) {
-            printf("2\n");
-    fclose(fp);
+		staterr("libpng: can't create read struct\n");
+		fclose(fp);
         return NULL;
     }
 
     info_ptr = png_create_info_struct(png_ptr);
     if (info_ptr == NULL) {
-        printf("3\n");
+        staterr("libpng: can't create info struct\n");
         fclose(fp);
         png_destroy_read_struct(&png_ptr, NULL, NULL);
         return NULL;
     }
     if (setjmp(png_jmpbuf(png_ptr))) {
-        printf("4\n");
+		staterr("libpng: can't setjmp\n");
         png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
         fclose(fp);
         return NULL;
     }
 
-    png_init_io(png_ptr, fp);
+    //png_init_io(png_ptr, fp);
+	png_set_read_fn(png_ptr, (png_voidp)fp, user_read_fn);
 
     png_set_sig_bytes(png_ptr, sig_read);
 
