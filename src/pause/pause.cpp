@@ -52,7 +52,14 @@ bool pause_init(int param)
 	dlg->AddItem("Quit", _exit);
 	dlg->SetSelection(mm_cursel);
 	dlg->ShowFull();
-	dlg->SetSize(100,70);
+	int maxsize = 0;
+	for (auto& item: dlg->Items())
+	{
+		int x = GetFontWidth(_(item->text));
+		if (x > maxsize)
+			maxsize = x;
+	}
+	dlg->SetSize(maxsize+60,70);
 	return 0;
 }
 

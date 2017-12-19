@@ -346,6 +346,10 @@ void Dialog::Clear()
 	fCurSel = 0;
 }
 
+std::vector<ODItem*>& Dialog::Items()
+{
+    return fItems;
+}
 
 
 

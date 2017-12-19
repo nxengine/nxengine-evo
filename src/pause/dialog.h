@@ -49,6 +49,7 @@ public:
 	
 	void (*onclear)();
 	void (*ondismiss)();
+	std::vector<ODItem*>& Items();
 	
 private:
 	void DrawItem(int x, int y, ODItem *item);
