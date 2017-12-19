@@ -456,7 +456,7 @@ std::string fname;
 		backdrop[backdrop_no] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), use_chromakey);
 		if (!backdrop[backdrop_no])
 		{
-			staterr("Failed to load backdrop '%s'", fname);
+			staterr("Failed to load backdrop '%s'", fname.c_str());
 			return 1;
 		}
 	}
