@@ -168,10 +168,10 @@ const char *input_get_name(int index)
 {
 static const char *input_names[] =
 {
-	"left", "right", "up", "down",
-	"jump", "fire", "previous wpn", "next wpn",
-	"inventory", "map",
-	"pause",
+	"Left", "Right", "Up", "Down",
+	"Jump", "Fire", "Wpn Prev", "Wpn Next",
+	"Inventory", "Map",
+	"Pause",
 	"f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
 	"freeze frame", "frame advance", "debug fly"
 };
