@@ -325,7 +325,7 @@ int i;
 		// allow entering inventory
 		if (justpushed(INVENTORYKEY))
 		{
-			if (!game.frozen && !player->dead && game.tsc.GetCurrentScript() == -1)
+			if (!game.frozen && !player->dead && game.tsc->GetCurrentScript() == -1)
 			{
 				game.setmode(GM_INVENTORY);
 			}
@@ -334,7 +334,7 @@ int i;
 		// Map System
 		if (justpushed(MAPSYSTEMKEY) && (FindInventory(ITEM_MAP_SYSTEM)!=-1))
 		{
-			if (!game.frozen && !player->dead && game.tsc.GetCurrentScript() == -1)
+			if (!game.frozen && !player->dead && game.tsc->GetCurrentScript() == -1)
 			{
 				if (fade.getstate() == FS_NO_FADE && game.switchstage.mapno == -1)
 				{
@@ -423,7 +423,7 @@ int tile;
 					// level after Core battle, and should instead execute script 1100.
 					if (game.flags[4000])
 					{	// "your senses dim and the world grows dark"
-						game.tsc.StartScript(1100);
+						game.tsc->StartScript(1100);
 					}
 					else
 					{	// nope sorry buddy, no such luck this time
@@ -1259,7 +1259,7 @@ void killplayer(int script)
 	player->yinertia = 0;
 	player->riding = NULL;			// why exactly did I say this? i dunno, but not touching for safety
 	StopLoopSounds();				// important for Almond
-	game.tsc.StartScript(script);
+	game.tsc->StartScript(script);
 }
 
 /*
@@ -1452,7 +1452,7 @@ static bool RunScriptAtLocation(int x, int y)
 			if (x >= o->Left() && x <= o->Right() && \
 				y >= o->Top() && y <= o->Bottom())
 			{
-				game.tsc.StartScript(o->id2);
+				game.tsc->StartScript(o->id2);
 				return true;
 			}
 		}
@@ -1498,7 +1498,7 @@ void PTryActivateScript()
 	// e.g. Plantation Rocket
 	if (player->riding && (player->riding->flags & FLAG_SCRIPTONACTIVATE))
 	{
-		game.tsc.StartScript(player->riding->id2);
+		game.tsc->StartScript(player->riding->id2);
 		return;
 	}
 	

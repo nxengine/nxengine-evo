@@ -63,7 +63,7 @@ struct Game
 	
 	uint32_t counter;	// Nikumaru counter value
 	
-	TSC tsc;
+	TSC* tsc;
 	I18N* lang;
 	
 	struct

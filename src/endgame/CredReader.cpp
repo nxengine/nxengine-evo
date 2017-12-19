@@ -133,7 +133,7 @@ bool CredReader::OpenFile(void)
 {
 	if (!data.empty()) CloseFile();
 
-	data = game.tsc.Decrypt(ResourceManager::getInstance()->getLocalizedPath("Credit.tsc"), &datalen);
+	data = game.tsc->Decrypt(ResourceManager::getInstance()->getLocalizedPath("Credit.tsc"), &datalen);
 	if (data.empty())
 	{
 		staterr("CredReader: couldn't open 'Credits.tsc'!");

@@ -71,7 +71,7 @@ char fname[MAXPATHLEN];
 	if (load_entities(ResourceManager::getInstance()->getLocalizedPath(fname))) return 1;
 	
 	sprintf(fname, "Stage/%s.tsc", mapname);
-	if (!game.tsc.Load(ResourceManager::getInstance()->getLocalizedPath(fname), TSC::ScriptPages::SP_MAP)) return 1;
+	if (!game.tsc->Load(ResourceManager::getInstance()->getLocalizedPath(fname), TSC::ScriptPages::SP_MAP)) return 1;
 	map_set_backdrop(stages[stage_no].bg_no);
 	map.scrolltype = stages[stage_no].scroll_type;
 	map.motionpos = 0;

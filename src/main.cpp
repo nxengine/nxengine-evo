@@ -309,7 +309,7 @@ bool freshstart;
 	if (Carets::init()) { fatal("Failed to initialize carets."); return 1; }
 	
 	if (game.init()) return 1;
-	if (!game.tsc.Init()) { fatal("Failed to initialize script engine."); return 1; }
+	if (!game.tsc->Init()) { fatal("Failed to initialize script engine."); return 1; }
 	game.setmode(GM_NORMAL);
 	// set null stage just to have something to do while we go to intro
 	game.switchstage.mapno = 0;
@@ -394,7 +394,7 @@ bool freshstart;
 	}
 	
 shutdown: ;
-	game.tsc.Close();
+	game.tsc->Close();
 	game.close();
 	Carets::close();
 	

@@ -392,7 +392,7 @@ void OmegaBoss::Run(void)
 			}
 			else if (omg.timer==24)
 			{
-				game.tsc.StartScript(210);
+				game.tsc->StartScript(210);
 			}
 		}
 		break;

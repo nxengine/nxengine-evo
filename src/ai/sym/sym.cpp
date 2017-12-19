@@ -214,11 +214,11 @@ void ai_hvtrigger(Object *o)
 		AddDebugMark(o->hvt.x1, o->hvt.y1, o->hvt.x2, o->hvt.y2, DM_BOX, 0, 255, 0);
 	
 	// ok then, we can trigger, except for:
-	if (game.tsc.GetCurrentScript() == -1 &&		// no override other scripts
+	if (game.tsc->GetCurrentScript() == -1 &&		// no override other scripts
 		game.switchstage.mapno == -1)	// no repeat exec after <TRA
 	{
 		stat("HVTrigger %04d (%08x) activated", o->id2, o);
-		game.tsc.StartScript(o->id2);
+		game.tsc->StartScript(o->id2);
 	}
 }
 

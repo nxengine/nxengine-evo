@@ -47,7 +47,7 @@ void ai_boss_doctor(Object *o)
 	/*if (o->state > 2 && o->state < 500)
 	{
 		o->state = 937;
-		game.tsc.StartScript(410);
+		game.tsc->StartScript(410);
 		return;
 	}*/
 	

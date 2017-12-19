@@ -309,7 +309,7 @@ int i;
 			SetStates(fishspawners, 4, 0);
 			KillObjectsOfType(OBJ_X_FISHY_MISSILE);
 			
-			game.tsc.StartScript(1000);
+			game.tsc->StartScript(1000);
 			o->timer = 0;
 			o->state++;
 		}

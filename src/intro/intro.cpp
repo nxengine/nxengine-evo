@@ -48,10 +48,10 @@ void intro_tick()
 	player->y = 0;
 	
 	// when script ends with WAI9999, detect it and move on to title screen
-	ScriptInstance *script = game.tsc.GetCurrentScriptInstance();
+	ScriptInstance *script = game.tsc->GetCurrentScriptInstance();
 	if ((script && script->delaytimer == 9999) || buttonjustpushed())
 	{
-		game.tsc.StopScripts();
+		game.tsc->StopScripts();
 		blanktimer = EXIT_DELAY;
 	}
 	

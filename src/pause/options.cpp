@@ -266,7 +266,7 @@ void _lang_get(ODItem *item)
 void _lang_change(ODItem *item, int dir)
 {
 	std::vector<std::string> langs = ResourceManager::getInstance()->languages();
-	unsigned int i;
+	unsigned int i = 0;
 	for (auto &l: langs)
 	{
 	    if (strcmp(settings->language, l.c_str()) == 0)
@@ -286,7 +286,7 @@ void _lang_change(ODItem *item, int dir)
     strncpy(settings->language,langs[i].c_str(), 255);
     game.lang->load();
     font_reload();
-    game.tsc.Init();
+    game.tsc->Init();
     Graphics::FlushAll();
 }
 

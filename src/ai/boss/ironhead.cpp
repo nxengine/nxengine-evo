@@ -240,7 +240,7 @@ void IronheadBoss::Run(void)
 
 void ondeath_ironhead(Object *o)
 {
-	game.tsc.StartScript(1000);
+	game.tsc->StartScript(1000);
 }
 
 /*

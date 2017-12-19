@@ -736,7 +736,7 @@ Object * const &o = this;
 	if (o->flags & FLAG_SCRIPTONDEATH)
 	{
 		o->OnDeath();
-		game.tsc.StartScript(o->id2);
+		game.tsc->StartScript(o->id2);
 	}
 	else
 	{
@@ -872,11 +872,11 @@ Object * const &o = this;
 			// player->riding check is for fans in Final Cave
 			if ((y > o->Top() && y < o->Bottom()) || player->riding == o)
 			{
-				if (game.tsc.GetCurrentScript() == -1 &&		// no override other scripts
+				if (game.tsc->GetCurrentScript() == -1 &&		// no override other scripts
 					game.switchstage.mapno == -1)	// no repeat exec after <TRA
 				{
 					stat("On-touch script %d triggered", o->id2);
-					game.tsc.StartScript(o->id2);
+					game.tsc->StartScript(o->id2);
 				}
 			}
 		}
@@ -889,7 +889,7 @@ void Object::DealContactDamage()
 Object * const &o = this;
 
 	// no contact damage to player while scripts running
-	if (game.tsc.GetCurrentScript() != -1 || player->inputs_locked)
+	if (game.tsc->GetCurrentScript() != -1 || player->inputs_locked)
 		return;
 	
 	if (!(o->flags & FLAG_NOREARTOPATTACK))

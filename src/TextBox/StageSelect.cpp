@@ -135,11 +135,11 @@ bool button_down;
 		if (!GetSlotByIndex(fSelectionIndex, NULL, &scriptno))
 		{
 			stat("StageSelect: starting activation script %d", scriptno);
-			game.tsc.JumpScript(scriptno, TSC::ScriptPages::SP_MAP);
+			game.tsc->JumpScript(scriptno, TSC::ScriptPages::SP_MAP);
 		}
 		else
 		{	// dismiss "no permission to teleport"
-			game.tsc.StopScripts();
+			game.tsc->StopScripts();
 		}
 		
 		fMadeSelection = true;
@@ -183,7 +183,7 @@ int scriptno;
 		scriptno %= 1000;
 	}
 	
-	game.tsc.JumpScript(scriptno + 1000, TSC::ScriptPages::SP_STAGESELECT);
+	game.tsc->JumpScript(scriptno + 1000, TSC::ScriptPages::SP_STAGESELECT);
 }
 
 /*

@@ -37,7 +37,7 @@ void onspawn_balrog(Object *o)
 			
 			// nasty hack to adjust his starting position in the post-fight cutscene.
 			// I'm not sure why this is otherwise wrong.
-			if (game.tsc.GetCurrentScript() == 600)
+			if (game.tsc->GetCurrentScript() == 600)
 			{
 				o->x -= (6 * CSFI);
 			}
