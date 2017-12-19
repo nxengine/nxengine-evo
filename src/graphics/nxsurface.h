@@ -3,6 +3,8 @@
 #define _NXSURFACE_H
 
 #include <SDL.h>
+#include <string>
+
 #include "../common/basics.h"
 
 // scaling factor for the graphics
@@ -64,8 +66,8 @@ public:
 	~NXSurface();
 	
 	bool AllocNew(int wd, int ht, NXFormat *format = screen->Format());
-	bool LoadImage(const char *pbm_name, bool use_colorkey=false, int use_display_format=-1);
-	static NXSurface *FromFile(const char *pbm_name, bool use_colorkey=false, int use_display_format=-1);
+	bool LoadImage(const std::string& pbm_name, bool use_colorkey=false, int use_display_format=-1);
+	static NXSurface *FromFile(const std::string& pbm_name, bool use_colorkey=false, int use_display_format=-1);
 	
 	// blitting
 	void DrawSurface(NXSurface *src, int dstx, int dsty);

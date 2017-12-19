@@ -63,8 +63,6 @@ bool NXSurface::AllocNew(int wd, int ht, NXFormat* format)
 {
 	Free();
 
-	stat("NXSurface::AllocNew this = %p", this);
-
 	fTexture = SDL_CreateTexture(renderer, format->format, SDL_TEXTUREACCESS_TARGET, wd*SCALE, ht*SCALE);
 	
 	if (!fTexture)
@@ -81,10 +79,8 @@ bool NXSurface::AllocNew(int wd, int ht, NXFormat* format)
 
 
 // load the surface from a .pbm or bitmap file
-bool NXSurface::LoadImage(const char *pbm_name, bool use_colorkey, int use_display_format)
+bool NXSurface::LoadImage(const std::string& pbm_name, bool use_colorkey, int use_display_format)
 {
-	stat("NXSurface::LoadImage name = %s, this = %p", pbm_name, this);
-
 	Free();
 	
 	// if (use_display_format == -1)
@@ -93,8 +89,8 @@ bool NXSurface::LoadImage(const char *pbm_name, bool use_colorkey, int use_displ
 	// }
 	
 
-	SDL_Surface *image = SDL_LoadBMP(pbm_name);
-	if (!image) { staterr("NXSurface::LoadImage: load failed of '%s'! %s", pbm_name, SDL_GetError()); return 1; }
+	SDL_Surface *image = SDL_LoadBMP(pbm_name.c_str());
+	if (!image) { staterr("NXSurface::LoadImage: load failed of '%s'! %s", pbm_name.c_str(), SDL_GetError()); return 1; }
 	
 	if (use_colorkey)
 	{
@@ -140,13 +136,11 @@ done:
 		;
 	}
 
-	stat("NXSurface::LoadImage name = %s, this = %p done", pbm_name, this);
-
 	return (fTexture == NULL);
 }
 
 
-NXSurface *NXSurface::FromFile(const char *pbm_name, bool use_colorkey, int use_display_format)
+NXSurface *NXSurface::FromFile(const std::string& pbm_name, bool use_colorkey, int use_display_format)
 {
 	NXSurface *sfc = new NXSurface;
 	if (sfc->LoadImage(pbm_name, use_colorkey, use_display_format))
