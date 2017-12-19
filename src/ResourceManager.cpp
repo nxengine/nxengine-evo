@@ -1,6 +1,5 @@
 #include <fstream>
 #include <string>
-#include <glob.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -13,6 +12,39 @@
 
 #include "ResourceManager.h"
 #include "settings.h"
+#include "common/glob.h"
+
+inline bool fileExists(const std::string& file)
+{
+#if defined(__unix__) || defined(__APPLE__) // Linux, OS X, BSD
+    struct stat st;
+
+    if (stat(file.c_str(), &st) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+#elif defined(_WIN32) || defined(WIN32) // Windows
+    DWORD attrs = GetFileAttributesA(file.c_str());
+
+    // Assume path exists
+    if (attrs != INVALID_FILE_ATTRIBUTES)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+#else
+    #error Platform not supported
+#endif
+    return false;
+}
+
 
 ResourceManager::ResourceManager()
 {
@@ -36,58 +68,45 @@ void ResourceManager::shutdown()
 std::string ResourceManager::getLocalizedPath(const std::string& filename)
 {
     std::string _tryPath;
-    std::ifstream ifs;
 
 #if defined(__linux__)
     char *home = getenv("HOME");
     if (home != NULL)
     {
         _tryPath=std::string(home)+"/.local/share/nxengine/data/lang/"+std::string(settings->language)+"/"+filename;
-        ifs.open(_tryPath);
-        if (ifs.is_open())
+        if (fileExists(_tryPath))
         {
-            ifs.close();
             return _tryPath;
         }
 
         _tryPath=std::string(home)+"/.local/share/nxengine/data/"+filename;
-        ifs.open(_tryPath);
-        if (ifs.is_open())
+        if (fileExists(_tryPath))
         {
-            ifs.close();
             return _tryPath;
         }
     }
 
     _tryPath="/usr/share/nxengine/data/lang/"+std::string(settings->language)+"/"+filename;
-    ifs.open(_tryPath);
-    if (ifs.is_open())
+    if (fileExists(_tryPath))
     {
-        ifs.close();
         return _tryPath;
     }
 
     _tryPath="/usr/share/nxengine/data/"+filename;
-    ifs.open(_tryPath);
-    if (ifs.is_open())
+    if (fileExists(_tryPath))
     {
-        ifs.close();
         return _tryPath;
     }
 
     _tryPath="/usr/local/share/nxengine/data/lang/"+std::string(settings->language)+"/"+filename;
-    ifs.open(_tryPath);
-    if (ifs.is_open())
+    if (fileExists(_tryPath))
     {
-        ifs.close();
         return _tryPath;
     }
 
     _tryPath="/usr/local/share/nxengine/data/"+filename;
-    ifs.open(_tryPath);
-    if (ifs.is_open())
+    if (fileExists(_tryPath))
     {
-        ifs.close();
         return _tryPath;
     }
 #elif defined (__APPLE__)
@@ -95,19 +114,15 @@ std::string ResourceManager::getLocalizedPath(const std::string& filename)
     if (home != NULL)
     {
         _tryPath=std::string(home)+"/data/lang/"+std::string(settings->language)+"/"+filename;
-        ifs.open(_tryPath);
-        if (ifs.is_open())
+        if (fileExists(_tryPath))
         {
-            ifs.close();
             SDL_free(home);
             return _tryPath;
         }
 
         _tryPath=std::string(home)+"/data/"+filename;
-        ifs.open(_tryPath);
-        if (ifs.is_open())
+        if (fileExists(_tryPath))
         {
-            ifs.close();
             SDL_free(home);
             return _tryPath;
         }
@@ -117,56 +132,21 @@ std::string ResourceManager::getLocalizedPath(const std::string& filename)
 #endif
 
     _tryPath="data/lang/"+std::string(settings->language)+"/"+filename;
-    ifs.open(_tryPath);
-    if (ifs.is_open())
+    if (fileExists(_tryPath))
     {
-        ifs.close();
         return _tryPath;
     }
 
     _tryPath="data/"+filename;
-    ifs.open(_tryPath);
-    if (ifs.is_open())
+//    if (fileExists(_tryPath))
     {
-        ifs.close();
         return _tryPath;
     }
-    ifs.close();
 
-    throw std::runtime_error("Can't open file "+_tryPath);
+    //throw std::runtime_error("Can't open file "+_tryPath);
 
 }
 
-inline bool fileExists(const std::string& file)
-{
-#if defined(__unix__) || defined(__APPLE__) // Linux, OS X, BSD
-    struct stat st;
-
-    if (stat(file.c_str(), &st) == 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-#elif defined(_WIN32) || defined(WIN32) // Windows
-    DWORD attrs = GetFileAttributes(file.c_str());
-
-    // Assume path exists
-    if (attrs != INVALID_FILE_ATTRIBUTES)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-#else
-    #error Platform not supported
-#endif
-    return false;
-}
 
 
 std::string ResourceManager::getPathForDir(const std::string& dir)
@@ -212,23 +192,23 @@ std::string ResourceManager::getPathForDir(const std::string& dir)
 #endif
 
     _tryPath="data/"+dir;
-    if (fileExists(_tryPath))
+    //if (fileExists(_tryPath))
     {
         return _tryPath;
     }
 
-    throw std::runtime_error("Can't find directory "+dir);
+    //throw std::runtime_error("Can't find directory "+dir);
 
 }
 
 inline std::vector<std::string> glob(const std::string& pat){
-    glob_t glob_result;
-    glob(pat.c_str(),GLOB_TILDE,NULL,&glob_result);
+    Glob search(pat);
     std::vector<std::string> ret;
-    for(unsigned int i=0;i<glob_result.gl_pathc;++i){
-        ret.push_back(std::string(glob_result.gl_pathv[i]));
+    while(search)
+    {
+        ret.push_back(search.GetFileName());
+        search.Next();
     }
-    globfree(&glob_result);
     return ret;
 }
 
