@@ -454,7 +454,7 @@ std::string narrow(const std::wstring &str)
     std::string wstrTo;
     char *wszTo = new char[str.length() + 1];
     wszTo[str.size()] = L'\0';
-    WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, wszTo, (int)str.length());
+    WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, wszTo, (int)str.length(), NULL, NULL);
     wstrTo = wszTo;
     delete[] wszTo;
     return wstrTo;

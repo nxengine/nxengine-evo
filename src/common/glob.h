@@ -4,8 +4,10 @@
 #include <cassert>
 #include <string>
 
+
 #ifdef _WIN32
   #include <windows.h>
+  #include "misc.h"
 #else
   #include <dirent.h>
 #endif

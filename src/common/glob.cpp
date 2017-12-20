@@ -3,7 +3,6 @@
 #endif
 #include <iostream>
 #include "glob.h"
-#include "misc.h"
 
 static std::pair<std::string, std::string> SplitPath(const std::string &path) {
   std::string::size_type last_sep = path.find_last_of("/");
