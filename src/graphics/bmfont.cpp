@@ -1,6 +1,7 @@
 #include "bmfont.h"
 #include "../common/json.hpp"
 #include "../common/stat.h"
+#include "../common/misc.h"
 #include "pngfuncs.h"
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,7 @@ bool BMFont::load(const std::string& font)
     std::string path=ResourceManager::getInstance()->getLocalizedPath(font);
     stat("Loading font file %s", path.c_str());
     std::ifstream fl;
-    fl.open(path, std::ifstream::in | std::ifstream::binary);
+    fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
     if (fl.is_open()) {
         nlohmann::json fontdef = nlohmann::json::parse(fl);
 

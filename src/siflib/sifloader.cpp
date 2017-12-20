@@ -60,7 +60,7 @@ uint32_t magick;
 	ClearIndex();
 	
 	if (fFP) fclose(fFP);
-	fp = fFP = fopen(filename.c_str(), "rb");
+	fp = fFP = fopen(widen(filename).c_str(), "rb");
 	
 	if (!fp)
 	{

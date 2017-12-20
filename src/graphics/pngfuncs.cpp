@@ -27,6 +27,7 @@
 #include <png.h>
 #include "pngfuncs.h"
 #include "../common/stat.h"
+#include "../common/misc.h"
 
 
 static int png_colortype_from_surface(SDL_Surface *surface)
@@ -67,7 +68,7 @@ int png_save_surface(char *filename, SDL_Surface *surf)
 	png_bytep *row_pointers;
 
 	/* Opening output file */
-	fp = fopen(filename, "wb");
+	fp = fopen(widen(filename).c_str(), "wb");
 	if (fp == NULL) {
 		staterr("fopen error");
 		return -1;
@@ -132,7 +133,7 @@ SDL_Surface* png_load_surface(const char *name)
     Uint32 Bmask = 0x000000FF;
     Uint32 Amask = 0xFF000000;
 
-    if ((fp = fopen(name, "rb")) == NULL)
+    if ((fp = fopen(widen(name).c_str(), "rb")) == NULL)
     {
         staterr("Can't open file\n");
 

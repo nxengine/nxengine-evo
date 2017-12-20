@@ -3,6 +3,7 @@
 #endif
 #include <iostream>
 #include "glob.h"
+#include "misc.h"
 
 static std::pair<std::string, std::string> SplitPath(const std::string &path) {
   std::string::size_type last_sep = path.find_last_of("/");
@@ -22,7 +23,7 @@ Glob::Glob(const std::string &pattern)
   std::pair<std::string, std::string> dir_and_mask = SplitPath(pattern);
   _base = dir_and_mask.first;
 
-  find_handle_ = FindFirstFileA(pattern.c_str(), &find_data_);
+  find_handle_ = FindFirstFile(widen(pattern).c_str(), &find_data_);
   ok_ = find_handle_ != INVALID_HANDLE_VALUE;
 }
 
@@ -33,9 +34,9 @@ Glob::~Glob() {
 }
 
 bool Glob::Next() {
-	while (ok_ = (FindNextFileA(find_handle_, &find_data_) != 0))
+	while (ok_ = (FindNextFile(find_handle_, &find_data_) != 0))
 	{
-		if (strcmp(find_data_.cFileName, ".") != 0 && strcmp(find_data_.cFileName, "..") != 0)
+		if (strcmp(narrow(find_data_.cFileName).c_str(), ".") != 0 && strcmp(narrow(find_data_.cFileName).c_str(), "..") != 0)
 			break;
     }
     return ok_;

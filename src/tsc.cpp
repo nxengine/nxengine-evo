@@ -255,7 +255,7 @@ std::string TSC::Decrypt(const std::string& fname, int *fsize_out)
     int fsize, i;
     std::ifstream ifs;
 
-    ifs.open (fname, std::ifstream::binary);
+    ifs.open (widen(fname), std::ifstream::binary);
 
     if (!ifs)
     {

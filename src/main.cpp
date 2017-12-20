@@ -6,7 +6,6 @@
 #else
 #include <io.h>
 #include <direct.h>
-#include <windows.h>
 #endif
 //#include "main.h"
 #include "game.h"
@@ -264,7 +263,6 @@ bool freshstart;
 	char* basepath = SDL_GetBasePath();
 	
 #if defined(_WIN32)
-	SetFileApisToOEM();
 	_chdir(basepath);
 #else
 	chdir(basepath);

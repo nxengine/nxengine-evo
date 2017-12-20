@@ -53,4 +53,12 @@ int CVTDir(int csdir);
 void crtoslashn(char* in, char* out);
 bool contains_non_cr(const std::string& str);
 
+#if defined(_WIN32)
+std::wstring widen(const std::string &str);
+std::string narrow(const std::wstring &str);
+#else
+std::string widen(const std::string &str);
+std::string narrow(const std::string &str);
+#endif
+
 #endif

@@ -10,6 +10,7 @@
 #include "input.h"
 #include "ResourceManager.h"
 #include "common/stat.h"
+#include "common/misc.h"
 
 const uint32_t SETTINGS_VERSION = ( ( '3' << 24 ) + ( 'S' << 16 ) + ( 'X' << 8 ) + 'N' );		// serves as both a version and magic
 
@@ -26,7 +27,7 @@ FILE *fp;
 
 	stat("Loading settings...");
 	
-	fp = fopen(path.c_str(), "rb");
+	fp = fopen(widen(path).c_str(), "rb");
 	if (!fp)
 	{
 		stat("Couldn't open file %s.", path.c_str());
@@ -115,7 +116,7 @@ FILE *fp;
 		setfile = &normal_settings;
 	
 	stat("Writing settings...");
-	fp = fopen(path.c_str(), "wb");
+	fp = fopen(widen(path).c_str(), "wb");
 	if (!fp)
 	{
 		stat("Couldn't open file %s.", path.c_str());

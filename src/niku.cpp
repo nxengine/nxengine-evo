@@ -24,7 +24,7 @@ int i, j;
 	std::string fname = std::string(basepath) + "290.rec";
 	SDL_free(basepath);
 
-	fp = fopen(fname.c_str(), "rb");
+	fp = fopen(widen(fname).c_str(), "rb");
 	if (!fp)
 	{
 		stat("niku_load: couldn't open file '%s'", fname.c_str());
@@ -96,7 +96,7 @@ uint32_t *buf_dword = (uint32_t *)buf_byte;
 		ptr[3] += key / 2;
 	}
 	
-	FILE *fp = fopen(fname.c_str(), "wb");
+	FILE *fp = fopen(widen(fname).c_str(), "wb");
 	if (!fp)
 	{
 		staterr("niku_save: failed to open '%s'", fname.c_str());

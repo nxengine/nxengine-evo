@@ -27,7 +27,7 @@ class Glob {
 #ifdef _WIN32
   std::string GetFileName() const {
     assert(ok_);
-    return _base+"/"+std::string(find_data_.cFileName);
+    return _base+"/"+narrow(find_data_.cFileName);
   }
 
   operator bool() const {
@@ -37,7 +37,7 @@ class Glob {
  private:
   bool ok_;
   HANDLE find_handle_;
-  WIN32_FIND_DATAA find_data_;
+  WIN32_FIND_DATA find_data_;
 #else
   std::string GetFileName() const {
     assert(dir_entry_ != 0);

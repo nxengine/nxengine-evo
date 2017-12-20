@@ -221,7 +221,7 @@ bool file_exists(const char *fname)
 {
 FILE *fp;
 
-	fp = fopen(fname, "rb");
+	fp = fopen(widen(fname).c_str(), "rb");
 	if (!fp) return 0;
 	fclose(fp);
 	return 1;
@@ -433,3 +433,36 @@ int CVTDir(int csdir)
     return LEFT;
 }
 
+#if defined(_WIN32)
+std::wstring widen(const std::string &str)
+{
+    // Convert an ASCII string to a Unicode String
+    std::wstring wstrTo;
+    wchar_t *wszTo = new wchar_t[str.length() + 1];
+    wszTo[str.size()] = L'\0';
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, wszTo, (int)str.length());
+    wstrTo = wszTo;
+    delete[] wszTo;
+    return wstrTo;
+}
+std::string narrow(const std::wstring &str)
+{
+    // Convert an ASCII string to a Unicode String
+    std::string wstrTo;
+    char_t *wszTo = new char[str.length() + 1];
+    wszTo[str.size()] = L'\0';
+    WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, wszTo, (int)str.length());
+    wstrTo = wszTo;
+    delete[] wszTo;
+    return wstrTo;
+}
+#else
+std::string widen(const std::string &str)
+{
+    return str;
+}
+std::string narrow(const std::string &str)
+{
+    return str;
+}
+#endif

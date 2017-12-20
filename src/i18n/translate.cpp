@@ -1,5 +1,6 @@
 #include "translate.h"
 #include "../common/json.hpp"
+#include "../common/misc.h"
 #include "../ResourceManager.h"
 #include <fstream>
 
@@ -12,7 +13,7 @@ const bool I18N::load()
     std::string path=ResourceManager::getInstance()->getLocalizedPath("system.json");
     std::ifstream fl;
     _strings.clear();
-    fl.open(path, std::ifstream::in | std::ifstream::binary);
+    fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
     if (fl.is_open()) {
         nlohmann::json langfile = nlohmann::json::parse(fl);
 

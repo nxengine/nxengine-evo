@@ -49,7 +49,7 @@ const int smoke_amounts[] = { 0, 3, 7, 12 };
 const int nEntries = 361;
 int i;
 
-	FILE *fp = fopen(ResourceManager::getInstance()->getLocalizedPath("npc.tbl").c_str(), "rb");
+	FILE *fp = fopen(widen(ResourceManager::getInstance()->getLocalizedPath("npc.tbl")).c_str(), "rb");
 	if (!fp) { staterr("load_npc_tbl: data/npc.tbl is missing"); return 1; }
 	
 	stat("Reading npc.tbl...");

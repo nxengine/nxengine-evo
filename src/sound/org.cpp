@@ -203,7 +203,7 @@ uint16_t version;
 	#else
 		
 		// try and load the drums from cache instead of synthing them
-		fp = fopen(drum_cache.c_str(), "rb");
+		fp = fopen(widen(drum_cache).c_str(), "rb");
 		if (fp)
 		{
 			// this also checks for correct endianness
@@ -240,7 +240,7 @@ uint16_t version;
 		}
 		
 		// cache the drums for next time
-		fp = fopen(drum_cache.c_str(), "wb");
+		fp = fopen(widen(drum_cache).c_str(), "wb");
 		if (fp)
 		{
 			version = DRUM_VERSION;
@@ -273,7 +273,7 @@ FILE *fp;
 signed char buffer[BUF_SIZE + 1];
 signed char *ptr;
 
-	fp = fopen(fname.c_str(), "rb");
+	fp = fopen(widen(fname).c_str(), "rb");
 	if (!fp)
 	{
 		stat("Unable to open wavetable.dat!!");
@@ -389,7 +389,7 @@ char buf[8];
 FILE *fp;
 int i, j;
 
-	fp = fopen(fname.c_str(), "rb");
+	fp = fopen(widen(fname).c_str(), "rb");
 	if (!fp) { stat("org_load: no such file: '%s'", fname.c_str()); return 1; }
 	
 	for(i=0;i<6;i++) { buf[i] = fgetc(fp); } buf[i] = 0;

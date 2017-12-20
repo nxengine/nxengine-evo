@@ -13,6 +13,7 @@
 #include "ResourceManager.h"
 #include "settings.h"
 #include "common/glob.h"
+#include "common/misc.h"
 
 inline bool fileExists(const std::string& file)
 {
@@ -28,7 +29,7 @@ inline bool fileExists(const std::string& file)
         return false;
     }
 #elif defined(_WIN32) || defined(WIN32) // Windows
-    DWORD attrs = GetFileAttributesA(file.c_str());
+    DWORD attrs = GetFileAttributes(widen(file).c_str());
 
     // Assume path exists
     if (attrs != INVALID_FILE_ATTRIBUTES)
@@ -152,7 +153,6 @@ std::string ResourceManager::getLocalizedPath(const std::string& filename)
 std::string ResourceManager::getPathForDir(const std::string& dir)
 {
     std::string _tryPath;
-    std::ifstream ifs;
 
 #if defined(__linux__)
     char *home = getenv("HOME");
@@ -219,7 +219,7 @@ void ResourceManager::findLanguages()
     for (auto &l: langs)
     {
         std::cout << l << std::endl;
-        std::ifstream ifs(l+"/system.json");
+        std::ifstream ifs(widen(l+"/system.json"));
         if (ifs.is_open())
         {
             ifs.close();
