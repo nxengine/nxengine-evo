@@ -452,7 +452,7 @@ std::string narrow(const std::wstring &str)
 {
     // Convert an ASCII string to a Unicode String
     std::string wstrTo;
-    char_t *wszTo = new char[str.length() + 1];
+    char *wszTo = new char[str.length() + 1];
     wszTo[str.size()] = L'\0';
     WideCharToMultiByte(CP_UTF8, 0, str.c_str(), -1, wszTo, (int)str.length());
     wstrTo = wszTo;
