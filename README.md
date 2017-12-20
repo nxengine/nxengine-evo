@@ -2,9 +2,9 @@
 
 This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sourceforge.net/)
 
-[![Build Status](https://travis-ci.org/isage/nxengine-evo.svg?branch=master)](https://travis-ci.org/isage/nxengine-evo) [![Build status](https://ci.appveyor.com/api/projects/status/csoc1fkqkxoajk64/branch/master?svg=true)](https://ci.appveyor.com/project/isage/nxengine-evo/branch/master)
+[![Build Status](https://travis-ci.org/nxengine/nxengine-evo.svg?branch=master)](https://travis-ci.org/nxengine/nxengine-evo) [![Build status](https://ci.appveyor.com/api/projects/status/85orsvsorwbvct25?svg=true)](https://ci.appveyor.com/project/nxengine/nxengine-evo/branch/master)
 
-![Screenshot](https://raw.githubusercontent.com/isage/nxengine-evo/master/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/nxengine/nxengine-evo/master/screenshot.png)
 
 * [Differences](#differences-from-original-nxengine)
 * [Building](#building)
@@ -16,6 +16,7 @@ This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sou
 * More resolutions and widescreen support up to FullHD (thanks to https://github.com/EXL/NXEngine )
 * Fullscreen for any resolution
 * Gamepad with force-feedback support.
+* Localization support.
 * Mimiga mask ending pictures (re-drawn by me)
 * Modern main menu
 * Support for "New" and "Remastered" tracks from CS+
@@ -28,14 +29,14 @@ This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sou
 * fixed tons of warnings and undefined behaviour
 
 ## Building
-* [Linux](https://github.com/isage/nxengine-evo/wiki/Building-linux-version)
-* [Windows](https://github.com/isage/nxengine-evo/wiki/Building-windows-version)
-* [OSX](https://github.com/isage/nxengine-evo/wiki/Building-OSX-version)
+* [Linux](https://github.com/nxengine/nxengine-evo/wiki/Building-linux-version)
+* [Windows](https://github.com/nxengine/nxengine-evo/wiki/Building-windows-version)
+* [OSX](https://github.com/nxengine/nxengine-evo/wiki/Building-OSX-version)
 
 
 ## Running
- * For source builds see [Running](https://github.com/isage/nxengine-evo/wiki/Running) on wiki.
- * or just use prepackaged [releases](https://github.com/isage/nxengine-evo/releases)
+ * For source builds see [Running](https://github.com/nxengine/nxengine-evo/wiki/Running) on wiki.
+ * or just use prepackaged [releases](https://github.com/nxengine/nxengine-evo/releases)
    (OSX builds are done on 10.10, so that's a minimum requirement, windows builds require [MSVC2015 runtime](https://www.microsoft.com/en-us/download/details.aspx?id=53587)
 
 Look in TODO.md for upcoming features
