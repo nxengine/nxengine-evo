@@ -23,7 +23,7 @@ void writelog(const char *buf, bool append_cr)
 {
 FILE *fp;
 
-	fp = fopen(widen(logfilename).c_str(), "a+");
+	fp = myfopen(widen(logfilename).c_str(), widen("a+").c_str());
 	if (fp)
 	{
 		fputs(buf, fp);

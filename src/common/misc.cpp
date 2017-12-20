@@ -6,6 +6,9 @@
 #include <stdarg.h>
 #include <math.h>
 #include <ctype.h>
+#if defined(_WIN32)
+#include <windows.h>
+#endif
 
 #include "basics.h"
 #include "misc.h"
@@ -221,7 +224,7 @@ bool file_exists(const char *fname)
 {
 FILE *fp;
 
-	fp = fopen(widen(fname).c_str(), "rb");
+	fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
 	if (!fp) return 0;
 	fclose(fp);
 	return 1;

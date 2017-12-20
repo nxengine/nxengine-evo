@@ -68,7 +68,7 @@ int png_save_surface(char *filename, SDL_Surface *surf)
 	png_bytep *row_pointers;
 
 	/* Opening output file */
-	fp = fopen(widen(filename).c_str(), "wb");
+	fp = myfopen(widen(filename).c_str(), widen("wb").c_str());
 	if (fp == NULL) {
 		staterr("fopen error");
 		return -1;
@@ -133,7 +133,7 @@ SDL_Surface* png_load_surface(const char *name)
     Uint32 Bmask = 0x000000FF;
     Uint32 Amask = 0xFF000000;
 
-    if ((fp = fopen(widen(name).c_str(), "rb")) == NULL)
+    if ((fp = myfopen(widen(name).c_str(), widen("rb").c_str())) == NULL)
     {
         staterr("Can't open file\n");
 

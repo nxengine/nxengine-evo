@@ -27,7 +27,7 @@ FILE *fp;
 
 	stat("Loading settings...");
 	
-	fp = fopen(widen(path).c_str(), "rb");
+	fp = myfopen(widen(path).c_str(), widen("rb").c_str());
 	if (!fp)
 	{
 		stat("Couldn't open file %s.", path.c_str());
@@ -116,7 +116,7 @@ FILE *fp;
 		setfile = &normal_settings;
 	
 	stat("Writing settings...");
-	fp = fopen(widen(path).c_str(), "wb");
+	fp = myfopen(widen(path).c_str(), widen("wb").c_str());
 	if (!fp)
 	{
 		stat("Couldn't open file %s.", path.c_str());

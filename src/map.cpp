@@ -89,7 +89,7 @@ bool load_map(const std::string& fname)
 FILE *fp;
 int x, y;
 
-	fp = fopen(widen(fname).c_str(), "rb");
+	fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
 	if (!fp)
 	{
 		staterr("load_map: no such file: '%s'", fname.c_str());
@@ -202,7 +202,7 @@ int nEntities;
 	
 	stat("load_entities: reading in %s", fname.c_str());
 	// now we can load in the new objects
-	fp = fopen(widen(fname).c_str(), "rb");
+	fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
 	if (!fp)
 	{
 		staterr("load_entities: no such file: '%s'", fname.c_str());
@@ -333,7 +333,7 @@ unsigned char tc;
 	map.nmotiontiles = 0;
 	
 	stat("load_pxa: reading in %s", fname.c_str());
-	fp = fopen(widen(fname).c_str(), "rb");
+	fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
 	if (!fp)
 	{
 		staterr("load_pxa: no such file: '%s'", fname.c_str());
@@ -372,7 +372,7 @@ bool load_stages(void)
 {
 FILE *fp;
 
-	fp = fopen(widen(ResourceManager::getInstance()->getLocalizedPath("stage.dat")).c_str(), "rb");
+	fp = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("stage.dat")).c_str(), widen("rb").c_str());
 	if (!fp)
 	{
 		staterr("%s(%d): failed to open data/stage.dat", __FILE__, __LINE__);
@@ -401,7 +401,7 @@ FILE *fp;
 int i;
 
 	stat("initmapfirsttime: loading data/tilekey.dat.");
-	if (!(fp = fopen(widen(ResourceManager::getInstance()->getLocalizedPath("tilekey.dat")).c_str(), "rb")))
+	if (!(fp = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("tilekey.dat")).c_str(), widen("rb").c_str())))
 	{
 		staterr("data/tilekey.dat is missing!");
 		return 1;

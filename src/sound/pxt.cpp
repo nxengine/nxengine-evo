@@ -679,7 +679,7 @@ static char LoadFXCache(const std::string& fname, int top)
 	uint32_t magick;
 	stPXSound snd;
 
-	fp = fopen(widen(fname).c_str(), "rb");
+	fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
 	if (!fp)
 	{
 		stat("LoadFXCache: audio cache %s does not exist", fname.c_str());
@@ -758,7 +758,7 @@ char pxt_LoadSoundFX(const std::string& path, const std::string& cache_name, int
 			return 0;
 		}
 		
-		fp = fopen(widen(cache_name).c_str(), "wb");
+		fp = myfopen(widen(cache_name).c_str(), widen("wb").c_str());
 		if (!fp)
 		{
 			staterr("LoadSoundFX: failed open: '%s'", cache_name.c_str());
@@ -891,7 +891,7 @@ char pxt_load(const std::string& fname, stPXSound *snd)
 	int i, cc;
 	
 	
-	fp = fopen(widen(fname).c_str(), "rb");
+	fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
 	if (!fp) { staterr("pxt_load: file '%s' not found.", fname.c_str()); return 1; }
 	
 	//lprintf("pxt_load: reading %s...\n", fname);
