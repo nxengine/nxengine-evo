@@ -3,7 +3,8 @@
 $tag = (Invoke-WebRequest "https://api.github.com/repos/nxengine/translations/releases" | ConvertFrom-Json)[0].tag_name
 
 Invoke-WebRequest "https://github.com/nxengine/translations/releases/download/$tag/all.zip" -Out all.zip
-Expand-Archive all.zip -Force
+7z x .\all.zip
+rm .\all.zip
 
 mkdir release
 cd release
