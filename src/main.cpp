@@ -263,6 +263,7 @@ bool freshstart;
 	char* basepath = SDL_GetBasePath();
 	
 #if defined(_WIN32)
+	SetFileApisToOEM();
 	_chdir(basepath);
 #else
 	chdir(basepath);
