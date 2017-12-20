@@ -1,8 +1,8 @@
 #prepare
 
-$tag = (Invoke-WebRequest "https://api.github.com/repos/nxengine/nxengine-evo/releases" | ConvertFrom-Json)[0].tag_name
+$tag = (Invoke-WebRequest "https://api.github.com/repos/nxengine/translations/releases" | ConvertFrom-Json)[0].tag_name
 
-Invoke-WebRequest "https://github.com/nxengine/nxengine-evo/releases/download/$tag/all.zip" -Out all.zip
+Invoke-WebRequest "https://github.com/nxengine/translations/releases/download/$tag/all.zip" -Out all.zip
 Expand-Archive all.zip -Force
 
 mkdir release
