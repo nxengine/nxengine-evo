@@ -6,6 +6,7 @@
 #else
 #include <io.h>
 #include <direct.h>
+#include <windows.h>
 #endif
 //#include "main.h"
 #include "game.h"
