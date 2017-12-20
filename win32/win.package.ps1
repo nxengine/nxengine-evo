@@ -1,4 +1,10 @@
 #prepare
+
+$tag = (Invoke-WebRequest "https://api.github.com/repos/nxengine/nxengine-evo/releases" | ConvertFrom-Json)[0].tag_name
+
+Invoke-WebRequest https://github.com/nxengine/nxengine-evo/releases/download/$tag/all.zip" -Out all.zip
+Expand-Archive all.zip -Force
+
 mkdir release
 cd release
 wget http://www.cavestory.org/downloads/cavestoryen.zip -outfile cavestoryen.zip
@@ -33,7 +39,7 @@ if ($env:PLATFORM -eq "x86") {
   Push-AppveyorArtifact $name
 
   #upload
-  invoke-webrequest -UseBasicParsing -method put -infile ".\$name" https://transfer.sh/$name
+  #invoke-webrequest -UseBasicParsing -method put -infile ".\$name" https://transfer.sh/$name
 } else {
   #bundle libs
   cp ..\win32\ext\runtime\x64\* .\NXEngine\
@@ -45,6 +51,6 @@ if ($env:PLATFORM -eq "x86") {
   Push-AppveyorArtifact $name
 
   #upload
-  invoke-webrequest -UseBasicParsing -method put -infile ".\$name" https://transfer.sh/$name
+  #invoke-webrequest -UseBasicParsing -method put -infile ".\$name" https://transfer.sh/$name
 
 }

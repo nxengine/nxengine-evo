@@ -1,5 +1,9 @@
 brew install dylibbundler
 
+#langs
+wget `curl --silent https://api.github.com/repos/nxengine/translations/releases/latest | /usr/bin/awk '/browser_download_url/ { print $2 }' | /usr/bin/sed 's/"//g'`
+unzip all.zip
+
 #prepare
 mkdir release
 cd release
@@ -32,11 +36,11 @@ cd ..
 git clone https://github.com/isage/create-dmg
 cd create-dmg
 ./create-dmg --volname "NXEngine" --window-size 640 480 --app-drop-link 380 205 --background ../osx/bg.png --icon-size 96 --icon "NXEngine.app" 110 205 "../NXEngine-$TRAVIS_TAG.dmg" ../release/
-curl --upload-file "../NXEngine-$TRAVIS_TAG.dmg" https://transfer.sh/NXEngine.dmg
+#curl --upload-file "../NXEngine-$TRAVIS_TAG.dmg" https://transfer.sh/NXEngine.dmg
 
 #upload
-cd ../release
-zip -r "NXEngine-$TRAVIS_TAG.zip" NXEngine.app
-curl --upload-file "NXEngine-$TRAVIS_TAG.zip" https://transfer.sh/NXEngine.zip
+#cd ../release
+#zip -r "NXEngine-$TRAVIS_TAG.zip" NXEngine.app
+#curl --upload-file "NXEngine-$TRAVIS_TAG.zip" https://transfer.sh/NXEngine.zip
 cd ..
 ls
