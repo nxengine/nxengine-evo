@@ -1,7 +1,9 @@
 brew install dylibbundler
 
 #langs
-wget `curl --silent https://api.github.com/repos/nxengine/translations/releases/latest | grep browser_download_url | grep all.zip | cut -d '"' -f 4`
+part=`curl --silent https://github.com/nxengine/translations/releases/latest | cut -d '"' -f 2 | sed 's/tag/download/'`
+url="$part/all.zip"
+wget $url
 unzip all.zip
 
 #prepare
