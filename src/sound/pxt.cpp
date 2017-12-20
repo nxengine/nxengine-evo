@@ -917,7 +917,7 @@ char pxt_load(const std::string& fname, stPXSound *snd)
 		{	// opening a new channel
 			if (cc >= PXT_NO_CHANNELS)
 			{
-				staterr("pxt_load: sound '%s' contains too many channels!", fname);
+				staterr("pxt_load: sound '%s' contains too many channels!", fname.c_str());
 				goto error;
 			}
 			
@@ -960,7 +960,7 @@ char pxt_load(const std::string& fname, stPXSound *snd)
 		}
 	}
 	
-	//stat("pxt_load: '%s' parsed ok", fname);
+	//stat("pxt_load: '%s' parsed ok", fname.c_str());
 	fclose(fp);
 	return 0;
 	
