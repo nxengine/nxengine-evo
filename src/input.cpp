@@ -269,11 +269,13 @@ int ino;//, key;
 					{
 						if (key == '`')		// bring up console
 						{
+#if defined(DEBUG)
 							if (!freezeframe)
 							{
 								sound(SND_SWITCH_WEAPON);
 								console.SetVisible(true);
 							}
+#endif
 						}
 						else
 						{

@@ -94,6 +94,11 @@ bool settings_load(Settings *setfile)
 	else
 	{
 		input_set_mappings(settings->input_mappings);
+#if defined(DEBUG)
+		setfile->enable_debug_keys = false;
+#else
+		setfile->enable_debug_keys = true;
+#endif
 	}
 	
 	return 0;
