@@ -600,7 +600,7 @@ int val;
 int parm[6] = {0,0,0,0,0,0};
 int i;
 Object *o;
-char *mnemonic;
+const char *mnemonic;
 char *str;
 int cmdip;
 
@@ -700,7 +700,10 @@ int cmdip;
 	{
 		cmdip = s->ip++;
 		cmd = s->program[cmdip];
-		mnemonic = (char *)cmd_table[cmd].mnemonic;
+		if (cmd<OP_COUNT)
+			mnemonic = cmd_table[cmd].mnemonic;
+		else
+			mnemonic = "???";
 		
 		if (cmd != OP_TEXT)
 		{
