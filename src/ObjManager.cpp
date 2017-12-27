@@ -121,6 +121,36 @@ int32_t rect2x1, rect2y1, rect2x2, rect2y2;
 	return true;
 }
 
+bool hitdetect_damage_player(Object *o1)
+{
+SIFSprite *s1;
+int32_t rect1x1, rect1y1, rect1x2, rect1y2;
+int32_t rect2x1, rect2y1, rect2x2, rect2y2;
+	
+	// get the sprites used by the two objects
+	s1 = o1->Sprite();
+	
+	// get the bounding rectangle of the first object
+	rect1x1 = o1->x + (s1->bbox.x1 * CSFI);
+	rect1x2 = o1->x + (s1->bbox.x2 * CSFI);
+	rect1y1 = o1->y + (s1->bbox.y1 * CSFI);
+	rect1y2 = o1->y + (s1->bbox.y2 * CSFI);
+	
+	// get the bounding rectangle of the second object
+	rect2x1 = player->x + (4 * CSFI);
+	rect2x2 = player->x + (4 * CSFI);
+	rect2y1 = player->y + (4 * CSFI);
+	rect2y2 = player->y + (4 * CSFI);
+	
+	// find out if the rectangles overlap
+	if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1)) return false;
+	if ((rect1x1 > rect2x2) && (rect1x2 > rect2x2)) return false;
+	if ((rect1y1 < rect2y1) && (rect1y2 < rect2y1)) return false;
+	if ((rect1y1 > rect2y2) && (rect1y2 > rect2y2)) return false;
+	
+	return true;
+}
+
 // returns true if the solidity boxes of the two given objects are touching
 bool solidhitdetect(Object *o1, Object *o2)
 {
@@ -212,7 +242,7 @@ int xinertia, yinertia;
 			{
 				// have enemies hurt you when you touch them
 				// (solid-brick objects do this in PHandleSolidBrickObjects)
-				if (hitdetect(o, player))
+				if (hitdetect_damage_player(o))
 					o->DealContactDamage();
 			}
 		}
