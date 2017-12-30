@@ -222,7 +222,6 @@ int ino;//, key;
 				key = evt.key.keysym.sym;
 				
 				static uint8_t shiftstates = 0;
-				extern bool freezeframe;
 				
 				if (console.IsVisible() && !IsNonConsoleKey(key))
 				{
@@ -270,6 +269,7 @@ int ino;//, key;
 						if (key == '`')		// bring up console
 						{
 #if defined(DEBUG)
+							extern bool freezeframe;
 							if (!freezeframe)
 							{
 								sound(SND_SWITCH_WEAPON);
