@@ -66,7 +66,7 @@ public:
 
     bool StartScript(int scriptno, ScriptPages pageno=ScriptPages::SP_MAP);
     void StopScript(ScriptInstance *s);
-    bool JumpScript(int newscriptno, ScriptPages pageno=ScriptPages::SP_MAP);
+    bool JumpScript(int newscriptno, ScriptPages pageno=ScriptPages::SP_NULL);
 
     void Clear();
     bool Init(void);
