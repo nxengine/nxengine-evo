@@ -1,8 +1,6 @@
 #prepare
 
-$tag = (Invoke-WebRequest "https://api.github.com/repos/nxengine/translations/releases" | ConvertFrom-Json)[0].tag_name
-
-Invoke-WebRequest "https://github.com/nxengine/translations/releases/download/$tag/all.zip" -Out all.zip
+Invoke-WebRequest "https://github.com/nxengine/translations/releases/download/v1.1/all.zip" -Out all.zip
 7z x .\all.zip
 rm .\all.zip
 
