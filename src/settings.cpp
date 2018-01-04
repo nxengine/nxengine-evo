@@ -78,9 +78,9 @@ bool settings_load(Settings *setfile)
 		setfile->fullscreen = false;
 		
 #if defined(DEBUG)
-		setfile->enable_debug_keys = false;
-#else
 		setfile->enable_debug_keys = true;
+#else
+		setfile->enable_debug_keys = false;
 #endif
 		setfile->sound_enabled = true;
 		setfile->music_enabled = 1;	// both Boss and Regular music
@@ -95,9 +95,9 @@ bool settings_load(Settings *setfile)
 	{
 		input_set_mappings(settings->input_mappings);
 #if defined(DEBUG)
-		setfile->enable_debug_keys = false;
-#else
 		setfile->enable_debug_keys = true;
+#else
+		setfile->enable_debug_keys = false;
 #endif
 	}
 	
