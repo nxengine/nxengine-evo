@@ -173,7 +173,7 @@ static const char *input_names[] =
 	"Inventory", "Map",
 	"Pause",
 	"f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
-	"freeze frame", "frame advance", "debug fly"
+	"freeze frame", "frame advance", "debug fly", "Home","End","Enter"
 };
 
 	if (index < 0 || index >= INPUT_COUNT)
