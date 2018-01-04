@@ -54,13 +54,11 @@ bool input_init(void)
 	mappings[F10KEY].key = SDLK_F10;
 	mappings[F11KEY].key = SDLK_F11;
 	mappings[F12KEY].key = SDLK_F12;
-	
+#if defined(DEBUG)
 	mappings[FREEZE_FRAME_KEY].key  = SDLK_SPACE;
 	mappings[FRAME_ADVANCE_KEY].key = SDLK_c;
 	mappings[DEBUG_FLY_KEY].key     = SDLK_v;
-
-	mappings[HOMEKEY].key  = SDLK_HOME;
-	mappings[ENDKEY].key   = SDLK_END;
+#endif
 	mappings[ENTERKEY].key = SDLK_RETURN;
 	
 	SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
@@ -173,7 +171,7 @@ static const char *input_names[] =
 	"Inventory", "Map",
 	"Pause",
 	"f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
-	"freeze frame", "frame advance", "debug fly", "Home","End","Enter"
+	"freeze frame", "frame advance", "debug fly", "Enter"
 };
 
 	if (index < 0 || index >= INPUT_COUNT)

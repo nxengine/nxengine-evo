@@ -252,17 +252,6 @@ void Dialog::RunInput()
 	}
 	else fRepeatTimer = 0;
 	
-	if (inputs[HOMEKEY])
-	{
-	  fCurSel = 0;
-	}
-
-	if (inputs[ENDKEY])
-	{
-	  fCurSel = fItems.size()-1;
-	}
-
-	
 	if (buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
 	{
 		int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(ENTERKEY)) ? 1 : -1;
