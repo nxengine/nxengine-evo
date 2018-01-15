@@ -1352,7 +1352,7 @@ void TSC::_DoANP(Object *o, int p1, int p2)		// ANIMATE (set) object's state to 
 {
 	#ifdef TRACE_SCRIPT
 		stat("ANP: Obj %08x (%s): setting state: %d and dir: %s", \
-			o, DescribeObjectType(o->type), p1, DescribeCSDir(p2));
+			o, DescribeObjectType(o->type), p1, _DescribeCSDir(p2));
 	#endif
 	
 	o->state = p1;
@@ -1363,7 +1363,7 @@ void TSC::_DoCNP(Object *o, int p1, int p2)		// CHANGE object to p1 and set dir 
 {
 	#ifdef TRACE_SCRIPT
 		stat("CNP: Obj %08x changing from %s to %s, new dir = %s",
-			o, DescribeObjectType(o->type), DescribeObjectType(p1), DescribeCSDir(p2));
+			o, DescribeObjectType(o->type), DescribeObjectType(p1), _DescribeCSDir(p2));
 	#endif
 	
 	// Must set direction BEFORE changing type, so that the Carried Puppy object
