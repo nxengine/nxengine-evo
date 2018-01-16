@@ -21,7 +21,7 @@ matrix:
 
 
 script:
-  - cmake .
+  - cmake -DCMAKE_BUILD_TYPE=Release .
   - make
 
 before_install:

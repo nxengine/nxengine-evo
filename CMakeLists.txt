@@ -54,11 +54,11 @@ set(SOURCES
     ${I18N_SOURCES}
 )
 
-option(DEBUG "build application with debug traces" OFF) # OFF is the default
-
-if(DEBUG)
-  add_definitions(-DTRACE_SCRIPT)
-endif(DEBUG)
+IF(CMAKE_BUILD_TYPE MATCHES Debug)
+    message("debug mode")
+    add_definitions(-DTRACE_SCRIPT)
+    add_definitions(-DDEBUG)
+ENDIF()
 
 add_definitions("-Wall -std=c++11")
 add_executable(nx ${SOURCES})
