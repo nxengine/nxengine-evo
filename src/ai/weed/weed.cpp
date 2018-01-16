@@ -76,11 +76,16 @@ void ai_critter(Object *o)
 					if (o->type == OBJ_CRITTER_HOPPING_GREEN)
 						o->critter.falldmg = 2;
 					
+					// critters in First Cave deal 1 damage
+					if (o->type == OBJ_CRITTER_HOPPING_BLUE)
+						o->critter.falldmg = 1;
+					
 					// critters in First Cave don't jump as high
 					if (o->type != OBJ_CRITTER_HOPPING_BLUE)
 					{
 						o->critter.jumpgrav = 0x2C;
 					}
+					
 				}
 				else
 				{
@@ -211,7 +216,14 @@ void ai_critter(Object *o)
 			if (o->blockd)
 			{	// landed
 landed: ;
-				o->damage = 2;			// reset to normal damage
+				if (o->type == OBJ_CRITTER_HOPPING_BLUE)
+				{
+					o->damage = 1;			// reset to normal damage
+				}
+				else
+				{
+					o->damage = 2;			// reset to normal damage
+				}
 				o->state = 1;
 				
 				o->frame = 0;
