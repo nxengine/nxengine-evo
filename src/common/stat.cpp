@@ -1,7 +1,7 @@
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
 #include <time.h>
 
 #include "basics.h"

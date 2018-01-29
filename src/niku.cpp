@@ -1,8 +1,8 @@
 
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdio>
 #include <SDL.h>
 #include <string>
+#include "niku.h"
 #include "common/stat.h"
 #include "common/misc.h"
 

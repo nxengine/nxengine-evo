@@ -1,5 +1,5 @@
 
-#include <math.h>
+#include <cmath>
 #include "nx.h"
 #include "trig.h"
 #include "common/misc.h"

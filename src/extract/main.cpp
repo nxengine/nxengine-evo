@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include "extractpxt.h"
 #include "extractstages.h"
 #include "extractfiles.h"

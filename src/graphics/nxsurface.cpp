@@ -1,6 +1,6 @@
 #include <cassert>
-#include <string.h>
-#include <stdint.h>
+#include <cstring>
+#include <cstdint>
 #include "../settings.h"
 #include "../config.h"
 #include "graphics.h"

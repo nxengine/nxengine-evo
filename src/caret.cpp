@@ -4,7 +4,7 @@
 // on top of all other objects and in front even of map foreground tiles.
 
 #include "nx.h"
-#include <math.h>
+#include <cmath>
 #include "caret.h"
 #include "common/llist.h"
 #include "common/stat.h"

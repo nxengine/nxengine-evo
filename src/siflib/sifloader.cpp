@@ -1,7 +1,7 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include "sifloader.h"
 #include "../common/misc.h"
 #include "../common/stat.h"

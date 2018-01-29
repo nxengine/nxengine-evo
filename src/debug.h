@@ -8,7 +8,7 @@
 #define DM_YLINE			3
 #define DM_BOX				4
 
-#include <stdint.h>
+#include <cstdint>
 
 void DrawDebug(void);
 void DrawBoundingBoxes();

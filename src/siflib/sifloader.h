@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <string>
-#include <stdint.h>
+#include <cstdint>
 
 #define SIF_MAX_GROUPS			255		// limitation of SECTION_GROUPS format
 

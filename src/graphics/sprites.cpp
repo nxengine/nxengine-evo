@@ -2,7 +2,7 @@
 // sprites routines
 #include "graphics.h"
 #include "../nx.h"
-#include <string.h>
+#include <cstring>
 #include <vector>
 #include <string>
 #include "../siflib/sif.h"

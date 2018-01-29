@@ -1,8 +1,8 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <sys/stat.h>
 
 #if defined (_WIN32)

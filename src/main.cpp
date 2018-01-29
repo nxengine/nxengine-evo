@@ -1,6 +1,6 @@
 
 #include "nx.h"
-#include <stdarg.h>
+#include <cstdarg>
 #if !defined(_WIN32)
 #include <unistd.h>
 #else

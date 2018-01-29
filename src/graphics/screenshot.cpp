@@ -2,11 +2,11 @@
 #include "graphics.h"
 #include "../common/stat.h"
 #if defined(__MACH__)
-#include <stdlib.h>
+#include <cstdlib>
 #else
 #include <malloc.h>
 #endif
-#include <stdio.h>
+#include <cstdio>
 
 
 #include <sys/stat.h>

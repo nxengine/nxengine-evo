@@ -3,10 +3,10 @@
 // see bottom of file for info on how to use this module
 #include <SDL.h>
 #include <SDL_mixer.h>
-#include <stdio.h>
-#include <math.h>			// for sin()
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cmath>			// for sin()
+#include <cstdlib>
+#include <cstring>
 
 #include "../config.h"
 #include "pxt.h"

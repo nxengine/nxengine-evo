@@ -3,7 +3,7 @@
 // graphics routines
 #include <SDL.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 #include "../nx.h"
 #include "../config.h"
 #include "graphics.h"

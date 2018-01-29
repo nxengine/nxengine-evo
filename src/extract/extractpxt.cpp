@@ -1,7 +1,7 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
 #include <sys/stat.h>
 #include "extractpxt.h"
 #include "../common/misc.h"

@@ -1,7 +1,7 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdint>
+#include <cstring>
 #include "crc.h"
 
 static uint32_t CRC_Table[256];

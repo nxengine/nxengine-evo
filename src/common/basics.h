@@ -2,7 +2,7 @@
 #ifndef _BASICS_H
 #define _BASICS_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #if defined(__APPLE__) || defined(_WIN32)
 	#define MAXPATHLEN	256

@@ -1,6 +1,7 @@
 #ifndef __TRIG_H_
 #define __TRIG_H_
-#include <stdint.h>
+
+#include <cstdint>
 #include "object.h"
 extern signed int sin_table[256];
 char trig_init(void);

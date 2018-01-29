@@ -2,8 +2,8 @@
 /* SOUND.C
   PXT/SS/Org sound interface
 */
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <string>
 #include <SDL_mixer.h>
 

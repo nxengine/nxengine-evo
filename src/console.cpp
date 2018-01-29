@@ -1,6 +1,6 @@
 
 #include "nx.h"
-#include <stdarg.h>
+#include <cstdarg>
 #include "console.h"
 #include "game.h"
 #include "ObjManager.h"
