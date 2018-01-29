@@ -3,3 +3,4 @@
 * make compatible with nicalis version
 * use wavs for drums?
 * rewrite renderer using modern OpenGL(ES)
+* Unify Ogg and Ogg11
