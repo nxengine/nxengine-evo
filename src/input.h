@@ -2,6 +2,7 @@
 #ifndef _INPUT_H
 #define _INPUT_H
 #include <SDL.h>
+#include <string>
 
 typedef struct 
 {
@@ -58,7 +59,7 @@ extern SDL_Haptic *haptic;
 bool input_init(void);
 void input_remap(int keyindex, in_action sdl_key);
 in_action input_get_mapping(int keyindex);
-const char *input_get_name(int index);
+const std::string input_get_name(int index);
 void input_set_mappings(in_action *array);
 void input_poll(void);
 void input_close(void);

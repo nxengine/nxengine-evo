@@ -1,4 +1,5 @@
 
+#include <array>
 #include "nx.h"
 #include "input.h"
 #include "console.h"
@@ -162,9 +163,9 @@ int input_get_action_axis(int32_t jaxis, int32_t jvalue)
   return -1;
 }
 
-const char *input_get_name(int index)
+const std::string input_get_name(int index)
 {
-static const char *input_names[] =
+static std::array<std::string, 27> input_names =
 {
 	"Left", "Right", "Up", "Down",
 	"Jump", "Fire", "Wpn Prev", "Wpn Next",
