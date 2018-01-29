@@ -1,7 +1,3 @@
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 #include "../common/bufio.h"
 #include "../common/stat.h"
 
