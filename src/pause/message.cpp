@@ -17,7 +17,7 @@ extern std::vector<void*> optionstack;
 #define MESSAGE_W		244
 #define MESSAGE_H		48
 
-Message::Message(const char *msg, const char *msg2)
+Message::Message(const std::string& msg, const std::string& msg2)
 {
     MESSAGE_X = ((SCREEN_WIDTH / 2) - 112);
     MESSAGE_Y = ((SCREEN_HEIGHT / 2) - 30);
@@ -29,8 +29,8 @@ Message::Message(const char *msg, const char *msg2)
 	last_sdl_action.jhat = -1;
 	last_sdl_action.jaxis = -1;
 	
-	fMsg = strdup(msg);
-	fMsg2 = strdup(msg2 ? msg2 : "");
+	fMsg = msg;
+	fMsg2 = msg2;
 	
 	fMsgX = MESSAGE_X + ((MESSAGE_W / 2) - (GetFontWidth(fMsg) / 2));
 	
@@ -59,8 +59,6 @@ Message::~Message()
             break;
         }
     }
-	free(fMsg);
-	free(fMsg2);
 }
 
 /*
