@@ -266,10 +266,10 @@ void _lang_get(ODItem *item)
 void _lang_change(ODItem *item, int dir)
 {
 	std::vector<std::string> langs = ResourceManager::getInstance()->languages();
-	unsigned int i = 0;
+	int i = 0;
 	for (auto &l: langs)
 	{
-	    if (strcmp(settings->language, l.c_str()) == 0)
+	    if (l == settings->language)
 	        break;
 	    i++;
 	}
