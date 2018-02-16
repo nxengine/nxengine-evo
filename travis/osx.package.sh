@@ -1,7 +1,7 @@
 brew install dylibbundler
 
 #langs
-wget https://github.com/nxengine/translations/releases/download/v1.1/all.zip
+wget https://github.com/nxengine/translations/releases/download/v1.2/all.zip
 unzip all.zip
 
 #prepare
