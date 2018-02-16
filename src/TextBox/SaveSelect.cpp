@@ -191,7 +191,7 @@ const int w = fCoords.w - 33;
 	}
 	else if (fCurSel == index)
 	{
-		const char *str = "available";
+		std::string str = "available";
 		int fx = (w / 2) - (GetFontWidth(_(str)) / 2);
 		font_draw(x+fx, y-1, _(str));
 	}
