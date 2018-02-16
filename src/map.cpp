@@ -1012,7 +1012,7 @@ const char *map_get_stage_name(int mapno)
 // show map name for "ticks" ticks
 void map_show_map_name()
 {
-	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(map_get_stage_name(game.curmap)) / 2);
+	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(_(map_get_stage_name(game.curmap))) / 2);
 	game.showmapnametime = 120;
 }
 
