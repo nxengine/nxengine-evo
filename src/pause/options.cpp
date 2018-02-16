@@ -278,7 +278,7 @@ void _lang_change(ODItem *item, int dir)
 	{
 	    i = langs.size()-1;
 	}
-	if (i>=langs.size())
+	if (i>=(int)langs.size())
 	{
 	    i = 0;
 	}

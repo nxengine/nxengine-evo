@@ -1,6 +1,6 @@
 #include "../common/bufio.h"
 #include "../common/stat.h"
-
+#include <cstring>
 
 #include "sectSprites.h"
 
