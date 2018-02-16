@@ -241,7 +241,7 @@ bool result;
 		staterr("tsc_load: failed to load file: '%s'", fname.c_str());
 		return false;
 	}
-	
+
 	// now "compile" all the scripts in the TSC
 	//int top_script = CompileScripts(buf, fsize, base);
 	result = Compile(buf.c_str(), fsize, pageno);
@@ -268,8 +268,8 @@ std::string TSC::Decrypt(const std::string& fname, int *fsize_out)
     ifs.seekg (0, ifs.beg);
 
     // load file
-    char *buf = new char[fsize+1];
-    ifs.read(buf, fsize);
+    uint8_t *buf = new uint8_t[fsize+1];
+    ifs.read((char*)buf, fsize);
     buf[fsize] = 0;
     ifs.close();
 
@@ -283,7 +283,7 @@ std::string TSC::Decrypt(const std::string& fname, int *fsize_out)
 
     if (fsize_out) *fsize_out = fsize;
 
-    std::string ret(buf);
+    std::string ret((char*)buf);
     delete[] buf;
     return ret;
 }
@@ -1352,7 +1352,7 @@ void TSC::_DoANP(Object *o, int p1, int p2)		// ANIMATE (set) object's state to 
 {
 	#ifdef TRACE_SCRIPT
 		stat("ANP: Obj %08x (%s): setting state: %d and dir: %s", \
-			o, DescribeObjectType(o->type), p1, _DescribeCSDir(p2));
+			o, DescribeObjectType(o->type), p1, _DescribeCSDir(p2).c_str());
 	#endif
 	
 	o->state = p1;
@@ -1363,7 +1363,7 @@ void TSC::_DoCNP(Object *o, int p1, int p2)		// CHANGE object to p1 and set dir 
 {
 	#ifdef TRACE_SCRIPT
 		stat("CNP: Obj %08x changing from %s to %s, new dir = %s",
-			o, DescribeObjectType(o->type), DescribeObjectType(p1), _DescribeCSDir(p2));
+			o, DescribeObjectType(o->type), DescribeObjectType(p1), _DescribeCSDir(p2).c_str());
 	#endif
 	
 	// Must set direction BEFORE changing type, so that the Carried Puppy object
