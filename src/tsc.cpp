@@ -1060,6 +1060,7 @@ int cmdip;
 				// required for post-Ballos cutscene
 				textbox.SetFlags(TUR_PARAMS, false);
 				textbox.SetVisible(true, TB_DEFAULTS);
+				textbox.SetCanSpeedUp(true);
 			}
 			break;
 			
@@ -1068,6 +1069,7 @@ int cmdip;
 				textbox.SetFace(0);		// required for Undead Core intro
 				textbox.SetFlags(TUR_PARAMS, false);
 				textbox.SetVisible(true, TB_DRAW_AT_TOP | TB_NO_BORDER);
+				textbox.SetCanSpeedUp(true);
 			}
 			break;
 			
@@ -1075,6 +1077,7 @@ int cmdip;
 			{
 				textbox.SetFlags(TUR_PARAMS, false);
 				textbox.SetVisible(true, TB_DRAW_AT_TOP);
+				textbox.SetCanSpeedUp(true);
 			}
 			break;
 			
