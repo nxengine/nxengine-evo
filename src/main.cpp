@@ -131,6 +131,8 @@ static int frameskip = 0;
 			char buf[1024];
 			sprintf(buf, "[] Tick %d", framecount++);
 			font_draw(4, (SCREEN_HEIGHT-GetFontHeight()-4), buf, 0x00FF00, true);
+			sprintf(buf, "Left: %d, Right: %d, JMP: %d, FR: %d", inputs[LEFTKEY], inputs[RIGHTKEY], inputs[JUMPKEY], inputs[FIREKEY]);
+			font_draw(80, (SCREEN_HEIGHT-GetFontHeight()-4), buf, 0x00FF00, true);
 			can_tick = false;
 		}
 		
