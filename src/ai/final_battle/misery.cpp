@@ -69,7 +69,7 @@ void ai_boss_misery(Object *o)
 			o->yinertia += (o->y < o->ymark) ? 0x20 : -0x20;
 			LIMITY(0x200);
 			
-			if (++o->timer > 200 || (o->hp - o->savedhp) >= 80)
+			if (++o->timer > 200 || (o->savedhp - o->hp) >= 80)
 			{
 				o->state = STATE_FLASH_FOR_SPELL;
 				o->timer = 0;
