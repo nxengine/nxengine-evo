@@ -80,7 +80,7 @@ int pxt_Play(int chan, int slot, char loop);
 int pxt_PlayResampled(int chan, int slot, char loop, int percent);
 void pxt_Stop(int slot);
 char pxt_IsPlaying(int slot);
-char pxt_LoadSoundFX(const std::string& path, const std::string& cache_name, int top);
+char pxt_LoadSoundFX(const std::string& path, int top);
 void pxt_freeSoundFX(void);
 void FreePXTBuf(stPXSound *snd);
 char pxt_load(const std::string& fname, stPXSound *snd);

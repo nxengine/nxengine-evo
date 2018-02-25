@@ -670,105 +670,20 @@ char pxt_IsPlaying(int slot)
 }
 
 
-// attempts to load all the PXT's out of the given cache file.
-// if succesful, returns 0.
-static char LoadFXCache(const std::string& fname, int top)
-{
-	FILE *fp;
-	int slot;
-	uint32_t magick;
-	stPXSound snd;
-
-	fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
-	if (!fp)
-	{
-		stat("LoadFXCache: audio cache %s does not exist", fname.c_str());
-		return 1;
-	}
-	
-	// I don't use endian-agnostic fgetl as this file is endian-specific and we
-	// want the check to fail if the file were moved from a little-endian to
-	// big-endian system or vice-versa.
-	fread(&magick, sizeof(magick), 1, fp);
-	if (magick != PXCACHE_MAGICK)
-	{
-		stat("LoadFXCache: %s is incorrect format: expected %08x, got %08x", fname.c_str(), PXCACHE_MAGICK, magick);
-		fclose(fp);
-		return 1;
-	}
-	
-	if (fgeti(fp) != top)
-	{
-		stat("LoadFXCache: # of sounds has changed since cache creation");
-		fclose(fp);
-		return 1;
-	}
-	
-	int allocd_size = 0;
-	snd.final_buffer = NULL;
-	
-	stat("LoadFXCache: restoring pxts from cache");
-	for(;;)
-	{
-		snd.final_size = fgetl(fp);
-		slot = fgetc(fp);
-		if (slot == -1) break;
-		
-		if (snd.final_size > allocd_size)
-		{
-			allocd_size = (snd.final_size * 10);
-			
-			if (snd.final_buffer) free(snd.final_buffer);
-			snd.final_buffer = (signed char *)malloc(allocd_size);
-			if (!snd.final_buffer)
-			{
-				staterr("LoadFXCache: out of memory!");
-				return 1;
-			}
-		}
-		
-		fread(snd.final_buffer, snd.final_size, 1, fp);
-		pxt_PrepareToPlay(&snd, slot);
-	}
-	
-	load_top = slot;
-	free(snd.final_buffer);
-	return 0;
-}
 
 
 // render all pxt files under "path" up to slot "top".
 // get them all ready to play in their sound slots.
-// if cache_name is specified the pcm audio data is cached under the given filename.
-char pxt_LoadSoundFX(const std::string& path, const std::string& cache_name, int top)
+
+char pxt_LoadSoundFX(const std::string& path, int top)
 {
 	char fname[80];
 	int slot;
 	stPXSound snd;
-	FILE *fp = NULL;
 
 	stat("Loading Sound FX...");
 	load_top = top;
 	
-	if (!cache_name.empty())
-	{
-		// try to load the cache if we can
-		if (LoadFXCache(cache_name, top) == 0)
-		{
-			return 0;
-		}
-		
-		fp = myfopen(widen(cache_name).c_str(), widen("wb").c_str());
-		if (!fp)
-		{
-			staterr("LoadSoundFX: failed open: '%s'", cache_name.c_str());
-			return 1;
-		}
-		
-		uint32_t magick = PXCACHE_MAGICK;
-		fwrite(&magick, 4, 1, fp);	// fwrite allows us to verify endianness, as well
-		fputi(top, fp);
-	}
 	
 	// get ready to do synthesis
 	pxt_initsynth();
@@ -780,31 +695,9 @@ char pxt_LoadSoundFX(const std::string& path, const std::string& cache_name, int
 		if (pxt_load(fname, &snd)) continue;
 		pxt_Render(&snd);
 		
-		// dirty hack; lower the pitch of the Stream Sounds
-		// to match the way they actually sound in the game
-		// with the SSS0400 command.
-///		if (slot == 40)
-//			pxt_ChangePitch(&snd, 5.0f);
-//		if (slot == 41)
-//			pxt_ChangePitch(&snd, 6.0f);
-		
-		// save the rendered audio to cache
-		if (fp)
-		{
-			fputl(snd.final_size, fp);
-			fputc(slot, fp);
-			fwrite(snd.final_buffer, snd.final_size, 1, fp);
-		}
-		
 		// upscale the sound to 16-bit for SDL_mixer then throw away the now unnecessary 8-bit data
 		pxt_PrepareToPlay(&snd, slot);
 		FreePXTBuf(&snd);
-	}
-	
-	if (fp)
-	{
-		stat(" - created %s; %d bytes", cache_name.c_str(), ftell(fp));
-		fclose(fp);
 	}
 	
 	return 0;

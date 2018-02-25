@@ -49,10 +49,6 @@ static const char *ogg11_dir = "Ogg11/";
 
 bool sound_init(void)
 {
-	char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
-	std::string sndcache = std::string(basepath) + "sndcache.pcm";
-	SDL_free(basepath);
-//	if (SSInit()) return 1;
 	if (Mix_Init(MIX_INIT_OGG) == -1)
 	{
 		staterr("Unable to init mixer.");
@@ -78,7 +74,7 @@ bool sound_init(void)
 	
 	if (pxt_init()) return 1;
 	
-	if (pxt_LoadSoundFX(ResourceManager::getInstance()->getPathForDir("pxt/"), sndcache, NUM_SOUNDS)) return 1;
+	if (pxt_LoadSoundFX(ResourceManager::getInstance()->getPathForDir("pxt/"), NUM_SOUNDS)) return 1;
 	
 	if (org_init(ResourceManager::getInstance()->getLocalizedPath("wavetable.dat"), ResourceManager::getInstance()->getPathForDir("pxt/"), ORG_VOLUME))
 	{
@@ -94,7 +90,6 @@ void sound_close(void)
 	pxt_freeSoundFX();
 	Mix_CloseAudio();
 	Mix_Quit();
-//	SSClose();
 }
 
 /*

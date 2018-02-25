@@ -186,13 +186,6 @@ static bool load_drumtable(const std::string& pxt_path)		// pxt_path = the path 
 {
 char fname[80];
 int d;
-FILE *fp;
-char* basepath = SDL_GetPrefPath("nxengine", "nxengine-evo");
-std::string drum_cache = std::string(basepath) + "drum.pcm";
-SDL_free(basepath);
-
-#define DRUM_VERSION	0x0001
-uint16_t version;
 
 	#ifndef DRUM_PXT
 		for(d=0;d<NUM_DRUMS;d++)
@@ -202,31 +195,8 @@ uint16_t version;
 		}
 	#else
 		
-		// try and load the drums from cache instead of synthing them
-		fp = myfopen(widen(drum_cache).c_str(), widen("rb").c_str());
-		if (fp)
-		{
-			// this also checks for correct endianness
-			fread(&version, sizeof(version), 1, fp);
-			if (version != DRUM_VERSION)
-			{
-				printf("%s: version incorrect\n", drum_cache.c_str());
-			}
-			else
-			{
-				for(d=0;d<NUM_DRUMS;d++)
-				{
-					drumtable[d].nsamples = fgetl(fp);
-					drumtable[d].samples = (signed short *)malloc(drumtable[d].nsamples * 2);
-					fread(drumtable[d].samples, drumtable[d].nsamples*2, 1, fp);
-				}
-				fclose(fp);
-				stat("-- Drums loaded from cache");
-				return 0;
-			}
-		}
 		
-		stat("load_drumtable: cache gone; rebuilding drums...");
+		stat("load_drumtable: rebuilding drums...");
 		
 		pxt_initsynth();
 		
@@ -239,21 +209,6 @@ uint16_t version;
 			}
 		}
 		
-		// cache the drums for next time
-		fp = myfopen(widen(drum_cache).c_str(), widen("wb").c_str());
-		if (fp)
-		{
-			version = DRUM_VERSION;
-			fwrite(&version, sizeof(version), 1, fp);
-			for(d=0;d<NUM_DRUMS;d++)
-			{
-				fputl(drumtable[d].nsamples, fp);
-				fwrite(drumtable[d].samples, drumtable[d].nsamples*2, 1, fp);
-			}
-			fclose(fp);
-		}
-		
-		load_drumtable(pxt_path);
 	#endif
 	
 	//for(d=0;d<256;d++) { lprintf("%d ", drumtable[0].samples[d]); if (d%32==0) lprintf("\n"); }
