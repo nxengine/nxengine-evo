@@ -129,7 +129,7 @@ int x, y, dir;
 	y += yoff;
 	
 	// create the shot
-	Object *shot = CreateObject(0, 0, otype);
+	Object *shot = CreateBullet(0, 0, otype);
 	
 	// set up the shot
 	if (player->look)
@@ -138,6 +138,44 @@ int x, y, dir;
 		dir = player->dir;
 	
 	SetupBullet(shot, x, y, btype, dir);
+	return shot;
+}
+
+// fires a missile type bullet at an offset from the exact center of the player
+static Object *FireMissileBullet(int otype, int btype, int xoff=0, int yoff=0, int accel = 0, bool wiggle = false)
+{
+int x, y, dir;
+
+	// create the shot
+	Object *shot = CreateBullet(0, 0, otype);
+	
+	// set up the shot
+	if (player->look)
+		dir = player->look;
+	else
+		dir = player->dir;
+
+	//for shot star effect
+	GetPlayerShootPoint(&x, &y);
+	SetupBullet(shot, x, y, btype, dir);
+
+	x = player->CenterX();
+	y = player->CenterY();// + 4*CSFI;
+
+	shot->SetCenterX(x + xoff);
+	shot->SetCenterY(y + yoff);
+	
+	if (player->look)
+	{
+		shot->yinertia = random(-512,512);
+		if (wiggle) shot->xinertia = (shot->x <= player->x) ? -256 : 256;
+	}
+	else
+	{
+		shot->xinertia = random(-512,512);
+		if (wiggle) shot->yinertia = (shot->y <= player->y) ? -256 : 256;
+	}
+	shot->shot.accel = accel;
 	return shot;
 }
 
@@ -272,7 +310,6 @@ void c------------------------------() {}
 // is_super: bool: true if the player is firing the Super Missile Launcher
 static void PFireMissile(int level, bool is_super)
 {
-Object *o;
 int xoff, yoff;
 
 	int object_type = (!is_super) ? OBJ_MISSILE_SHOT : OBJ_SUPERMISSILE_SHOT;
@@ -291,32 +328,31 @@ int xoff, yoff;
 	bullet_type += level;
 	
 	// level 1 & 2 fires just one missile
-	FireSimpleBulletOffset(object_type, bullet_type, -4 * CSFI, 0);
-	
-	// level 3 fires three missiles, they wave, and are "offset",
-	// so if it's level 3 fire two more missiles.
+	yoff = 1;
+	xoff = (player->dir == RIGHT) ? 1 : -1;
+	if (player->look)
+	{
+		yoff = (player->look == UP) ? -1 : 1;
+		FireMissileBullet(object_type, bullet_type, CSFI*xoff, 8 * CSFI * yoff, (is_super) ? 512 : 128, (level==2));
+	}
+	else
+	{
+		FireMissileBullet(object_type, bullet_type, 6*CSFI*xoff, (level == 2) ? CSFI : 0, (is_super) ? 512 : 128, (level==2));
+	}
+	// lv3 fires 3 missiles that wiggle
 	if (level == 2)
 	{
-		//									 norm	 super
-		static const int recoil_upper[] = { 0x500,  0xd00 };
-		static const int recoil_lower[] = { 0x700,  0x600 };
-		
-		if (player->look==DOWN || player->look==UP) { xoff = (4 * CSFI); yoff = 0; }
-											   else { yoff = (4 * CSFI); xoff = 0; }
-		
-		// this one is higher
-		o = FireSimpleBullet(object_type, bullet_type, -xoff, -yoff);
-		if (o->shot.dir==LEFT) 		 o->xinertia = recoil_upper[is_super];
-		else if (o->shot.dir==RIGHT) o->xinertia = -recoil_upper[is_super];
-		else if (o->shot.dir==UP) 	 o->yinertia = recoil_upper[is_super];
-		else 						 o->yinertia = -recoil_upper[is_super];
-		
-		// this one is lower
-		o = FireSimpleBullet(object_type, bullet_type, xoff, yoff);
-		if (o->shot.dir==LEFT) 		 o->xinertia = recoil_lower[is_super];
-		else if (o->shot.dir==RIGHT) o->xinertia = -recoil_lower[is_super];
-		else if (o->shot.dir==UP) 	 o->yinertia = recoil_lower[is_super];
-		else 						 o->yinertia = -recoil_lower[is_super];
+		if (player->look)
+		{
+			yoff = (player->look == UP) ? -1 : 1;
+			FireMissileBullet(object_type, bullet_type, 3*CSFI*xoff, 0, (is_super) ? 256 : 64, true);
+			FireMissileBullet(object_type, bullet_type, -3*CSFI*xoff, 0, (is_super) ? 170 : 51, true);
+		}
+		else
+		{
+			FireMissileBullet(object_type, bullet_type, 0, -8 * CSFI, (is_super) ? 256 : 64, true);
+			FireMissileBullet(object_type, bullet_type, -4*CSFI*xoff, -CSFI, (is_super) ? 170 : 51, true);
+		}
 	}
 }
 

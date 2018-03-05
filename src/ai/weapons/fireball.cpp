@@ -101,7 +101,7 @@ void ai_fireball(Object *o)
 		//  and continuing on if the enemy is killed by that much damage."
 		// So, our damage is set to half of what it should be, and we'll let ourselves
 		// deal it up to twice.
-		enemy->DealDamage(o->shot.damage);
+		enemy->DealDelayedDamage(o->shot.damage);
 		
 		if (o->timer3 == 1)
 			shot_dissipate(o, EFFECT_STARPOOF);

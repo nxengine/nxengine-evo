@@ -102,7 +102,7 @@ Object *enemy;
 		}
 		else
 		{
-			enemy->DealDamage(o->shot.damage, o);
+			enemy->DealDelayedDamage(o->shot.damage, o);
 		}
 		
 		return enemy;
@@ -113,7 +113,7 @@ Object *enemy;
 
 // used by AoE weapons, damages all enemies within the bounding box,
 // not just the first one found. Returns the number of enemies hit.
-int damage_all_enemies_in_bb(Object *o, uint32_t flags_to_exclude)
+int damage_all_enemies_in_bb(Object *o, uint32_t flags_to_exclude, int x, int y, int range)
 {
 Object *enemy;
 int count = 0;
@@ -124,7 +124,7 @@ int count = 0;
 		{
 			if ((enemy->flags & flags_to_exclude) == 0)
 			{
-				if (hitdetect(enemy, o))
+				if (hitdetect_area(enemy, x,y,range))
 				{
 					if (enemy->flags & FLAG_INVULNERABLE)
 					{
@@ -133,7 +133,7 @@ int count = 0;
 					}
 					else
 					{
-						enemy->DealDamage(o->shot.damage, o);
+						enemy->DealDelayedDamage(o->shot.damage, o);
 					}
 					
 					count++;

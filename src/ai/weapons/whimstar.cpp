@@ -120,7 +120,7 @@ void ai_whimsical_star(Object *o)
 	{
 		if (!(enemy->flags & FLAG_INVULNERABLE))
 		{
-			enemy->DealDamage(1);
+			enemy->DealDelayedDamage(1);
 		}
 		else
 		{

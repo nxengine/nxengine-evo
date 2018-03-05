@@ -20,42 +20,32 @@
 struct MissileSettings
 {
 	int maxspeed;		// max speed of missile
-	int accel;			// rate of acceleration
-	int smokeamt;		// how much smoke to make on explosion (higher = more)
-	int num_booms;		// number of boomflashes to create on impact
+	int hitrange;		// 
+	int lifetime;		// number of boomflashes to create on impact
 	int boomrange;		// max dist away to create the boomflashes
-	int damage;			// damage dealt by a direct hit of the missile itself
 	int boomdamage;		// damage dealt by contact with a boomflash (AoE damage)
 }
 missile_settings[] =
 {
 //  Level 1-3 regular missile
-//  have on record here for damage 4, 6, 4; check if that's correct
-//  maxspd   acl   smk, nboom, range,  dmg,  bmdmg
-	{0xA00,  0x80,  4,   4,		16,		8,	   1},
-	{0xA00,  0x100, 6,   6,		32,		15,	   2},
-	{0xA00,  0x80,  12,  2,		40,		8,	   2},
+//  maxspd   hit,  life, range,  bmdmg
+	{0xA00,  16,   10,   16,     1},
+	{0xA00,  16,   15,   32,     1},
+	{0xA00,  16,   5,    40,     1},
 	
 //  Level 1-3 super missile
-//  maxspd   acl   smk, nboom, range,  dmg,  bmdmg
-	{0x1400, 0x200, 8,   4,     16,		18,	   1},
-	{0x1400, 0x200, 6,   5,     32,		30,	   2},
-	{0x1400, 0x200, 12,  3,     40,		18,    2}
+//  maxspd   hit,  life, range, bmdmg
+	{0x1400, 12,   10,   16,    2},
+	{0x1400, 12,   14,   32,    2},
+	{0x1400, 12,   6,    40,    2}
 };
 
-/*
-	Direct Hits:
-		L1 Super Missile deals 18 damage, boomflashes are 2 apiece I think
-	
-	l1 super missile spawns 8 smoke clouds, 2 per frame
-	and so it appears that there are 4 booms and the booms are spawning the smoke
-	
-*/
 
 INITFUNC(AIRoutines)
 {
 	AFTERMOVE(OBJ_MISSILE_SHOT, ai_missile_shot);
 	AFTERMOVE(OBJ_SUPERMISSILE_SHOT, ai_missile_shot);
+	ONTICK(OBJ_MISSILE_BOOM_SPAWNER, ai_missile_boom_spawner_tick);
 	AFTERMOVE(OBJ_MISSILE_BOOM_SPAWNER, ai_missile_boom_spawner);
 }
 
@@ -70,15 +60,14 @@ void ai_missile_shot(Object *o)
 	
 	if (o->state == 0)
 	{
-		o->shot.damage = settings->damage;
+		o->shot.damage = 0;
 		
 		if (o->shot.level == 2)
 		{
 			// initilize wavey effect
-			if (o->shot.dir == LEFT || o->shot.dir == RIGHT)
-				o->ymark = -0x20;
-			else
-				o->xmark = -0x20;
+			o->xmark = o->x;
+			o->ymark = o->y;
+			o->speed = (o->type == OBJ_SUPERMISSILE_SHOT) ? -64 : -32;
 			
 			// don't let it explode until the "recoil" effect is over.
 			o->state = STATE_WAIT_RECOIL_OVER;
@@ -97,22 +86,22 @@ void ai_missile_shot(Object *o)
 	switch(o->shot.dir)
 	{
 		case RIGHT:
-			o->xinertia += settings->accel;
+			o->xinertia += o->shot.accel;
 			if (o->xinertia > settings->maxspeed) o->xinertia = settings->maxspeed;
 		break;
 		
 		case LEFT:
-			o->xinertia -= settings->accel;
+			o->xinertia -= o->shot.accel;
 			if (o->xinertia < -settings->maxspeed) o->xinertia = -settings->maxspeed;
 		break;
 		
 		case UP:
-			o->yinertia -= settings->accel;
+			o->yinertia -= o->shot.accel;
 			if (o->yinertia < -settings->maxspeed) o->yinertia = -settings->maxspeed;
 		break;
 		
 		case DOWN:
-			o->yinertia += settings->accel;
+			o->yinertia += o->shot.accel;
 			if (o->yinertia > settings->maxspeed) o->yinertia = settings->maxspeed;
 		break;
 	}
@@ -123,17 +112,15 @@ void ai_missile_shot(Object *o)
 	{
 		if (o->shot.dir == LEFT || o->shot.dir == RIGHT)
 		{
-			o->yinertia += o->ymark;
-			
-			if (o->ymark > 0 && o->yinertia > 0x100)  o->ymark = -o->ymark;
-			if (o->ymark < 0 && o->yinertia < -0x100) o->ymark = -o->ymark;
+			if (o->y >= o->ymark) o->speed = (o->type == OBJ_SUPERMISSILE_SHOT) ? -64 : -32;
+			else o->speed = (o->type == OBJ_SUPERMISSILE_SHOT) ? 64 : 32;
+			o->yinertia += o->speed;
 		}
 		else
 		{
-			o->xinertia += o->xmark;
-			
-			if (o->xmark > 0 && o->xinertia > 0x100)  o->xmark = -o->xmark;
-			if (o->xmark < 0 && o->xinertia < -0x100) o->xmark = -o->xmark;
+			if (o->x >= o->xmark) o->speed = (o->type == OBJ_SUPERMISSILE_SHOT) ? -64 : -32;
+			else o->speed = (o->type == OBJ_SUPERMISSILE_SHOT) ? 64 : 32;
+			o->xinertia += o->speed;
 		}
 	}
 	
@@ -186,11 +173,14 @@ void ai_missile_shot(Object *o)
 				sound(SND_MISSILE_HIT);
 				
 				// create the boom-spawner object for the flashes, smoke, and AoE damage
-				Object *sp = CreateObject(o->CenterX(), o->CenterY(), OBJ_MISSILE_BOOM_SPAWNER);
+				int y = o->CenterY();
+				if (o->shot.dir==LEFT || o->shot.dir==RIGHT) y-=3*CSFI;
+				Object *sp = CreateBullet(o->CenterX(), y, OBJ_MISSILE_BOOM_SPAWNER);
 				
-				sp->shot.boomspawner.range = settings->boomrange;
-				sp->shot.boomspawner.booms_left = settings->num_booms;
+				sp->shot.boomspawner.range = settings->hitrange;
+				sp->shot.boomspawner.booms_left = settings->lifetime;
 				sp->shot.damage = settings->boomdamage;
+				sp->shot.level = settings->boomdamage;
 				
 				o->Delete();
 				return;
@@ -223,8 +213,6 @@ void ai_missile_shot(Object *o)
 
 void ai_missile_boom_spawner(Object *o)
 {
-	if ((++o->timer % 3) != 1)
-		return;
 	
 	if (o->state == 0)
 	{
@@ -239,23 +227,41 @@ void ai_missile_boom_spawner(Object *o)
 		o->invisible = true;
 	}
 	
-	int range = o->shot.boomspawner.range;
-	o->x = o->xmark + (random(-range, range) * CSFI);
-	o->y = o->ymark + (random(-range, range) * CSFI);
+	if (!(o->shot.boomspawner.booms_left % 3))
+	{
+	    int range;
+	    switch (o->shot.level)
+	    {
+	        case 1:
+	          range = 16;
+	          break;
+	        case 2:
+	          range = 32;
+	          break;
+	        case 3:
+	          range = 40;
+	          break;
+	    }
+		int x = o->CenterX() + (random(-range, range) * CSFI);
+		int y = o->CenterY() + (random(-range, range) * CSFI);
+		
+		effect(x,y, EFFECT_BOOMFLASH);
+		missilehitsmoke(x,y, o->shot.boomspawner.range);
+	}
 	
-	effect(o->x, o->y, EFFECT_BOOMFLASH);
-	missilehitsmoke(o);
-	
-	damage_all_enemies_in_bb(o, FLAG_INVULNERABLE);
-	
-	if (--o->shot.boomspawner.booms_left <= 0)
+	if (--o->shot.boomspawner.booms_left < 0)
 		o->Delete();
 }
 
-static void missilehitsmoke(Object *o)
+void ai_missile_boom_spawner_tick(Object *o)
 {
-	int smokex = o->CenterX() - (8 * CSFI);
-	int smokey = o->CenterY() - (8 * CSFI);
+	damage_all_enemies_in_bb(o, FLAG_INVULNERABLE, o->CenterX(), o->CenterY(), o->shot.boomspawner.range);
+}
+
+static void missilehitsmoke(int x, int y, int range)
+{
+	int smokex = x + (random(-range, range) * CSFI);
+	int smokey = y + (random(-range, range) * CSFI);
 	Object *smoke;
 	
 	for(int i=0;i<2;i++)

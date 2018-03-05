@@ -60,6 +60,7 @@ public:
 	// ---------------------------------------
 	
 	void DealDamage(int dmg, Object *shot = NULL);
+	void DealDelayedDamage(int dmg, Object *shot = NULL);
 	void Kill();
 	void SpawnPowerups();
 	void SpawnXP(int amt);
@@ -98,6 +99,8 @@ public:
 	
 	int CenterX();
 	int CenterY();
+	void SetCenterX(int x);
+	void SetCenterY(int y);
 	
 	int Left();
 	int Right();
@@ -129,6 +132,7 @@ public:
 	uint8_t dir;
 	
 	int hp;									// remaining health
+	int damaged;									// remaining health
 	int damage;								// if != 0 does this much damage to player on touch
 	int state;								// AI state
 	int substate;							// state of current "common/shared" AI routine
@@ -194,6 +198,7 @@ public:
 	Object *lower, *higher;
 	
 	Object *linkedobject;
+	Object *whohit;
 	
 	// AI variables used for specific AI functions
 	union
@@ -204,6 +209,7 @@ public:
 			int ttl;			// frames left till shot times out; sets range
 			int dir;			// direction shot was fired in, LEFT RIGHT UP DOWN.
 			int damage;			// damage dealt per hit
+			int accel;			// acceleration
 			
 			int btype;			// bullet type
 			int level;			// weapon level (0, 1, or 2)

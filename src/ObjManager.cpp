@@ -15,6 +15,8 @@ static Player ZERO_PLAYER;
 Object *firstobject = NULL, *lastobject = NULL;
 Object *lowestobject = NULL, *highestobject = NULL;
 
+Object* bullets[64];
+
 /*
 void c------------------------------() {}
 */
@@ -64,6 +66,41 @@ Object *o;
 	return o;
 }
 
+
+// bullets are stored in separate array
+Object *CreateBullet(int x, int y, int type)
+{
+Object *o;
+
+	o = new Object;
+	*o = ZERO_OBJECT;	// safely clears all members
+	
+	// initialize
+	o->SetType(type);
+	o->flags = objprop[type].defaultflags;
+	o->DamageText = new FloatText(SPR_REDNUMBERS);
+	
+	o->x = x;
+	o->y = y;
+	o->dir = RIGHT;
+	o->xinertia = 0;
+	o->yinertia = 0;
+	o->linkedobject = NULL;
+	
+	// add into list
+	for (int i=0;i<64;i++)
+	{
+		if (bullets[i]==NULL)
+		{
+			bullets[i]=o;
+			break;
+		}
+	}
+	LL_ADD_END(o, lower, higher, lowestobject, highestobject);
+	
+	return o;
+}
+
 Object *CreateObject(int x, int y, int type)
 {
 	return CreateObject(x, y, type, 0, 0, RIGHT, NULL, CF_DEFAULT);
@@ -87,6 +124,21 @@ void Objects::UpdateBlockStates(void)
 		o->UpdateBlockStates(ALLDIRMASK);
 		o = o->next;
 	}
+	
+	for (int i=0;i<64;i++)
+	{
+		o=bullets[i];
+		if(o!=NULL)
+		{
+			o->lastblockl = o->blockl;
+			o->lastblockr = o->blockr;
+			o->lastblocku = o->blocku;
+			o->lastblockd = o->blockd;
+			
+			o->UpdateBlockStates(ALLDIRMASK);
+		}
+	}
+
 }
 
 // returns true if the bounding boxes of the two given objects are touching
@@ -111,6 +163,37 @@ int32_t rect2x1, rect2y1, rect2x2, rect2y2;
 	rect2x2 = o2->x + (s2->bbox.x2 * CSFI);
 	rect2y1 = o2->y + (s2->bbox.y1 * CSFI);
 	rect2y2 = o2->y + (s2->bbox.y2 * CSFI);
+	
+	// find out if the rectangles overlap
+	if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1)) return false;
+	if ((rect1x1 > rect2x2) && (rect1x2 > rect2x2)) return false;
+	if ((rect1y1 < rect2y1) && (rect1y2 < rect2y1)) return false;
+	if ((rect1y1 > rect2y2) && (rect1y2 > rect2y2)) return false;
+	
+	return true;
+}
+
+bool hitdetect_area(Object *o1, int x, int y, int range)
+{
+SIFSprite *s1;
+int32_t rect1x1, rect1y1, rect1x2, rect1y2;
+int32_t rect2x1, rect2y1, rect2x2, rect2y2;
+	
+	// get the sprites used by the two objects
+	s1 = o1->Sprite();
+	
+	// get the bounding rectangle of the first object
+	rect1x1 = o1->x + (s1->bbox.x1 * CSFI);
+	rect1y1 = o1->y + (s1->bbox.y1 * CSFI);
+
+	rect1x2 = o1->x + (s1->bbox.x2 * CSFI);
+	rect1y2 = o1->y + (s1->bbox.y2 * CSFI);
+	
+	// get the bounding rectangle of the second object
+	rect2x1 = x - (range * CSFI);
+	rect2x2 = x + (range * CSFI);
+	rect2y1 = y - (range * CSFI);
+	rect2y2 = y + (range * CSFI);
 	
 	// find out if the rectangles overlap
 	if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1)) return false;
@@ -196,11 +279,58 @@ Object *o;
 	// for display order, we can't ever run AI twice in a frame because of z-order
 	// rearrangement, and 2) objects created by other objects are added to the end of
 	// the list and given a chance to run their AI routine before being displayed.
+	
+	// run bullet ai first
+	for (int i=0;i<64;i++)
+	{
+		if (bullets[i]!=NULL)
+		{
+			bullets[i]->RunAI();
+		}
+	}
+	
 	FOREACH_OBJECT(o)
 	{
 		if (!o->deleted)
+		{
 			o->RunAI();
+		}
 	}
+}
+
+void Objects::RunAfterMove(void)
+{
+Object *o;
+
+	FOREACH_OBJECT(o)
+	{
+		if (!o->deleted)
+		{
+			o->OnAftermove();
+		}
+	}
+	
+	for (int i=0;i<64;i++)
+	{
+		if (bullets[i]!=NULL)
+		{
+			bullets[i]->OnAftermove();
+		}
+	}
+	
+	// deal summary bullet damage at the end of the frame
+	FOREACH_OBJECT(o)
+	{
+		if (!o->deleted)
+		{
+			if (o->damaged)
+			{
+				o->DealDamage(o->damaged, o->whohit);
+				o->damaged = 0;
+			}
+		}
+	}
+	
 }
 
 
@@ -213,6 +343,56 @@ int xinertia, yinertia;
 	FOREACH_OBJECT(o)
 	{
 		if (o != player && !o->deleted)		// player is moved in PDoPhysics
+		{
+			if (!(o->flags & FLAG_IGNORE_SOLID) && \
+				!(o->nxflags & NXFLAG_NO_RESET_YINERTIA))
+			{
+				if (o->blockd && o->yinertia > 0) o->yinertia = 0;
+				if (o->blocku && o->yinertia < 0) o->yinertia = 0;
+			}
+			
+			// apply inertia to X,Y position
+			xinertia = o->xinertia;
+			yinertia = o->yinertia;
+			if (o->shaketime)
+			{
+				if (o->nxflags & NXFLAG_SLOW_X_WHEN_HURT) xinertia >>= 1;
+				if (o->nxflags & NXFLAG_SLOW_Y_WHEN_HURT) yinertia >>= 1;
+			}
+			
+			o->apply_xinertia(xinertia);
+			o->apply_yinertia(yinertia);
+			
+			// flag_solid_brick objects push player as they move
+			if (o->flags & FLAG_SOLID_BRICK)
+			{
+				o->PushPlayerOutOfWay(xinertia, yinertia);
+			}
+			else if (o->damage > 0)
+			{
+				// have enemies hurt you when you touch them
+				// (solid-brick objects do this in PHandleSolidBrickObjects)
+				// SOLID_MUSHY objects doen't let the player sink enough for a smaller hitbox to collide
+				// so run detection with a bigger one.
+				// this can be "easily" tested on balcony: you should be able to stand on mimiga, but not on Igor.
+				if (o->flags & FLAG_SOLID_MUSHY)
+				{
+					if (hitdetect(o, player))
+						o->DealContactDamage();
+				}
+				else
+				{
+					if (hitdetect_damage_player(o))
+						o->DealContactDamage();
+				}
+			}
+		}
+	}
+
+	for (int i=0;i<64;i++)
+	{
+		o=bullets[i];
+		if (o!=NULL && o != player && !o->deleted)		// player is moved in PDoPhysics
 		{
 			if (!(o->flags & FLAG_IGNORE_SOLID) && \
 				!(o->nxflags & NXFLAG_NO_RESET_YINERTIA))
@@ -276,6 +456,12 @@ int Objects::CountType(int objtype)
 			count++;
 	}
 	
+	for (int i=0;i<64;i++)
+	{
+		if (bullets[i]!=NULL && bullets[i]->type == objtype)
+			count++;
+	}
+	
 	return count;
 }
 
@@ -287,6 +473,12 @@ Object *Objects::FindByType(int objtype)
 	{
 		if (o->type == objtype)
 			return o;
+	}
+	
+	for (int i=0;i<64;i++)
+	{
+		if (bullets[i]!=NULL && bullets[i]->type == objtype)
+			return bullets[i];
 	}
 	
 	return NULL;
@@ -313,6 +505,14 @@ Object *o, *next;
 		
 		o = next;
 	}
+	for (int i=0;i<64;i++)
+	{
+		if (bullets[i]!=NULL && bullets[i]->deleted)
+		{
+			bullets[i]->Destroy();
+			bullets[i]=NULL;
+		}
+	}
 }
 
 // deletes all objects. if delete_player is true, also deletes the player.
@@ -332,6 +532,15 @@ Object *o, *next;
 		}
 		
 		o = next;
+	}
+
+	for (int i=0;i<64;i++)
+	{
+		if (bullets[i]!=NULL)
+		{
+			bullets[i]->Destroy();
+			bullets[i]=NULL;
+		}
 	}
 	
 	// must do this last to avoid crashes as player ptr gets invalidated

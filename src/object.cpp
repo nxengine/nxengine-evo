@@ -29,6 +29,9 @@ int Object::BBoxHeight()         { return (((sprites[this->sprite].bbox.y2 - spr
 int Object::CenterX()            { return (this->x + (Width() / 2)) - DrawPointX(); }
 int Object::CenterY()            { return (this->y + (Height() / 2)) - DrawPointY(); }
 
+void Object::SetCenterX(int x)            { this->x = x - (Width() / 2) + DrawPointX(); }
+void Object::SetCenterY(int y)            { this->y = y - (Height() / 2) + DrawPointY(); }
+
 int Object::Left()                       { return (this->x + (sprites[this->sprite].bbox.x1 * CSFI)); }
 int Object::Right()                      { return (this->x + (sprites[this->sprite].bbox.x2 * CSFI)); }
 int Object::Top()                        { return (this->y + (sprites[this->sprite].bbox.y1 * CSFI)); }
@@ -678,7 +681,16 @@ Object * const &o = this;
 void c------------------------------() {}
 */
 
-// deals the specified amount of damage to the object,
+// deals damage to the object.
+// actual summary damage is appplied at the end of the frame
+void Object::DealDelayedDamage(int dmg, Object *shot)
+{
+Object * const &o = this;
+	o->damaged += dmg;
+	o->whohit = shot;
+}
+
+// immidiately deals the specified amount of damage to the object,
 // and kills it if it's hitpoints reach 0.
 //
 // It is valid to deal 0 damage. The trails of the Spur do this
@@ -688,6 +700,7 @@ void c------------------------------() {}
 // shot is an optional parameter specifying a pointer to
 // the shot that hit the object, and is used to spawn
 // blood spatter at the correct location.
+
 void Object::DealDamage(int dmg, Object *shot)
 {
 Object * const &o = this;

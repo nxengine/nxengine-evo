@@ -270,8 +270,6 @@ void c------------------------------() {}
 // standard in-game tick (as opposed to title-screen, inventory etc)
 void game_tick_normal(void)
 {
-Object *o;
-
 	player->riding = NULL;
 	player->bopped_object = NULL;
 	Objects::UpdateBlockStates();
@@ -289,12 +287,7 @@ Object *o;
 		// run the "aftermove" AI routines
 		HandlePlayer_am();
 		game.stageboss.RunAftermove();
-		
-		FOREACH_OBJECT(o)
-		{
-			if (!o->deleted)
-				o->OnAftermove();
-		}
+		Objects::RunAfterMove();
 	}
 
 	// important to put this before and not after DrawScene(), or non-existant objects

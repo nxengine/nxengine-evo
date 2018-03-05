@@ -17,7 +17,7 @@ enum run_shot_result
 Object *check_hit_enemy(Object *o, uint32_t flags_to_exclude=0);
 Object *damage_enemies(Object *o, uint32_t flags_to_exclude=0);
 int damage_multiple_enemies(Object *o, uint32_t flags_to_exclude=0);
-int damage_all_enemies_in_bb(Object *o, uint32_t flags_to_exclude);
+int damage_all_enemies_in_bb(Object *o, uint32_t flags_to_exclude, int x, int y, int range);
 
 void shot_spawn_effect(Object *o, int effectno);
 void shot_dissipate(Object *o, int effectno = EFFECT_STARPOOF);

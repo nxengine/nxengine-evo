@@ -147,6 +147,8 @@ void DrawBoundingBoxes()
 			
 			AddDebugMark(o->Left(), o->Top(), o->Right(), o->Bottom(),
 						DM_BOX, color>>16, (color>>8)&0xff, color&0xff);
+			AddDebugMark(o->CenterX(), o->CenterY(), o->CenterX(), o->CenterY(),
+						DM_PIXEL, 255,0,255);
 		}
 	}
 }

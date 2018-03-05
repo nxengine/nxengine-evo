@@ -10,6 +10,7 @@ namespace Objects
 	
 	void RunAI(void);
 	void PhysicsSim(void);
+	void RunAfterMove(void);
 	
 	int IsRearTopAttack(Object *o);
 	
@@ -34,6 +35,7 @@ enum CreateObjectFlags
 };
 
 Object *CreateObject(int x, int y, int type);
+Object *CreateBullet(int x, int y, int type);
 Object *CreateObject(int x, int y, int type, int xinertia, int yinertia, \
 					int dir=0, Object *linkedobject=NULL, uint32_t createflags=CF_DEFAULT);
 
@@ -81,6 +83,7 @@ extern Object *firstobject, *lastobject;
 extern Object *lowestobject, *highestobject;
 
 bool hitdetect(Object *o1, Object *o2);
+bool hitdetect_area(Object *o1, int x, int y, int range);
 bool solidhitdetect(Object *o1, Object *o2);
 
 #endif
