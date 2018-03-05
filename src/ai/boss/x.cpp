@@ -731,7 +731,7 @@ int i;
 	mainobject->state = 1;
 	mainobject->x = (128 * TILE_W) * CSFI;
 	mainobject->y = (200 * CSFI);
-	mainobject->flags = FLAG_IGNORE_SOLID;
+	mainobject->flags = FLAG_IGNORE_SOLID | FLAG_SHOW_FLOATTEXT;
 	
 	// put X behind the flying gaudis
 	mainobject->PushBehind(lowestobject);
