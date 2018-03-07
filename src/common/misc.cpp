@@ -246,6 +246,7 @@ char *str = GetStaticStr();
 void c------------------------------() {}
 */
 
+static uint32_t seed = 0;
 
 // return a random number between min and max inclusive
 int random(int min, int max)
@@ -268,13 +269,19 @@ int range, val;
 		return 0;
 	}
 	
-	val = rand() % (range + 1);
+	val = getrand() % (range + 1);
 	return val + min;
+}
+
+uint32_t getrand()
+{
+	seed = seed * 214013L + 2531011L;
+	return (uint32_t)(seed/65536) % 32768;
 }
 
 void seedrand(uint32_t newseed)
 {
-	srand(newseed);
+	seed = newseed;
 }
 
 /*
