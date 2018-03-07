@@ -34,8 +34,8 @@ const char *org_names[] =
 {
 	NULL,
 	"wanpaku", "anzen", "gameover", "gravity", "weed", "mdown2", "fireeye",
-	"vivi", "mura", "fanfale1", "ginsuke", "cemetery", "plant", "kodou", "fanfale3",
-	"fanfale2", "dr", "escape", "jenka", "maze", "access", "ironh", "grand",
+	"vivi", "mura", "fanfale1", "ginsuke", "cemetery", "plant", "kodou", "fanfale2",
+	"fanfale3", "dr", "escape", "jenka", "maze", "access", "ironh", "grand",
 	"curly", "oside", "requiem", "wanpak2", "quiet", "lastcave", "balcony", "lastbtl",
 	"lastbt3", "ending", "zonbie", "bdown", "hell", "jenka2", "marine", "ballos",
 	"toroko", "white", NULL
