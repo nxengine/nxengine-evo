@@ -12,30 +12,46 @@
 #include "sound.h"			// SAMPLE_RATE
 #include "../common/stat.h"
 #include "../common/misc.h"
+#include "../ResourceManager.h"
 
 static ogg11Song song;
 static bool do_loop = false;
 static bool looped = false;
 
-char ogg11_load(const std::string& fname_intro, const std::string& fname_loop)
+bool ogg11_load(const std::string& fname, const std::string& dir)
 {
+    std::string filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + "_intro.ogg");
+    if (!ResourceManager::fileExists(filename))
+    {
+        filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + "_loop.ogg");
+        if (!ResourceManager::fileExists(filename))
+        {
+            filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + ".ogg");
+        }
+    }
 	song.intro=NULL;
-	song.intro=Mix_LoadMUS(fname_intro.c_str());
+	song.intro=Mix_LoadMUS(filename.c_str());
 	if (!song.intro)
 	{
 		staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
-		return 1;
+		return false;
 	}
 
+    filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + "_loop.ogg");
+    if (!ResourceManager::fileExists(filename))
+    {
+        filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + ".ogg");
+    }
+
 	song.loop=NULL;
-	song.loop=Mix_LoadMUS(fname_loop.c_str());
+	song.loop=Mix_LoadMUS(filename.c_str());
 	if (!song.loop)
 	{
 		staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
-		return 1;
+		return false;
 	}
-    stat("ogg11_load: %s, %s\n", fname_intro.c_str(), fname_loop.c_str());
-	return 0;
+//    stat("ogg11_load: %s, %s\n", fname_intro.c_str(), fname_loop.c_str());
+	return true;
 }
 
 void musicFinished11()
@@ -53,11 +69,15 @@ void musicFinished11()
 
 
 // start the currently-loaded track playing at beat startbeat.
-bool ogg11_start(const std::string& fname_intro, const std::string& fname_loop, int startbeat, bool loop)
+bool ogg11_start(const std::string& fname, const std::string& dir, int startbeat, bool loop)
 {
 	ogg11_stop();		// stop any old music
 	
-	ogg11_load(fname_intro, fname_loop);
+	if (!ogg11_load(fname, dir))
+	{
+	    return false;
+		song.playing = false;
+	}
 	
 	song.last_pos = 0;
 	
@@ -83,7 +103,7 @@ bool ogg11_start(const std::string& fname_intro, const std::string& fname_loop, 
 	Mix_VolumeMusic(song.volume);
 	Mix_SetMusicPosition(startbeat / 1000);
 	Mix_HookMusicFinished(musicFinished11);
-	return 0;
+	return true;
 }
 
 

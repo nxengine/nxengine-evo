@@ -16,8 +16,8 @@ struct ogg11Song
 	uint32_t last_pos;
 };
 
-char ogg11_load(const std::string& name_intro, const std::string& fname_loop);
-bool ogg11_start(const std::string& fname_intro, const std::string& fname_loop, int startbeat, bool loop);
+bool ogg11_load(const std::string& fname, const std::string& dir);
+bool ogg11_start(const std::string& fname, const std::string& dir, int startbeat, bool loop);
 void ogg11_stop(void);
 bool ogg11_is_playing(void);
 void ogg11_fade(void);

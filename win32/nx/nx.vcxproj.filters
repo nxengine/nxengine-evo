@@ -393,9 +393,6 @@
     <ClCompile Include="..\..\src\tsc.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\sound\ogg.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\sound\ogg11.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -819,9 +816,6 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\version.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\sound\ogg.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\sound\ogg11.h">

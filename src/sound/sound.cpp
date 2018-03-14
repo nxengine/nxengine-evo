@@ -12,7 +12,6 @@
 #include "../game.h"
 #include "pxt.h"
 #include "org.h"
-#include "ogg.h"
 #include "ogg11.h"
 #include "sound.h"
 #include "../common/stat.h"
@@ -174,57 +173,14 @@ char fname[MAXPATHLEN];
 	}
 }
 
-static void start_ogg_track(int songno, bool resume)
+static void start_ogg11_track(int songno, bool resume, const char* dir)
 {
-	char fname[MAXPATHLEN];
-
-	if (songno == 0)
-	{
-		ogg_stop();
-		return;
-	}
-	
-	strcpy(fname, ogg_dir);
-	strcat(fname, org_names[songno]);
-	strcat(fname, ".ogg");
-
-	ogg_start(ResourceManager::getInstance()->getLocalizedPath(fname), resume ? music_lastsongpos() : 0);
-}
-
-static void start_ogg11_track(int songno, bool resume)
-{
-	char fname_intro[MAXPATHLEN];
-	char fname_loop[MAXPATHLEN];
-
-	if (songno == 0)
-	{
-		ogg11_stop();
-		return;
-	}
-	
-	// There's no intro/loop for lastbtl
-	if (strstr(org_names[songno], "lastbtl"))
-	{
-		strcpy(fname_intro, ogg11_dir);
-		strcat(fname_intro, org_names[songno]);
-		strcat(fname_intro, ".ogg");
-
-		strcpy(fname_loop, ogg11_dir);
-		strcat(fname_loop, org_names[songno]);
-		strcat(fname_loop, ".ogg");
-	}
-	else
-	{
-		strcpy(fname_intro, ogg11_dir);
-		strcat(fname_intro, org_names[songno]);
-		strcat(fname_intro, "_intro.ogg");
-
-		strcpy(fname_loop, ogg11_dir);
-		strcat(fname_loop, org_names[songno]);
-		strcat(fname_loop, "_loop.ogg");
-	}
-
-	ogg11_start(ResourceManager::getInstance()->getLocalizedPath(fname_intro), ResourceManager::getInstance()->getLocalizedPath(fname_loop), resume ? music_lastsongpos() : 0, resume ? songlooped : false);
+    if (songno==0)
+    {
+        ogg11_stop();
+        return;
+    }
+	ogg11_start(org_names[songno], dir, resume ? music_lastsongpos() : 0, resume ? songlooped : false);
 }
 
 
@@ -247,8 +203,6 @@ void music(int songno, bool resume)
 				org_stop();
 				break;
 			case 1:
-				ogg_stop();
-				break;
 			case 2:
 				ogg11_stop();
 				break;
@@ -262,10 +216,10 @@ void music(int songno, bool resume)
 			start_track(songno,resume);
 			break;
 		case 1:
-			start_ogg_track(songno,resume);
+			start_ogg11_track(songno,resume, ogg_dir);
 			break;
 		case 2:
-			start_ogg11_track(songno,resume);
+			start_ogg11_track(songno,resume, ogg11_dir);
 			break;
 	}
 }
@@ -316,19 +270,19 @@ void music_set_enabled(int newstate)
 				}
 				break;
 			case 1:
-				if (play != ogg_is_playing())
+				if (play != ogg11_is_playing())
 				{
 					if (play)
-						start_ogg_track(cursong,0);
+						start_ogg11_track(cursong,0, ogg_dir);
 					else
-						ogg_stop();
+						ogg11_stop();
 				}
 				break;
 			case 2:
 				if (play != ogg11_is_playing())
 				{
 					if (play)
-						start_ogg11_track(cursong,0);
+						start_ogg11_track(cursong,0, ogg11_dir);
 					else
 						ogg11_stop();
 				}
@@ -346,7 +300,6 @@ void music_set_newmusic(int newstate)
 		settings->new_music = newstate;
 		
 		org_stop();
-		ogg_stop();
 		ogg11_stop();
 		
 		switch (newstate)
@@ -355,10 +308,10 @@ void music_set_newmusic(int newstate)
 				start_track(cursong,0);
 				break;
 			case 1:
-				start_ogg_track(cursong,0);
+				start_ogg11_track(cursong, 0, ogg_dir);
 				break;
 			case 2:
-				start_ogg11_track(cursong,0);
+				start_ogg11_track(cursong, 0, ogg11_dir);
 				break;
 		}
 	}
@@ -372,8 +325,6 @@ void music_fade()
 			org_fade();
 			break;
 		case 1:
-			ogg_fade();
-			break;
 		case 2:
 			ogg11_fade();
 			break;
@@ -392,8 +343,6 @@ void music_run_fade()
 			org_run_fade();
 			break;
 		case 1:
-			ogg_run_fade();
-			break;
 		case 2:
 			ogg11_run_fade();
 			break;
