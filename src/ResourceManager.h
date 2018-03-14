@@ -15,6 +15,7 @@ class ResourceManager
 
 public:
     static ResourceManager* getInstance();
+    static bool fileExists(const std::string& filename);
 
     void shutdown();
     std::string getLocalizedPath(const std::string& filename);

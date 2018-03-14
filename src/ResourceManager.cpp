@@ -15,12 +15,12 @@
 #include "common/glob.h"
 #include "common/misc.h"
 
-inline bool fileExists(const std::string& file)
+bool ResourceManager::fileExists(const std::string& filename)
 {
 #if defined(__unix__) || defined(__APPLE__) // Linux, OS X, BSD
     struct stat st;
 
-    if (stat(file.c_str(), &st) == 0)
+    if (stat(filename.c_str(), &st) == 0)
     {
         return true;
     }
@@ -29,7 +29,7 @@ inline bool fileExists(const std::string& file)
         return false;
     }
 #elif defined(_WIN32) || defined(WIN32) // Windows
-    DWORD attrs = GetFileAttributes(widen(file).c_str());
+    DWORD attrs = GetFileAttributes(widen(filename).c_str());
 
     // Assume path exists
     if (attrs != INVALID_FILE_ATTRIBUTES)
