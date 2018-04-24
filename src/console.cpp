@@ -581,7 +581,7 @@ static CommandEntry commands[] =
 	{"hello", __hello, 0, 0},
 	{"hi", __hello, 0, 0},
 	
-	{NULL, NULL}
+	{NULL, NULL, 0, 0}
 };
 
 

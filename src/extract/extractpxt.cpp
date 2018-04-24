@@ -40,7 +40,7 @@ fields[] =
 	{"by      ", 1},
 	{"cx      ", 1},
 	{"cy      ", 1},
-	{NULL}
+	{NULL, 0}
 };
 
 static struct

@@ -87,7 +87,7 @@ BulletInfo bullet_table[] =
 	// Curly's Nemesis from Hell (OBJ_CURLY_CARRIED_SHOOTING)
 	{SPR_SHOT_NEMESIS_L1,	0,  0, 1, 20, 12, 0x1000, 0, SND_NEMESIS_FIRE},
 	
-	{0, 0, 0, 0, 0, 0, 0}
+	{0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 

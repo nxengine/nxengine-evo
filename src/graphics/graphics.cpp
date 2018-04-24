@@ -261,7 +261,7 @@ const Graphics::gres_t* Graphics::GetRes()
         {(char*)"1366x768",  1366,     768,      455,      256,      3,            true,       true },
         {(char*)"1440x900",  1440,     900,      480,      300,      3,            true,       true },
         {(char*)"1920x1080", 1920,     1080,     480,      270,      4,            true,       true },
-        {NULL}
+        {NULL, 0, 0, 0, 0, 0, false, false}
     };
 
     SDL_DisplayMode dm;
