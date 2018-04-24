@@ -229,7 +229,7 @@ void ai_missile_boom_spawner(Object *o)
 	
 	if (!(o->shot.boomspawner.booms_left % 3))
 	{
-	    int range;
+	    int range = 0;
 	    switch (o->shot.level)
 	    {
 	        case 1:
