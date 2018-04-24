@@ -760,13 +760,13 @@ int i, key;
 	{
 		// keys which deactivate lookaway when you are facing away from player
 		static const char actionkeys[] = \
-			{ LEFTKEY, RIGHTKEY, UPKEY, JUMPKEY, FIREKEY, -1 };
+			{ LEFTKEY, RIGHTKEY, UPKEY, JUMPKEY, FIREKEY, INPUT_COUNT };
 		
 		// stop looking away if any keys are pushed
 		for(i=0;;i++)
 		{
 			key = actionkeys[i];
-			if (key == -1) break;
+			if (key == INPUT_COUNT) break;
 			
 			if (pinputs[key])
 			{
