@@ -103,7 +103,7 @@ files[] =
 	{"data/org/marine.org",      0x0d7a74, 16962, 0xb533d72a, NULL},
 	{"data/org/white.org",       0x109468, 23714, 0xcff0fb34, NULL},
 	{"data/org/zonbie.org",      0x10f180, 5346,  0xd217cc29, NULL},
-	{NULL}
+	{NULL, 0, 0, 0, NULL }
 };
 
 void createdir(const char *fname)
