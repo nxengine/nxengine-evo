@@ -298,7 +298,7 @@ char fname[MAXPATHLEN];
 		sprintf(fname, "endpic/credit%02dm.bmp", i);
 		else
 		sprintf(fname, "endpic/credit%02d.bmp", i);
-		if (file_exists(fname))
+		if (ResourceManager::fileExists(ResourceManager::getInstance()->getLocalizedPath(fname)))
 		{
 			images[i] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
 			if (!images[i])
