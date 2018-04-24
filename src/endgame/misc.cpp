@@ -372,7 +372,7 @@ Object *ahchoo;
 		
 		case 50:	// turn back to mimiga...
 		{
-			o->state = 41;
+			o->state = 51;
 			o->timer = 0;
 			o->frame = 0;
 		}
