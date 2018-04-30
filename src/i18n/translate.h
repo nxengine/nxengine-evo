@@ -8,7 +8,7 @@ class I18N {
 public:
     I18N();
     ~I18N();
-    const bool load();
+    bool load();
     const std::string& translate(const std::string& key);
 private:
     std::map<std::string, std::string> _strings;

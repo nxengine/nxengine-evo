@@ -78,12 +78,12 @@ BMFont::~BMFont()
     cleanup();
 }
 
-const uint32_t BMFont::height()
+uint32_t BMFont::height() const
 {
     return _height;
 }
 
-const uint32_t BMFont::base()
+uint32_t BMFont::base() const
 {
     return _base;
 }
