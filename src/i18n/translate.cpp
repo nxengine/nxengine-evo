@@ -8,7 +8,7 @@ I18N::I18N() : _strings() {}
 
 I18N::~I18N() {}
 
-const bool I18N::load()
+bool I18N::load()
 {
     std::string path=ResourceManager::getInstance()->getLocalizedPath("system.json");
     std::ifstream fl;

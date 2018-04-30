@@ -25,8 +25,8 @@ public:
     ~BMFont();
     bool load(const std::string& font);
     void cleanup();
-    const uint32_t height();
-    const uint32_t base();
+    uint32_t height() const;
+    uint32_t base() const;
     const BMFont::Glyph& glyph(uint32_t codepoint);
     SDL_Texture* atlas(uint32_t idx);
 private:
