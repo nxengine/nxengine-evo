@@ -384,16 +384,16 @@ void c------------------------------() {}
 // the specified coordinates.
 void TextBox::DrawFrame(int x, int y, int w, int h)
 {
-	draw_sprite_chopped(x, y, SPR_TEXTBOX, 0, w, 8);		// draw top
+	draw_sprite_chopped(x, y, SPR_TEXTBOX, 0, w, 8, 210);		// draw top
 	y += 8;
 	
 	for(int draw=0;draw<h-16;draw+=8)
 	{
-		draw_sprite_chopped(x, y, SPR_TEXTBOX, 1, w, 8);	// draw middle
+		draw_sprite_chopped(x, y, SPR_TEXTBOX, 1, w, 8, 210);	// draw middle
 		y += 8;
 	}
 	
-	draw_sprite_chopped(x, y, SPR_TEXTBOX, 2, w, 8);		// draw bottom
+	draw_sprite_chopped(x, y, SPR_TEXTBOX, 2, w, 8, 210);		// draw bottom
 }
 
 

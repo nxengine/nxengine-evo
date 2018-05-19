@@ -139,6 +139,8 @@ private:
 
 	bool need_clip;
 	SDL_Rect clip_rect;
+public:
+	int alpha = 255;
 
 };
 

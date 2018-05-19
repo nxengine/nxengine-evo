@@ -204,16 +204,17 @@ void Sprites::draw_in_batch(bool enabled)
     batch_draw_enabled = enabled;
 }
 
-namespace Sprites {
 // master sprite drawing function
-static void BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
-								int xoff, int yoff, int wd, int ht)
+void Sprites::BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
+								int xoff, int yoff, int wd, int ht, int alpha)
 {
 	LoadSheetIfNeeded(sprites[s].spritesheet);
 	
 	dir %= sprites[s].ndirs;
 	SIFDir *sprdir = &sprites[s].frame[frame].dir[dir];
 	
+    spritesheet[sprites[s].spritesheet]->alpha = alpha;
+
     if (batch_draw_enabled)
     {
         DrawBatchAdd(spritesheet[sprites[s].spritesheet], \
@@ -230,8 +231,9 @@ static void BlitSprite(int x, int y, int s, int frame, uint8_t dir, \
                     (sprdir->sheet_offset.y + yoff), \
                     wd, ht);
     }
+    spritesheet[sprites[s].spritesheet]->alpha = 255;
 }
-}
+
 /*
 void c------------------------------() {}
 */
@@ -276,25 +278,25 @@ void Sprites::draw_sprite_clip_width(int x, int y, int s, int frame, int wd)
 // on the left, the first "repeat_at" pixels are drawn.
 // then, the remaining "wd" is drawn from the right half of the sprite.
 // used for things like drawing the textboxes.
-void Sprites::draw_sprite_chopped(int x, int y, int s, int frame, int wd, int repeat_at)
+void Sprites::draw_sprite_chopped(int x, int y, int s, int frame, int wd, int repeat_at, int alpha)
 {
 int xoff;
 
 	if (wd >= sprites[s].w)
 	{
-		draw_sprite(x, y, s, frame);
+		BlitSprite(x, y, s, frame, 0, 0, 0, sprites[s].w, sprites[s].h, alpha);
 		return;
 	}
 	
 	// draw the left part
-	BlitSprite(x, y, s, frame, 0, 0, 0, repeat_at, sprites[s].h);
+	BlitSprite(x, y, s, frame, 0, 0, 0, repeat_at, sprites[s].h, alpha);
 	x += repeat_at;
 	wd -= repeat_at;
 	
 	// draw the rest of it
 	xoff = (sprites[s].w - wd);
 	
-	BlitSprite(x, y, s, frame, 0, xoff, 0, wd, sprites[s].h);
+	BlitSprite(x, y, s, frame, 0, xoff, 0, wd, sprites[s].h, alpha);
 }
 
 // draws a sprite to any arbitrary width by repeating it over the given distance.

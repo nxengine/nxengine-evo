@@ -180,7 +180,7 @@ void NXSurface::DrawSurface(NXSurface *src, \
 	dstrect.h = srcrect.h;
 
 	if (need_clip) clip(srcrect, dstrect);
-	
+	SDL_SetTextureAlphaMod(src->fTexture, src->alpha);
 	if (SDL_RenderCopy(renderer, src->fTexture, &srcrect, &dstrect))
 	{
 		staterr("NXSurface::DrawSurface: SDL_RenderCopy failed: %s", SDL_GetError());
