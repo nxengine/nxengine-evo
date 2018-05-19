@@ -65,7 +65,7 @@ bool Game::init()
 {
 int i;
 
-	memset(&game, 0, sizeof(game));
+	game = {};
 	tsc = new TSC();
 	// set default properties
 	memset(objprop, 0, sizeof(objprop));
