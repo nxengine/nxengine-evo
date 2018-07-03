@@ -794,7 +794,7 @@ int scroll_x, scroll_y;
 
 		for(x=0; x <= (SCREEN_WIDTH / TILE_W)+2; x++)
 		{
-			if (mapx+x <= 0 || mapy+y <= 0 || mapx+x >= map.xsize || mapy+y >= map.ysize)
+			if (mapx+x <= 0 || mapy+y <= 0 || mapx+x > map.xsize || mapy+y > map.ysize)
 			{
 				int t = oob_tiles[0];
 				if (oob_tile_count == 4)
