@@ -4,6 +4,7 @@
 #include "../ai.h"
 #include "../final_battle/doctor_common.h" //for Sue redcrystal
 #include "../final_battle/doctor.h"
+#include "../sand/puppy.h" // for ZZZZ
 
 #include "../sym/smoke.h"
 #include "../../ObjManager.h"
@@ -867,6 +868,21 @@ void ai_generic_npc_nofaceplayer(Object *o)
 				o->state = 3;
 				ai_generic_npc(o);
 				return;
+			}
+		break;
+		case 10:		// sleeping Chaco
+			if (o->type == OBJ_CHACO)
+			{
+				o->dir = 0;
+				o->frame = 6;
+				o->flags &= ~ FLAG_SCRIPTONACTIVATE;
+				o->state = 11;
+			}
+		break;
+		case 11:		// sleeping Chaco
+			if (o->type == OBJ_CHACO)
+			{
+				ai_zzzz_spawner(o);
 			}
 		break;
 	}
