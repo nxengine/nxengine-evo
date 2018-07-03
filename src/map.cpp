@@ -785,20 +785,20 @@ int scroll_x, scroll_y;
 	mapx = (scroll_x / TILE_W);
 	mapy = (scroll_y / TILE_H);
 
-	blit_y = -abs(scroll_y % TILE_H);
-	blit_x_start = -abs(scroll_x % TILE_W);
+	blit_y = ((-scroll_y) % TILE_H) - TILE_H;
+	blit_x_start = ((-scroll_x) % TILE_W) - TILE_W;
 
-	for(y=0; y <= (SCREEN_HEIGHT / TILE_H)+MAP_DRAW_EXTRA_Y; y++)
+	for(y=0; y <= (SCREEN_HEIGHT / TILE_H)+2; y++)
 	{
 		blit_x = blit_x_start;
 
-		for(x=0; x <= (SCREEN_WIDTH / TILE_W)+MAP_DRAW_EXTRA_X; x++)
+		for(x=0; x <= (SCREEN_WIDTH / TILE_W)+2; x++)
 		{
 			if (mapx+x <= 0 || mapy+y <= 0 || mapx+x >= map.xsize || mapy+y >= map.ysize)
 			{
 				int t = oob_tiles[0];
 				if (oob_tile_count == 4)
-					t = oob_tiles[abs(mapx+x) % 2 + (abs(mapy+y) % 2)*2];
+					t = oob_tiles[abs(mapx+x+1) % 2 + (abs(mapy+y+1) % 2)*2];
 				draw_tile(blit_x, blit_y, t);
 			}
 			blit_x += TILE_W;
