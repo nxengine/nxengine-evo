@@ -17,10 +17,12 @@ using namespace Tileset;
 
 #include "common/stat.h"
 #include "common/misc.h"
+#include "common/json.hpp"
 #include "game.h"
 #include "player.h"
 #include "settings.h"
 #include "ResourceManager.h"
+#include <fstream>
 
 
 stMap map;
@@ -38,6 +40,9 @@ unsigned char tilecode[MAX_TILES];			// tile codes for every tile in current til
 unsigned int tileattr[MAX_TILES];			// tile attribute bits for every tile in current tileset
 unsigned int tilekey[MAX_TILES];			// mapping from tile codes -> tile attributes
 
+
+unsigned char oob_tile_count;
+unsigned int oob_tiles[4];
 
 // load stage "stage_no", this entails loading the map (pxm), enemies (pxe), tileset (pbm),
 // tile attributes (pxa), and script (tsc).
@@ -75,6 +80,10 @@ char fname[MAXPATHLEN];
 	map_set_backdrop(stages[stage_no].bg_no);
 	map.scrolltype = stages[stage_no].scroll_type;
 	map.motionpos = 0;
+
+	// optional metadata
+	sprintf(fname, "StageMeta/%s.json", mapname);
+	load_meta(ResourceManager::getInstance()->getLocalizedPath(fname));
 	
 	return 0;
 }
@@ -366,6 +375,58 @@ unsigned char tc;
 	
 	fclose(fp);
 	return 0;
+}
+
+void load_meta(const std::string& fname)
+{
+std::ifstream fl;
+
+	oob_tile_count = 0;
+
+	fl.open(widen(fname), std::ifstream::in | std::ifstream::binary);
+	if (fl.is_open())
+	{
+		try
+		{
+			nlohmann::json metadata_root = nlohmann::json::parse(fl);
+
+			// Load out-of-bounds details.
+			if (metadata_root.find("out-of-bounds") != metadata_root.end())
+			{
+				auto oob = metadata_root.at("out-of-bounds");
+
+				// Save OOB tile IDs for rendering.
+				if (oob.is_array())
+				{
+					oob_tile_count = oob.size();
+					if (oob_tile_count == 1 || oob_tile_count == 4)
+					{
+						stat("load_meta: reading %d out-of-bounds tiles", oob_tile_count);
+						int i = 0;
+						for (auto it = oob.begin(); it != oob.end(); ++it, i++)
+						{
+							oob_tiles[i] = *it;
+						}
+					}
+					else
+					{
+						staterr("load_meta: 'out-of-bounds' tile count can only be 1 or 4, found %d", oob_tile_count);
+						oob_tile_count = 0;
+					}
+				}
+				else
+				{
+					staterr("load_meta: metadata field 'out-of-bounds' must be an array containing one or more tile IDs", fname.c_str());
+				}
+			}
+
+			stat("load_meta: '%s' finished parsing", fname.c_str());
+		}
+		catch (nlohmann::json::exception& e)
+		{
+			staterr("load_meta: JSON parsing error in file '%s': %s", fname.c_str(), e.what());
+		}
+	}
 }
 
 bool load_stages(void)

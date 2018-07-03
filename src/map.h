@@ -127,6 +127,7 @@ bool load_stage(int stage_no);
 bool load_map(const std::string& fname);
 bool load_entities(const std::string& fname);
 bool load_tileattr(const std::string& fname);
+void load_meta(const std::string& fname);
 bool load_stages(void);
 bool initmapfirsttime(void);
 void initmap(void);
