@@ -3,8 +3,12 @@
 #include "../ResourceManager.h"
 #include "../common/json.hpp"
 #include "../common/misc.h"
-
+#include "../common/utf8.h"
+#include "../ResourceManager.h"
+#include "minibidi.h"
 #include <fstream>
+#include <vector>
+#include <cstdint>
 
 I18N::I18N()
     : _strings()
@@ -26,6 +30,14 @@ bool I18N::load()
     for (auto it = langfile.begin(); it != langfile.end(); ++it)
     {
       _strings[it.key()] = it.value();
+      std::string result = it.value();
+      std::vector<uint32_t> utf32result;
+      utf8::utf8to32(result.begin(), result.end(), std::back_inserter(utf32result));
+      doBidi(&utf32result[0], utf32result.size(), true, false, NULL, NULL);
+      result.clear();
+      utf8::utf32to8(utf32result.begin(), utf32result.end(), std::back_inserter(result));
+
+      _strings[ it.key() ] = std::move(result);
     }
     return true;
   }
