@@ -137,6 +137,7 @@ void DrawFastLeftLayered(void);
 void map_flush_graphics();
 void map_drawwaterlevel(void);
 void map_draw(uint8_t foreground);
+void map_draw_oob();
 void scroll_normal(void);
 void map_scroll_do(void);
 void run_phase_compensator(void);

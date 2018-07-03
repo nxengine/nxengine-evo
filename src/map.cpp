@@ -768,6 +768,46 @@ int scroll_x, scroll_y;
 }
 
 
+// draw out-of-bounds tiles, if any.
+void map_draw_oob()
+{
+int x, y;
+int mapx, mapy;
+int blit_x, blit_y, blit_x_start;
+int scroll_x, scroll_y;
+
+	if (oob_tile_count == 0)
+		return;
+
+	scroll_x = (map.displayed_xscroll / CSFI);
+	scroll_y = (map.displayed_yscroll / CSFI);
+
+	mapx = (scroll_x / TILE_W);
+	mapy = (scroll_y / TILE_H);
+
+	blit_y = -abs(scroll_y % TILE_H);
+	blit_x_start = -abs(scroll_x % TILE_W);
+
+	for(y=0; y <= (SCREEN_HEIGHT / TILE_H)+MAP_DRAW_EXTRA_Y; y++)
+	{
+		blit_x = blit_x_start;
+
+		for(x=0; x <= (SCREEN_WIDTH / TILE_W)+MAP_DRAW_EXTRA_X; x++)
+		{
+			if (mapx+x <= 0 || mapy+y <= 0 || mapx+x >= map.xsize || mapy+y >= map.ysize)
+			{
+				int t = oob_tiles[0];
+				if (oob_tile_count == 4)
+					t = oob_tiles[abs(mapx+x) % 2 + (abs(mapy+y) % 2)*2];
+				draw_tile(blit_x, blit_y, t);
+			}
+			blit_x += TILE_W;
+		}
+
+		blit_y += TILE_H;
+	}
+}
+
 /*
 void c------------------------------() {}
 */

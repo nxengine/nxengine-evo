@@ -428,7 +428,10 @@ extern int flipacceltime;
 	
 	// draw foreground map tiles
 	if (!flipacceltime)
+	{
 		map_draw(TA_FOREGROUND);
+		map_draw_oob();
+	}
 	
 	// draw carets (always-on-top effects such as boomflash)
 	Carets::DrawAll();
