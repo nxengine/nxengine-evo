@@ -700,8 +700,8 @@ int water_x, water_y;
 	if (!map.waterlevelobject)
 		return;
 	
-	water_x = -(map.displayed_xscroll / CSFI);
-	water_x %= SCREEN_WIDTH;
+	water_x = (map.displayed_xscroll / CSFI);
+	water_x = ((-water_x) % TILE_W) - TILE_W;
 	
 	water_y = (map.waterlevelobject->y / CSFI) - (map.displayed_yscroll / CSFI);
 	
