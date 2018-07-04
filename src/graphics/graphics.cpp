@@ -14,6 +14,8 @@
 #include "../version.h"
 #include "../ResourceManager.h"
 #include "nx_icon.h"
+#include "../game.h"
+#include "../pause/dialog.h"
 
 SDL_Window * window = NULL;
 SDL_Renderer * renderer = NULL;
@@ -195,6 +197,8 @@ void Graphics::SetFullscreen(bool enable)
 // 1 - Windowed scale x1 (320x240)
 // 2 - Windowed scale x2 (640x480)
 // 3 - Windowed scale x3 (960x720)
+extern std::vector<void*>  optionstack;
+
 bool Graphics::SetResolution(int r, bool restoreOnFailure)
 {
 	stat("Graphics::SetResolution(%d)", r);
@@ -240,6 +244,11 @@ bool Graphics::SetResolution(int r, bool restoreOnFailure)
 	current_res = r;
 	if (Graphics::FlushAll()) return 1;
 	recalc_map_offsets();
+	textbox.RecalculateOffsets();
+	for (auto dlg : optionstack)
+	{
+	    ((Options::Dialog*)dlg)->UpdateSizePos();
+	}
 	return 0;
 }
 

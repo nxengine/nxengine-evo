@@ -90,6 +90,14 @@ void TextBox::SetVisible(bool enable, uint8_t flags)
 	SetFlags(flags);
 }
 
+void TextBox::RecalculateOffsets()
+{
+	fCoords.w = MSG_W;
+	fCoords.h = MSG_H;
+	fCoords.x = ((SCREEN_WIDTH / 2) - (MSG_W / 2));
+	fCoords.y = (fFlags & TB_DRAW_AT_TOP) ? MSG_UPPER_Y : ((SCREEN_HEIGHT - MSG_H) - 2);
+}
+
 void TextBox::SetFlags(uint8_t flags)
 {
 	fFlags = flags;

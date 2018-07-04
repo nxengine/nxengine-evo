@@ -242,7 +242,7 @@ int newres;
 		settings->resolution = newres;
 //		Graphics::SetFullscreen(false);
 //		Graphics::SetFullscreen(settings->fullscreen);
-		opt.dlg->UpdateSizePos();
+//		opt.dlg->UpdateSizePos();
 	}
 	else
 	{

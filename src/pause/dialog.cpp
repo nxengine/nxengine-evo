@@ -87,11 +87,9 @@ void Dialog::UpdateSizePos()
         DLG_H = 200;
     }
 
-    fCoords.x = DLG_X;
-    fCoords.y = DLG_Y;
-    fCoords.w = DLG_W;
-    fCoords.h = DLG_H;
-    fTextX = (fCoords.x + 48);
+	fCoords.x = ((DLG_W / 2) - (fCoords.w / 2)) + DLG_X;
+	fCoords.y = ((DLG_H / 2) - (fCoords.h / 2)) + DLG_Y;
+	fTextX = (fCoords.x + 34);
 }
 
 void Dialog::SetSize(int w, int h)

@@ -42,6 +42,7 @@ public:
 	void AddText(const std::string& str);
 	void SetText(const std::string& str);
 	void ClearText();
+	void RecalculateOffsets();
 	
 	void SetFace(int newface);
 	
