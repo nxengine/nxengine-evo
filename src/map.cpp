@@ -754,7 +754,7 @@ int scroll_x, scroll_y;
 				//fixes drawing of debug tiles in Stream and Fall maps
 				if( ((game.curmap == 71) && (tilecode[t] == 0x41))
 				    ||
-				    ((game.curmap == 31) && (tilecode[t] == 0x46))
+				    ((game.curmap == 31) /*&& (tilecode[t] == 0x46)*/)
 				) {}
 				else
 					if ((tileattr[t] & TA_FOREGROUND) == foreground)
