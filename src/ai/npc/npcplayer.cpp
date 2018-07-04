@@ -152,6 +152,9 @@ void c------------------------------() {}
 // player (teleporting in)
 void ai_ptelin(Object *o)
 {
+	o->sprite = (player->equipmask & EQUIP_MIMIGA_MASK) ? \
+	                                        SPR_MYCHAR_MIMIGA : SPR_MYCHAR;
+
 	switch(o->state)
 	{
 		case 0:
@@ -206,6 +209,8 @@ void ai_ptelin(Object *o)
 // player (teleporting out)
 void ai_ptelout(Object *o)
 {
+	o->sprite = (player->equipmask & EQUIP_MIMIGA_MASK) ? \
+	                                        SPR_MYCHAR_MIMIGA : SPR_MYCHAR;
 	switch(o->state)
 	{
 		case 0:
