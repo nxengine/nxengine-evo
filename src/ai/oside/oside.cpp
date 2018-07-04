@@ -335,6 +335,11 @@ void ai_sky_dragon(Object *o)
 		
 		case 30:	// spawn a Sue hanging from mouth
 		{
+		    Object *sue = CreateObject(o->x, o->y, OBJ_SUE);
+		    sue->state = 42;
+		    sue->dir = 0;
+		    sue->frame = 9;
+		    sue->sue.carried_by = o;
 		}
 		break;
 	}
