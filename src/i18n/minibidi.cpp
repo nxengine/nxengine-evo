@@ -23,7 +23,7 @@
  *
  ************************************************************************/
 
-#include <malloc.h>		/* malloc() and free() definition */
+#include <cstdlib>		/* malloc() and free() definition */
 #ifdef _LINUX
 #include <wchar.h>
 #endif
