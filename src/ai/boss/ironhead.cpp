@@ -114,7 +114,7 @@ void IronheadBoss::Run(void)
 			
 			if (o->dir==RIGHT)
 			{	// coming up on player from left
-				o->x = 0x1e000;
+				o->x = 0x0e000;
 				o->y = player->y;
 			}
 			else
@@ -162,7 +162,7 @@ void IronheadBoss::Run(void)
 			}
 			else
 			{
-				if (o->x < 0x22000)
+				if (o->x < 0x12000)
 				{
 					o->dir = RIGHT;
 					o->state = IRONH_SPAWN_FISHIES;
