@@ -15,6 +15,7 @@ public:
 	void SetVisible(bool enable, bool saving=SS_LOADING);
 	
 	bool IsVisible();
+	bool Aborted();
 	void Draw();
 	
 private:
@@ -24,6 +25,7 @@ private:
 	
 	bool fVisible;
 	bool fSaving;
+	bool fAborted;
 	int fCurSel;
 	int fNumFiles;
 	

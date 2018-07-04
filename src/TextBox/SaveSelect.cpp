@@ -60,6 +60,7 @@ void c------------------------------() {}
 void TB_SaveSelect::ResetState()
 {
 	fVisible = false;
+	fAborted = false;
 }
 
 void TB_SaveSelect::SetVisible(bool enable, bool saving)
@@ -105,6 +106,11 @@ bool TB_SaveSelect::IsVisible()
 	return fVisible;
 }
 
+bool TB_SaveSelect::Aborted()
+{
+	return fAborted;
+}
+
 /*
 void c------------------------------() {}
 */
@@ -147,8 +153,9 @@ int start;
 		fPicXOffset = -24;
 	}
 	
-	if (buttonjustpushed() || justpushed(ENTERKEY))
+	if (justpushed(FIREKEY) || justpushed(ENTERKEY))
 	{
+		fAborted = false;
 		if (fSaving)
 			game_save(fCurSel);
 			
@@ -163,6 +170,14 @@ int start;
 		ScriptInstance *s = game.tsc->GetCurrentScriptInstance();
 		if (s) s->delaytimer = 0;
 	}
+	else if (justpushed(JUMPKEY) || justpushed(ESCKEY))
+	{
+		fAborted = true;
+		SetVisible(false);
+		ScriptInstance *s = game.tsc->GetCurrentScriptInstance();
+		if (s) s->delaytimer = 0;
+	}
+
 }
 
 

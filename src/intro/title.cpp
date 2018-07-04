@@ -304,9 +304,12 @@ void title_tick()
 			sound(SND_MENU_SELECT);
 			
 			textbox.SetVisible(false);
-			title.selchoice = 1;
-			title.seldelay = SELECT_LOAD_DELAY;
 			title.in_multiload = false;
+			if (!textbox.SaveSelect.Aborted())
+			{
+				title.selchoice = 1;
+				title.seldelay = SELECT_LOAD_DELAY;
+			}
 		}
 		else
 		{
