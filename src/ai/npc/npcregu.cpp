@@ -61,7 +61,7 @@ void ai_jenka(Object *o)
 	switch(o->state)
 	{
 		case 0: o->state = 1; o->frame = 0;
-		case 1: if (random(0, 120) < 10) { o->state = 2; o->timer = 0; o->frame = 1; } break;
+		case 1: if (random(0, 120) == 10) { o->state = 2; o->timer = 0; o->frame = 1; } break;
 		case 2: if (++o->timer > 8) { o->state = 1; o->frame = 0; } break;
 	}
 }
