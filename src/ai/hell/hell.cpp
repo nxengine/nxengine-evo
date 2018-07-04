@@ -944,29 +944,11 @@ void ai_statue(Object *o)
 		{
 			if (o->hp < (1000 - STATUE_HP))
 			{
-				// There are two ways to do it, actually:
-				// either ns->PushBehind(OBJ_CURLY),
-				// or don't destroy/recreate, just manually
-				// change state, spawn effects and set flags.
-				//
-				// First one is hacky, and needs object recreation,
-				// so i chose second approach.
-				
-//				Object *ns = CreateObject(o->x, o->y, o->type);
-//				ns->dirparam = (o->frame + 4) * 10;
-//				o->Kill();
-
 				game.flags[o->id1] = true;
-				o->hp = 0;
-				o->flags &= ~FLAG_SHOOTABLE;
-				
-				SmokeClouds(o, objprop[o->type].death_smoke_amt, 8, 8);
-				effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
-				
-				if (objprop[o->type].death_sound)
-					sound(objprop[o->type].death_sound);
-				o->SpawnPowerups();
-				o->state = 20;
+				Object *ns = CreateObject(o->x, o->y, o->type);
+				ns->dirparam = (o->frame + 4) * 10;
+				ns->PushBehind(OBJ_CURLY_CARRIED_SHOOTING);
+				o->Kill();
 			}
 		}
 		break;
