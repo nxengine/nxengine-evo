@@ -705,6 +705,7 @@ void AssignExtraSprites(void)
 	objprop[OBJ_IGOR_BALCONY].sprite = SPR_IGOR;
 	
 	objprop[OBJ_X_TARGET].hurt_sound = SND_ENEMY_HURT_COOL;
+	objprop[OBJ_X_INTERNALS].hurt_sound = SND_ENEMY_HURT_COOL;
 	objprop[OBJ_X_INTERNALS].shaketime = 9;
 	objprop[OBJ_X_MAINOBJECT].xponkill = 1;
 	
