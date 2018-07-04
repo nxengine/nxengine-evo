@@ -195,6 +195,8 @@ void ai_pooh_black_dying(Object *o)
 		case 0:
 		{
 			o->frame = FRAME_DYING;
+			o->flags &= ~FLAG_IGNORE_SOLID;
+			o->yinertia = 0;
 			FACEPLAYER;
 			
 			sound(SND_BIG_CRASH);
