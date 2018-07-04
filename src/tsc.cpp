@@ -594,7 +594,7 @@ ScriptInstance *s = &_curscript;
 
 void TSC::ExecScript(ScriptInstance *s)
 {
-char debugbuffer[256];
+char debugbuffer[512];
 int cmd;
 int val;
 int parm[6] = {0,0,0,0,0,0};
@@ -698,6 +698,7 @@ int cmdip;
 	// main execution loop
 	for(;;)
 	{
+		char debugbuffer2[256];
 		cmdip = s->ip++;
 		cmd = s->program[cmdip];
 		if (cmd<OP_COUNT)
@@ -707,19 +708,18 @@ int cmdip;
 		
 		if (cmd != OP_TEXT)
 		{
-			snprintf(debugbuffer, sizeof(debugbuffer), "%04x <%s ", cmd, mnemonic);
+			snprintf(debugbuffer2, sizeof(debugbuffer2), "%04x <%s ", cmd, mnemonic);
 			for(i=0;i<cmd_table[cmd].nparams;i++)
 			{
 				val = ((int)s->program[s->ip++]) << 8;
 				val |= s->program[s->ip++];
 				parm[i] = val;
-				snprintf(debugbuffer, sizeof(debugbuffer), "%s %04d", debugbuffer, val);
+				snprintf(debugbuffer, sizeof(debugbuffer), "%s %04d", debugbuffer2, val);
 			}
 		}
 		#ifdef TRACE_SCRIPT
 		else
 		{
-			char debugbuffer2[10000];
 			crtoslashn((char *)&s->program[s->ip], debugbuffer2);
 			snprintf(debugbuffer, sizeof(debugbuffer), "TEXT  '%s'", debugbuffer2);
 		}
