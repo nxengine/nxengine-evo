@@ -85,7 +85,7 @@ int i;
 		
 		if (player->equipmask & EQUIP_WHIMSTAR)
 		{
-			if (i < wh->nstars && i == wh->stariter)
+			if (i < wh->nstars && i == wh->stariter && !player->inputs_locked)
 			{
 				CreateObject(stars[i].x, stars[i].y, OBJ_WHIMSICAL_STAR);
 			}
