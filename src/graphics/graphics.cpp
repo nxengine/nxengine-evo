@@ -262,7 +262,9 @@ const Graphics::gres_t* Graphics::GetRes()
         {(char*)"320x240",   320,      240,      320,      240,      1,            false,      true },
         {(char*)"640x480",   640,      480,      320,      240,      2,            false,      true },
 //        {(char*)"800x600",   800,      600,      320,      240,      2.5,          false,      true }, //requires float scalefactor
+        {(char*)"960x720",   960,      720,      320,      240,      3,            false,      true },
         {(char*)"1024x768",  1024,     768,      340,      256,      3,            false,      true },
+        {(char*)"1280x960",  1280,     960,      320,      240,      4,            false,      true },
         {(char*)"1280x1024", 1280,     1024,     320,      256,      4,            false,      true },
         {(char*)"1600x1200", 1600,     1200,     320,      240,      5,            false,      true },
         // widescreen
