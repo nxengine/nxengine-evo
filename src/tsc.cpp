@@ -962,6 +962,9 @@ int cmdip;
 			{
 				player->lookaway = 0;
 				player->yinertia = -0x200;
+				// nudge a little more in plantation
+				if (game.curmap == 56 && GetCurrentScript()==480)
+					player->yinertia = -0x400;
 				int dir = parm[0];
 				
 				if (dir >= 10)			// bump away from the object in parm
