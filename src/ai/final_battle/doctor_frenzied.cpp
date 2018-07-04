@@ -531,7 +531,7 @@ static void run_defeat(Object *o)
 		// script: crystal up and away
 		case 520:
 		{
-			crystal_ymark = -(32 * CSFI);
+			crystal_ymark = -(128 * CSFI);
 		}
 		break;
 	}
