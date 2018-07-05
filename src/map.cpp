@@ -588,6 +588,12 @@ int x, y;
 		}
 		return;
 		
+		case BK_TITLE_LEFT:
+			map.motionpos++;
+			map.parscroll_x = (map.motionpos / 2);
+			map.parscroll_y = 0;
+		break;
+
 		default:
 			map.parscroll_x = map.parscroll_y = 0;
 			staterr("map_draw_backdrop: unhandled map scrolling type %d", map.scrolltype);

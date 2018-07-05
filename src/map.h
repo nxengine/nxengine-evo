@@ -78,6 +78,7 @@ void map_focus(Object *o, int spd = 16);
 #define BK_FASTLEFT_LAYERS	6		// fast scroll left w/ layers, items falling left (Outer Wall)
 #define BK_FASTLEFT_LAYERS_NOFALLLEFT	7	// fast left w/ layers, but items don't fall left (Balcony)
 #define BK_HIDE3			8		// identical to BK_HIDE
+#define BK_TITLE_LEFT		1000
 
 #define MAX_TILES			256				// max # of different kinds of tiles per tileset
 

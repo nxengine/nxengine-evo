@@ -266,7 +266,11 @@ bool title_init(int param)
 	title.sprite = titlescreens[t].sprite;
 	music(titlescreens[t].songtrack);
 	map_set_backdrop(titlescreens[t].backdrop);
-	map.scrolltype = BK_FIXED;
+	if (titlescreens[t].backdrop == 9
+	|| titlescreens[t].backdrop == 10)
+		map.scrolltype = BK_FASTLEFT_LAYERS;
+	else
+		map.scrolltype = BK_TITLE_LEFT;
 	map.motionpos = 0;
 	
 	if (AnyProfileExists())
