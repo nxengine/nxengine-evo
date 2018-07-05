@@ -626,7 +626,7 @@ int x, y;
 // blit OSide's BK_FASTLEFT_LAYERS
 void DrawFastLeftLayered(void)
 {
-    int layer_ys[] = { 80, 122, 145, 176, 240 };
+    int layer_ys[] = { 87, 122, 145, 176, 240 };
     if (widescreen)
     {
         layer_ys[4] = 272;
