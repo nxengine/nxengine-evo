@@ -31,7 +31,7 @@ static struct
 	{(3*3000),   SPR_CS_SUE,    2,	 2}, // 3 mins	- Sue & Safety, on bkGreen
 	{(4*3000),   SPR_CS_KING,   41,	 6}, // 4 mins	- King & White, on bkGray
 	{(5*3000),   SPR_CS_TOROKO, 40,	 5}, // 5 mins	- Toroko & Toroko's Theme, on bkMaze
-	{(6*3000),   SPR_CS_CURLY,  36,	 7}, // 6 mins	- Curly & Running Hell, on bkRed
+	{(6*3000),   SPR_CS_CURLY,  36,	 4}, // 6 mins	- Curly & Running Hell, on bkGard
 	{0xFFFFFFFF, SPR_CS_MYCHAR, 24,	 1}  // default - Quote & Cave Story, on bkBlue
 };
 
