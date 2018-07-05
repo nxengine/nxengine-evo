@@ -566,7 +566,7 @@ int x, y;
 		break;
 		
 		case BK_FASTLEFT:		// Ironhead
-			if (game.mode == GM_NORMAL)
+			if (game.mode == GM_NORMAL && !game.frozen)
 				map.parscroll_x += 6;
 			map.parscroll_y = 0;
 		break;
