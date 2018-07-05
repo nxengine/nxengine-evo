@@ -361,6 +361,11 @@ bool freshstart;
 			if (!inhibit_loadfade) fade.Start(FADE_IN, FADE_CENTER);
 			else inhibit_loadfade = false;
 		}
+		else if (game.switchstage.mapno == TITLE_SCREEN)
+		{
+			stat("= Title screen =");
+			game.curmap = TITLE_SCREEN;
+		}
 		else
 		{
 			if (game.switchstage.mapno == NEW_GAME || \

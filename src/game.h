@@ -21,13 +21,13 @@
 // highest addressable flag by tsc scripts etc
 #define NUM_GAMEFLAGS		8000
 
-// switchstage.mapno is set to this to load a game
 #define MAPNO_SPECIALS		1000
-#define LOAD_GAME			1000
+#define LOAD_GAME			1000	// switchstage.mapno is set to this to load a game
 #define NEW_GAME			1001
 #define NEW_GAME_FROM_MENU	1002	// new game (include Kazuma cutscene)
 #define LOAD_GAME_FROM_MENU	1003	// load game (from title screen, include weapon slide)
 #define START_REPLAY		1004
+#define TITLE_SCREEN		1005	// dynamic title screen background(s)
 
 // game modes (changes *tickfunction)
 enum GameModes
