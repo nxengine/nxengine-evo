@@ -259,6 +259,7 @@ const Graphics::gres_t* Graphics::GetRes()
         //      description,     screen_w, screen_h, render_w, render_h, scale_factor, widescreen, enabled
         {(char*)"---",                  0,        0,        0,        0,            1,      false,    true },
         {(char*)"=320x240= (4:3)",    320,      240,      320,      240,            1,      false,    true },
+        {(char*)"384x240 (16:10)",    384,      240,      384,      240,            1,       true,    true },
         {(char*)"480x272 (16:9)",     480,      272,      480,      272,            1,       true,    true },
         {(char*)"=640x480= (4:3)",    640,      480,      320,      240,            2,      false,    true },
         {(char*)"720x576 (5:4)",      720,      576,      360,      288,            2,      false,    true },
