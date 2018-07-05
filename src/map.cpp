@@ -445,8 +445,6 @@ FILE *fp;
 	for(int i=0;i<num_stages;i++)
 		fread(&stages[i], sizeof(MapRecord), 1, fp);
 		
-	//hack to show nice backdrop in menu, like nicalis
-	stages[0].bg_no=9;
 	//hack to not show ballos in e_Blcn
 	stages[93].bossNo = 0;
 	
