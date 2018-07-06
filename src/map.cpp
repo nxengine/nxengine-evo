@@ -1110,9 +1110,10 @@ const std::string& map_get_stage_name(int mapno)
 	stagename = (std::string)"stage_" + stages[mapno].filename;
 	if (_(stagename) == stagename)
 	{
+		stagename = stages[mapno].stagename;
 		if (mapno == STAGE_KINGS)
 			stagename = "";//"Studio Pixel Presents";
-		return _(stages[mapno].stagename);
+		return _(stagename);
 	}
 	else
 		return _(stagename);
