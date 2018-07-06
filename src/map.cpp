@@ -1106,7 +1106,8 @@ void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds, bool boomfl
 
 const std::string& map_get_stage_name(int mapno)
 {
-	std::string stagename = (std::string)"stage_" + stages[mapno].filename;
+	static std::string stagename;
+	stagename = (std::string)"stage_" + stages[mapno].filename;
 	if (_(stagename) == stagename)
 	{
 		if (mapno == STAGE_KINGS)
