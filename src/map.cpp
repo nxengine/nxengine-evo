@@ -1103,18 +1103,23 @@ void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds, bool boomfl
 
 
 
-const char *map_get_stage_name(int mapno)
+const std::string& map_get_stage_name(int mapno)
 {
-	if (mapno == STAGE_KINGS)
-		return "";//"Studio Pixel Presents";
-	
-	return stages[mapno].stagename;
+	std::string stagename = (std::string)"stage_" + stages[mapno].filename;
+	if (_(stagename) == stagename)
+	{
+		if (mapno == STAGE_KINGS)
+			stagename = "";//"Studio Pixel Presents";
+		return _(stages[mapno].stagename);
+	}
+	else
+		return _(stagename);
 }
 
 // show map name for "ticks" ticks
 void map_show_map_name()
 {
-	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(_(map_get_stage_name(game.curmap))) / 2);
+	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(map_get_stage_name(game.curmap)) / 2);
 	game.showmapnametime = 120;
 }
 
@@ -1122,7 +1127,7 @@ void map_draw_map_name(void)
 {
 	if (game.showmapnametime)
 	{
-		font_draw(game.mapname_x, 84, _(map_get_stage_name(game.curmap)), 0xFFFFFF, true);
+		font_draw(game.mapname_x, 84, map_get_stage_name(game.curmap), 0xFFFFFF, true);
 		game.showmapnametime--;
 	}
 }
