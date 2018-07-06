@@ -198,8 +198,8 @@ const int w = fCoords.w - 33;
 	
 	if (fHaveProfile[index])
 	{
-		const char *stage = map_get_stage_name(p->stage);
-		font_draw(x+8, y-1, _(stage));
+		const std::string& stage = map_get_stage_name(p->stage);
+		font_draw(x+8, y-1, stage);
 		
 		// draw health.
 		DrawHealth(x+w, y, p);
