@@ -566,7 +566,7 @@ int x, y;
 		break;
 		
 		case BK_FASTLEFT:		// Ironhead
-			if (game.mode == GM_NORMAL && !game.frozen)
+			if (game.mode == GM_NORMAL && !game.frozen && !game.paused)
 				map.parscroll_x += 6;
 			map.parscroll_y = 0;
 		break;
@@ -637,8 +637,9 @@ void DrawFastLeftLayered(void)
     int y1, y2;
     int i, x;
 
-	if (--map.parscroll_x <= -(480*SCALE*2))
-		map.parscroll_x = 0;
+	if ((game.mode == GM_NORMAL || game.mode == GM_TITLE) && !game.frozen && !game.paused)
+		if (--map.parscroll_x <= -(480*SCALE*2))
+			map.parscroll_x = 0;
 	
 	y1 = x = 0;
 	// fix for extra height
