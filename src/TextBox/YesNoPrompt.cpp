@@ -111,6 +111,10 @@ void TB_YNJPrompt::Draw()
 				fAnswer = (fState == STATE_YES_SELECTED) ? YES : NO;
 				SetVisible(false);
 			}
+			if (justpushed(FIREKEY))
+			{
+				fState = STATE_NO_SELECTED;
+			}
 		}
 		break;
 	}

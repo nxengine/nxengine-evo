@@ -153,7 +153,7 @@ int start;
 		fPicXOffset = -24;
 	}
 	
-	if (justpushed(FIREKEY) || justpushed(ENTERKEY))
+	if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
 	{
 		fAborted = false;
 		if (fSaving)
@@ -170,12 +170,16 @@ int start;
 		ScriptInstance *s = game.tsc->GetCurrentScriptInstance();
 		if (s) s->delaytimer = 0;
 	}
-	else if (justpushed(JUMPKEY) || justpushed(ESCKEY))
+	else if (justpushed(FIREKEY) || justpushed(ESCKEY))
 	{
 		fAborted = true;
 		SetVisible(false);
 		ScriptInstance *s = game.tsc->GetCurrentScriptInstance();
-		if (s) s->delaytimer = 0;
+		if (s)
+		{
+			s->delaytimer = 0;
+			game.tsc->JumpScript(0);
+		}
 	}
 
 }

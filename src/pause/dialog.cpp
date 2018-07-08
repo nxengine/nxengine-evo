@@ -250,10 +250,10 @@ void Dialog::RunInput()
 	}
 	else fRepeatTimer = 0;
 	
-	if (buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
+	if (justpushed(JUMPKEY) || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
 	{
 		int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(ENTERKEY)) ? 1 : -1;
-		if (buttonjustpushed() || justpushed(ENTERKEY)) dir = 0;
+		if (justpushed(JUMPKEY) || justpushed(ENTERKEY)) dir = 0;
 		
 		ODItem *item = NULL;
 		if (fCurSel>=0 && fCurSel<(int)fItems.size())
@@ -286,7 +286,7 @@ void Dialog::RunInput()
 		}
 	}
 	
-	if (justpushed(ESCKEY))
+	if (justpushed(ESCKEY) || justpushed(FIREKEY))
 	{
 		sound(SND_MENU_MOVE);
 		if (ondismiss) (*ondismiss)();
