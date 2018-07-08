@@ -617,7 +617,7 @@ int x, y;
 	{
 		for(x=0;x<SCREEN_WIDTH+map.parscroll_x; x+=w)
 		{
-		    if ( ((x - map.parscroll_x) < mapx) && ((y - map.parscroll_y) < mapy))
+//		    if ( ((x - map.parscroll_x) < mapx) && ((y - map.parscroll_y) < mapy))
 			DrawSurface(backdrop[map.backdrop], x - map.parscroll_x, y - map.parscroll_y);
 		}
 	}
