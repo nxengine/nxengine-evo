@@ -32,14 +32,8 @@ using namespace Graphics;
 
 static void __god(std::vector<std::string> *args, int num)
 {
-bool enable;
-
-	if (args->size() == 0)
-		enable = true;
-	else
-		enable = num;
-	
-	game.debug.god = enable;
+	game.debug.god = !game.debug.god;
+	Respond("God mode:  %s", game.debug.god ? "enabled" : "disabled");
 }
 
 static void __script(std::vector<std::string> *args, int num)
