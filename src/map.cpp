@@ -306,6 +306,62 @@ int nEntities;
 				    // now that it's all set up, execute OnSpawn,
 				    // since we didn't do it in CreateObject.
 				    o->OnSpawn();
+
+				    stat("spawning extra motion wall");
+				    o = CreateObject(((x) * TILE_W) * CSFI, \
+										 ((y - TILE_H) * TILE_H) * CSFI, type,
+										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
+				    o->id1 = id1;
+				    o->id2 = id2;
+				    o->flags |= flags;
+				
+				    ID2Lookup[o->id2] = o;
+				
+				    // now that it's all set up, execute OnSpawn,
+				    // since we didn't do it in CreateObject.
+				    o->OnSpawn();
+
+				    stat("spawning extra motion wall");
+				    o = CreateObject(((x+22) * TILE_W) * CSFI, \
+										 ((y - TILE_H) * TILE_H) * CSFI, type,
+										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
+				    o->id1 = id1;
+				    o->id2 = id2;
+				    o->flags |= flags;
+				
+				    ID2Lookup[o->id2] = o;
+				
+				    // now that it's all set up, execute OnSpawn,
+				    // since we didn't do it in CreateObject.
+				    o->OnSpawn();
+
+				    stat("spawning extra motion wall");
+				    o = CreateObject(((x) * TILE_W) * CSFI, \
+										 ((y + TILE_H) * TILE_H) * CSFI, type,
+										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
+				    o->id1 = id1;
+				    o->id2 = id2;
+				    o->flags |= flags;
+				
+				    ID2Lookup[o->id2] = o;
+				
+				    // now that it's all set up, execute OnSpawn,
+				    // since we didn't do it in CreateObject.
+				    o->OnSpawn();
+
+				    stat("spawning extra motion wall");
+				    o = CreateObject(((x+22) * TILE_W) * CSFI, \
+										 ((y + TILE_H) * TILE_H) * CSFI, type,
+										 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
+				    o->id1 = id1;
+				    o->id2 = id2;
+				    o->flags |= flags;
+				
+				    ID2Lookup[o->id2] = o;
+				
+				    // now that it's all set up, execute OnSpawn,
+				    // since we didn't do it in CreateObject.
+				    o->OnSpawn();
 				}
 
 			}
@@ -564,7 +620,7 @@ int x, y;
 		break;
 		
 		case BK_FASTLEFT:		// Ironhead
-			if (game.mode == GM_NORMAL && !game.frozen)
+			if (game.mode == GM_NORMAL && !game.frozen && !game.paused)
 				map.parscroll_x += 6;
 			map.parscroll_y = 0;
 		break;
@@ -603,7 +659,7 @@ int x, y;
 	int h = backdrop[map.backdrop]->Height();
 	
 	int mapx = (map.xsize * TILE_W);
-	int mapy = (map.ysize * TILE_H);
+//	int mapy = (map.ysize * TILE_H);
 	// hack for ending Maze map
     if (game.curmap == 74)
     {
@@ -613,7 +669,7 @@ int x, y;
 
     if (game.curmap == 31 && widescreen)
     {
-        map.parscroll_y-= 36;
+//        map.parscroll_y-= 36;
 //        mapy+=64;
     }
 
@@ -628,7 +684,7 @@ int x, y;
 	{
 		for(x=0;x<SCREEN_WIDTH+map.parscroll_x; x+=w)
 		{
-		    if ( ((x - map.parscroll_x) < mapx) && ((y - map.parscroll_y) < mapy))
+//		    if ( ((x - map.parscroll_x) < mapx) && ((y - map.parscroll_y) < mapy))
 			DrawSurface(backdrop[map.backdrop], x - map.parscroll_x, y - map.parscroll_y);
 		}
 	}
@@ -637,7 +693,7 @@ int x, y;
 // blit OSide's BK_FASTLEFT_LAYERS
 void DrawFastLeftLayered(void)
 {
-    int layer_ys[] = { 80, 122, 145, 176, 240 };
+    int layer_ys[] = { 87, 122, 145, 176, 240 };
     if (widescreen)
     {
         layer_ys[4] = 272;
@@ -648,8 +704,9 @@ void DrawFastLeftLayered(void)
     int y1, y2;
     int i, x;
 
-	if (--map.parscroll_x <= -(480*SCALE*2))
-		map.parscroll_x = 0;
+	if ((game.mode == GM_NORMAL || game.mode == GM_TITLE) && !game.frozen && !game.paused)
+		if (--map.parscroll_x <= -(480*SCALE*2))
+			map.parscroll_x = 0;
 	
 	y1 = x = 0;
 	// fix for extra height
@@ -1114,18 +1171,25 @@ void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds, bool boomfl
 
 
 
-const char *map_get_stage_name(int mapno)
+const std::string& map_get_stage_name(int mapno)
 {
-	if (mapno == STAGE_KINGS)
-		return "";//"Studio Pixel Presents";
-	
-	return stages[mapno].stagename;
+	static std::string stagename;
+	stagename = (std::string)"stage_" + stages[mapno].filename;
+	if (_(stagename) == stagename)
+	{
+		stagename = stages[mapno].stagename;
+		if (mapno == STAGE_KINGS)
+			stagename = "";//"Studio Pixel Presents";
+		return _(stagename);
+	}
+	else
+		return _(stagename);
 }
 
 // show map name for "ticks" ticks
 void map_show_map_name()
 {
-	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(_(map_get_stage_name(game.curmap))) / 2);
+	game.mapname_x = (SCREEN_WIDTH / 2) - (GetFontWidth(map_get_stage_name(game.curmap)) / 2);
 	game.showmapnametime = 120;
 }
 
@@ -1133,7 +1197,7 @@ void map_draw_map_name(void)
 {
 	if (game.showmapnametime)
 	{
-		font_draw(game.mapname_x, 84, _(map_get_stage_name(game.curmap)), 0xFFFFFF, true);
+		font_draw(game.mapname_x, 84, map_get_stage_name(game.curmap), 0xFFFFFF, true);
 		game.showmapnametime--;
 	}
 }

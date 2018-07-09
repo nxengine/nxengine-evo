@@ -146,7 +146,7 @@ static void handle_input()
 			title.cursel = 3;
 	}
 	
-	if (buttonjustpushed() || justpushed(ENTERKEY))
+	if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
 	{
 		sound(SND_MENU_SELECT);
 		int choice = title.cursel;

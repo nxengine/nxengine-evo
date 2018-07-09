@@ -148,7 +148,7 @@ void map_scroll_jump(int x, int y);
 void map_scroll_lock(bool lockstate);
 void map_focus(Object *o, int spd);
 void map_ChangeTileWithSmoke(int x, int y, int newtile, int nclouds, bool boomflash, Object *push_behind);
-const char *map_get_stage_name(int mapno);
+const std::string& map_get_stage_name(int mapno);
 void map_show_map_name();
 void map_draw_map_name(void);
 void AnimateMotionTiles(void);

@@ -525,7 +525,6 @@ int tile;
 void PDoWalking(void)
 {
 int walk_accel;
-int limit;
 	
 	walk_accel = (player->blockd) ? player->walkaccel : player->jumpwalkaccel;
 	
@@ -615,17 +614,19 @@ int limit;
 		//	1) if player partially hits a brick while in air, his inertia is lesser after he passes it
 		//	2) but, if he's trying to turn around, let him! don't "stick" him to it just because
 		//		of a high inertia when he hit it
-		if (player->blockr)
-		{
-			limit = (player->dir == RIGHT) ? 0x180 : 0;
-			if (player->xinertia > limit) player->xinertia = limit;
-		}
-		
 		if (player->blockl)
 		{
-			limit = (player->dir == LEFT) ? -0x180 : 0;
-			if (player->xinertia < limit) player->xinertia = limit;
+			if (player->xinertia < -0x180) player->xinertia = -0x180;
+			if (player->xinertia < 0 && !pinputs[LEFTKEY])
+				player->xinertia = 0;
 		}
+		if (player->blockr)
+		{
+			if (player->xinertia > 0x180) player->xinertia = 0x180;
+			if (player->xinertia > 0 && !pinputs[RIGHTKEY])
+				player->xinertia = 0;
+		}
+		
 	}
 }
 
