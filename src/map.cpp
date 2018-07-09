@@ -673,13 +673,6 @@ int x, y;
 //        mapy+=64;
     }
 
-	// Render the title screen background for the full screen size.
-	if (game.curmap == TITLE_SCREEN)
-	{
-		mapx = SCREEN_WIDTH;
-		mapy = SCREEN_HEIGHT;
-	}
-
 	for(y=0;y<SCREEN_HEIGHT+map.parscroll_y; y+=h)
 	{
 		for(x=0;x<SCREEN_WIDTH+map.parscroll_x; x+=w)
