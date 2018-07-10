@@ -51,7 +51,6 @@ void TB_StageSelect::SetVisible(bool enable)
 	textbox.SetFlags(TB_VARIABLE_WIDTH_CHARS, enable);
 	
 	fSelectionIndex = 0;
-	fLastButtonDown = true;
 	
 	if (enable)
 	{
@@ -113,8 +112,6 @@ void c------------------------------() {}
 
 void TB_StageSelect::HandleInput()
 {
-bool button_down;
-
 	if (textbox.YesNoPrompt.IsVisible() || fMadeSelection)
 		return;
 	
@@ -128,8 +125,7 @@ bool button_down;
 	}
 	
 	// when user picks a location return the new script to execute
-	button_down = buttondown();
-	if (button_down && !fLastButtonDown)
+	if (justpushed(JUMPKEY))
 	{
 		int scriptno;
 		if (!GetSlotByIndex(fSelectionIndex, NULL, &scriptno))
@@ -144,8 +140,10 @@ bool button_down;
 		
 		fMadeSelection = true;
 	}
-	
-	fLastButtonDown = button_down;
+	else if (justpushed(FIREKEY))
+	{
+		game.tsc->JumpScript(0);
+	}
 }
 
 void TB_StageSelect::MoveSelection(int dir)

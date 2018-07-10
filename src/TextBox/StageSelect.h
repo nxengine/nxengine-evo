@@ -39,7 +39,6 @@ private:
 	int fSelectionIndex;
 	int fSelectionFrame;
 	
-	bool fLastButtonDown;
 	bool fMadeSelection;
 };
 
