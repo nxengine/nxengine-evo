@@ -91,8 +91,8 @@ static void create_slope_boxes()
 				if (sprites[s].block_d[i].x > rightmost) rightmost = sprites[s].block_d[i].x;
 			}
 			
-			sprites[s].slopebox.x1 = leftmost;
-			sprites[s].slopebox.x2 = rightmost;
+			sprites[s].slopebox.x1 = leftmost+1;
+			sprites[s].slopebox.x2 = rightmost-1;
 			
 			if (sprites[s].block_u.count)
 				sprites[s].slopebox.y1 = (sprites[s].block_u[0].y + 1);
