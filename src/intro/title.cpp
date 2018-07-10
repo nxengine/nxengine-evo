@@ -265,12 +265,13 @@ bool title_init(int param)
 	
 	title.sprite = titlescreens[t].sprite;
 	music(titlescreens[t].songtrack);
+#ifdef NIKUMARU_BACKDROP
 	map_set_backdrop(titlescreens[t].backdrop);
-	if (titlescreens[t].backdrop == 9
-	|| titlescreens[t].backdrop == 10)
-		map.scrolltype = BK_FASTLEFT_LAYERS;
-	else
-		map.scrolltype = BK_TITLE_LEFT;
+	map.scrolltype = BK_TITLE_LEFT;
+#else
+	map_set_backdrop(9);
+	map.scrolltype = BK_FASTLEFT_LAYERS;
+#endif
 	map.motionpos = 0;
 	
 	if (AnyProfileExists())

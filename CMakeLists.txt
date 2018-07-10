@@ -15,6 +15,8 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(PNG REQUIRED)
 
+option(USE_NIKUMARU_BACKDROP "Use Nikumaru-based title backdrops instead of Moon." ON)
+
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${PNG_PNG_INCLUDE_DIR})
 
@@ -60,6 +62,10 @@ IF(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DTRACE_SCRIPT)
     add_definitions(-DDEBUG)
 ENDIF()
+
+if (USE_NIKUMARU_BACKDROP)
+	add_definitions("-DNIKUMARU_BACKDROP")
+endif (USE_NIKUMARU_BACKDROP)
 
 add_definitions("-Wall -std=c++11")
 add_executable(nx ${SOURCES})
