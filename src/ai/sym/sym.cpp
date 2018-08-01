@@ -217,7 +217,9 @@ void ai_hvtrigger(Object *o)
 	if (game.tsc->GetCurrentScript() == -1 &&		// no override other scripts
 		game.switchstage.mapno == -1)	// no repeat exec after <TRA
 	{
+#ifdef TRACE_SCRIPT
 		stat("HVTrigger %04d (%08x) activated", o->id2, o);
+#endif
 		game.tsc->StartScript(o->id2);
 	}
 }

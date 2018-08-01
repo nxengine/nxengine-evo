@@ -228,7 +228,9 @@ int fsize;
 std::string buf;
 bool result;
 
+#ifdef TRACE_SCRIPT
 	stat("tsc_load: loading '%s' to page %d", fname.c_str(), pageno);
+#endif
 	if (_curscript.running && _curscript.pageno == (int)pageno)
 		StopScript(&_curscript);
 	
@@ -347,7 +349,9 @@ const char *buf_end = (buf + (bufsize - 1));
 std::vector<uint8_t> *script = NULL;
 char cmdbuf[4] = { 0 };
 
+#ifdef TRACE_SCRIPT
 	stat("<> tsc_compile bufsize = %d pageno = %d", bufsize, pageno);
+#endif
 	
 	while(buf <= buf_end)
 	{
@@ -472,13 +476,16 @@ const uint8_t *TSC::FindScriptData(int scriptno, ScriptPages pageno, ScriptPages
 {
     ScriptPage *page = &_script_pages[(int)pageno];
 
+#ifdef TRACE_SCRIPT
     stat("Looking for script #%04d in %d (%d)", scriptno, (int)pageno, page->scripts.size());
-
+#endif
     if (page->scripts.find(scriptno) == page->scripts.end())
 	{
 		if (pageno != ScriptPages::SP_HEAD)
 		{	// try to find the script in head.tsc
+#ifdef TRACE_SCRIPT
 			stat("Looking for script #%04d in head", scriptno);
+#endif
 			return FindScriptData(scriptno, ScriptPages::SP_HEAD, page_out);
 		}
 		else
@@ -523,7 +530,9 @@ ScriptPages found_pageno;
 	_curscript.running = true;
 	
 	textbox.ResetState();
+#ifdef TRACE_SCRIPT
 	stat("  - Started script %04d", scriptno);
+#endif
 	
 	RunScripts();
 	return true;
@@ -535,7 +544,9 @@ void TSC::StopScript(ScriptInstance *s)
 		return;
 	
 	s->running = false;
+#ifdef TRACE_SCRIPT
 	stat("  - Stopped script %04d", s->scriptno);
+#endif
 	
 	// TRA is really supposed to be a jump, not a script restart--
 	// in that in maintains KEY/PRI across the stage transition.
@@ -559,8 +570,10 @@ ScriptInstance *s = &_curscript;
 	if (pageno == ScriptPages::SP_NULL)
 		pageno = (ScriptPages)s->pageno;
 	
+#ifdef TRACE_SCRIPT
 	stat("JumpScript: moving to script #%04d page %d", newscriptno, pageno);
-	
+#endif
+
 	s->program = FindScriptData(newscriptno, pageno, &pageno);
 	s->pageno = (int)pageno;
 	s->scriptno = newscriptno;
