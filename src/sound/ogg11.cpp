@@ -50,7 +50,16 @@ bool ogg11_load(const std::string& fname, const std::string& dir)
 		staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
 		return false;
 	}
-//    stat("ogg11_load: %s, %s\n", fname_intro.c_str(), fname_loop.c_str());
+	
+	if (ResourceManager::fileExists(ResourceManager::getInstance()->getLocalizedPath(dir + fname + ".noloop")))
+	{
+		song.doloop = false;
+	}
+	else
+	{
+		song.doloop = true;
+	}
+	
 	return true;
 }
 
@@ -64,7 +73,10 @@ void musicFinished11()
 
 	looped = true;
 	song.last_pos = SDL_GetTicks();
-	Mix_PlayMusic(song.loop,0);
+	if (song.doloop)
+	{
+		Mix_PlayMusic(song.loop,0);
+	}
 }
 
 

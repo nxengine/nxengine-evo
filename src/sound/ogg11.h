@@ -14,6 +14,7 @@ struct ogg11Song
 	bool fading;
 	uint32_t last_fade_time;
 	uint32_t last_pos;
+	bool doloop;
 };
 
 bool ogg11_load(const std::string& fname, const std::string& dir);
