@@ -501,8 +501,6 @@ FILE *fp;
 	for(int i=0;i<num_stages;i++)
 		fread(&stages[i], sizeof(MapRecord), 1, fp);
 		
-	//hack to show nice backdrop in menu, like nicalis
-	stages[0].bg_no=9;
 	//hack to not show ballos in e_Blcn
 	stages[93].bossNo = 0;
 	
@@ -646,6 +644,12 @@ int x, y;
 		}
 		return;
 		
+		case BK_TITLE_LEFT:
+			map.motionpos++;
+			map.parscroll_x = (map.motionpos / 2);
+			map.parscroll_y = 0;
+		break;
+
 		default:
 			map.parscroll_x = map.parscroll_y = 0;
 			staterr("map_draw_backdrop: unhandled map scrolling type %d", map.scrolltype);
