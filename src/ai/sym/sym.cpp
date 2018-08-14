@@ -235,7 +235,13 @@ void ai_xp(Object *o)
 {
 	if (o->state == 0)
 	{
-		o->yinertia = random(-400, 0);
+		o->yinertia = random(-1024, 0);
+		o->xinertia = random(-512, 512);
+		o->frame = random(0,4);
+		if (random(0,1))
+			o->dir = CVTDir(0);
+		else
+			o->dir = CVTDir(2);
 		o->state = 1;
 	}
 	
@@ -261,6 +267,7 @@ void ai_xp(Object *o)
 	}
 	else
 	{	// normal bouncing
+		o->yinertia += 42;
 		if (o->blockd)
 		{
 			// disappear if we were spawned embedded in ground
@@ -278,9 +285,15 @@ void ai_xp(Object *o)
 			o->xinertia *= 2;
 			o->xinertia /= 3;
 		}
-		else
+		if (o->blocku)
 		{
-			o->yinertia += 42;
+			if (o->blockd || (o->blockl && o->blockr))
+			{
+				o->Delete();
+				return;
+			}
+			o->yinertia = -o->yinertia;
+			o->y++;
 		}
 		
 		if (o->blockl || o->blockr)
