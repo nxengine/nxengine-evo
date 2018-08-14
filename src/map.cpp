@@ -502,7 +502,7 @@ FILE *fp;
 		fread(&stages[i], sizeof(MapRecord), 1, fp);
 		
 	//hack to show nice backdrop in menu, like nicalis
-	stages[0].bg_no=9;
+//	stages[0].bg_no=9;
 	//hack to not show ballos in e_Blcn
 	stages[93].bossNo = 0;
 	
@@ -550,25 +550,16 @@ std::string fname;
 	{
 		// use chromakey (transparency) on bkwater, all others don't
 		bool use_chromakey = (backdrop_no == 8);
-		if (widescreen)
+		
+		if (widescreen && (backdrop_no == 9 || backdrop_no == 10 || backdrop_no == 12 || backdrop_no == 13 || backdrop_no == 14))
 		{
-		    if (backdrop_no == 9)
-		    {
-		        fname = "bkMoon480fix.pbm";
-		    }
-		    else if (backdrop_no == 10)
-		    {
-		        fname = "bkFog480fix.pbm";
-		    }
-		    else
-		    {
-		        fname = std::string(backdrop_names[backdrop_no]) + ".pbm";
-		    }
+		    fname = std::string(backdrop_names[backdrop_no]) + "480fix.pbm";
 		}
 		else
 		{
 		    fname = std::string(backdrop_names[backdrop_no]) + ".pbm";
 		}
+		
 		
 		backdrop[backdrop_no] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), use_chromakey);
 		if (!backdrop[backdrop_no])
@@ -702,7 +693,14 @@ void DrawFastLeftLayered(void)
 	if (map.backdrop == 9)
 	    ClearScreen(111,156,214);
 	else if (map.backdrop == 10 && game.curmap != 64 )
-	    ClearScreen(111,107,86);
+	    ClearScreen(107,105,82);
+	else if (map.backdrop == 12)
+	    ClearScreen(179,190,210);
+	else if (map.backdrop == 13)
+	    ClearScreen(170,101,0);
+	else if (map.backdrop == 14)
+	    ClearScreen(202,97,97);
+
 	for(i=0;i<nlayers;i++)
 	{
 		y2 = layer_ys[i];
@@ -716,7 +714,7 @@ void DrawFastLeftLayered(void)
 		y1 = (y2 + 1);
 	}
 	int mapy = map.displayed_yscroll / CSFI;
-	if (mapy<0)
+	if (mapy<0 && map.backdrop == 9)
 		FillRect(0,0,SCREEN_WIDTH, -mapy,0,0,0);
 }
 

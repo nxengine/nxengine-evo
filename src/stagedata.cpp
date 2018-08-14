@@ -15,6 +15,9 @@ const char *backdrop_names[] = {
 	"bkMoon",
 	"bkFog",
 	"bkFall",
+	"bkLight",
+	"bkSunset",
+	"bkHellish",
 	NULL
 };
 

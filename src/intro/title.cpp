@@ -25,13 +25,14 @@ static struct
 	uint32_t timetobeat;
 	int sprite;
 	int songtrack;
+	int backdrop;
 } titlescreens[] =
 {
-	{(3*3000),	SPR_CS_SUE,    2},		// 3 mins	- Sue & Safety
-	{(4*3000),	SPR_CS_KING,   41},		// 4 mins	- King & White
-	{(5*3000),	SPR_CS_TOROKO, 40},		// 5 mins	- Toroko & Toroko's Theme
-	{(6*3000),	SPR_CS_CURLY,  36},		// 6 mins	- Curly & Running Hell
-	{0xFFFFFFFF, SPR_CS_MYCHAR, 24}		// default
+	{(3*3000),	SPR_CS_SUE,    2, 14},		// 3 mins	- Sue & Safety
+	{(4*3000),	SPR_CS_KING,   41, 13},		// 4 mins	- King & White
+	{(5*3000),	SPR_CS_TOROKO, 40, 12},		// 5 mins	- Toroko & Toroko's Theme
+	{(6*3000),	SPR_CS_CURLY,  36, 10},		// 6 mins	- Curly & Running Hell
+	{0xFFFFFFFF, SPR_CS_MYCHAR, 24, 9}		// default
 };
 
 // artifical fake "loading" delay between selecting an option and it being executed,
@@ -58,7 +59,7 @@ static void draw_title()
 	// background is dk grey, not pure black
 	ClearScreen(0x20, 0x20, 0x20);
 	map_draw_backdrop();
-	DrawFastLeftLayered();
+//	DrawFastLeftLayered();
 	
 	// top logo
 	int tx = (SCREEN_WIDTH / 2) - (sprites[SPR_TITLE].w / 2) - 2;
@@ -246,7 +247,8 @@ static void selectoption(int index)
 bool title_init(int param)
 {
 	memset(&title, 0, sizeof(title));
-	game.switchstage.mapno = 0;
+//	game.switchstage.mapno = 0;
+	game.switchstage.mapno = TITLE_SCREEN;
 	game.switchstage.eventonentry = 0;
 	game.showmapnametime = 0;
 	textbox.SetVisible(false);
@@ -267,6 +269,9 @@ bool title_init(int param)
 	
 	title.sprite = titlescreens[t].sprite;
 	music(titlescreens[t].songtrack);
+	map_set_backdrop(titlescreens[t].backdrop);
+	map.scrolltype = BK_FASTLEFT_LAYERS;
+	map.motionpos = 0;
 	
 	if (AnyProfileExists())
 		title.cursel = 1;	// Load Game

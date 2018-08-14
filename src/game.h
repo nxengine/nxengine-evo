@@ -28,6 +28,7 @@
 #define NEW_GAME_FROM_MENU	1002	// new game (include Kazuma cutscene)
 #define LOAD_GAME_FROM_MENU	1003	// load game (from title screen, include weapon slide)
 #define START_REPLAY		1004
+#define TITLE_SCREEN        1005
 
 // game modes (changes *tickfunction)
 enum GameModes
