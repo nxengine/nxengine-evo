@@ -1009,6 +1009,13 @@ int cmdip;
 			case OP_WAS: s->wait_standing = true; return;	// wait until player has blockd
 			
 			case OP_SMP: map.tiles[parm[0]][parm[1]]--; break;
+			case OP_SNP:
+			{
+				o = CreateObject((parm[1] * TILE_W) * CSFI, \
+									(parm[2] * TILE_H) * CSFI, parm[0],
+									0, 0, CVTDir(parm[3]), NULL, CF_NO_SPAWN_EVENT);
+			}
+			break;
 			
 			case OP_CMP:	// change map tile at x:y to z and create smoke
 			{
