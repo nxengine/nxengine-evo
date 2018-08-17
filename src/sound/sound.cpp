@@ -29,22 +29,22 @@ bool songlooped = false;
 #define NUM_SOUNDS		0x75
 #define ORG_VOLUME		75
 
-const char *org_names[] =
+std::vector<std::string> org_names = 
 {
-	NULL,
+	"",
 	"wanpaku", "anzen", "gameover", "gravity", "weed", "mdown2", "fireeye",
 	"vivi", "mura", "fanfale1", "ginsuke", "cemetery", "plant", "kodou", "fanfale2",
 	"fanfale3", "dr", "escape", "jenka", "maze", "access", "ironh", "grand",
 	"curly", "oside", "requiem", "wanpak2", "quiet", "lastcave", "balcony", "lastbtl",
 	"lastbt3", "ending", "zonbie", "bdown", "hell", "jenka2", "marine", "ballos",
-	"toroko", "white", NULL
+	"toroko", "white"
 };
 
 static const char bossmusic[] = { 4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 35, 0 };
 
-static const char *org_dir = "org/";
-static const char *ogg_dir = "Ogg/";
-static const char *ogg11_dir = "Ogg11/";
+static const std::string org_dir("org/");
+static const std::string ogg_dir("Ogg/");
+static const std::string ogg11_dir("Ogg11/");
 
 bool sound_init(void)
 {
@@ -155,25 +155,20 @@ void c------------------------------() {}
 
 static void start_track(int songno, bool resume)
 {
-char fname[MAXPATHLEN];
-
 	if (songno == 0)
 	{
 		org_stop();
 		return;
 	}
 	
-	strcpy(fname, org_dir);
-	strcat(fname, org_names[songno]);
-	strcat(fname, ".org");
 	
-	if (!org_load(ResourceManager::getInstance()->getLocalizedPath(fname)))
+	if (!org_load(ResourceManager::getInstance()->getLocalizedPath(org_dir+org_names[songno]+".org")))
 	{
 		org_start(resume ? music_lastsongpos() : 0);
 	}
 }
 
-static void start_ogg11_track(int songno, bool resume, const char* dir)
+static void start_ogg11_track(int songno, bool resume, std::string dir)
 {
     if (songno==0)
     {

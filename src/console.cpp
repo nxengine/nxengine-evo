@@ -101,18 +101,16 @@ static void __sound(std::vector<std::string> *args, int num)
 
 static void __music(std::vector<std::string> *args, int num)
 {
-	extern const char *org_names[];
+	extern const std::vector<std::string> org_names;
 	bool ok = true;
-	int i;
+	std::vector<std::string>::size_type i;
 	
 	const char *name = args->at(0).c_str();
 	if (num == 0 && strcmp(name, "0") != 0)
 	{
-		for(i=1;;i++)
+		for(i=1;i<org_names.size();i++)
 		{
-			if (!org_names[i]) break;
-			
-			if (strcasebegin(org_names[i], name))
+			if (strcasebegin(org_names[i].c_str(), name))
 			{
 				num = i;
 				break;
@@ -127,17 +125,7 @@ static void __music(std::vector<std::string> *args, int num)
 	}
 	
 	if (num < 0) ok = false;
-	else
-	{
-		for(i=1;i<=num;i++)
-		{
-			if (!org_names[i])
-			{
-				ok = false;
-				break;
-			}
-		}
-	}
+	else if (num >= (int)org_names.size()) ok = false;
 	
 	if (!ok)
 	{
@@ -148,8 +136,10 @@ static void __music(std::vector<std::string> *args, int num)
 	{
 		music(0);
 		music(num);
-		if (org_names[num])
-			Respond("%s started", org_names[num]);
+		if (num > 0)
+			Respond("%s started", org_names[num].c_str());
+		else
+			Respond("ZERO MUZAK");
 	}
 }
 
