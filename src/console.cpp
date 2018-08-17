@@ -774,9 +774,11 @@ bool DebugConsole::Execute(const char *line)
 	stat("DebugConsole::Execute('%s')", line);
 	
 	// record command in backbuffer
+	if (!fBackBuffer.empty()) fBackBuffer.erase(fBackBuffer.end());
 	if (fBackBuffer.size() >= CONSOLE_MAX_BACK)
 		fBackBuffer.erase(fBackBuffer.begin());
 	fBackBuffer.push_back(std::string(line));
+	fBackBuffer.push_back(std::string(""));
 	
 	// split command into arguments
 	std::vector<std::string> args;
