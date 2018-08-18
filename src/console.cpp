@@ -101,7 +101,7 @@ static void __sound(std::vector<std::string> *args, int num)
 
 static void __music(std::vector<std::string> *args, int num)
 {
-	extern const std::vector<std::string> org_names;
+	extern std::vector<std::string> org_names;
 	bool ok = true;
 	std::vector<std::string>::size_type i;
 	
