@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstring>
 #include <string>
+#include <fstream>
 #include <SDL_mixer.h>
 
 #include "../nx.h"
@@ -16,6 +17,9 @@
 #include "sound.h"
 #include "../common/stat.h"
 #include "../ResourceManager.h"
+#include "../common/json.hpp"
+#include "../common/misc.h"
+
 
 #define MUSIC_OFF		0
 #define MUSIC_ON		1
@@ -70,6 +74,24 @@ bool sound_init(void)
 	Mix_AllocateChannels(64);
 	
 	Mix_ChannelFinished(pxtSoundDone);
+	
+	std::string path=ResourceManager::getInstance()->getLocalizedPath("music.json");
+	std::ifstream fl;
+	org_names.clear();
+	fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
+	if (fl.is_open()) {
+		nlohmann::json tracklist = nlohmann::json::parse(fl);
+		
+		for (auto it = tracklist.begin(); it != tracklist.end(); ++it)
+		{
+			org_names.push_back(it.value());
+		}
+	}
+	else
+	{
+		staterr("Failed to load tracklist");
+		return 1;
+	}
 	
 	if (pxt_init()) return 1;
 	
