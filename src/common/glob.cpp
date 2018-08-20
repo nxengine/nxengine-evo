@@ -66,8 +66,6 @@ Glob::~Glob() {
 
 bool Glob::Next() {
   while ((dir_entry_ = readdir(dir_)) != 0) {
-    std::cout << pattern_ << std::endl;
-    std::cout << dir_entry_->d_name << std::endl;
     if (!fnmatch(pattern_.c_str(), dir_entry_->d_name,
                  FNM_CASEFOLD | FNM_NOESCAPE | FNM_PERIOD)) {
       return true;
