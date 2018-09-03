@@ -718,7 +718,7 @@ int i, key;
 		{	// activating scripts/talking to NPC's
 			
 			if (!player->walking && !player->lookaway && \
-				!pinputs[JUMPKEY] && !pinputs[FIREKEY])
+				!pinputs[JUMPKEY] && !pinputs[FIREKEY] && !pinputs[UPKEY])
 			{
 				if (!inputs[DEBUG_MOVE_KEY] || !settings->enable_debug_keys)
 				{
