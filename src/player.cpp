@@ -240,6 +240,7 @@ void HandlePlayer_am(void)
 		
 		player->yinertia = 0;
 		player->jumping = 0;
+		player->walkanimframe = 0;
 	}
 	else if (player->blocku && player->yinertia < 0)
 	{
