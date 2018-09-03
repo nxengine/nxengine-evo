@@ -8,6 +8,7 @@
 #include <direct.h>
 #endif
 //#include "main.h"
+#include <SDL_mixer.h>
 #include "game.h"
 #include "map.h"
 #include "profile.h"
@@ -168,8 +169,8 @@ static int frameskip = 0;
 void AppMinimized(void)
 {
 	stat("Game minimized or lost focus--pausing...");
-	SDL_PauseAudio(1);
-	
+	music(0);
+	Mix_Pause(-1);
 	for(;;)
 	{
         if (Graphics::WindowVisible())
@@ -180,8 +181,8 @@ void AppMinimized(void)
 		input_poll();
 		SDL_Delay(20);
 	}
-	
-	SDL_PauseAudio(0);
+	Mix_Resume(-1);
+	music(music_lastsong(), true);
 	stat("Focus regained, resuming play...");
 }
 
