@@ -12,7 +12,7 @@
 #include "common/stat.h"
 #include "common/misc.h"
 
-const uint32_t SETTINGS_VERSION = ( ( '3' << 24 ) + ( 'S' << 16 ) + ( 'X' << 8 ) + 'N' );		// serves as both a version and magic
+const uint32_t SETTINGS_VERSION = ( ( '4' << 24 ) + ( 'S' << 16 ) + ( 'X' << 8 ) + 'N' );		// serves as both a version and magic
 
 Settings normal_settings;
 Settings *settings = &normal_settings;

@@ -38,6 +38,8 @@ void _music_change(ODItem *item, int dir);
 void _music_get(ODItem *item);
 void _tracks_change(ODItem *item, int dir);
 void _tracks_get(ODItem *item);
+void _strafe_change(ODItem *item, int dir);
+void _strafe_get(ODItem *item);
 static void EnterControlsMenu(ODItem *item, int dir);
 static void _upd_control(ODItem *item);
 static void _edit_control(ODItem *item, int dir);
@@ -182,6 +184,10 @@ Dialog *dlg = opt.dlg;
 	dlg->AddItem("Music: ", _music_change, _music_get, -1, OD_CHOICE);
 	dlg->AddItem("Tracks: ", _tracks_change, _tracks_get, -1, OD_CHOICE);
 	dlg->AddItem("Sound: ", _sound_change, _sound_get, -1, OD_CHOICE);
+
+	dlg->AddSeparator();
+
+	dlg->AddItem("Strafing: ", _strafe_change, _strafe_get, -1, OD_CHOICE);
 
 	if (game.mode == GM_TITLE)
 		dlg->AddItem("Language: ", _lang_change, _lang_get, -1, OD_CHOICE);
@@ -344,7 +350,17 @@ void _sound_get(ODItem *item)
 	strcpy(item->suffix, strs[settings->sound_enabled]);
 }
 
+void _strafe_change(ODItem *item, int dir)
+{
+	settings->strafing ^= 1;
+	sound(SND_MENU_SELECT);
+}
 
+void _strafe_get(ODItem *item)
+{
+	static const char *strs[] = { "Off", "On" };
+	strcpy(item->suffix, strs[settings->strafing]);
+}
 
 void _music_change(ODItem *item, int dir)
 {
@@ -409,6 +425,7 @@ Dialog *dlg = opt.dlg;
 //	dlg->AddSeparator();
 	
 	dlg->AddItem("Jump", _edit_control, _upd_control, JUMPKEY);
+	dlg->AddItem("Strafe", _edit_control, _upd_control, STRAFEKEY);
 	dlg->AddItem("Fire", _edit_control, _upd_control,  FIREKEY);
 	dlg->AddItem("Wpn Prev", _edit_control, _upd_control, PREVWPNKEY);
 	dlg->AddItem("Wpn Next", _edit_control, _upd_control, NEXTWPNKEY);

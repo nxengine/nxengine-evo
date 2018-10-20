@@ -39,6 +39,7 @@ static void InitWeapon(int wpn, int l1, int l2, int l3, int maxammo=0)
 void PInitFirstTime()
 {
 	player->dir = RIGHT;
+	player->look = 0;
 	player->hp = player->maxHealth = 3;
 	player->nxflags |= NXFLAG_FOLLOW_SLOPE;
 	
@@ -536,7 +537,8 @@ int walk_accel;
 		if (pinputs[LEFTKEY])
 		{
 			player->walking = true;
-			player->dir = LEFT;
+                        if (!pinputs[STRAFEKEY] || !settings->strafing) // Don't change direction if strafing (and strafing is enabled)
+				player->dir = LEFT;
 			
 			if (player->xinertia > -player->walkspeed)
 			{
@@ -550,7 +552,8 @@ int walk_accel;
 		if (pinputs[RIGHTKEY])
 		{
 			player->walking = true;
-			player->dir = RIGHT;
+                        if (!pinputs[STRAFEKEY] || !settings->strafing) // Don't change direction if strafing (and strafing is enabled)
+				player->dir = RIGHT;
 			
 			if (player->xinertia < player->walkspeed)
 			{
@@ -706,19 +709,21 @@ int lookscroll_want;
 int i, key;
 
 	// looking/aiming up and down
-	player->look = lookscroll_want = 0;
+	if (!pinputs[STRAFEKEY] || !settings->strafing)
+		player->look = lookscroll_want = 0;
 	
 	if (pinputs[DOWNKEY])
 	{
 		if (!player->blockd)
 		{
-			player->look = DOWN;
+			if (!pinputs[STRAFEKEY] || !settings->strafing)
+				player->look = DOWN;
 		}
 		else if (!lastpinputs[DOWNKEY])
 		{	// activating scripts/talking to NPC's
 			
 			if (!player->walking && !player->lookaway && \
-				!pinputs[JUMPKEY] && !pinputs[FIREKEY] && !pinputs[UPKEY])
+				!pinputs[JUMPKEY] && !pinputs[FIREKEY] && !pinputs[UPKEY] && (!pinputs[STRAFEKEY] || !settings->strafing))
 			{
 				if (!inputs[DEBUG_MOVE_KEY] || !settings->enable_debug_keys)
 				{
@@ -734,7 +739,7 @@ int i, key;
 		lookscroll_want = DOWN;
 	}
 	
-	if (pinputs[UPKEY])
+	if (pinputs[UPKEY] && (!pinputs[STRAFEKEY] || !settings->strafing))
 	{
 		player->look = lookscroll_want = UP;
 	}
@@ -762,13 +767,14 @@ int i, key;
 	{
 		// keys which deactivate lookaway when you are facing away from player
 		static const char actionkeys[] = \
-			{ LEFTKEY, RIGHTKEY, UPKEY, JUMPKEY, FIREKEY, INPUT_COUNT };
+			{ LEFTKEY, RIGHTKEY, UPKEY, JUMPKEY, FIREKEY, STRAFEKEY, INPUT_COUNT };
 		
 		// stop looking away if any keys are pushed
 		for(i=0;;i++)
 		{
 			key = actionkeys[i];
 			if (key == INPUT_COUNT) break;
+			if (!settings->strafing && key == STRAFEKEY) break;
 			
 			if (pinputs[key])
 			{
