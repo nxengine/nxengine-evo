@@ -20,6 +20,7 @@ struct Settings
 	
 	bool skip_intro;
 	bool rumble;
+	bool strafing;
 	
 	in_action input_mappings[INPUT_COUNT];
 	char language[256];

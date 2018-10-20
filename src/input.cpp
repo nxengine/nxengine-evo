@@ -36,6 +36,7 @@ bool input_init(void)
 	mappings[DOWNKEY].key      = SDLK_DOWN;
 	mappings[JUMPKEY].key      = SDLK_z;
 	mappings[FIREKEY].key      = SDLK_x;
+	mappings[STRAFEKEY].key    = SDLK_c;
 	mappings[PREVWPNKEY].key   = SDLK_a;
 	mappings[NEXTWPNKEY].key   = SDLK_s;
 	mappings[INVENTORYKEY].key = SDLK_q;
@@ -165,10 +166,10 @@ int input_get_action_axis(int32_t jaxis, int32_t jvalue)
 
 const std::string input_get_name(int index)
 {
-static std::array<std::string, 27> input_names =
+static std::array<std::string, 28> input_names =
 {
 	"Left", "Right", "Up", "Down",
-	"Jump", "Fire", "Wpn Prev", "Wpn Next",
+	"Jump", "Fire", "Strafe", "Wpn Prev", "Wpn Next",
 	"Inventory", "Map",
 	"Pause",
 	"f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
@@ -381,7 +382,7 @@ void input_close(void)
 void c------------------------------() {}
 */
 
-static const int buttons[] = { JUMPKEY, FIREKEY, 0 };
+static const int buttons[] = { JUMPKEY, FIREKEY, STRAFEKEY, 0 };
 
 bool buttondown(void)
 {
