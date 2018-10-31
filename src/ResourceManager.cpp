@@ -5,6 +5,8 @@
 
 #if defined(__unix__) || defined(__APPLE__)
 #include <sys/stat.h>
+#elif defined(__HAIKU__)
+#include <posix/sys/stat.h> // ugh
 #elif defined(_WIN32) || defined(WIN32)
 #include <windows.h>
 #endif

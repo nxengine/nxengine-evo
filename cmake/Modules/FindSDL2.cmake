@@ -73,7 +73,7 @@
 FIND_PATH(SDL2_INCLUDE_DIR SDL.h
   HINTS
   $ENV{SDL2DIR}
-  PATH_SUFFIXES include/SDL2 include headers headers/x86
+  PATH_SUFFIXES include/SDL2 include headers/SDL2 headers/x86/SDL2
   PATHS
   ~/Library/Frameworks
   /Library/Frameworks
@@ -83,10 +83,7 @@ FIND_PATH(SDL2_INCLUDE_DIR SDL.h
   /opt/local # DarwinPorts
   /opt/csw # Blastwave
   /opt
-  /boot/system/develop/headers #haiku
-  /boot/system/develop/headers/SDL2 #haiku
-  /boot/system/develop/headers/x86 #haiku
-  /boot/system/develop/headers/x86/SDL2 #haiku
+  /boot/system/develop #haiku
 )
 #MESSAGE("SDL2_INCLUDE_DIR is ${SDL2_INCLUDE_DIR}")
 
@@ -100,8 +97,6 @@ FIND_LIBRARY(SDL2_LIBRARY_TEMP
   /opt/local
   /opt/csw
   /opt
-  /lib
-  /lib/x86
 )
 
 #MESSAGE("SDL2_LIBRARY_TEMP is ${SDL2_LIBRARY_TEMP}")
@@ -122,8 +117,6 @@ IF(NOT SDL2_BUILDING_LIBRARY)
       /opt/local
       /opt/csw
       /opt
-      /lib
-      /lib/x86
     )
   ENDIF(NOT ${SDL2_INCLUDE_DIR} MATCHES ".framework")
 ENDIF(NOT SDL2_BUILDING_LIBRARY)
