@@ -24,4 +24,4 @@
 #include <SDL.h>
 
 int png_save_surface(char *filename, SDL_Surface *surf);
-SDL_Surface* png_load_surface(const char *filename);
+SDL_Surface *png_load_surface(const char *filename);

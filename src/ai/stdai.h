@@ -2,28 +2,28 @@
 #ifndef _STDAI_H
 #define _STDAI_H
 
-#include "../nx.h"
 #include "../common/InitList.h"
+#include "../nx.h"
 #include "../object.h"
 
 extern InitList AIRoutines;
 
-#define ONTICK(OBJTYPE, FUNCTION)		objprop[OBJTYPE].ai_routines.ontick = FUNCTION;
-#define ONDEATH(OBJTYPE, FUNCTION)		objprop[OBJTYPE].ai_routines.ondeath = FUNCTION;
-#define AFTERMOVE(OBJTYPE, FUNCTION)	objprop[OBJTYPE].ai_routines.aftermove = FUNCTION;
-#define ONSPAWN(OBJTYPE, FUNCTION)		objprop[OBJTYPE].ai_routines.onspawn = FUNCTION;
+#define ONTICK(OBJTYPE, FUNCTION) objprop[OBJTYPE].ai_routines.ontick = FUNCTION;
+#define ONDEATH(OBJTYPE, FUNCTION) objprop[OBJTYPE].ai_routines.ondeath = FUNCTION;
+#define AFTERMOVE(OBJTYPE, FUNCTION) objprop[OBJTYPE].ai_routines.aftermove = FUNCTION;
+#define ONSPAWN(OBJTYPE, FUNCTION) objprop[OBJTYPE].ai_routines.onspawn = FUNCTION;
 
-#define GENERIC_NPC(O)	\
-{	\
-	ONSPAWN(O, onspawn_generic_npc);	\
-	ONTICK(O, ai_generic_npc);	\
-}
+#define GENERIC_NPC(O)                                                                                                 \
+  {                                                                                                                    \
+    ONSPAWN(O, onspawn_generic_npc);                                                                                   \
+    ONTICK(O, ai_generic_npc);                                                                                         \
+  }
 
-#define GENERIC_NPC_NOFACEPLAYER(O)	\
-{	\
-	ONSPAWN(O, onspawn_generic_npc);	\
-	ONTICK(O, ai_generic_npc_nofaceplayer);	\
-}
+#define GENERIC_NPC_NOFACEPLAYER(O)                                                                                    \
+  {                                                                                                                    \
+    ONSPAWN(O, onspawn_generic_npc);                                                                                   \
+    ONTICK(O, ai_generic_npc_nofaceplayer);                                                                            \
+  }
 
 void aftermove_StickToLinkedActionPoint(Object *o);
 void onspawn_set_frame_from_id2(Object *o);

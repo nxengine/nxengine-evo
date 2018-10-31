@@ -8,46 +8,45 @@
 class BalfrogBoss : public StageBoss
 {
 public:
-	void OnMapEntry();
-	void Run();
+  void OnMapEntry();
+  void Run();
 
-	void place_bboxes();
+  void place_bboxes();
 
 private:
-	void RunDeathAnim();
-	void RunEntryAnim();
-	
-	void RunFighting();
-	void RunJumping();
-	void RunShooting();
+  void RunDeathAnim();
+  void RunEntryAnim();
 
-	void SetJumpingSprite(bool enable);
-	void SpawnFrogs(int objtype, int count);
-	void SpawnSmoke(int count, int ytop);
+  void RunFighting();
+  void RunJumping();
+  void RunShooting();
 
-	void set_bbox(int index, int x, int y, int w, int h, uint32_t flags);
-	void transmit_bbox_hits(Object *box);
-	
-	Object *o;
+  void SetJumpingSprite(bool enable);
+  void SpawnFrogs(int objtype, int count);
+  void SpawnSmoke(int count, int ytop);
 
-	struct
-	{
-		int shakeflash;
-		
-		int orighp;
-		int shots_fired;
-		int attackcounter;
-		
-		Object *balrog;		// balrog puppet for death scene
-		
-		// our group of multiple bboxes to simulate our irregular bounding box.
-		IrregularBBox bboxes;
-		int bbox_mode;
-		
-	} frog;
+  void set_bbox(int index, int x, int y, int w, int h, uint32_t flags);
+  void transmit_bbox_hits(Object *box);
+
+  Object *o;
+
+  struct
+  {
+    int shakeflash;
+
+    int orighp;
+    int shots_fired;
+    int attackcounter;
+
+    Object *balrog; // balrog puppet for death scene
+
+    // our group of multiple bboxes to simulate our irregular bounding box.
+    IrregularBBox bboxes;
+    int bbox_mode;
+
+  } frog;
 };
 
 void ondeath_balfrog(Object *o);
-
 
 #endif

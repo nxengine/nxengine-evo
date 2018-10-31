@@ -14,5 +14,4 @@ void ai_ahchoo(Object *o);
 void ai_misery_wind(Object *o);
 void ai_the_cast(Object *o);
 
-
 #endif

@@ -11,8 +11,8 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <functional>
+#include <string>
 
 Ogg *Ogg::getInstance()
 {
@@ -80,7 +80,7 @@ void Ogg::musicFinished()
   // produces audible pause.
   // This seems to work, but needs extensive testing.
 
-  _looped = true;
+  _looped        = true;
   _song.last_pos = SDL_GetTicks();
   if (_song.doloop)
   {
@@ -100,11 +100,11 @@ bool Ogg::start(const std::string &fname, const std::string &dir, int startbeat,
   }
 
   _song.last_pos = 0;
-  _song.playing = true;
-  _song.fading = false;
+  _song.playing  = true;
+  _song.fading   = false;
 
   _song.volume = 75;
-  _do_loop = false;
+  _do_loop     = false;
 
   _looped = loop;
 
@@ -131,8 +131,8 @@ uint32_t Ogg::stop()
   if (_song.playing)
   {
     _song.playing = false;
-    _do_loop = false;
-    _looped = false;
+    _do_loop      = false;
+    _looped       = false;
     Mix_HookMusicFinished(NULL);
     Mix_HaltMusic();
     if (_song.intro)
@@ -157,7 +157,7 @@ bool Ogg::isPlaying()
 
 void Ogg::fade()
 {
-  _song.fading = true;
+  _song.fading         = true;
   _song.last_fade_time = 0;
 }
 
@@ -172,7 +172,7 @@ void Ogg::setVolume(int newvolume)
 
 void Ogg::runFade()
 {
-  
+
   if (!_song.fading)
     return;
   uint32_t curtime = SDL_GetTicks();

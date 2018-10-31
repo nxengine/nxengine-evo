@@ -2,11 +2,11 @@
 #ifndef _DEBUG_H
 #define _DEBUG_H
 
-#define DM_PIXEL			0
-#define DM_CROSSHAIR		1
-#define DM_XLINE			2
-#define DM_YLINE			3
-#define DM_BOX				4
+#define DM_PIXEL 0
+#define DM_CROSSHAIR 1
+#define DM_XLINE 2
+#define DM_YLINE 3
+#define DM_BOX 4
 
 #include <cstdint>
 
@@ -31,7 +31,5 @@ void debugVline(int x, uint8_t r, uint8_t g, uint8_t b);
 void debugHline(int y, uint8_t r, uint8_t g, uint8_t b);
 void debugbox(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
 void debugtile(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-
-
 
 #endif

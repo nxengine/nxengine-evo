@@ -1,8 +1,9 @@
 #ifndef __TRIG_H_
 #define __TRIG_H_
 
-#include <cstdint>
 #include "object.h"
+
+#include <cstdint>
 extern signed int sin_table[256];
 char trig_init(void);
 void vector_from_angle(uint8_t angle, int speed, int *xs, int *ys);

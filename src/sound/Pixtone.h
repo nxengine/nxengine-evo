@@ -97,14 +97,15 @@ private:
   bool _inited = false;
   struct
   {
-    Mix_Chunk *chunk = nullptr;
-    Mix_Chunk *resampled = nullptr;
+    Mix_Chunk *chunk        = nullptr;
+    Mix_Chunk *resampled    = nullptr;
     uint32_t resampled_rate = SAMPLE_RATE;
-    int32_t channel = -1;
+    int32_t channel         = -1;
   } _sound_fx[256];
   int32_t _slots[64];
   const uint32_t NUM_SOUNDS = 0x75;
 };
+
 } // namespace Sound
 } // namespace NXE
 #endif

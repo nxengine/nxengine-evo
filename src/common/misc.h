@@ -1,18 +1,17 @@
 #ifndef __MISC_H_
 #define __MISC_H_
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include <string>
 
 enum Directions
 {
-        RIGHT   = 0,
-        LEFT    = 1,
-        UP              = 2,
-        DOWN    = 3,
-        CENTER  = 5
+  RIGHT  = 0,
+  LEFT   = 1,
+  UP     = 2,
+  DOWN   = 3,
+  CENTER = 5
 };
-
 
 uint16_t fgeti(FILE *fp);
 uint32_t fgetl(FILE *fp);
@@ -44,11 +43,10 @@ char fbooleanread(FILE *fp);
 void fbooleanwrite(char bit, FILE *fp);
 void fbooleanflush(FILE *fp);
 
-
 int CVTDir(int csdir);
 
-void crtoslashn(char* in, char* out);
-bool contains_non_cr(const std::string& str);
+void crtoslashn(char *in, char *out);
+bool contains_non_cr(const std::string &str);
 
 #if defined(_WIN32)
 std::wstring widen(const std::string &str);

@@ -117,15 +117,15 @@ bool Song::Load(const std::string &fname)
   }
   for (int i = 0; i < 6; ++i)
     fgetc(fp); // Ignore file signature ("Org-02")
-  last_pos = 0;
-  cur_beat = 0;
+  last_pos    = 0;
+  cur_beat    = 0;
   total_beats = 0;
   // Load song parameters
-  ms_per_beat = fgeti(fp);
-  steps_per_bar = fgetc(fp);
+  ms_per_beat    = fgeti(fp);
+  steps_per_bar  = fgetc(fp);
   beats_per_step = fgetc(fp);
-  loop_start = fgetl(fp);
-  loop_end = fgetl(fp);
+  loop_start     = fgetl(fp);
+  loop_end       = fgetl(fp);
   // Load each instrument parameters (and initialize them)
   for (auto &i : ins)
   {
@@ -194,16 +194,16 @@ void Song::Synth()
         i.phaseinc = freq / sampling_rate;
         i.phaseacc = 0;
         // And determine the actual wave data to play
-        i.cur_wave = &WaveTable[256 * (i.wave % 100)];
+        i.cur_wave     = &WaveTable[256 * (i.wave % 100)];
         i.cur_wavesize = 256;
-        i.cur_length = i.pipi ? 1024 / i.phaseinc : (event.length * samples_per_beat);
+        i.cur_length   = i.pipi ? 1024 / i.phaseinc : (event.length * samples_per_beat);
         if (&i >= &ins[8]) // Percussion is different
         {
-          const auto &d = DrumSamples[i.wave % 12];
-          i.phaseinc = event.note * (22050 / 32.5) / sampling_rate; // Linear frequency
-          i.cur_wave = &d[0];
+          const auto &d  = DrumSamples[i.wave % 12];
+          i.phaseinc     = event.note * (22050 / 32.5) / sampling_rate; // Linear frequency
+          i.cur_wave     = &d[0];
           i.cur_wavesize = d.size();
-          i.cur_length = d.size() / i.phaseinc;
+          i.cur_length   = d.size() / i.phaseinc;
         }
         // Ignore missing drum samples
         if (i.cur_wavesize <= 0)
@@ -214,7 +214,7 @@ void Song::Synth()
     }
 
     // Generate wave data. Calculate left & right volumes...
-    auto left = (i.cur_pan > 6 ? 12 - i.cur_pan : 6) * i.cur_vol;
+    auto left  = (i.cur_pan > 6 ? 12 - i.cur_pan : 6) * i.cur_vol;
     auto right = (i.cur_pan < 6 ? i.cur_pan : 6) * i.cur_vol;
 
     int n = samples_per_beat > i.cur_length ? i.cur_length : samples_per_beat;
@@ -261,7 +261,7 @@ void Song::Synth()
 
 bool Organya::load(const std::string &fname)
 {
-  song.loaded = false;
+  song.loaded  = false;
   song.playing = false;
 
   if (!song.Load(fname))
@@ -320,8 +320,8 @@ bool Organya::start(int startBeat)
     return false;
 
   song.playing = true;
-  fading = false;
-  volume = 0.75;
+  fading       = false;
+  volume       = 0.75;
   musicCallback
       = std::bind(&Organya::_musicCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
   _setPlayPosition(startBeat);
@@ -339,8 +339,8 @@ uint32_t Organya::stop()
        to audio device in bulk and there's no way of knowing
        how many samples actually played.
     */
-    uint32_t delta = SDL_GetTicks() - song.last_gen_tick;
-    uint32_t beats = (double)delta / (double)song.ms_per_beat;
+    uint32_t delta    = SDL_GetTicks() - song.last_gen_tick;
+    uint32_t beats    = (double)delta / (double)song.ms_per_beat;
     uint32_t cur_beat = song.last_gen_beat + beats;
     if (cur_beat >= song.loop_end)
     {
@@ -361,7 +361,7 @@ bool Organya::isPlaying()
 
 void Organya::fade()
 {
-  fading = true;
+  fading         = true;
   last_fade_time = 0;
 }
 

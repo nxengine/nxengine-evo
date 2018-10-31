@@ -7,19 +7,19 @@
 #include <SDL_mixer.h>
 #include <string>
 
-typedef void(*music_finished_cb)(void);
+typedef void (*music_finished_cb)(void);
 
 struct oggSong
 {
   Mix_Music *intro = nullptr;
-  Mix_Music *loop = nullptr;
-  bool playing = false;
-  int volume = 75;
+  Mix_Music *loop  = nullptr;
+  bool playing     = false;
+  int volume       = 75;
 
-  bool fading = false;
+  bool fading             = false;
   uint32_t last_fade_time = 0;
-  uint32_t last_pos = 0;
-  bool doloop = false;
+  uint32_t last_pos       = 0;
+  bool doloop             = false;
 };
 
 class Ogg
@@ -49,8 +49,7 @@ public:
 private:
   oggSong _song;
   bool _do_loop = false;
-  bool _looped = false;
-
+  bool _looped  = false;
 };
 
 bool ogg11_load(const std::string &fname, const std::string &dir);

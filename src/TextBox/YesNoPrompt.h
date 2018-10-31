@@ -4,31 +4,36 @@
 
 enum YNJResult
 {
-	NO,
-	YES
+  NO,
+  YES
 };
 
 class TB_YNJPrompt
 {
 public:
-	void SetVisible(bool enable);
-	void ResetState();
-	
-	void Draw();
-	
-	bool IsVisible() { return fVisible; }
-	bool ResultReady();		// returns true if the user has selected a result
-	int GetResult();		// returns YES or NO
-	
-private:
-	bool fVisible;
-	struct { int y; } fCoords;
-	
-	int fState;
-	int fTimer;
-	
-	int fAnswer;
-};
+  void SetVisible(bool enable);
+  void ResetState();
 
+  void Draw();
+
+  bool IsVisible()
+  {
+    return fVisible;
+  }
+  bool ResultReady(); // returns true if the user has selected a result
+  int GetResult();    // returns YES or NO
+
+private:
+  bool fVisible;
+  struct
+  {
+    int y;
+  } fCoords;
+
+  int fState;
+  int fTimer;
+
+  int fAnswer;
+};
 
 #endif

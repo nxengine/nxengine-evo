@@ -1,8 +1,9 @@
+#include "Pixtone.h"
+
 #include "../ResourceManager.h"
 #include "../common/misc.h"
 #include "../common/stat.h"
 #include "../config.h"
-#include "Pixtone.h"
 
 #include <SDL.h>
 #include <SDL_mixer.h>
@@ -13,7 +14,7 @@
 #include <functional>
 #include <vector>
 
-//using std::fgetc;
+// using std::fgetc;
 
 namespace NXE
 {
@@ -36,7 +37,7 @@ double fgetv(FILE *fp) // Load a numeric value from text file; one per line.
     return fgetv(fp);
   while (*p && *p++ != ':')
   {
-  } // Skip until a colon character.
+  }                         // Skip until a colon character.
   return std::strtod(p, 0); // Parse the value and return it.
 }
 
@@ -51,13 +52,14 @@ bool stPXSound::load(const std::string &fname)
     return false;
   }
 
-  auto f = [=]() { return (int32_t)fgetv(fp); };
+  auto f  = [=]() { return (int32_t)fgetv(fp); };
   auto fu = [=]() { return (uint32_t)fgetv(fp); };
 
   for (auto &c : channels)
   {
     c = {
-        f() != 0, fu(), // enabled, length
+        f() != 0,
+        fu(),                                       // enabled, length
         {wave[f() % 6].table, fgetv(fp), f(), f()}, // carrier wave
         {wave[f() % 6].table, fgetv(fp), f(), f()}, // frequency wave
         {wave[f() % 6].table, fgetv(fp), f(), f()}, // amplitude wave
@@ -192,13 +194,13 @@ int32_t stPXEnvelope::evaluate(int32_t i) const // Linearly interpolate between 
     if (i < p[j].time)
     {
       nexttime = p[j].time;
-      nextval = p[j].val;
+      nextval  = p[j].val;
     }
   for (int32_t j = 0; j <= 2; ++j)
     if (i >= p[j].time)
     {
       prevtime = p[j].time;
-      prevval = p[j].val;
+      prevval  = p[j].val;
     }
   if (nexttime <= prevtime)
     return prevval;
@@ -217,7 +219,7 @@ void stPXChannel::synth()
     auto s = [=](double p = 1) { return 256 * p * i / nsamples; };
     // Take sample from each of the three signal generators:
     int freqval = f.wave[0xFF & int(f.offset + s(f.pitch))] * f.level;
-    int ampval = a.wave[0xFF & int(a.offset + s(a.pitch))] * a.level;
+    int ampval  = a.wave[0xFF & int(a.offset + s(a.pitch))] * a.level;
     int mainval = c.wave[0xFF & int(mainpos)] * c.level;
     // Apply amplitude & envelope to the main signal level:
     buffer[i] = mainval * (ampval + 4096) / 4096 * envelope.evaluate(s()) / 4096;
@@ -257,13 +259,13 @@ bool Pixtone::init()
 
   for (uint32_t seed = 0, i = 0; i < 256; ++i)
   {
-    seed = (seed * 214013) + 2531011; // Linear congruential generator
-    wave[MOD_SINE].table[i] = 0x40 * std::sin(i * 3.1416 / 0x80); // Sine
-    wave[MOD_TRI].table[i] = ((0x40 + i) & 0x80) ? 0x80 - i : i; // Triangle
-    wave[MOD_SAWUP].table[i] = -0x40 + i / 2; // Sawtooth up
-    wave[MOD_SAWDOWN].table[i] = 0x40 - i / 2; // Sawtooth down
-    wave[MOD_SQUARE].table[i] = 0x40 - (i & 0x80); // Square
-    wave[MOD_NOISE].table[i] = (signed char)(seed >> 16) / 2; // Pseudorandom
+    seed                       = (seed * 214013) + 2531011;          // Linear congruential generator
+    wave[MOD_SINE].table[i]    = 0x40 * std::sin(i * 3.1416 / 0x80); // Sine
+    wave[MOD_TRI].table[i]     = ((0x40 + i) & 0x80) ? 0x80 - i : i; // Triangle
+    wave[MOD_SAWUP].table[i]   = -0x40 + i / 2;                      // Sawtooth up
+    wave[MOD_SAWDOWN].table[i] = 0x40 - i / 2;                       // Sawtooth down
+    wave[MOD_SQUARE].table[i]  = 0x40 - (i & 0x80);                  // Square
+    wave[MOD_NOISE].table[i]   = (signed char)(seed >> 16) / 2;      // Pseudorandom
   }
 
   char fname[80];
@@ -313,9 +315,9 @@ int Pixtone::play(int32_t chan, int32_t slot, int32_t loop)
 {
   if (_sound_fx[slot].chunk)
   {
-    chan = Mix_PlayChannel(chan, _sound_fx[slot].chunk, loop);
+    chan                    = Mix_PlayChannel(chan, _sound_fx[slot].chunk, loop);
     _sound_fx[slot].channel = chan;
-    _slots[chan] = slot;
+    _slots[chan]            = slot;
 
     if (chan < 0)
     {
@@ -356,18 +358,18 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
       {
         delete _sound_fx[slot].resampled;
       }
-      _sound_fx[slot].resampled = new Mix_Chunk;
+      _sound_fx[slot].resampled            = new Mix_Chunk;
       _sound_fx[slot].resampled->allocated = _sound_fx[slot].chunk->allocated;
-      _sound_fx[slot].resampled->abuf = (Uint8 *)SDL_malloc(cvt.len_cvt);
-      _sound_fx[slot].resampled->alen = cvt.len_cvt;
-      _sound_fx[slot].resampled->volume = 128;
+      _sound_fx[slot].resampled->abuf      = (Uint8 *)SDL_malloc(cvt.len_cvt);
+      _sound_fx[slot].resampled->alen      = cvt.len_cvt;
+      _sound_fx[slot].resampled->volume    = 128;
       memcpy(_sound_fx[slot].resampled->abuf, cvt.buf, cvt.len_cvt);
       SDL_free(cvt.buf);
     }
 
-    chan = Mix_PlayChannel(chan, _sound_fx[slot].resampled, loop);
+    chan                    = Mix_PlayChannel(chan, _sound_fx[slot].resampled, loop);
     _sound_fx[slot].channel = chan;
-    _slots[chan] = slot;
+    _slots[chan]            = slot;
 
     if (chan < 0)
     {
@@ -428,5 +430,6 @@ void Pixtone::_prepareToPlay(stPXSound *snd, int32_t slot)
 
   _sound_fx[slot].chunk = Mix_QuickLoad_RAW((Uint8 *)cvt.buf, cvt.len_cvt);
 }
+
 } // namespace Sound
 } // namespace NXE

@@ -1,7 +1,7 @@
 #ifndef __AIPLANT_H_
 #define __AIPLANT_H_
-#include "../../object.h"
 #include "../../caret.h"
+#include "../../object.h"
 
 void ai_stumpy(Object *o);
 void ai_midorin(Object *o);

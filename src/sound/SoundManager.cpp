@@ -6,9 +6,9 @@
 #include "../common/stat.h"
 #include "../game.h"
 #include "../settings.h"
+#include "Ogg.h"
 #include "Organya.h"
 #include "Pixtone.h"
-#include "Ogg.h"
 
 #include <fstream>
 #include <iostream>
@@ -139,7 +139,7 @@ void SoundManager::music(uint32_t songno, bool resume)
   if (songno == _currentSong)
     return;
 
-  _lastSong = _currentSong;
+  _lastSong    = _currentSong;
   _currentSong = songno;
 
   stat(" >> music(%d)", songno);
@@ -149,29 +149,29 @@ void SoundManager::music(uint32_t songno, bool resume)
     stat("Not playing track %d because music_enabled is %d", songno, settings->music_enabled);
     switch (settings->new_music)
     {
-    case 0:
-      _lastSongPos = Organya::getInstance()->stop();
-      break;
-    case 1:
-    case 2:
-      _songlooped = Ogg::getInstance()->looped();
-      _lastSongPos = Ogg::getInstance()->stop();
-      break;
+      case 0:
+        _lastSongPos = Organya::getInstance()->stop();
+        break;
+      case 1:
+      case 2:
+        _songlooped  = Ogg::getInstance()->looped();
+        _lastSongPos = Ogg::getInstance()->stop();
+        break;
     }
     return;
   }
 
   switch (settings->new_music)
   {
-  case 0:
-    _start_org_track(songno, resume);
-    break;
-  case 1:
-    _start_ogg_track(songno, resume, _ogg_dir);
-    break;
-  case 2:
-    _start_ogg_track(songno, resume, _ogg11_dir);
-    break;
+    case 0:
+      _start_org_track(songno, resume);
+      break;
+    case 1:
+      _start_ogg_track(songno, resume, _ogg_dir);
+      break;
+    case 2:
+      _start_ogg_track(songno, resume, _ogg11_dir);
+      break;
   }
 }
 
@@ -182,37 +182,37 @@ void SoundManager::enableMusic(int newstate)
     stat("music_set_enabled(%d)", newstate);
 
     settings->music_enabled = newstate;
-    bool play = _shouldMusicPlay(_currentSong, newstate);
+    bool play               = _shouldMusicPlay(_currentSong, newstate);
 
     switch (settings->new_music)
     {
-    case 0:
-      if (play != Organya::getInstance()->isPlaying())
-      {
-        if (play)
-          _start_org_track(_currentSong, 0);
-        else
-          _lastSongPos = Organya::getInstance()->stop();
-      }
-      break;
-    case 1:
-      if (play != Ogg::getInstance()->isPlaying())
-      {
-        if (play)
-          _start_ogg_track(_currentSong, 0, _ogg_dir);
-        else
-          _lastSongPos = Ogg::getInstance()->stop();
-      }
-      break;
-    case 2:
-      if (play != Ogg::getInstance()->isPlaying())
-      {
-        if (play)
-          _start_ogg_track(_currentSong, 0, _ogg11_dir);
-        else
-          _lastSongPos = Ogg::getInstance()->stop();
-      }
-      break;
+      case 0:
+        if (play != Organya::getInstance()->isPlaying())
+        {
+          if (play)
+            _start_org_track(_currentSong, 0);
+          else
+            _lastSongPos = Organya::getInstance()->stop();
+        }
+        break;
+      case 1:
+        if (play != Ogg::getInstance()->isPlaying())
+        {
+          if (play)
+            _start_ogg_track(_currentSong, 0, _ogg_dir);
+          else
+            _lastSongPos = Ogg::getInstance()->stop();
+        }
+        break;
+      case 2:
+        if (play != Ogg::getInstance()->isPlaying())
+        {
+          if (play)
+            _start_ogg_track(_currentSong, 0, _ogg11_dir);
+          else
+            _lastSongPos = Ogg::getInstance()->stop();
+        }
+        break;
     }
   }
 }
@@ -231,7 +231,7 @@ void SoundManager::setNewmusic(int newstate)
     switch (newstate)
     {
       case 0:
-        _start_org_track(_currentSong,0);
+        _start_org_track(_currentSong, 0);
         break;
       case 1:
         _start_ogg_track(_currentSong, 0, _ogg_dir);
@@ -257,13 +257,13 @@ void SoundManager::fadeMusic()
 {
   switch (settings->new_music)
   {
-  case 0:
-    Organya::getInstance()->fade();
-    break;
-  case 1:
-  case 2:
-    Ogg::getInstance()->fade();
-    break;
+    case 0:
+      Organya::getInstance()->fade();
+      break;
+    case 1:
+    case 2:
+      Ogg::getInstance()->fade();
+      break;
   }
 }
 
@@ -271,13 +271,13 @@ void SoundManager::runFade()
 {
   switch (settings->new_music)
   {
-  case 0:
-    Organya::getInstance()->runFade();
-    break;
-  case 1:
-  case 2:
-    Ogg::getInstance()->runFade();
-    break;
+    case 0:
+      Organya::getInstance()->runFade();
+      break;
+    case 1:
+    case 2:
+      Ogg::getInstance()->runFade();
+      break;
   }
 }
 
@@ -288,12 +288,12 @@ bool SoundManager::_shouldMusicPlay(uint32_t songno, uint32_t musicmode)
 
   switch (musicmode)
   {
-  case MUSIC_OFF:
-    return false;
-  case MUSIC_ON:
-    return true;
-  case MUSIC_BOSS_ONLY:
-    return _musicIsBoss(songno);
+    case MUSIC_OFF:
+      return false;
+    case MUSIC_ON:
+      return true;
+    case MUSIC_BOSS_ONLY:
+      return _musicIsBoss(songno);
   }
 
   return false;
@@ -326,7 +326,7 @@ void SoundManager::_start_ogg_track(int songno, bool resume, std::string dir)
 {
   if (songno == 0)
   {
-    _songlooped = Ogg::getInstance()->looped();
+    _songlooped  = Ogg::getInstance()->looped();
     _lastSongPos = Ogg::getInstance()->stop();
     return;
   }

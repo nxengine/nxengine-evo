@@ -5,4 +5,3 @@
 void ai_frenzied_mimiga(Object *o);
 
 #endif
-

@@ -4,21 +4,21 @@
 
 struct PercentBar
 {
-	int displayed_value;
-	int dectimer;
+  int displayed_value;
+  int dectimer;
 };
 
 struct StatusBar
 {
-	int xpflashcount;
-	int xpflashstate;
+  int xpflashcount;
+  int xpflashstate;
 };
 
 extern StatusBar statusbar;
-void niku_draw(int value, bool force_white=false);
+void niku_draw(int value, bool force_white = false);
 
-void stat_PrevWeapon(bool quiet=false);
-void stat_NextWeapon(bool quiet=false);
+void stat_PrevWeapon(bool quiet = false);
+void stat_NextWeapon(bool quiet = false);
 
 bool statusbar_init(void);
 void DrawStatusBar(void);
@@ -36,6 +36,5 @@ void DrawNumberRAlign(int x, int y, int s, int num);
 void DrawTwoDigitNumber(int x, int y, int num);
 void DrawDigit(int x, int y, int digit);
 void niku_run();
-
 
 #endif

@@ -90,7 +90,7 @@ static void __warp(std::vector<std::string> *args, int num)
     }
   }
 
-  game.switchstage.mapno = num;
+  game.switchstage.mapno   = num;
   game.switchstage.playerx = 16;
   game.switchstage.playery = 16;
 }
@@ -103,48 +103,48 @@ static void __sound(std::vector<std::string> *args, int num)
 
 static void __music(std::vector<std::string> *args, int num)
 {
-/*  extern std::vector<std::string> org_names;
-  bool ok = true;
-  std::vector<std::string>::size_type i;
+  /*  extern std::vector<std::string> org_names;
+    bool ok = true;
+    std::vector<std::string>::size_type i;
 
-  const char *name = args->at(0).c_str();
-  if (num == 0 && strcmp(name, "0") != 0)
-  {
-    for (i = 1; i < org_names.size(); i++)
+    const char *name = args->at(0).c_str();
+    if (num == 0 && strcmp(name, "0") != 0)
     {
-      if (strcasebegin(org_names[i].c_str(), name))
+      for (i = 1; i < org_names.size(); i++)
       {
-        num = i;
-        break;
+        if (strcasebegin(org_names[i].c_str(), name))
+        {
+          num = i;
+          break;
+        }
+      }
+
+      if (num == 0)
+      {
+        Respond("Don't know that song.");
+        return;
       }
     }
 
-    if (num == 0)
+    if (num < 0)
+      ok = false;
+    else if (num >= (int)org_names.size())
+      ok = false;
+
+    if (!ok)
     {
-      Respond("Don't know that song.");
-      return;
+      Respond("track out of range");
+      music(0);
     }
-  }
-
-  if (num < 0)
-    ok = false;
-  else if (num >= (int)org_names.size())
-    ok = false;
-
-  if (!ok)
-  {
-    Respond("track out of range");
-    music(0);
-  }
-  else
-  {
-    music(0);
-    music(num);
-    if (num > 0)
-      Respond("%s started", org_names[num].c_str());
     else
-      Respond("ZERO MUZAK");
-  }*/
+    {
+      music(0);
+      music(num);
+      if (num > 0)
+        Respond("%s started", org_names[num].c_str());
+      else
+        Respond("ZERO MUZAK");
+    }*/
 }
 
 static void __giveweapon(std::vector<std::string> *args, int num)
@@ -152,9 +152,9 @@ static void __giveweapon(std::vector<std::string> *args, int num)
   if (num >= 0 && num < WPN_COUNT)
   {
     player->weapons[num].hasWeapon = 1;
-    player->weapons[num].maxammo = 0; // gives it unlimited ammo
-    player->weapons[num].ammo = 0;
-    player->curWeapon = num;
+    player->weapons[num].maxammo   = 0; // gives it unlimited ammo
+    player->weapons[num].ammo      = 0;
+    player->curWeapon              = num;
   }
 }
 
@@ -164,8 +164,8 @@ static void __dropweapon(std::vector<std::string> *args, int num)
     num = player->curWeapon;
 
   player->weapons[num].hasWeapon = 0;
-  player->weapons[num].maxammo = 0;
-  player->weapons[num].ammo = 0;
+  player->weapons[num].maxammo   = 0;
+  player->weapons[num].ammo      = 0;
 
   if (num == player->curWeapon)
     stat_NextWeapon();
@@ -327,7 +327,7 @@ static void __animate(std::vector<std::string> *args, int num)
     if (o->nxflags & NXFLAG_CONSOLE_ANIMATE)
     {
       o->state = num;
-      found = true;
+      found    = true;
     }
   }
 
@@ -377,12 +377,12 @@ static void __clearflags(std::vector<std::string> *args, int num)
 
 static void __equip(std::vector<std::string> *args, int num)
 {
-  static const char *equiplist[] = {"booster08", "map", "armsbarrier", "turbocharge", "airtank", "booster20",
-      "mimigamask", "whimstar", "nikumaru", NULL};
+  static const char *equiplist[] = {"booster08", "map",        "armsbarrier", "turbocharge", "airtank",
+                                    "booster20", "mimigamask", "whimstar",    "nikumaru",    NULL};
   int i, mask;
 
   const char *item = args->at(0).c_str();
-  bool enable = args->size() > 1 ? atoi(args->at(1).c_str()) : true;
+  bool enable      = args->size() > 1 ? atoi(args->at(1).c_str()) : true;
 
   mask = 0x01;
   for (i = 0; equiplist[i]; i++)
@@ -454,10 +454,10 @@ static void __cre(std::vector<std::string> *args, int num)
   game.pause(0);
   game.setmode(GM_NORMAL);
 
-  game.flags[1341] = true;
-  game.switchstage.mapno = 70;
-  game.switchstage.playerx = 16;
-  game.switchstage.playery = 16;
+  game.flags[1341]              = true;
+  game.switchstage.mapno        = 70;
+  game.switchstage.playerx      = 16;
+  game.switchstage.playery      = 16;
   game.switchstage.eventonentry = 400;
 }
 
@@ -519,35 +519,58 @@ static void __textbox_setvisible(std::vector<std::string> *args, int num)
   textbox.SetVisible(num);
 }
 
-static CommandEntry commands[] = {{"god", __god, 0, 1}, {"script", __script, 1, 1}, {"warp", __warp, 1, 999},
-    {"sound", __sound, 1, 1}, {"music", __music, 1, 1}, {"giveweapon", __giveweapon, 1, 1},
-    {"dropweapon", __dropweapon, 0, 1}, {"level", __level, 1, 1}, {"ammo", __ammo, 1, 1}, {"maxammo", __maxammo, 1, 1},
-    {"hp", __hp, 1, 1}, {"maxhp", __maxhp, 1, 1}, {"xp", __xp, 1, 1}, {"spawn", __spawn, 1, 999},
-    {"animate", __animate, 1, 2}, {"infinitedamage", __infinitedamage, 0, 1}, {"killall", __killall, 0, 0},
-    {"movemode", __movemode, 1, 1}, {"flag", __flag, 1, 1}, {"clearflags", __clearflags, 0, 0},
-    {"equip", __equip, 1, 2}, {"giveitem", __giveitem, 1, 1}, {"takeitem", __takeitem, 1, 1}, {"qua", __qua, 0, 1},
-    {"boa", __boa, 1, 1}, {"cre", __cre, 0, 0}, {"reset", __reset, 0, 0}, {"fps", __fps, 0, 1},
+static CommandEntry commands[] = {{"god", __god, 0, 1},
+                                  {"script", __script, 1, 1},
+                                  {"warp", __warp, 1, 999},
+                                  {"sound", __sound, 1, 1},
+                                  {"music", __music, 1, 1},
+                                  {"giveweapon", __giveweapon, 1, 1},
+                                  {"dropweapon", __dropweapon, 0, 1},
+                                  {"level", __level, 1, 1},
+                                  {"ammo", __ammo, 1, 1},
+                                  {"maxammo", __maxammo, 1, 1},
+                                  {"hp", __hp, 1, 1},
+                                  {"maxhp", __maxhp, 1, 1},
+                                  {"xp", __xp, 1, 1},
+                                  {"spawn", __spawn, 1, 999},
+                                  {"animate", __animate, 1, 2},
+                                  {"infinitedamage", __infinitedamage, 0, 1},
+                                  {"killall", __killall, 0, 0},
+                                  {"movemode", __movemode, 1, 1},
+                                  {"flag", __flag, 1, 1},
+                                  {"clearflags", __clearflags, 0, 0},
+                                  {"equip", __equip, 1, 2},
+                                  {"giveitem", __giveitem, 1, 1},
+                                  {"takeitem", __takeitem, 1, 1},
+                                  {"qua", __qua, 0, 1},
+                                  {"boa", __boa, 1, 1},
+                                  {"cre", __cre, 0, 0},
+                                  {"reset", __reset, 0, 0},
+                                  {"fps", __fps, 0, 1},
 
-    {"skip-intro", __skip_intro, 1, 1},
+                                  {"skip-intro", __skip_intro, 1, 1},
 
-    {"player->hide", __player_hide, 1, 1}, {"player->inputs_locked", __player_inputs_locked, 1, 1},
-    {"game.frozen", __game_frozen, 1, 1}, {"textbox.SetVisible", __textbox_setvisible, 1, 1},
+                                  {"player->hide", __player_hide, 1, 1},
+                                  {"player->inputs_locked", __player_inputs_locked, 1, 1},
+                                  {"game.frozen", __game_frozen, 1, 1},
+                                  {"textbox.SetVisible", __textbox_setvisible, 1, 1},
 
-    {"hello", __hello, 0, 0}, {"hi", __hello, 0, 0},
+                                  {"hello", __hello, 0, 0},
+                                  {"hi", __hello, 0, 0},
 
-    {NULL, NULL, 0, 0}};
+                                  {NULL, NULL, 0, 0}};
 
 DebugConsole::DebugConsole()
 {
-  fVisible = false;
-  fLineLen = 0;
-  fCursorTimer = 0;
+  fVisible       = false;
+  fLineLen       = 0;
+  fCursorTimer   = 0;
   fResponseTimer = 0;
 
-  fLine[0] = 0;
+  fLine[0]     = 0;
   fResponse[0] = 0;
 
-  fKeyDown = 0;
+  fKeyDown     = 0;
   fRepeatTimer = 0;
 }
 
@@ -561,16 +584,16 @@ void DebugConsole::SetVisible(bool newstate)
 
   if (fVisible != newstate)
   {
-    fVisible = newstate;
-    fKeyDown = 0;
+    fVisible     = newstate;
+    fKeyDown     = 0;
     fRepeatTimer = 0;
 
     if (newstate)
     {
-      fLine[0] = 0;
-      fLineLen = 0;
+      fLine[0]           = 0;
+      fLineLen           = 0;
       fBrowsingExpansion = false;
-      fBackIndex = fBackBuffer.size() - 1;
+      fBackIndex         = fBackBuffer.size() - 1;
 
       fResponse[0] = 0;
       fCursorTimer = 0;
@@ -592,7 +615,7 @@ bool DebugConsole::HandleKey(int key)
 
   if (key != fKeyDown)
   {
-    fKeyDown = key;
+    fKeyDown     = key;
     fRepeatTimer = 25;
   }
   else
@@ -604,70 +627,70 @@ bool DebugConsole::HandleKey(int key)
 
   switch (key)
   {
-  case 27:
-  case '`':
-  {
-    SetVisible(false);
-  }
-  break;
-
-  case 13:
-  case 271: // numeric enter
-  {
-    SetVisible(false);
-
-    fLine[fLineLen] = 0;
-    Execute(fLine);
-    fLineLen = 0;
-  }
-  break;
-
-  case 10:
+    case 27:
+    case '`':
+    {
+      SetVisible(false);
+    }
     break;
 
-  case 8:
-  {
-    if (fLineLen > 0)
-      fLineLen--;
-  }
-  break;
-
-  case 9: // command completion
-  {
-    fLine[fLineLen] = 0;
-    ExpandCommand();
-
-    fBrowsingExpansion = true;
-    fExpandIndex++;
-  }
-  break;
-
-  // command backbuffer
-  case SDLK_UP:
-  case SDLK_DOWN:
-  {
-    if (fBackBuffer.size() > 0)
+    case 13:
+    case 271: // numeric enter
     {
-      fBackIndex += (key == SDLK_UP) ? -1 : 1;
-      if (fBackIndex < 0)
-        fBackIndex = (fBackBuffer.size() - 1);
-      else
-        fBackIndex %= fBackBuffer.size();
+      SetVisible(false);
 
-      const char *str = fBackBuffer.at(fBackIndex).c_str();
-
-      maxcpy(fLine, str, sizeof(fLine) - 1);
-      fLineLen = strlen(str);
+      fLine[fLineLen] = 0;
+      Execute(fLine);
+      fLineLen = 0;
     }
-  }
-  break;
+    break;
 
-  default:
-  {
-    if (fLineLen < (sizeof(fLine) - 1))
-      fLine[fLineLen++] = key;
-  }
-  break;
+    case 10:
+      break;
+
+    case 8:
+    {
+      if (fLineLen > 0)
+        fLineLen--;
+    }
+    break;
+
+    case 9: // command completion
+    {
+      fLine[fLineLen] = 0;
+      ExpandCommand();
+
+      fBrowsingExpansion = true;
+      fExpandIndex++;
+    }
+    break;
+
+    // command backbuffer
+    case SDLK_UP:
+    case SDLK_DOWN:
+    {
+      if (fBackBuffer.size() > 0)
+      {
+        fBackIndex += (key == SDLK_UP) ? -1 : 1;
+        if (fBackIndex < 0)
+          fBackIndex = (fBackBuffer.size() - 1);
+        else
+          fBackIndex %= fBackBuffer.size();
+
+        const char *str = fBackBuffer.at(fBackIndex).c_str();
+
+        maxcpy(fLine, str, sizeof(fLine) - 1);
+        fLineLen = strlen(str);
+      }
+    }
+    break;
+
+    default:
+    {
+      if (fLineLen < (sizeof(fLine) - 1))
+        fLine[fLineLen++] = key;
+    }
+    break;
   }
 
   return 1;
@@ -677,7 +700,7 @@ void DebugConsole::HandleKeyRelease(int key)
 {
   if (key == fKeyDown)
   {
-    fKeyDown = 0;
+    fKeyDown     = 0;
     fRepeatTimer = 0;
   }
 }
@@ -776,7 +799,7 @@ bool DebugConsole::Execute(const char *line)
         else if (args.size() < command->minArgs)
         {
           Print("'%s' requires at least %d argument%s", command->name, command->minArgs,
-              (command->minArgs == 1) ? "" : "s");
+                (command->minArgs == 1) ? "" : "s");
         }
         else
         {
@@ -786,7 +809,7 @@ bool DebugConsole::Execute(const char *line)
       else
       {
         void (*handler)(std::vector<std::string> *, int) = command->handler;
-        int num = (args.size() > 0) ? atoi(args.at(0).c_str()) : 0;
+        int num                                          = (args.size() > 0) ? atoi(args.at(0).c_str()) : 0;
 
         (*handler)(&args, num);
         return 1;

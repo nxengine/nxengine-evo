@@ -10,5 +10,4 @@ void ai_giant_beetle(Object *o);
 void ai_egg_elevator(Object *o);
 void ai_forcefield(Object *o);
 
-
 #endif

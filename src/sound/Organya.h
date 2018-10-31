@@ -39,9 +39,9 @@ struct Song
   Instrument ins[16];
   bool loaded;
   bool playing;
-  uint32_t cur_beat = 0;
+  uint32_t cur_beat    = 0;
   uint32_t total_beats = 0;
-  uint32_t last_pos = 0;
+  uint32_t last_pos    = 0;
   std::vector<float> samples;
   uint32_t volume = 255;
   bool Load(const std::string &fname);
@@ -83,8 +83,8 @@ private:
 
   Song song;
   const uint8_t patch[12] = {0x96, 0, 0x97, 0, 0x9a, 0x98, 0x99, 0, 0x9b, 0, 0, 0};
-  float volume = 1.0;
-  bool fading = false;
+  float volume            = 1.0;
+  bool fading             = false;
   uint32_t last_fade_time = 0;
 };
 
