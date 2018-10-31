@@ -59,6 +59,7 @@ static struct
   Dialog *dismiss_on_focus;
   unsigned int mm_cursel;
   bool InMainMenu;
+  bool InBindingMenu;
   int xoffset;
 
   int32_t remapping_key;
@@ -147,6 +148,10 @@ void DialogDismissed()
     memset(inputs, 0, sizeof(inputs));
     game.pause(false);
   }
+  else if (opt.InBindingMenu)
+  {
+    EnterControlsMenu(NULL,0);
+  }
   else
   {
     EnterMainMenu();
@@ -199,12 +204,13 @@ static void EnterControlsMenu(ODItem *item, int dir)
 
   dlg->AddSeparator();
   dlg->AddDismissalItem();
+  opt.InBindingMenu = false;
 }
 
 static void EnterRebindMenu(ODItem *item, int dir)
 {
   Dialog *dlg = opt.dlg;
-
+  opt.InBindingMenu = true;
   dlg->Clear();
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
   dlg->AddItem("Left", _edit_control, _upd_control, LEFTKEY);
@@ -222,6 +228,7 @@ static void EnterRebindMenu(ODItem *item, int dir)
 
   dlg->AddSeparator();
   dlg->AddDismissalItem();
+  opt.InBindingMenu = true;
 }
 
 static void EnterGraphicsMenu(ODItem *item, int dir)
