@@ -54,8 +54,8 @@ typedef struct
   stPXWave frequency;
   stPXWave amplitude;
   stPXEnvelope envelope;
+  int8_t *buffer;
   void synth();
-  int8_t *buffer = nullptr;
 } stPXChannel;
 
 typedef struct

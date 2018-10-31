@@ -63,7 +63,8 @@ bool stPXSound::load(const std::string &fname)
         {wave[f() % 6].table, fgetv(fp), f(), f()}, // carrier wave
         {wave[f() % 6].table, fgetv(fp), f(), f()}, // frequency wave
         {wave[f() % 6].table, fgetv(fp), f(), f()}, // amplitude wave
-        {f(), {{f(), f()}, {f(), f()}, {f(), f()}}} // envelope
+        {f(), {{f(), f()}, {f(), f()}, {f(), f()}}}, // envelope
+        nullptr
     };
   }
   fclose(fp);

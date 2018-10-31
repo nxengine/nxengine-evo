@@ -61,7 +61,7 @@ IF(CMAKE_BUILD_TYPE MATCHES Debug)
     add_definitions(-DDEBUG)
 ENDIF()
 
-add_definitions("-Wall -std=c++14")
+add_definitions("-Wall -std=c++11")
 add_executable(nx ${SOURCES})
 target_link_libraries(nx ${SDL2_LIBRARY} ${SDL_MIXER_LIBRARY} ${PNG_LIBRARY})
 
