@@ -16,7 +16,7 @@
 
 bool ResourceManager::fileExists(const std::string &filename)
 {
-#if defined(__unix__) || defined(__APPLE__) // Linux, OS X, BSD
+#if defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__)// Linux, OS X, BSD
   struct stat st;
 
   if (stat(filename.c_str(), &st) == 0)

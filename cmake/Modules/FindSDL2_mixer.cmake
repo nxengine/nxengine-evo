@@ -40,8 +40,12 @@ find_path(SDL_MIXER_INCLUDE_DIR SDL_mixer.h
   HINTS
     ENV SDLMIXERDIR
     ENV SDLDIR
-  PATH_SUFFIXES include/SDL2 include
+  PATH_SUFFIXES include/SDL2 include headers headers/x86
   PATHS
+  /boot/system/develop/headers
+  /boot/system/develop/headers/SDL2
+  /boot/system/develop/headers/x86
+  /boot/system/develop/headers/x86/SDL2
   ${PROJECT_ROOT_DIR}/ext/SDL2
 )
 
@@ -55,8 +59,10 @@ find_library(SDL_MIXER_LIBRARY
   HINTS
     ENV SDLMIXERDIR
     ENV SDLDIR
-  PATH_SUFFIXES lib
+  PATH_SUFFIXES lib lib/x86
   PATHS
+  /lib
+  /lib/x86
   ${PROJECT_ROOT_DIR}/ext/SDL2
 )
 
