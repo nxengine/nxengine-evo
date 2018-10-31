@@ -2,6 +2,8 @@
 #ifndef _STAGESELECT_H
 #define _STAGESELECT_H
 
+#include <cstddef>
+
 #define NUM_TELEPORTER_SLOTS 8
 
 struct Teleporter_Slot

@@ -344,7 +344,7 @@ void _sound_get(ODItem *item)
 void _strafe_change(ODItem *item, int dir)
 {
   settings->strafing ^= 1;
-  sound(SND_MENU_SELECT);
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _strafe_get(ODItem *item)

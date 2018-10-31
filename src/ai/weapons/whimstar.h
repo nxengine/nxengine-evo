@@ -2,6 +2,8 @@
 #ifndef _WHIMSTAR_H
 #define _WHIMSTAR_H
 
+#include "../../object.h"
+
 #define MAX_WHIMSTARS 3
 
 struct Whimstar

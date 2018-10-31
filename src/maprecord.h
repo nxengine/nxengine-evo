@@ -2,6 +2,8 @@
 #ifndef _MAPRECORD_H
 #define _MAPRECORD_H
 
+#include <cstdint>
+
 #define MAX_STAGES 120
 struct MapRecord
 {
