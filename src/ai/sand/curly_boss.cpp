@@ -7,7 +7,7 @@
 #include "../../caret.h"
 #include "../../player.h"
 #include "../../game.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../autogen/sprites.h"
@@ -74,7 +74,7 @@ void ai_curly_boss(Object *o)
 				o->flags |= FLAG_SHOOTABLE;
 				o->state = CURLYB_CHARGE_GUN;
 				o->timer = 0;
-				sound(SND_CHARGE_GUN);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CHARGE_GUN);
 			}
 		break;
 		
@@ -131,7 +131,7 @@ void ai_curly_boss(Object *o)
 	{
 		// curly activates her shield anytime a missile's explosion goes off,
 		// even if it's nowhere near her at all
-		if (sound_is_playing(SND_MISSILE_HIT))
+		if (NXE::Sound::SoundManager::getInstance()->isSfxPlaying(NXE::Sound::SFX::SND_MISSILE_HIT))
 		{
 			o->timer = 0;
 			o->state = CURLYB_SHIELD;
@@ -178,7 +178,7 @@ static void curlyboss_fire(Object *o, int dir)
 		break;
 	}
 	
-	sound(SND_POLAR_STAR_L1_2);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_POLAR_STAR_L1_2);
 }
 
 
@@ -203,4 +203,3 @@ void ai_curlyboss_shot(Object *o)
 	shot_spawn_effect(o, EFFECT_STARSOLID);
 	o->Delete();
 }
-

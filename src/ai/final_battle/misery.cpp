@@ -9,7 +9,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
 #include "../../player.h"
@@ -134,7 +134,7 @@ static void run_spells(Object *o)
 			if ((++o->timer % 6) == 0)
 			{
 				EmFireAngledShot(o, OBJ_MISERY_SHOT, 4, 0x800);
-				sound(SND_FIREBALL);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 			}
 			
 			if (o->timer > 30)
@@ -182,7 +182,7 @@ static void run_spells(Object *o)
 			if ((++o->timer % 24) == 0)
 			{
 				CreateObject(o->x, o->y+(4 * CSFI), OBJ_MISERY_BALL);
-				sound(SND_FIREBALL);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 			}
 			
 			if (o->timer > 72)
@@ -212,7 +212,7 @@ static void run_teleport(Object *o)
 			CreateObject(o->x, o->y, OBJ_MISERY_PHASE)->dir = LEFT;
 			CreateObject(o->x, o->y, OBJ_MISERY_PHASE)->dir = RIGHT;
 			
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 		}
 		case STATE_TP_AWAY+1:
 		{
@@ -499,7 +499,7 @@ void ai_misery_ball(Object *o)
 		{
 			if (++o->timer > 10)
 			{
-				sound(SND_LIGHTNING_STRIKE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LIGHTNING_STRIKE);
 				CreateObject(o->x, o->y, OBJ_BLACK_LIGHTNING);
 				o->Delete();
 			}
@@ -522,15 +522,3 @@ void ai_black_lightning(Object *o)
 		o->Delete();
 	}
 }
-
-
-/*
-void c------------------------------() {}
-*/
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@
 #include "../sym/smoke.h"
 #include "../../game.h"
 #include "../../ObjManager.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -65,7 +65,7 @@ void ai_pooh_black(Object *o)
 			if (o->blockd)
 			{
 				SmokeSide(o, 8, DOWN);
-				sound(SND_BIG_CRASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 				quake(30);
 				
 				KillObjectsOfType(OBJ_POOH_BLACK_BUBBLE);
@@ -199,7 +199,7 @@ void ai_pooh_black_dying(Object *o)
 			o->yinertia = 0;
 			FACEPLAYER;
 			
-			sound(SND_BIG_CRASH);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 			SmokeClouds(o, 10, 12, 12);
 			KillObjectsOfType(OBJ_POOH_BLACK_BUBBLE);
 			
@@ -222,7 +222,7 @@ void ai_pooh_black_dying(Object *o)
 				o->display_xoff = (o->timer2 & 1);
 				
 				if ((o->timer2 % 4) == 2)
-					sound(SND_BUBBLE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLE);
 				
 				if (o->clipy1 >= o->clipy2)
 					o->Delete();
@@ -248,7 +248,3 @@ void ai_pooh_black_dying(Object *o)
 	}
 
 }
-
-
-
-

@@ -21,8 +21,7 @@
 using namespace Graphics;
 #include "graphics/font.h"
 #include "graphics/screenshot.h"
-#include "sound/sound.h"
-#include "sound/org.h"
+#include "sound/SoundManager.h"
 #include "common/stat.h"
 #include "common/misc.h"
 #include "caret.h"
@@ -30,6 +29,7 @@ using namespace Graphics;
 #include "screeneffect.h"
 #include "ResourceManager.h"
 
+using namespace NXE::Sound;
 
 int fps = 0;
 static int fps_so_far = 0;
@@ -163,13 +163,13 @@ static int frameskip = 0;
 		SDL_Delay(20);
 	}
 	
-	music_run_fade();
+	SoundManager::getInstance()->runFade();
 }
 
 void AppMinimized(void)
 {
 	stat("Game minimized or lost focus--pausing...");
-	music(0);
+//	music(0);
 	Mix_Pause(-1);
 	for(;;)
 	{
@@ -182,7 +182,7 @@ void AppMinimized(void)
 		SDL_Delay(20);
 	}
 	Mix_Resume(-1);
-	music(music_lastsong(), true);
+//	music(music_lastsong(), true);
 	stat("Focus regained, resuming play...");
 }
 
@@ -305,7 +305,8 @@ bool freshstart;
 //	}
 	
 	Graphics::ShowLoadingScreen();
-	if (sound_init()) { fatal("Failed to initialize sound."); return 1; }
+	SoundManager::getInstance()->init();
+//	if (sound_init()) { fatal("Failed to initialize sound."); return 1; }
 	if (trig_init()) { fatal("Failed trig module init."); return 1; }
 	
 	if (textbox.Init()) { fatal("Failed to initialize textboxes."); return 1; }
@@ -342,7 +343,8 @@ bool freshstart;
 		// but that's the spec.
 		if (game.switchstage.mapno >= MAPNO_SPECIALS)
 		{
-			StopLoopSounds();
+			NXE::Sound::SoundManager::getInstance()->stopLoopSfx();
+//			StopLoopSounds();
 		}
 		
 		// enter next stage, whatever it may be
@@ -409,7 +411,8 @@ shutdown: ;
 	Graphics::close();
 	input_close();
 	font_close();
-	sound_close();
+	NXE::Sound::SoundManager::getInstance()->shutdown();
+//	sound_close();
 	textbox.Deinit();
 	return error;
 	

@@ -8,7 +8,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -129,7 +129,7 @@ void ai_gaudi_egg(Object *o)
 			o->flags &= ~FLAG_SHOOTABLE;
 			SmokeSide(o, 6, (o->dir==LEFT)?DOWN:UP);
 			o->SpawnPowerups();
-			sound(objprop[o->type].death_sound);
+			NXE::Sound::SoundManager::getInstance()->playSfx(objprop[o->type].death_sound);
 			o->state = 2;
 		}
 	}
@@ -292,7 +292,7 @@ void ai_buyobuyo_base(Object *o)
 				Object *buyo = SpawnObjectAtActionPoint(o, OBJ_BUYOBUYO);
 				buyo->dir = o->dir;
 				
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				o->frame = 0;
 				o->CurlyTargetHere();
 				
@@ -392,7 +392,3 @@ void ai_buyobuyo(Object *o)
 		return;
 	}
 }
-
-
-
-

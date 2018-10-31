@@ -10,7 +10,7 @@
 #include "../input.h"
 #include "../map.h"
 #include "../screeneffect.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../common/misc.h"
 #include "../graphics/graphics.h"
 using namespace Graphics;
@@ -21,7 +21,7 @@ static int blanktimer;
 
 bool intro_init(int param)
 {
-	music(0);
+	NXE::Sound::SoundManager::getInstance()->music(0);
 	fade.set_full(FADE_OUT);
 	
 	game.switchstage.mapno = STAGE_KINGS;

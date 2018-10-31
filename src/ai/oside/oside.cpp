@@ -3,7 +3,7 @@
 #include "../ai.h"
 #include "../sym/smoke.h"
 #include "../sand/sand.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../map.h"
@@ -105,7 +105,7 @@ void ai_night_spirit(Object *o)
 				shot->xinertia = random(0x100, 0x600);
 				shot->yinertia = random(-0x200, 0x200);
 				
-				sound(SND_BUBBLE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLE);
 			}
 			
 			if (o->timer > 50)
@@ -189,7 +189,7 @@ void ai_night_spirit_shot(Object *o)
 		if (o->blockl)
 		{
 			SmokeClouds(o, 4, 3, 3);
-			sound(SND_SHOT_HIT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
 			o->Delete();
 		}
 	}
@@ -232,7 +232,7 @@ void ai_hoppy(Object *o)
 				o->state = 3;
 				o->frame = 3;
 				
-				sound(SND_HOPPY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_HOPPY_JUMP);
 				o->xinertia = 0x700;
 			}
 		}
@@ -430,23 +430,3 @@ void ai_little_family(Object *o)
 	o->yinertia += 0x20;
 	LIMITY(0x5ff);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,7 +2,7 @@
 #include "../stdai.h"
 #include "../ai.h"
 #include "../../caret.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -93,7 +93,7 @@ void ai_puppy_bark(Object *o)
 					if (o->frame==NOBARK)
 					{
 						o->frame = BARK;
-						sound(SND_PUPPY_BARK);
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PUPPY_BARK);
 					}
 					else
 					{
@@ -235,10 +235,3 @@ void aftermove_puppy_carry(Object *o)
 	o->frame = 0;
 	randblink(o, 2, 4);
 }
-
-
-
-
-
-
-

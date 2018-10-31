@@ -2,7 +2,7 @@
 
 #include "weapons.h"
 #include "../../ObjManager.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 
 #include "../../game.h"
 #include "../../graphics/sprites.h"
@@ -28,7 +28,7 @@ void ai_spur_shot(Object *o)
 	{
 		if (!shot_destroy_blocks(o))
 		{
-			sound(SND_SHOT_HIT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
 			shot_spawn_effect(o, EFFECT_STARSOLID);
 			shot_spawn_effect(o, EFFECT_SPUR_HIT);
 			
@@ -125,6 +125,3 @@ void ai_spur_trail(Object *o)
 		o->shot.damage = 0;
 	}
 }
-
-
-

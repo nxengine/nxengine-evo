@@ -5,7 +5,7 @@
 #include "../../game.h"
 #include "../../ObjManager.h"
 #include "../../caret.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -103,7 +103,7 @@ void ai_ma_pignon(Object *o)
 				o->xinertia = random(-0x400, 0x400);
 				o->yinertia = -0x800;
 				
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 				o->timer2++;
 			}
 		}
@@ -183,7 +183,7 @@ void ai_ma_pignon(Object *o)
 				o->frame = 6;
 				
 				XMOVE(0x5ff);
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				
 				o->flags &= ~FLAG_SHOOTABLE;
 				o->flags |= FLAG_INVULNERABLE;
@@ -263,7 +263,7 @@ void ai_ma_pignon(Object *o)
 				o->state++;
 				o->frame = 12;
 				o->yinertia = -0x800;
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				
 				o->flags |= FLAG_IGNORE_SOLID;
 				o->flags &= ~FLAG_SHOOTABLE;
@@ -411,7 +411,7 @@ void ai_ma_pignon_rock(Object *o)
 					o->state = 2;
 					o->flags |= FLAG_IGNORE_SOLID;
 					
-					sound(SND_BLOCK_DESTROY);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 					game.quaketime = 10;
 					
 					// these smoke clouds appear BEHIND the map tiles
@@ -468,12 +468,3 @@ void ai_ma_pignon_clone(Object *o)
 		o->Delete();
 	}
 }
-
-
-
-
-
-
-
-
-

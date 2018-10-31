@@ -2,7 +2,7 @@
 
 #include "../stdai.h"
 #include "../../ObjManager.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../graphics/sprites.h"
 #include "../../game.h"
 
@@ -33,7 +33,7 @@ void dr_tp_out_init(Object *o)
 	o->ResetClip();
 	o->clip_enable = true;
 	
-	sound(SND_TELEPORT);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 	o->shaketime = 0;	// show any waiting damage numbers NOW
 }
 
@@ -78,5 +78,3 @@ bool dr_tp_in(Object *o)
 	
 	return false;
 }
-
-

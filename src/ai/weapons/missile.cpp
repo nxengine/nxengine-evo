@@ -4,7 +4,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 
@@ -170,7 +170,7 @@ void ai_missile_shot(Object *o)
 			
 			if (blow_up)
 			{
-				sound(SND_MISSILE_HIT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 				
 				// create the boom-spawner object for the flashes, smoke, and AoE damage
 				int y = o->CenterY();
@@ -271,9 +271,3 @@ static void missilehitsmoke(int x, int y, int range)
 		vector_from_angle(random(0,255), random(0x100,0x3ff), &smoke->xinertia, &smoke->yinertia);
 	}
 }
-
-
-
-
-
-

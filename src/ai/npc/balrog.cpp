@@ -7,7 +7,7 @@
 #include "../../ObjManager.h"
 #include "../../map.h"
 #include "../../tsc.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../autogen/sprites.h"
 
@@ -89,7 +89,7 @@ bool fall = true;
 			{
 				o->Delete();
 				quake(30);
-//				sound(SND_QUAKE);
+//				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 //				game.quaketime = 30;
 			}
 		}
@@ -104,7 +104,7 @@ bool fall = true;
 			o->xinertia = 0;
 			o->timer = o->timer2 = 0;
 			SmokeClouds(o, 4, 8, 8);
-			sound(SND_BIG_CRASH);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 			o->balrog.smoking = 1;
 		}
 		case 21:
@@ -236,14 +236,14 @@ bool fall = true;
 					map_ChangeTileWithSmoke(x-1, y, 0, 4, false, lowestobject);
 					map_ChangeTileWithSmoke(x+1, y, 0, 4, false, lowestobject);
 					
-					megaquake(10, 0);
-					sound(SND_MISSILE_HIT);
+					megaquake(10, NXE::Sound::SFX::SND_NULL);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 				}
 			}
 			
 			if (o->Bottom() < -(20 * CSFI))
 			{
-				quake(30, 0);
+				quake(30, NXE::Sound::SFX::SND_NULL);
 				o->Delete();
 			}
 		}
@@ -339,7 +339,7 @@ void ai_balrog_bust_in(Object *o)
 			o->y += (10 * CSFI);
 			o->yinertia = -0x100;
 			
-			sound(SND_BLOCK_DESTROY);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 			quake(30);
 			
 			o->state = 1;
@@ -401,28 +401,9 @@ void balrog_walk_animation(Object *o)
 		o->frame++;
 		
 		if (o->frame == 10 || o->frame == 11)
-			sound(SND_THUD);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 		
 		if (o->frame > 12)
 			o->frame = 9;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

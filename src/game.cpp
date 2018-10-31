@@ -20,7 +20,7 @@
 #include "debug.h"
 #include "console.h"
 #include "ai/ai.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "common/stat.h"
 #include "graphics/graphics.h"
 using namespace Graphics;
@@ -255,7 +255,8 @@ void Game::switchmap(int mapno, int scriptno, int px, int py)
 void Game::reset()
 {
 	memset(inputs, 0, sizeof(inputs));
-	StopLoopSounds();
+	NXE::Sound::SoundManager::getInstance()->stopLoopSfx();
+//	StopLoopSounds();
 	tsc->StopScripts();
 	
 	game.pause(false);
@@ -312,19 +313,19 @@ void game_tick_normal(void)
 
 
 // shake screen.
-void quake(int quaketime, int snd)
+void quake(int quaketime, NXE::Sound::SFX snd)
 {
 	if (game.quaketime < quaketime)
 		game.quaketime = quaketime;
 	
-	if (snd)
-		sound((snd != -1) ? snd : SND_QUAKE);
+	if (snd != NXE::Sound::SFX::SND_NULL)
+		NXE::Sound::SoundManager::getInstance()->playSfx(snd);
 	rumble(0.6,quaketime*10);
 }
 
 // during Ballos fight, since there's already a perpetual quake,
 // we need to be able to make an even BIGGER quake effect.
-void megaquake(int quaketime, int snd)
+void megaquake(int quaketime, NXE::Sound::SFX snd)
 {
 	if (game.megaquaketime < quaketime)
 	{
@@ -333,8 +334,8 @@ void megaquake(int quaketime, int snd)
 			game.quaketime = game.megaquaketime;
 	}
 	
-	if (snd)
-		sound((snd != -1) ? snd : SND_QUAKE);
+	if (snd != NXE::Sound::SFX::SND_NULL)
+		NXE::Sound::SoundManager::getInstance()->playSfx(snd);
 	rumble(0.8,quaketime*10);
 }
 
@@ -508,7 +509,7 @@ int i;
 	// have to load the stage last AFTER the flags are loaded because
 	// of the options to appear and disappear objects based on flags.
 	if (load_stage(p->stage)) return 1;
-	music(p->songno);
+	NXE::Sound::SoundManager::getInstance()->music(p->songno);
 	
 	player->x = p->px;
 	player->y = p->py;
@@ -547,7 +548,7 @@ int i;
 	memset(p, 0, sizeof(Profile));
 	
 	p->stage = game.curmap;
-	p->songno = music_cursong();
+	p->songno = NXE::Sound::SoundManager::getInstance()->currentSong();
 	
 	p->px = player->x;
 	p->py = player->y;
@@ -667,13 +668,13 @@ void AssignExtraSprites(void)
 	objprop[OBJ_IRONH].shaketime = 8;
 	
 	objprop[OBJ_OMEGA_BODY].shaketime = 0;		// omega handles his own shaketime
-	objprop[OBJ_OMEGA_BODY].hurt_sound = SND_ENEMY_HURT_BIG;
+	objprop[OBJ_OMEGA_BODY].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_BIG;
 	
 	objprop[OBJ_OMEGA_LEG].sprite = SPR_OMG_LEG_INAIR;
 	objprop[OBJ_OMEGA_STRUT].sprite = SPR_OMG_STRUT;
 	
 	objprop[OBJ_OMEGA_SHOT].death_smoke_amt = 4;
-	objprop[OBJ_OMEGA_SHOT].death_sound = SND_EXPL_SMALL;
+	objprop[OBJ_OMEGA_SHOT].death_sound = NXE::Sound::SFX::SND_EXPL_SMALL;
 	objprop[OBJ_OMEGA_SHOT].initial_hp = 1;
 	objprop[OBJ_OMEGA_SHOT].xponkill = 1;
 	
@@ -688,8 +689,8 @@ void AssignExtraSprites(void)
 	
 	objprop[OBJ_CURLY].defaultnxflags |= NXFLAG_FOLLOW_SLOPE;
 	
-	objprop[OBJ_MINICORE].hurt_sound = SND_ENEMY_HURT_COOL;
-	objprop[OBJ_CORE_CONTROLLER].hurt_sound = SND_CORE_HURT;
+	objprop[OBJ_MINICORE].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
+	objprop[OBJ_CORE_CONTROLLER].hurt_sound = NXE::Sound::SFX::SND_CORE_HURT;
 	
 	objprop[OBJ_CURLY_CARRIED].sprite = SPR_CURLY;
 	
@@ -704,8 +705,8 @@ void AssignExtraSprites(void)
 	objprop[OBJ_BOSS_IGOR_DEFEATED].sprite = SPR_IGOR;
 	objprop[OBJ_IGOR_BALCONY].sprite = SPR_IGOR;
 	
-	objprop[OBJ_X_TARGET].hurt_sound = SND_ENEMY_HURT_COOL;
-	objprop[OBJ_X_INTERNALS].hurt_sound = SND_ENEMY_HURT_COOL;
+	objprop[OBJ_X_TARGET].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
+	objprop[OBJ_X_INTERNALS].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
 	objprop[OBJ_X_INTERNALS].shaketime = 9;
 	objprop[OBJ_X_MAINOBJECT].xponkill = 1;
 	
@@ -740,4 +741,3 @@ void AssignExtraSprites(void)
 		if (objprop[i].sprite==SPR_UNIMPLEMENTED_OBJECT) objprop[i].sprite = SPR_NULL;
 	#endif
 }
-

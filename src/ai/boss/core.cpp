@@ -8,7 +8,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 #include "../../common/misc.h"
 
@@ -278,7 +278,7 @@ int i;
 			if (o->timer==300 || o->timer==350 || o->timer==400)
 			{
 				EmFireAngledShot(pieces[CFRONT], OBJ_CORE_BLAST, 0, 3 * CSFI);
-				sound(SND_LIGHTNING_STRIKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LIGHTNING_STRIKE);
 			}
 			
 			if (o->timer > 400)
@@ -338,7 +338,7 @@ int i;
 			o->xinertia = 0;
 			o->yinertia = 0;
 			o->state++;
-			//sound(SND_TELEPORT);
+			//NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 			
 			pieces[CFRONT]->clip_enable = pieces[CBACK]->clip_enable = 1;
 			o->timer = sprites[pieces[CFRONT]->sprite].h;
@@ -375,7 +375,7 @@ int i;
 		}
 		
 		quake(20);
-		sound(SND_CORE_THRUST);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CORE_THRUST);
 	}
 	
 	
@@ -449,7 +449,7 @@ void CoreBoss::StartWaterStream(void)
 		map.wlforcestate = WL_UP;
 	
 	game.quaketime = 100;
-	StartStreamSound(1000);
+	NXE::Sound::SoundManager::getInstance()->startStreamSound(1000);
 }
 
 void CoreBoss::StopWaterStream(void)
@@ -458,7 +458,7 @@ void CoreBoss::StopWaterStream(void)
 	if (map.wlstate == WL_UP)
 		map.wlforcestate = WL_CYCLE;
 	
-	StopLoopSounds();
+	NXE::Sound::SoundManager::getInstance()->stopLoopSfx();
 }
 
 /*
@@ -545,7 +545,7 @@ void ai_minicore(Object *o)
 			{
 				// fire at player at speed (2 * CSFI) with 2 degrees of variance
 				EmFireAngledShot(o, OBJ_MINICORE_SHOT, 2, 2 * CSFI);
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 			}
 		break;
 		
@@ -628,5 +628,3 @@ void ai_core_blast(Object *o)
 	if (++o->timer > 200) o->Delete();
 	ANIMATE(2, 0, 1);
 }
-
-

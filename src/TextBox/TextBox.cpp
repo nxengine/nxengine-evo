@@ -2,7 +2,7 @@
 #include "../nx.h"
 #include "TextBox.h"
 #include "../input.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../graphics/font.h"
 #include "../graphics/graphics.h"
 #include "../graphics/sprites.h"
@@ -349,7 +349,7 @@ void TextBox::AddNextChar(void)
 		
 		// CR's make no sound
 		if (!line_at_once && ch != 13)
-			sound(SND_MSG);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MSG);
 		
 		fCurLineLen++;
 		utf8::append(ch, std::back_inserter(fLines[fCurLine]));
@@ -403,7 +403,3 @@ void TextBox::DrawFrame(int x, int y, int w, int h)
 	
 	draw_sprite_chopped(x, y, SPR_TEXTBOX, 2, w, 8, 210);		// draw bottom
 }
-
-
-
-

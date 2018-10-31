@@ -3,7 +3,7 @@
 #include "../stdai.h"
 #include "../ai.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../game.h"
 #include "../../player.h"
 
@@ -84,7 +84,7 @@ void ai_critter_shooting_purple(Object *o)
 				o->timer = 0;
 				o->frame = 2;
 				
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 				o->yinertia = -0x5ff;
 			}
 		}
@@ -124,12 +124,12 @@ void ai_critter_shooting_purple(Object *o)
 			}
 			
 			if ((o->timer % 4) == 1)
-				sound(SND_CRITTER_FLY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CRITTER_FLY);
 			
 			if ((o->timer % 30) == 6)
 			{
 				EmFireAngledShot(o, OBJ_CRITTER_SHOT, 6, 0x600);
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 			}
 			
 			if (o->blockd)
@@ -146,7 +146,7 @@ void ai_critter_shooting_purple(Object *o)
 				o->timer = 0;
 				o->frame = 0;
 				o->state = 0;
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 			}
 		}
 		break;
@@ -158,6 +158,3 @@ void ai_critter_shooting_purple(Object *o)
 		LIMITY(0x5ff);
 	}
 }
-
-
-

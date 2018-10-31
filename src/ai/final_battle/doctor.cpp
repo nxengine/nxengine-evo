@@ -8,7 +8,7 @@
 #include "../../player.h"
 #include "../../map.h"
 
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
@@ -121,7 +121,7 @@ void ai_boss_doctor(Object *o)
 				shot->dir = o->dir;
 				shot->angle = 0x80;
 				
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 			}
 			
 			if (o->timer == 120)
@@ -164,7 +164,7 @@ void ai_boss_doctor(Object *o)
 				o->timer = 0;
 				o->frame = 7;
 				
-				sound(SND_LIGHTNING_STRIKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LIGHTNING_STRIKE);
 				
 				for(int angle=8;angle<256;angle+=16)
 				{
@@ -520,6 +520,3 @@ void ai_doctor_crowned(Object *o)
 		break;
 	}
 }
-
-
-

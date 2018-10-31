@@ -11,7 +11,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../graphics/graphics.h"
 #include "../../graphics/sprites.h"
@@ -140,7 +140,7 @@ void ai_critter_hopping_red(Object *o)
 			{
 				o->state = 2;
 				o->frame = 2;
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 				
 				o->yinertia = -0x5ff;
 				o->xinertia = (o->dir == RIGHT) ? 0x200 : -0x200;
@@ -152,7 +152,7 @@ void ai_critter_hopping_red(Object *o)
 		{
 			if (o->blockd && o->yinertia > 0)
 			{
-				sound(SND_THUD);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 				o->xinertia = 0;
 				
 				o->state = 0;
@@ -231,7 +231,7 @@ void ai_lava_drip(Object *o)
 		}
 		
 		if (o->onscreen)
-			sound(SND_BUBBLE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLE);
 		
 		o->Delete();
 	}
@@ -342,7 +342,7 @@ void ai_red_demon(Object *o)
 				{
 					o->frame = 4;
 					EmFireAngledShot(o, OBJ_RED_DEMON_SHOT, 0, 0x800);
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				}
 				break;
 				
@@ -389,7 +389,7 @@ void ai_red_demon(Object *o)
 				{
 					o->frame = 6;
 					EmFireAngledShot(o, OBJ_RED_DEMON_SHOT, 0, 0x800);
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				}
 				break;
 				
@@ -443,7 +443,7 @@ void ai_red_demon(Object *o)
 				SmokeClouds(o, 12, 4, 4);
 				o->SpawnXP(19);
 				
-				sound(SND_BIG_CRASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 				
 				// needed to prevent status bars from not disappearing
 				game.bossbar.object = NULL;
@@ -513,8 +513,3 @@ void ai_press_vert(Object *o)
 		break;
 	}
 }
-
-
-
-
-

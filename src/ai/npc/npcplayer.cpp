@@ -4,7 +4,7 @@
 #include "../ai.h"
 #include "../sym/smoke.h"
 #include "../../tsc.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -62,7 +62,7 @@ static const int pwalkanimframes[] = { 0, 1, 0, 2 };
 		
 		case 10:	// he gets flattened
 		{
-			sound(SND_LITTLE_CRASH);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LITTLE_CRASH);
 			SmokeClouds(o, 6, 8, 8);
 			o->state++;
 		}
@@ -273,23 +273,3 @@ void ai_ptelout(Object *o)
 	
 	LIMITY(0x5ff);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

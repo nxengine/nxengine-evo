@@ -5,7 +5,7 @@
 
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
 #include "../../player.h"
@@ -109,7 +109,7 @@ void ai_gaudi(Object *o)
 				o->state = 20;
 				
 				if (!player->inputs_locked)	// no sound during ending cutscene
-					sound(SND_ENEMY_JUMP);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 			}
 		}
 		break;
@@ -125,7 +125,7 @@ void ai_gaudi(Object *o)
 				o->timer = 0;
 				
 				if (!player->inputs_locked)	// no sound during ending cutscene
-					sound(SND_THUD);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 			}
 			
 			// count how long we've been touching the wall
@@ -175,7 +175,7 @@ void ai_gaudi_dying(Object *o)
 			
 			o->yinertia = -0x200;
 			XMOVE(-0x100);
-			sound(SND_ENEMY_HURT_SMALL);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_HURT_SMALL);
 			
 			o->state = 1;
 		}
@@ -263,7 +263,7 @@ void ai_gaudi_flying(Object *o)
 			if (++o->timer > 30)
 			{
 				EmFireAngledShot(o, OBJ_GAUDI_FLYING_SHOT, 6, 0x500);
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				
 				o->state = 1;
 				o->frame &= 1;		// stop flashing purple
@@ -331,7 +331,7 @@ void ai_gaudi_armored(Object *o)
 		{
 			if (++o->timer > 3)
 			{
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 				o->frame = 2;
 				o->timer = 0;
 				
@@ -362,7 +362,7 @@ void ai_gaudi_armored(Object *o)
 				// (required to maintain stability of back-and-forth sequence).
 				o->y /= CSFI; o->y *= CSFI;
 				
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 				o->state = 40;
 				o->frame = 1;
 				o->timer = 0;
@@ -378,7 +378,7 @@ void ai_gaudi_armored(Object *o)
 			if (o->timer == 30 || o->timer == 40)
 			{
 				EmFireAngledShot(o, OBJ_GAUDI_ARMORED_SHOT, 6, 0x600);
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				
 				o->frame = 3;
 				o->CurlyTargetHere();
@@ -390,7 +390,7 @@ void ai_gaudi_armored(Object *o)
 			
 			if (o->blockd && o->yinertia > 0)
 			{
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 				o->state = 40;
 				o->frame = 1;
 				o->timer = 0;
@@ -438,7 +438,7 @@ void ai_gaudi_armored_shot(Object *o)
 			if (bounced)
 			{
 				o->state = 1;
-				sound(SND_TINK);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TINK);
 			}
 		}
 		break;
@@ -458,21 +458,3 @@ void ai_gaudi_armored_shot(Object *o)
 		break;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@
 #include "../../game.h"
 #include "../../ObjManager.h"
 #include "../../map.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -62,7 +62,7 @@ void ai_ballos_skull(Object *o)
 					o->state = 110;
 					o->flags |= FLAG_IGNORE_SOLID;
 					
-					quake(10, SND_BLOCK_DESTROY);
+					quake(10, NXE::Sound::SFX::SND_BLOCK_DESTROY);
 					
 					for(int i=0;i<4;i++)
 					{
@@ -419,7 +419,7 @@ int y;
 					map_ChangeTileWithSmoke(xa, ya+y, 109, 4, false, lowestobject);
 				}
 				
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				quake(20);
 				
 				if (o->dir == LEFT) o->x -= (TILE_W * CSFI);
@@ -479,8 +479,3 @@ int y;
 		break;
 	}
 }
-
-
-
-
-

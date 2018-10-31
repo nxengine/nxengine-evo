@@ -7,7 +7,7 @@
 #include "../../ObjManager.h"
 #include "../../tsc.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../player.h"
 #include "../../map.h"
@@ -222,7 +222,7 @@ void BalfrogBoss::RunJumping()
 	{
 		case STATE_JUMPING:
 		{
-			sound(SND_FUNNY_EXPLODE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 			
 			SetJumpingSprite(true);
 			o->yinertia = -0x400;
@@ -379,7 +379,7 @@ void BalfrogBoss::RunShooting()
 				o->timer = 0;
 				
 				EmFireAngledShot(o, OBJ_BALFROG_SHOT, 16, 0x200);
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				
 				if (++frog.shots_fired > 10 || o->hp < (frog.orighp - 90))
 				{
@@ -466,7 +466,7 @@ void BalfrogBoss::RunDeathAnim()
 			SetJumpingSprite(false);
 			o->frame = FRAME_MOUTH_OPEN;
 			
-			sound(SND_BIG_CRASH);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 			o->xinertia = 0;
 			o->timer = 0;
 			o->state++;
@@ -650,5 +650,3 @@ void BalfrogBoss::SetJumpingSprite(bool enable)
 		}
 	}
 }
-
-

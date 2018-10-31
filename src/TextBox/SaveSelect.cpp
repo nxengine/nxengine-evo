@@ -22,7 +22,7 @@
 #include "../autogen/sprites.h"
 using namespace Graphics;
 using namespace Sprites;
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 
 // moved here as static data so that the compiler will shut up about a circular dependency
 // that happens if you try to include profile.h from SaveSelect.h.
@@ -132,7 +132,7 @@ int start;
 			if (fCurSel == start) break;
 		}
 		
-		sound(SND_MENU_MOVE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 		fPicXOffset = -24;
 	}
 	
@@ -148,8 +148,7 @@ int start;
 			if (fHaveProfile[fCurSel]) break;
 			if (fCurSel == start) break;
 		}
-		
-		sound(SND_MENU_MOVE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 		fPicXOffset = -24;
 	}
 	
@@ -365,14 +364,3 @@ void TB_SaveSelect::Draw(void)
 	if (fHaveProfile[fCurSel])
 		DrawExtendedInfo();
 }
-
-
-
-
-
-
-
-
-
-
-

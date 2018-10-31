@@ -2,6 +2,8 @@
 #ifndef _INVENTORY_H
 #define _INVENTORY_H
 
+#include "sound/SoundManager.h"
+
 #define MAXLISTLEN		100
 
 struct stSelector
@@ -12,7 +14,7 @@ struct stSelector
 	int cursel, lastsel;
 	int sprite;
 	int nitems;
-	int sound;
+	NXE::Sound::SFX sound;
 	int rowlen;
 	
 	int scriptbase;

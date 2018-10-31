@@ -8,7 +8,7 @@
 #include "StageSelect.h"
 #include "../tsc.h"
 #include "../input.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../common/stat.h"
 #include "../game.h"
 #include "../graphics/graphics.h"
@@ -161,8 +161,7 @@ void TB_StageSelect::MoveSelection(int dir)
 		if (--fSelectionIndex < 0)
 			fSelectionIndex = (numslots - 1);
 	}
-	
-	sound(SND_MENU_MOVE);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 	UpdateText();
 }
 
@@ -250,6 +249,3 @@ int TB_StageSelect::CountActiveSlots()
 	
 	return count;
 }
-
-
-

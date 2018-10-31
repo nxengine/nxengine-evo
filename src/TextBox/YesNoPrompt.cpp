@@ -3,7 +3,7 @@
 #include "YesNoPrompt.h"
 #include "../input.h"
 #include "../player.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../graphics/graphics.h"
 #include "../graphics/sprites.h"
 #include "../autogen/sprites.h"
@@ -41,8 +41,7 @@ void TB_YNJPrompt::SetVisible(bool enable)
 		fState = STATE_APPEAR;
 		fCoords.y = YESNO_Y + (YESNO_POP_SPEED * 2);
 		fAnswer = -1;
-		
-		sound(SND_MENU_PROMPT);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_PROMPT);
 	}
 }
 
@@ -96,7 +95,7 @@ void TB_YNJPrompt::Draw()
 		{
 			if (justpushed(LEFTKEY) || justpushed(RIGHTKEY))
 			{
-				sound(SND_MENU_MOVE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 				
 				fState = (fState == STATE_YES_SELECTED) ?
 							STATE_NO_SELECTED : STATE_YES_SELECTED;
@@ -104,7 +103,7 @@ void TB_YNJPrompt::Draw()
 			
 			if (justpushed(JUMPKEY))
 			{
-				sound(SND_MENU_SELECT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 				lastinputs[JUMPKEY] = true;
 				lastpinputs[JUMPKEY] = true;
 				
@@ -133,4 +132,3 @@ int TB_YNJPrompt::GetResult()
 {
 	return fAnswer;
 }
-

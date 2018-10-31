@@ -3,7 +3,7 @@
 #include "whimstar.h"
 #include "../../ObjManager.h"
 #include "../../caret.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 
 #include "../../player.h"
 #include "../../map.h"
@@ -125,7 +125,7 @@ void ai_whimsical_star(Object *o)
 		else
 		{
 			effect(o->x, o->y, EFFECT_STARSOLID);
-			sound(SND_TINK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TINK);
 		}
 		
 		o->Delete();
@@ -140,11 +140,3 @@ void ai_whimsical_star(Object *o)
 		o->state = 1;
 	}
 }
-
-
-
-
-
-
-
-

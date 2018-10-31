@@ -7,7 +7,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -46,7 +46,7 @@ Object *block = o->linkedobject;
 	block->flags |= FLAG_INVULNERABLE;		\
 	ThrowObjectAtPlayer(block, 1, 0x900);		\
 	o->linkedobject = block->linkedobject = NULL;	\
-	sound(SND_EM_FIRE);		\
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE); \
 }
 
 #define HOLDBRICKTIME		30
@@ -95,7 +95,7 @@ Object *block = o->linkedobject;
 			FACEPLAYER;
 			ANIMATE(4, 0, 1);
 			///FIXME:: I think Toroko does not like fireball either?
-			if (o->frame==0 && (sound_is_playing(SND_MISSILE_HIT) /*|| sound_is_playing(0)*/))
+			if (o->frame==0 && (NXE::Sound::SoundManager::getInstance()->isSfxPlaying(NXE::Sound::SFX::SND_MISSILE_HIT) /*|| sound_is_playing(0)*/))
 			{
 				o->state = 20;
 			}
@@ -137,7 +137,7 @@ Object *block = o->linkedobject;
 				o->state = 26;
 				o->timer = 0;
 				o->frame = 2;
-				sound(SND_QUAKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 				game.quaketime = 20;
 			}
 		break;
@@ -181,7 +181,7 @@ Object *block = o->linkedobject;
 				o->state = 102;
 				o->frame = 2;
 				o->timer = 0;
-				sound(SND_QUAKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 				game.quaketime = 20;
 			}
 		break;
@@ -211,7 +211,7 @@ Object *block = o->linkedobject;
 			o->state = 141;
 			o->timer = 0;
 			o->frame = 12;
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 		case 141:
 			o->invisible ^= 1;
 			if (++o->timer > 100)
@@ -264,7 +264,7 @@ int hit;
 	{
 		SmokeClouds(o, 6, 8, 8);
 		effect(o->CenterX(), o->CenterY(), EFFECT_FISHY);
-		sound(SND_BLOCK_DESTROY);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 		
 		o->ChangeType(OBJ_TOROKO_FLOWER);
 		o->frame = 0;
@@ -314,7 +314,7 @@ void ai_toroko_flower(Object *o)
 				o->frame = 2;
 				o->state = 21;
 				o->timer = o->xinertia = 0;
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 			}
 		break;
 		case 21:
@@ -325,7 +325,3 @@ void ai_toroko_flower(Object *o)
 	o->yinertia += 0x40;
 	LIMITY(0x5ff);
 }
-
-
-
-

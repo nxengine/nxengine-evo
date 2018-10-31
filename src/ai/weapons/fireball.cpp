@@ -1,7 +1,7 @@
 #include "fireball.h"
 #include "weapons.h"
 #include "../../ObjManager.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 
 #include "../../game.h"
 #include "../../graphics/sprites.h"
@@ -31,7 +31,7 @@ void ai_fireball(Object *o)
 	// bounce
 	if (o->blockl || o->blockr || o->blockd)
 	{
-		sound(SND_FIREBALL);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 		
 		if (o->blockd) o->yinertia = -0x400;
 		if (o->blockl) o->xinertia = 0x400;
@@ -164,4 +164,3 @@ static const int ccw_trail_frames[] = { 2, 1, 0, 5, 4, 3, 8, 7, 6 };
 		}
 	}
 }
-

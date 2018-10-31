@@ -7,7 +7,7 @@ using namespace Graphics;
 #include "autogen/sprites.h"
 #include "screeneffect.h"
 using namespace Sprites;
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "player.h"
 #include "game.h"
 
@@ -191,7 +191,8 @@ int w;
 		
 		if (player->weapons[w].hasWeapon || w == player->curWeapon)
 		{
-			if (!quiet) sound(SND_SWITCH_WEAPON);
+			if (!quiet)
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SWITCH_WEAPON);
 			weapon_slide(LEFT, w);
 			return;
 		}
@@ -212,7 +213,8 @@ int w;
 		
 		if (player->weapons[w].hasWeapon || w == player->curWeapon)
 		{
-			if (!quiet) sound(SND_SWITCH_WEAPON);
+			if (!quiet)
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SWITCH_WEAPON);
 			weapon_slide(RIGHT, w);
 			return;
 		}
@@ -494,6 +496,3 @@ bool maxed_out;
 		DrawAirLeft((SCREEN_WIDTH/2) - (5*8), ((SCREEN_HEIGHT)/2)-16);
 	}
 }
-
-
-

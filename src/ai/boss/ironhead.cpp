@@ -4,7 +4,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../tsc.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -39,7 +39,7 @@ INITFUNC(AIRoutines)
 	
 	ONTICK(OBJ_MOTION_WALL, ai_motion_wall);
 	
-	objprop[OBJ_IRONH].hurt_sound = SND_ENEMY_HURT_COOL;
+	objprop[OBJ_IRONH].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
 }
 
 /*
@@ -181,7 +181,7 @@ void IronheadBoss::Run(void)
 						Object *shot = SpawnObjectAtActionPoint(o, OBJ_IRONH_SHOT);
 						shot->xinertia = (random(-3, 0) * CSFI);
 						shot->yinertia = (random(-3, 3) * CSFI);
-						sound(SND_EM_FIRE);
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 					}
 					break;
 				}
@@ -191,7 +191,7 @@ void IronheadBoss::Run(void)
 		
 		case IRONH_DEFEATED:
 		{
-			sound(SND_EXPL_SMALL);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPL_SMALL);
 			o->state = IRONH_DEFEATED+1;
 			o->flags &= ~FLAG_SHOOTABLE;
 			o->frame = 8;
@@ -307,7 +307,8 @@ void ai_ironh_shot(Object *o)
 		o->Delete();
 	}
 	
-	if ((o->timer2 & 3)==1) sound(SND_IRONH_SHOT_FLY);
+	if ((o->timer2 & 3)==1)
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_IRONH_SHOT_FLY);
 }
 
 
@@ -460,4 +461,3 @@ void ai_motion_wall(Object *o)		// the walls at the top and bottom of the arena
 	if (o->x < (((9 * TILE_W) - 8) * CSFI))
 		o->x += (SCREEN_WIDTH + 160 + 32) * CSFI;
 }
-

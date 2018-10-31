@@ -3,7 +3,7 @@
 #include "../../ObjManager.h"
 #include "../../p_arms.h"
 #include "../../game.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 
 // code for both Polar Star _AND_ MGun. The way I handle trails on level 2 & 3 mgun shots
 // is a little weird, but it is already written and works ok, so leaving it for now.
@@ -44,7 +44,7 @@ void ai_polar_shot(Object *o)
 			
 			if (!shot_destroy_blocks(o))
 			{
-				sound(SND_SHOT_HIT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
 			}
 		}
 		else if (--o->shot.ttl < 0)
@@ -149,9 +149,3 @@ Object *shot;
 	o->mgun.bultype++;
 	if (++o->timer >= o->mgun.nlayers) o->Delete();
 }
-
-/*
-void c------------------------------() {}
-*/
-
-

@@ -6,7 +6,7 @@
 
 #include "../../game.h"
 #include "../../player.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 
 #define STATE_CHARGE			10
 #define STATE_JUMP				20
@@ -139,7 +139,7 @@ static void walking_animation(Object *o)
 		
 		if (o->frame == 10 || o->frame == 12)
 		{
-			sound(SND_THUD);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 		}
 	}
 }
@@ -153,5 +153,3 @@ void ondeath_balrog_boss_running(Object *o)
 	o->xinertia = 0;
 	o->yinertia = 0;
 }
-
-

@@ -7,7 +7,7 @@
 #include "../input.h"
 #include "../niku.h"
 #include "../graphics/font.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../common/stat.h"
 #include "../TextBox/TextBox.h"
 
@@ -123,7 +123,7 @@ void run_konami_code()
 			title.kc_pos++;
 			if (kc_table[title.kc_pos] == -1)
 			{
-				sound(SND_MENU_SELECT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 				title.kc_pos = 0;
 			}
 		}
@@ -138,20 +138,20 @@ static void handle_input()
 {
 	if (justpushed(DOWNKEY))
 	{
-		sound(SND_MENU_MOVE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 		if (++title.cursel >= 4)
 			title.cursel = 0;
 	}
 	else if (justpushed(UPKEY))
 	{
-		sound(SND_MENU_MOVE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 		if (--title.cursel < 0)
 			title.cursel = 3;
 	}
 	
 	if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
 	{
-		sound(SND_MENU_SELECT);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 		int choice = title.cursel;
 		
 		// handle case where user selects Load but there is no savefile,
@@ -203,7 +203,7 @@ static void selectoption(int index)
 	{
 		case 0:		// New
 		{
-			music(0);
+			NXE::Sound::SoundManager::getInstance()->music(0);
 			
 			game.switchstage.mapno = NEW_GAME_FROM_MENU;
 			game.setmode(GM_NORMAL);
@@ -212,7 +212,7 @@ static void selectoption(int index)
 		
 		case 1:		// Load
 		{
-			music(0);
+			NXE::Sound::SoundManager::getInstance()->music(0);
 			
 			game.switchstage.mapno = LOAD_GAME_FROM_MENU;
 			game.setmode(GM_NORMAL);
@@ -227,7 +227,7 @@ static void selectoption(int index)
 		break;
 		case 3:		// Quit
 		{
-			music(0);
+			NXE::Sound::SoundManager::getInstance()->music(0);
 			game.running = false;
 		}
 		break;
@@ -268,7 +268,7 @@ bool title_init(int param)
 	}
 	
 	title.sprite = titlescreens[t].sprite;
-	music(titlescreens[t].songtrack);
+	NXE::Sound::SoundManager::getInstance()->music(titlescreens[t].songtrack);
 	map_set_backdrop(titlescreens[t].backdrop);
 	map.scrolltype = BK_FASTLEFT_LAYERS;
 	map.motionpos = 0;
@@ -306,7 +306,7 @@ void title_tick()
 		if (!textbox.SaveSelect.IsVisible())
 		{	// selection was made, and settings.last_save_slot is now set appropriately
 			
-			sound(SND_MENU_SELECT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 			
 			textbox.SetVisible(false);
 			title.in_multiload = false;
@@ -322,11 +322,3 @@ void title_tick()
 		}
 	}
 }
-
-
-/*
-void c------------------------------() {}
-*/
-
-
-

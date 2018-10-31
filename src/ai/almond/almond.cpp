@@ -2,7 +2,7 @@
 #include "../stdai.h"
 #include "../ai.h"
 #include "../sym/smoke.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 #include "almond.h"
 
@@ -110,7 +110,7 @@ void ai_shutter(Object *o)
 			if (!o->timer)
 			{
 				game.quaketime = 20;
-				sound(SND_QUAKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 				
 				o->timer = 6;
 			} else o->timer--;
@@ -149,7 +149,7 @@ void ai_almond_robot(Object *o)
 		break;
 		
 		case 10:	// blows up
-			sound(SND_BIG_CRASH);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 			SmokeClouds(o, 8, 3, 3);
 			o->Delete();
 		break;
@@ -159,8 +159,3 @@ void ai_almond_robot(Object *o)
 		break;
 	}
 }
-
-
-
-
-

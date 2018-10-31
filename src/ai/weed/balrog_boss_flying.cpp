@@ -8,7 +8,7 @@
 #include "../../caret.h"
 #include "../../trig.h"
 #include "../../player.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #define STEPS_TO_PLAYER			100
@@ -67,7 +67,7 @@ void ai_balrog_boss_flying(Object *o)
 				o->frame = 1;
 				
 				EmFireAngledShot(o, OBJ_IGOR_SHOT, 16, 0x200);
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				
 				if (++o->timer2 > 3)	// number of shots to fire
 				{
@@ -121,7 +121,7 @@ void ai_balrog_boss_flying(Object *o)
 				o->frame = (o->frame == 13) ? 14 : 13;
 				// wings just went down
 				if (o->frame == 13)
-					sound(SND_EXPLOSION2);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION2);
 			}
 			
 			if (++o->timer >= STEPS_TO_PLAYER)
@@ -151,7 +151,7 @@ void ai_balrog_boss_flying(Object *o)
 				o->xinertia = 0;
 				o->damage = 0;
 				
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				quake(30);
 				
 				SmokeSide(o, 6, DOWN);

@@ -7,7 +7,7 @@
 #include "../../ObjManager.h"
 #include "../../map.h"
 #include "../../caret.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -289,7 +289,7 @@ void ai_bute_sword(Object *o)
 				
 				o->state = 30;
 				o->frame = 2;	// sword back, jumping
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 			}
 			else if (++o->timer > 50)
 			{	// timeout, p got away
@@ -591,7 +591,7 @@ static bool run_bute_defeated(Object *o, int hp)
 			o->y -= (4 * CSFI);
 			o->ChangeType(OBJ_BUTE_DYING);
 			
-			sound(SND_ENEMY_SQUEAK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_SQUEAK);
 			XMOVE(-0x100);
 		}
 		
@@ -660,7 +660,7 @@ void ai_mesa(Object *o)
 					block->yinertia = -0x400;
 					block->state = 1;
 					
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 					block->linkedobject = NULL;
 					o->linkedobject = NULL;
 				}
@@ -708,7 +708,7 @@ void ai_mesa_block(Object *o)
 			
 			if (o->blockd && o->yinertia >= 0)
 			{
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				o->Delete();
 			}
 		}
@@ -736,7 +736,7 @@ void ai_deleet(Object *o)
 		o->frame = 2;
 		
 		o->flags |= FLAG_INVULNERABLE;
-		sound(SND_CHEST_OPEN);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CHEST_OPEN);
 	}
 	
 	switch(o->state)
@@ -976,7 +976,7 @@ void ai_puppy_ghost(Object *o)
 		{
 			o->state = 11;
 			o->timer = 2;
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 		}
 		case 11:
 		{
@@ -993,27 +993,3 @@ void ai_puppy_ghost(Object *o)
 		effect(random(o->Left(), o->Right()), o->Bottom(), EFFECT_GHOST_SPARKLE);
 	}
 }
-
-/*
-void c------------------------------() {}
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

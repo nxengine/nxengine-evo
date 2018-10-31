@@ -9,7 +9,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -41,7 +41,7 @@ void ai_dragon_zombie(Object *o)
 {
 	if (o->hp < 950 && o->state < 50)
 	{
-		sound(SND_BIG_CRASH);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 		SmokeClouds(o, 8, 4, 4);
 		o->SpawnPowerups();
 		
@@ -102,7 +102,7 @@ void ai_dragon_zombie(Object *o)
 				Object *fire = SpawnObjectAtActionPoint(o, OBJ_DRAGON_ZOMBIE_SHOT);
 				ThrowObject(fire, o->xmark, o->ymark, 6, 0x600);
 				
-				sound(SND_SNAKE_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SNAKE_FIRE);
 			}
 			
 			if (o->timer > 60)
@@ -157,7 +157,7 @@ void ai_falling_spike_small(Object *o)
 			if (o->blockd)
 			{
 				if (!player->inputs_locked)	// no sound in ending cutscene
-					sound(SND_BLOCK_DESTROY);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				
 				SmokeClouds(o, 4, 2, 2);
 				effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
@@ -236,7 +236,7 @@ void ai_falling_spike_large(Object *o)
 				o->state = 3;	// fall complete
 				o->timer = 0;
 				
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				SmokeClouds(o, 4, 2, 2);
 				
 				effect(o->CenterX(), o->y + (sprites[o->sprite].block_d[0].y * CSFI),
@@ -329,7 +329,7 @@ void ai_counter_bomb(Object *o)
 					o->state = 4;
 					
 					// make kaboom
-					sound(SND_EXPLOSION1);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 					quake(20);
 					SmokeXY(o->CenterX(), o->CenterY(), 100, 128, 100);
 					
@@ -359,7 +359,7 @@ void ai_counter_bomb_number(Object *o)
 	{
 		case 0:
 		{
-			sound(SND_COMPUTER_BEEP);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_COMPUTER_BEEP);
 			o->state = 1;
 		}
 		case 1:
@@ -381,26 +381,3 @@ void ai_counter_bomb_number(Object *o)
 		break;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

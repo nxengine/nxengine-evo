@@ -8,7 +8,7 @@
 #include "../../slope.h"
 #include "../../trig.h"
 #include "../npc/npcregu.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
 #include "../../player.h"
@@ -422,7 +422,7 @@ void ai_gunfish(Object *o)
 				shot->xinertia = (o->dir == LEFT) ? -0x400 : 0x400;
 				shot->yinertia = -0x400;
 				
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 			}
 			
 			if (o->timer > 60)
@@ -466,7 +466,7 @@ void ai_gunfish_shot(Object *o)
 			c->yinertia = random(-0x400, 0);
 		}
 		
-		sound(SND_BUBBLE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLE);
 		o->Delete();
 	}
 	
@@ -529,7 +529,7 @@ void ai_droll(Object *o)
 					o->frame = 7;
 					
 					EmFireAngledShot(o, OBJ_DROLL_SHOT, 0, 0x600);
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				}
 				else if (o->yinertia > 0x200)
 				{	// after-fire frame
@@ -571,7 +571,7 @@ void ai_droll_shot(Object *o)
 	ANIMATE(0, 0, 2);
 	
 	if ((++o->timer % 5) == 0)
-		sound(SND_DROLL_SHOT_FLY);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DROLL_SHOT_FLY);
 	
 	bool hit_something = false;
 	if (o->xinertia <= 0 && o->blockl) hit_something = true;
@@ -947,7 +947,7 @@ void ai_proximity_press_hoz(Object *o)
 			
 			if (++o->timer == 8)
 			{
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				SmokeSide(o, 4, o->dir);
 			}
 			
@@ -1056,7 +1056,7 @@ void ai_rocket(Object *o)
 			o->frame = 1;
 			
 			SmokeClouds(o, 10, 16, 8);
-			sound(SND_BLOCK_DESTROY);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 		}
 		case 13:
 		{
@@ -1068,7 +1068,7 @@ void ai_rocket(Object *o)
 			
 			// noise
 			if ((o->timer % 4) == 1)
-				sound(SND_FIREBALL);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 			
 			// smacked into ceiling. note that I didn't check that we're actually
 			// riding the rocket when I test player->blocku--the original doesn't
@@ -1085,7 +1085,7 @@ void ai_rocket(Object *o)
 				}
 				
 				SmokeClouds(o, 6, 16, 8);
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				
 				o->yinertia = 0;
 				o->state = 14;
@@ -1105,7 +1105,7 @@ void ai_rocket(Object *o)
 				
 				// sound
 				if ((o->timer % 16) == 1)
-					sound(SND_FIREBALL);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 			}
 			else if (o->blockd)
 			{
@@ -1147,7 +1147,3 @@ void ai_numahachi(Object *o)
 	o->yinertia += 0x40;
 	LIMITY(0x5ff);
 }
-
-
-
-

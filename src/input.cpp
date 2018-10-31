@@ -4,7 +4,7 @@
 #include "input.h"
 #include "console.h"
 #include "game.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "common/stat.h"
 #include "settings.h"
 
@@ -272,7 +272,7 @@ int ino;//, key;
 							extern bool freezeframe;
 							if (!freezeframe)
 							{
-								sound(SND_SWITCH_WEAPON);
+								NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SWITCH_WEAPON);
 								console.SetVisible(true);
 							}
 #endif

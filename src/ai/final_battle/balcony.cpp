@@ -6,7 +6,7 @@
 #include "../../game.h"
 #include "../../ObjManager.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../player.h"
 #include "../../map.h"
@@ -156,7 +156,7 @@ void ai_igor_balcony(Object *o)
 				o->state = 21;
 				o->yinertia = -0x5ff;
 				XMOVE(0x200);
-				sound(SND_IGOR_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_IGOR_JUMP);
 			}
 		}
 		break;
@@ -204,7 +204,7 @@ void ai_igor_balcony(Object *o)
 			{
 				if ((o->timer % 4) == 1)
 				{
-					sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 					Object *shot = SpawnObjectAtActionPoint(o, OBJ_IGOR_SHOT);
 					
 					int angle = (o->dir == LEFT) ? 136 : 248;
@@ -379,10 +379,3 @@ void ai_falling_block(Object *o)
 	}
 	
 }
-
-
-
-
-
-
-

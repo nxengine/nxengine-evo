@@ -8,7 +8,7 @@
 #include "tsc.h"
 #include "input.h"
 #include "game.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "common/misc.h"
 #include "ai/weapons/whimstar.h"
 #include "p_arms.h"
@@ -206,7 +206,7 @@ void HandlePlayer(void)
 		(player->riding->nxflags & NXFLAG_THUD_ON_RIDING))
 	{
 	    rumble(0.3,100);
-		sound(SND_THUD);
+	    NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 	}
 }
 
@@ -236,7 +236,7 @@ void HandlePlayer_am(void)
 		if (player->yinertia > 0x400 && !player->hide)
 		{
 		    rumble(0.3,100);
-			sound(SND_THUD);
+		    NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 		}
 		
 		player->yinertia = 0;
@@ -252,7 +252,7 @@ void HandlePlayer_am(void)
 		if (player->yinertia < -0x200 && !player->hide && \
 			player->blocku == BLOCKED_MAP)
 		{
-			sound(SND_BONK_HEAD);
+		    NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BONK_HEAD);
 			rumble(0.4,200);
 			effect(player->CenterX(), player->y, EFFECT_BONKPLUS);
 		}
@@ -387,7 +387,7 @@ int tile;
 					o->yinertia = random(-0x200, 0x80) - (player->yinertia >> 1);
 				}
 				
-				sound(SND_SPLASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SPLASH);
 			}
 		}
 		
@@ -574,7 +574,7 @@ int walk_accel;
 		player->walkanimtimer = 0;
 		// tap sound when stopped walking
 		if (player->lastwalking && player->blockd)
-			sound(SND_PLAYER_WALK);
+		    NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PLAYER_WALK);
 	}
 	
 	// deceleration
@@ -692,7 +692,7 @@ void PDoJumping(void)
 			{
 				player->jumping = true;
 				player->yinertia -= player->jumpvelocity;
-				sound(SND_PLAYER_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PLAYER_JUMP);
 			}
 		}
 		else if ((player->equipmask & (EQUIP_BOOSTER08 | EQUIP_BOOSTER20)))
@@ -1024,7 +1024,7 @@ void PBoosterSmokePuff()
 	Caret *smoke = effect(x, y, EFFECT_SMOKETRAIL_SLOW);
 	smoke->MoveAtDir(smokedir, 0x200);
 	
-	sound(SND_BOOSTER);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BOOSTER);
 }
 
 /*
@@ -1235,14 +1235,14 @@ void hurtplayer(int damage)
 	
 	if (player->hp <= 0)
 	{
-		sound(SND_PLAYER_DIE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PLAYER_DIE);
 		SmokeClouds(player, 64, 16, 16);
 		rumble(1.0,1000);
 		killplayer(SCRIPT_DIED);
 	}
 	else
 	{
-		sound(SND_PLAYER_HURT);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PLAYER_HURT);
 		rumble(0.5,500);
 		// hop
 		if (player->movementmode != MOVEMODE_ZEROG)
@@ -1266,7 +1266,8 @@ void killplayer(int script)
 	player->xinertia = 0;
 	player->yinertia = 0;
 	player->riding = NULL;			// why exactly did I say this? i dunno, but not touching for safety
-	StopLoopSounds();				// important for Almond
+	NXE::Sound::SoundManager::getInstance()->stopLoopSfx();
+//	StopLoopSounds();				// important for Almond
 	game.tsc->StartScript(script);
 }
 
@@ -1550,7 +1551,8 @@ void PSelectFrame(void)
 		{
 			player->walkanimtimer = 0;
 			if (++player->walkanimframe >= 4) player->walkanimframe = 0;
-			if (pwalkanimframes[player->walkanimframe]==0) sound(SND_PLAYER_WALK);
+			if (pwalkanimframes[player->walkanimframe]==0)
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PLAYER_WALK);
 		}
 		
 		player->frame = pwalkanimframes[player->walkanimframe];
@@ -1701,5 +1703,3 @@ int scr_x, scr_y;
 	if (player->equipmask & EQUIP_WHIMSTAR)
 		draw_whimstars(&player->whimstar);
 }
-
-

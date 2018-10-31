@@ -12,7 +12,7 @@ using namespace Graphics;
 #include "statusbar.h"
 #include "game.h"
 #include "input.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "tsc.h"
 
 #define ARMS_X			10
@@ -63,7 +63,7 @@ int curwpn = 0;
 	inv.armssel.spacing_x = 40;
 	inv.armssel.spacing_y = 0;
 	inv.armssel.sprite = SPR_SELECTOR_ARMS;
-	inv.armssel.sound = SND_SWITCH_WEAPON;
+	inv.armssel.sound = NXE::Sound::SFX::SND_SWITCH_WEAPON;
 	inv.armssel.scriptbase = 1000;
 	inv.armssel.rowlen = inv.armssel.nitems;
 	
@@ -76,7 +76,7 @@ int curwpn = 0;
 	inv.itemsel.spacing_x = sprites[SPR_ITEMIMAGE].w;
 	inv.itemsel.spacing_y = sprites[SPR_ITEMIMAGE].h + 2;
 	inv.itemsel.sprite = SPR_SELECTOR_ITEMS;
-	inv.itemsel.sound = SND_MENU_MOVE;
+	inv.itemsel.sound = NXE::Sound::SFX::SND_MENU_MOVE;
 	inv.itemsel.rowlen = 6;
 	inv.itemsel.scriptbase = 5000;
 	
@@ -214,7 +214,7 @@ char toggle = 0;
 	
 	if (justpushed(LEFTKEY))
 	{
-		sound(selector->sound);
+		NXE::Sound::SoundManager::getInstance()->playSfx(selector->sound);
 		
 		// at beginning of row?
 		if (curcol == 0)
@@ -229,7 +229,7 @@ char toggle = 0;
 	
 	if (justpushed(RIGHTKEY))
 	{
-		sound(selector->sound);
+		NXE::Sound::SoundManager::getInstance()->playSfx(selector->sound);
 		
 		// at end of row?
 		if (curcol==selector->rowlen-1 || selector->cursel+1 >= selector->nitems)
@@ -251,7 +251,7 @@ char toggle = 0;
 			if (selector->cursel >= selector->nitems)
 				selector->cursel = (selector->nitems - 1);
 				
-			sound(selector->sound);
+			NXE::Sound::SoundManager::getInstance()->playSfx(selector->sound);
 		}
 	}
 	
@@ -262,7 +262,7 @@ char toggle = 0;
 		else
 		{
 			selector->cursel -= selector->rowlen;
-			sound(selector->sound);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 		}
 	}
 	
@@ -280,7 +280,7 @@ char toggle = 0;
 		
 		inv.curselector = selector;
 		
-		sound(selector->sound);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 		selector->lastsel = -9999;
 	}
 	

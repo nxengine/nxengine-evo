@@ -8,7 +8,7 @@
 #include "../../caret.h"
 #include "../../player.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 #include "../../common/misc.h"
 
@@ -83,7 +83,7 @@ void BallosBoss::OnMapEntry(void)
 	main->damage = 0;
 	main->hp = 800;
 	
-	objprop[main->type].hurt_sound = SND_ENEMY_HURT_COOL;
+	objprop[main->type].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
 	main->invisible = true;
 	
 	// create body (the big rock)
@@ -234,7 +234,7 @@ void BallosBoss::RunComeDown(Object *o)
 				o->timer = 0;
 				o->state++;
 				
-				megaquake(30, SND_MISSILE_HIT);
+				megaquake(30, NXE::Sound::SFX::SND_MISSILE_HIT);
 				
 				// player smush damage
 				// (he could only get that low if he had been pushed into the floor)
@@ -320,7 +320,7 @@ void BallosBoss::RunForm1(Object *o)
 				if (player->blockd)
 					player->yinertia = -0x200;
 				
-				megaquake(30, SND_MISSILE_HIT);
+				megaquake(30, NXE::Sound::SFX::SND_MISSILE_HIT);
 				
 				CreateObject(o->x - (12 * CSFI), o->y + (52 * CSFI), OBJ_BALLOS_BONE_SPAWNER)->dir = LEFT;
 				CreateObject(o->x + (12 * CSFI), o->y + (52 * CSFI), OBJ_BALLOS_BONE_SPAWNER)->dir = RIGHT;
@@ -355,7 +355,7 @@ void BallosBoss::RunForm1(Object *o)
 				o->yinertia = 0;
 				o->state++;
 				
-				megaquake(30, SND_MISSILE_HIT);
+				megaquake(30, NXE::Sound::SFX::SND_MISSILE_HIT);
 				SmokeXY(o->x, o->y + 0x5000, 16, 40, 0);
 				
 				if (player->blockd)
@@ -568,7 +568,7 @@ void BallosBoss::RunForm3(Object *o)
 			o->timer++;
 			
 			if ((o->timer % 3) == 0)
-				sound(SND_QUAKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 			
 			if ((o->timer % 30) == 1)
 			{
@@ -589,7 +589,7 @@ void BallosBoss::RunForm3(Object *o)
 			SetRotatorStates(30);			// slow spin CW, alternate open/closed
 			
 			SmokeClouds(o, 256, 60, 60);	// ka boom!
-			sound(SND_EXPLOSION1);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 			megaquake(30);
 			
 			body->frame |= 2;		// go all bloody
@@ -631,7 +631,7 @@ void BallosBoss::RunForm3(Object *o)
 				{
 					SmokeXY(o->x, o->y - (52 * CSFI), 4);
 					CreateObject(o->x, o->y - (52 * CSFI), OBJ_BUTE_SWORD_RED)->dir = UP;
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				}
 				break;
 				
@@ -700,7 +700,7 @@ void BallosBoss::RunDefeated(Object *o)
 			o->timer++;
 			
 			if ((o->timer % 12) == 0)
-				sound(SND_MISSILE_HIT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 			
 			if (o->timer > 150)
 			{
@@ -708,7 +708,7 @@ void BallosBoss::RunDefeated(Object *o)
 				o->state = 1002;
 				
 				starflash.Start(o->x, o->y);
-				sound(SND_EXPLOSION1);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 			}
 		}
 		break;
@@ -903,7 +903,7 @@ static void spawn_impact_puffs(Object *o)
 	{
 		make_puff(o->x + hitdata[bd].xoffs1, o->y + hitdata[bd].yoffs1, bd);
 		make_puff(o->x + hitdata[bd].xoffs2, o->y + hitdata[bd].yoffs2, bd);
-		sound(SND_QUAKE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 		
 		if (bd == RIGHT)		// on ceiling
 		{
@@ -966,7 +966,7 @@ void ai_ballos_rotator(Object *o)
 					o->frame = 2;	// close eye
 					
 					SmokeClouds(o, 32, 16, 16);
-					sound(SND_LITTLE_CRASH);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LITTLE_CRASH);
 					
 					rotators_left--;
 				}
@@ -1025,7 +1025,7 @@ void ai_ballos_rotator(Object *o)
 					
 					o->flags &= ~(FLAG_SHOOTABLE | FLAG_IGNORE_SOLID);
 					SmokeClouds(o, 32, 16, 16);
-					sound(SND_LITTLE_CRASH);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LITTLE_CRASH);
 					
 					o->frame = 2;
 					o->state = 40;
@@ -1054,7 +1054,7 @@ void ai_ballos_rotator(Object *o)
 					o->xinertia = (o->CenterX() < player->CenterX()) ? 0x100 : -0x100;
 				
 				o->yinertia = -0x800;
-				sound(SND_QUAKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 			}
 		}
 		break;
@@ -1077,7 +1077,7 @@ void ai_ballos_rotator(Object *o)
 			if (o->timer2 <= 0)
 			{
 				SmokeClouds(o, 32, 16, 16);
-				sound(SND_LITTLE_CRASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LITTLE_CRASH);
 				effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
 				o->Delete();
 			}
@@ -1259,13 +1259,3 @@ bool BallosBoss::passed_ycoord(bool ltgt, int ycoord, bool reset)
 	
 	return result;
 }
-
-/*
-void c------------------------------() {}
-*/
-
-
-
-
-
-

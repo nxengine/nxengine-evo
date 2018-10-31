@@ -5,7 +5,7 @@
 #include "../../ObjManager.h"
 #include "../../trig.h"
 #include "../ai.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -63,7 +63,7 @@ void ai_npc_igor(Object *o)
 			{
 				o->timer = 0;
 				o->state = 6;
-				sound(SND_EXPL_SMALL);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPL_SMALL);
 			}
 		break;
 		case 6:
@@ -208,7 +208,7 @@ void ai_boss_igor(Object *o)
 		{
 			if (++o->timer > 12)
 			{
-				sound(SND_EXPL_SMALL);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPL_SMALL);
 				
 				// sprite appears identical, but has a wider bounding box.
 				o->sprite = SPR_IGOR_PUNCHING;
@@ -238,7 +238,7 @@ void ai_boss_igor(Object *o)
 		{
 			if (o->blockd)
 			{
-				sound(SND_QUAKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 				SmokeSide(o, 4, DOWN);
 				
 				o->state = STATE_LANDED;
@@ -280,7 +280,7 @@ void ai_boss_igor(Object *o)
 			{
 				if ((o->timer % 6) == 1)
 				{
-					sound(SND_BLOCK_DESTROY);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 					Object *shot = SpawnObjectAtActionPoint(o, OBJ_IGOR_SHOT);
 					
 					int angle = (o->dir == LEFT) ? 136 : 248;
@@ -315,7 +315,7 @@ void ai_boss_igor_defeated(Object *o)
 			o->frame = IGOR_DEFEAT_FRAME;
 			
 			FACEPLAYER;
-			sound(SND_BIG_CRASH);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 			
 			SmokeBoomUp(o);
 			

@@ -8,7 +8,7 @@
 #include "../../game.h"
 #include "../../caret.h"
 #include "../../player.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #define STATE_CHARGE			10
@@ -128,7 +128,7 @@ void ai_balrog_boss_missiles(Object *o)
 			{
 				if ((o->timer % 6) == 1)
 				{
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 					
 					Object *shot = SpawnObjectAtActionPoint(o, OBJ_BALROG_MISSILE);
 					shot->dir = o->dir;
@@ -184,7 +184,7 @@ static void walking_animation(Object *o)
 		
 		if (o->frame == 12)
 		{
-			sound(SND_THUD);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 		}
 		else if (o->frame > 12)
 		{
@@ -205,7 +205,7 @@ void ai_balrog_missile(Object *o)
 	{
 		SmokeClouds(o, 3, 0, 0);
 		effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
-		sound(SND_MISSILE_HIT);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 		
 		o->Delete();
 		return;
@@ -251,25 +251,3 @@ void ai_balrog_missile(Object *o)
 	if (o->xinertia > 0x400)
 		o->xinertia = 0x600;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -3,7 +3,7 @@
 #include "ai.h"
 #include "../player.h"
 #include "../game.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 
 
 // some routines used by multiple Balrog boss fights or Balrog NPC's
@@ -77,7 +77,7 @@ bool balrog_toss_player_away(Object *o)
 				
 				player->y -= 0x1000;
 				player->yinertia = -0x200;
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				
 				o->dir = player->dir;
 				
@@ -98,8 +98,3 @@ bool balrog_toss_player_away(Object *o)
 
 	return false;
 }
-
-/*
-void c------------------------------() {}
-*/
-

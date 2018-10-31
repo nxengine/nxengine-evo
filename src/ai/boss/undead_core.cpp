@@ -8,7 +8,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -105,7 +105,7 @@ Object *o;
 	game.stageboss.object = o;
 	
 	o->sprite = SPR_NULL;//SPR_MARKER;
-	objprop[o->type].hurt_sound = SND_CORE_HURT;
+	objprop[o->type].hurt_sound = NXE::Sound::SFX::SND_CORE_HURT;
 	
 	o->hp = 700;
 	o->x = (592 * CSFI);
@@ -203,7 +203,7 @@ void UDCoreBoss::Run(void)
 				if (o->timer > 200)
 				{
 					o->timer2++;
-					sound(SND_CORE_THRUST);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CORE_THRUST);
 					
 					// select attack mode
 					if (o->hp < 200)
@@ -287,7 +287,7 @@ void UDCoreBoss::Run(void)
 				int x = rotator[i]->x - (16 * CSFI);
 				int y = rotator[i]->y;
 				
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				CreateSpinner(x, y);
 			}
 			
@@ -308,7 +308,7 @@ void UDCoreBoss::Run(void)
 			SpawnFaceSmoke();
 			SetRotatorStates(RT_Spin_Fast_Closed);
 			
-			sound(SND_FUNNY_EXPLODE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 			
 			// spawn a whole bunch of crazy spinners from the face
 			CreateSpinner(face->x - (16 * CSFI), face->y);
@@ -496,11 +496,11 @@ bool UDCoreBoss::RunDefeated()
 		// defeated (exploding)
 		case CR_Exploding:
 		{
-			quake(100, 0);
+			quake(100, NXE::Sound::SFX::SND_NULL);
 			o->timer++;
 			
 			if ((o->timer % 8) == 0)
-				sound(SND_MISSILE_HIT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 			
 			int x = o->x + random(-72 * CSFI, 72 * CSFI);
 			int y = o->y + random(-64 * CSFI, 64 * CSFI);
@@ -509,7 +509,7 @@ bool UDCoreBoss::RunDefeated()
 			
 			if (o->timer > 100)
 			{
-				sound(SND_EXPLOSION1);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 				starflash.Start(o->x, o->y);
 				
 				o->state++;
@@ -574,17 +574,17 @@ void UDCoreBoss::run_face(Object *o)
 			if (o->timer > 250)
 			{
 				if ((o->timer % 16) == 1)
-					sound(SND_QUAKE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 				
 				if ((o->timer % 16) == 7)
 				{
 					CreateObject(o->x, o->y, OBJ_UD_BLAST);
-					sound(SND_LIGHTNING_STRIKE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LIGHTNING_STRIKE);
 				}
 			}
 			
 			if (o->timer == 200)
-				sound(SND_CORE_CHARGE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CORE_CHARGE);
 			
 			if (o->timer >= 200 && (o->timer & 1))
 				o->frame = 3;	// mouth lit
@@ -890,7 +890,7 @@ void ai_ud_pellet(Object *o)
 		
 		case 2:		// hit ground/ceiling
 		{
-			sound(SND_MISSILE_HIT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 			o->xinertia = (o->x > player->x) ? -0x400 : 0x400;
 			o->yinertia = 0;
 			
@@ -1014,9 +1014,3 @@ void ai_ud_blast(Object *o)
 	if (o->x < -0x4000)
 		o->Delete();
 }
-
-
-
-
-
-

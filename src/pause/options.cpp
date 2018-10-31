@@ -1,4 +1,3 @@
-
 #include "../nx.h"
 #include "options.h"
 #include "dialog.h"
@@ -8,7 +7,7 @@ using namespace Options;
 #include "../settings.h"
 #include "../input.h"
 #include "../game.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../common/misc.h"
 #include "../ResourceManager.h"
 
@@ -76,7 +75,7 @@ bool options_init(int retmode)
 	opt.dlg->ShowFull();
 	
 	inputs[F3KEY] = 0;
-	sound(SND_MENU_MOVE);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 	return 0;
 }
 
@@ -230,7 +229,7 @@ void _res_change(ODItem *item, int dir)
 int numres = Graphics::GetResCount();
 int newres;
 
-	sound(SND_DOOR);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
 	
 	newres = (settings->resolution + dir);
 	if (newres >= numres) newres = 1;
@@ -253,7 +252,7 @@ int newres;
 	else
 	{
 		new Message("Resolution change failed");
-		sound(SND_GUN_CLICK);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
 	}
 }
 
@@ -307,7 +306,7 @@ void _fullscreen_get(ODItem *item)
 void _fullscreen_change(ODItem *item, int dir)
 {
 	settings->fullscreen ^= 1;
-	sound(SND_MENU_SELECT);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 	Graphics::SetFullscreen(settings->fullscreen);
 }
 
@@ -315,7 +314,7 @@ void _fullscreen_change(ODItem *item, int dir)
 void _debug_change(ODItem *item, int dir)
 {
 	settings->enable_debug_keys ^= 1;
-	sound(SND_MENU_SELECT);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _debug_get(ODItem *item)
@@ -328,7 +327,7 @@ void _debug_get(ODItem *item)
 void _save_change(ODItem *item, int dir)
 {
 	settings->multisave ^= 1;
-	sound(SND_MENU_MOVE);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 }
 
 void _save_get(ODItem *item)
@@ -341,7 +340,7 @@ void _save_get(ODItem *item)
 void _sound_change(ODItem *item, int dir)
 {
 	settings->sound_enabled ^= 1;
-	sound(SND_MENU_SELECT);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _sound_get(ODItem *item)
@@ -367,8 +366,8 @@ void _music_change(ODItem *item, int dir)
 	int result = settings->music_enabled + dir;
 	if (result < 0) result = 2;
 	if (result > 2) result = 0;
-	music_set_enabled(result);
-	sound(SND_MENU_SELECT);
+	NXE::Sound::SoundManager::getInstance()->enableMusic(result);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _music_get(ODItem *item)
@@ -382,8 +381,8 @@ void _tracks_change(ODItem *item, int dir)
 	int result = settings->new_music + dir;
 	if (result < 0) result = 2;
 	if (result > 2) result = 0;
-	music_set_newmusic(result);
-	sound(SND_MENU_SELECT);
+    NXE::Sound::SoundManager::getInstance()->setNewmusic(result);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _tracks_get(ODItem *item)
@@ -400,7 +399,7 @@ void c------------------------------() {}
 void _rumble_change(ODItem *item, int dir)
 {
 	settings->rumble ^= 1;
-	sound(SND_MENU_SELECT);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _rumble_get(ODItem *item)
@@ -415,7 +414,7 @@ static void EnterControlsMenu(ODItem *item, int dir)
 Dialog *dlg = opt.dlg;
 
 	dlg->Clear();
-	sound(SND_MENU_MOVE);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 	dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get, -1, OD_CHOICE);
 	dlg->AddItem("Left", _edit_control, _upd_control, LEFTKEY);
 	dlg->AddItem("Right", _edit_control, _upd_control, RIGHTKEY);
@@ -488,7 +487,7 @@ Message *msg;
 	msg->rawKeyReturn = &opt.new_sdl_key;
 	msg->on_dismiss = _finish_control_edit;
 	
-	sound(SND_DOOR);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
 }
 
 static void _finish_control_edit(Message *msg)
@@ -505,21 +504,21 @@ static void _finish_control_edit(Message *msg)
 		if (i != inputno && action.key!=-1 && action.key == new_sdl_key.key)
 		{
 			new Message("Key already in use by:", input_get_name(i));
-			sound(SND_GUN_CLICK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
 			return;
 		}
 
 		if (i != inputno && action.jbut!=-1 && action.jbut == new_sdl_key.jbut)
 		{
 			new Message("Key already in use by:", input_get_name(i));
-			sound(SND_GUN_CLICK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
 			return;
 		}
 
 		if (i != inputno && action.jhat!=-1 && action.jhat == new_sdl_key.jhat && action.jhat_value & new_sdl_key.jhat_value)
 		{
 			new Message("Key already in use by:", input_get_name(i));
-			sound(SND_GUN_CLICK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
 			return;
 		}
 
@@ -528,7 +527,7 @@ static void _finish_control_edit(Message *msg)
 		    if ( ((action.jaxis_value > 0) && (new_sdl_key.jaxis_value > 0)) || ((action.jaxis_value < 0) && (new_sdl_key.jaxis_value < 0)))
 		    {
 			    new Message("Key already in use by:", input_get_name(i));
-			    sound(SND_GUN_CLICK);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
 			    return;
 			}
 		}
@@ -537,20 +536,6 @@ static void _finish_control_edit(Message *msg)
 	}
 	
 	input_remap(inputno, new_sdl_key);
-	sound(SND_MENU_SELECT);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 	opt.dlg->Refresh();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

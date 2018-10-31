@@ -2,7 +2,7 @@
 #include "../stdai.h"
 #include "../ai.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../weed/weed.h"
 
 #include "../../game.h"
@@ -360,7 +360,7 @@ void ai_giant_beetle(Object *o)
 				{
 					if (pdistlx(0x14000))
 					{
-						sound(SND_EM_FIRE);
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 						EmFireAngledShot(o, OBJ_GIANT_BEETLE_SHOT, 2, 0x400);
 					}
 					
@@ -440,22 +440,3 @@ void ai_forcefield(Object *o)
 	
 	ai_animate1(o);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

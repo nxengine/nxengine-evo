@@ -1,7 +1,7 @@
 
 #include "nx.h"
 #include "screeneffect.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "graphics/graphics.h"
 #include "graphics/sprites.h"
 using namespace Graphics;
@@ -54,7 +54,7 @@ void c------------------------------() {}
 
 void SE_Starflash::Start(int x, int y)
 {
-	sound(SND_EXPLOSION1);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 	enabled = true;
 	state = 0;
 	centerx = x;

@@ -7,7 +7,7 @@
 #include "../../caret.h"
 #include "../../player.h"
 #include "../../tsc.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -153,7 +153,8 @@ void OmegaBoss::Run(void)
 			game.quaketime = 2;
 			
 			omg.timer++;
-			if ((omg.timer & 3) == 0) sound(SND_QUAKE);
+			if ((omg.timer & 3) == 0)
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 			
 			if (omg.timer >= omg.movetime)
 			{
@@ -176,7 +177,7 @@ void OmegaBoss::Run(void)
 		{
 			o->state++;
 			omg.animtimer = 0;
-			sound(SND_JAWS);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_JAWS);
 			o->sprite = SPR_OMG_OPENED;			// select "open" bounding box
 		}
 		case OMG_JAWS_OPEN+1:
@@ -206,7 +207,7 @@ void OmegaBoss::Run(void)
 				{
 					Object *shot;
 					
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 					
 					shot = SpawnObjectAtActionPoint(o, OBJ_OMEGA_SHOT);
 					shot->xinertia = random(-omg.shotxspd, omg.shotxspd);
@@ -226,11 +227,11 @@ void OmegaBoss::Run(void)
 					shot->damage = 4;
 				}
 			}
-			else if (omg.firecounter >= omg.endfirestate || sound_is_playing(SND_MISSILE_HIT))
+			else if (omg.firecounter >= omg.endfirestate || NXE::Sound::SoundManager::getInstance()->isSfxPlaying(NXE::Sound::SFX::SND_MISSILE_HIT))
 			{	// snap jaws shut
 				omg.animtimer = 0;
 				o->state = OMG_JAWS_CLOSE;
-				sound(SND_JAWS);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_JAWS);
 			}
 		}
 		break;
@@ -245,8 +246,8 @@ void OmegaBoss::Run(void)
 				o->frame--;
 				if (o->frame == 0)
 				{
-					sound_stop(SND_JAWS);
-					sound(SND_BLOCK_DESTROY);
+				    NXE::Sound::SoundManager::getInstance()->stopSfx(NXE::Sound::SFX::SND_JAWS);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 					
 					o->sprite = SPR_OMG_CLOSED;		// select "closed" bounding box
 					
@@ -262,7 +263,7 @@ void OmegaBoss::Run(void)
 					}
 					else
 					{	// form 2: jump
-						sound(SND_FUNNY_EXPLODE);
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 						if (o->x < player->x) o->xinertia = 0xC0;
 										 else o->xinertia = -0xC0;
 						o->state = OMG_JUMP;
@@ -382,7 +383,8 @@ void OmegaBoss::Run(void)
 			
 			game.quaketime = 2;
 			
-			if ((omg.timer % 12)==0) sound(SND_ENEMY_HURT_BIG);
+			if ((omg.timer % 12)==0)
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_HURT_BIG);
 			
 			if (++omg.timer > 100)
 			{
@@ -481,4 +483,3 @@ void ai_omega_shot(Object *o)
 		o->Delete();
 	}
 }
-

@@ -10,7 +10,7 @@
 #include "../../caret.h"
 #include "../../tsc.h"
 #include "../../debug.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 #include "../../common/misc.h"
 
@@ -252,7 +252,7 @@ void ai_xp(Object *o)
 			if (o->blockl)
 			{
 				if (o->onscreen || pdistly((SCREEN_HEIGHT - (SCREEN_HEIGHT / 3)) * CSFI))
-					sound(SND_XP_BOUNCE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_XP_BOUNCE);
 				
 				o->xinertia = 0x100;
 				o->yinertia *= 2;
@@ -279,7 +279,7 @@ void ai_xp(Object *o)
 			}
 			
 			if (o->onscreen || pdistlx((SCREEN_WIDTH - (SCREEN_WIDTH / 3)) * CSFI))
-				sound(SND_XP_BOUNCE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_XP_BOUNCE);
 			
 			o->yinertia = -0x280;
 			o->xinertia *= 2;
@@ -389,8 +389,14 @@ void ai_powerup(Object *o)
 	{
 		switch(o->type)
 		{
-			case OBJ_HEART:  sound(SND_HEALTH_REFILL); AddHealth(2); break;
-			case OBJ_HEART3: sound(SND_HEALTH_REFILL); AddHealth(6); break;
+			case OBJ_HEART:
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_HEALTH_REFILL);
+			  AddHealth(2);
+			  break;
+			case OBJ_HEART3:
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_HEALTH_REFILL);
+			  AddHealth(6);
+			  break;
 			
 			case OBJ_MISSILE:
 			case OBJ_MISSILE3:
@@ -399,7 +405,7 @@ void ai_powerup(Object *o)
 				int wpn = (player->weapons[WPN_SUPER_MISSILE].hasWeapon) ? \
 						WPN_SUPER_MISSILE : WPN_MISSILE;
 				
-				sound(SND_GET_MISSILE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GET_MISSILE);
 				AddAmmo(wpn, amt);
 			}
 			break;
@@ -449,7 +455,7 @@ void ai_hidden_powerup(Object *o)
 	if (o->hp < 990)
 	{
 		SmokeBoomUp(o);
-		sound(SND_EXPL_SMALL);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPL_SMALL);
 		
 		o->ChangeType((o->dir == LEFT) ? OBJ_HEART : OBJ_MISSILE);
 		if (o->type == OBJ_HEART)
@@ -469,7 +475,7 @@ void ai_xp_capsule(Object *o)
 	{
 		o->SpawnXP(o->id1);
 		SmokeClouds(o, 8, 2, 2);
-		sound(SND_FUNNY_EXPLODE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 		
 		o->Delete();
 	}
@@ -608,7 +614,7 @@ void ai_lightning(Object *o)
 			{
 				o->state = 2;
 				o->invisible = false;
-				sound(SND_LIGHTNING_STRIKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LIGHTNING_STRIKE);
 			}
 		}
 		break;
@@ -690,7 +696,7 @@ void ai_largedoor(Object *o)
 			o->timer++;
 			if ((o->timer & 7)==0)
 			{
-				sound(SND_QUAKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 			}
 			
 			px = (o->timer >> 3);
@@ -768,7 +774,7 @@ void ai_terminal(Object *o)
 			o->frame = 0;
 			if (pdistlx(8 * CSFI) && pdistly2(16 * CSFI, 8 * CSFI))
 			{
-				sound(SND_COMPUTER_BEEP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_COMPUTER_BEEP);
 				o->frame = 1;
 				o->state = 10;
 			}
@@ -1168,7 +1174,7 @@ void ai_quake(Object *o)
 		 game.curmap != STAGE_SEAL_CHAMBER))
 	{
 		//game.quaketime = 10;
-		quake(10,0);
+		quake(10, NXE::Sound::SFX::SND_NULL);
 	}
 }
 
@@ -1232,7 +1238,3 @@ void onspawn_spike_small(Object *o)
 		o->Delete();
 	}
 }
-
-
-
-

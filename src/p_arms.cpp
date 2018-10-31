@@ -8,7 +8,7 @@
 #include "statusbar.h"
 #include "input.h"
 #include "ai/weapons/whimstar.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "common/misc.h"
 
 #include "autogen/sprites.h"
@@ -27,67 +27,67 @@ struct BulletInfo
 	int damage;				// damage dealt per tick of contact with enemy
 	int speed;				// speed of shot
 	uint8_t manualsetup;	// 1= no auto setup at all, 2= don't use separate vert sprite
-	uint8_t sound;			// specify firing sound
+	NXE::Sound::SFX sound;			// specify firing sound
 };
 
 BulletInfo bullet_table[] =
 {
 //		sprite			  lvl  frm st ttl dmg spd  manset      sound
-	{SPR_SHOT_POLARSTAR, 	0,  0, 1, 8,   1, 0x1000, 0, SND_POLAR_STAR_L1_2},		// polarstar l1
-	{SPR_SHOT_POLARSTAR, 	1,  1, 1, 12,  2, 0x1000, 0, SND_POLAR_STAR_L1_2},		// polarstar l2
-	{SPR_SHOT_POLARSTAR_L3, 	2,  0, 1, 16,  4, 0x1000, 0, SND_POLAR_STAR_L3},		// polarstar l3
+	{SPR_SHOT_POLARSTAR, 	0,  0, 1, 8,   1, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},		// polarstar l1
+	{SPR_SHOT_POLARSTAR, 	1,  1, 1, 12,  2, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},		// polarstar l2
+	{SPR_SHOT_POLARSTAR_L3, 	2,  0, 1, 16,  4, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L3},		// polarstar l3
 	
-	{SPR_SHOT_MGUN_L1, 		0,  0, 1, 20,  2, 0x1000, 0, SND_POLAR_STAR_L1_2},		// mgun l1
+	{SPR_SHOT_MGUN_L1, 		0,  0, 1, 20,  2, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},		// mgun l1
 	
-	{SPR_SHOT_MGUN_L2,		1,  0, 1, 20,  4, 0x1000, 0, SND_POLAR_STAR_L1_2},		// mgun l2, white piece
-	{SPR_SHOT_MGUN_L2,		1,  1, 0, 21,  0, 0x1000, 0, 0},						// mgun l2, blue piece
-	{SPR_SHOT_MGUN_L2,		1,  2, 0, 22,  0, 0x1000, 0, 0},						// mgun l2, dark piece
+	{SPR_SHOT_MGUN_L2,		1,  0, 1, 20,  4, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},		// mgun l2, white piece
+	{SPR_SHOT_MGUN_L2,		1,  1, 0, 21,  0, 0x1000, 0, NXE::Sound::SFX::SND_NULL},						// mgun l2, blue piece
+	{SPR_SHOT_MGUN_L2,		1,  2, 0, 22,  0, 0x1000, 0, NXE::Sound::SFX::SND_NULL},						// mgun l2, dark piece
 	
-	{SPR_SHOT_MGUN_L3LEAD,	2,  0, 1, 20,  6, 0x1000, 0, SND_POLAR_STAR_L3},		// mgun l3
-	{SPR_SHOT_MGUN_L3TAIL,	2,  0, 0, 21,  0, 0x1000, 0, 0},						// the very long...
-	{SPR_SHOT_MGUN_L3TAIL,	2,  1, 0, 22,  0, 0x1000, 0, 0},						// ...4 piece trail...
-	{SPR_SHOT_MGUN_L3TAIL,	2,  2, 0, 23,  0, 0x1000, 0, 0},						// ...of the level 3...
-	{SPR_SHOT_MGUN_L3TAIL,	2,  3, 0, 24,  0, 0x1000, 0, 0},						// ...machine gun
+	{SPR_SHOT_MGUN_L3LEAD,	2,  0, 1, 20,  6, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L3},		// mgun l3
+	{SPR_SHOT_MGUN_L3TAIL,	2,  0, 0, 21,  0, 0x1000, 0, NXE::Sound::SFX::SND_NULL},						// the very long...
+	{SPR_SHOT_MGUN_L3TAIL,	2,  1, 0, 22,  0, 0x1000, 0, NXE::Sound::SFX::SND_NULL},						// ...4 piece trail...
+	{SPR_SHOT_MGUN_L3TAIL,	2,  2, 0, 23,  0, 0x1000, 0, NXE::Sound::SFX::SND_NULL},						// ...of the level 3...
+	{SPR_SHOT_MGUN_L3TAIL,	2,  3, 0, 24,  0, 0x1000, 0, NXE::Sound::SFX::SND_NULL},						// ...machine gun
 	
 	// damage for missiles is set inside missile.cpp
-	{SPR_SHOT_MISSILE1,		0,  0, 1, 50,  0, 0x0000, 0, SND_POLAR_STAR_L1_2},	// missile level 1
-	{SPR_SHOT_MISSILE2,		1,  0, 1, 65,  0, 0x0000, 0, SND_POLAR_STAR_L1_2},	// missile level 2
-	{SPR_SHOT_MISSILE3,		2,  0, 1, 90,  0, 0x0000, 0, SND_POLAR_STAR_L1_2},	// missile level 3
+	{SPR_SHOT_MISSILE1,		0,  0, 1, 50,  0, 0x0000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},	// missile level 1
+	{SPR_SHOT_MISSILE2,		1,  0, 1, 65,  0, 0x0000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},	// missile level 2
+	{SPR_SHOT_MISSILE3,		2,  0, 1, 90,  0, 0x0000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},	// missile level 3
 	
-	{SPR_SHOT_SUPERMISSILE13,0,  0, 1, 30,  0, 0x0000, 0, SND_POLAR_STAR_L1_2},	// supermissile l1
-	{SPR_SHOT_SUPERMISSILE2,	1,  0, 1, 40,  0, 0x0000, 0, SND_POLAR_STAR_L1_2},	// supermissile l2
-	{SPR_SHOT_SUPERMISSILE13,2,  0, 1, 40,  0, 0x0000, 0, SND_POLAR_STAR_L1_2},	// supermissile l3
+	{SPR_SHOT_SUPERMISSILE13,0,  0, 1, 30,  0, 0x0000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},	// supermissile l1
+	{SPR_SHOT_SUPERMISSILE2,	1,  0, 1, 40,  0, 0x0000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},	// supermissile l2
+	{SPR_SHOT_SUPERMISSILE13,2,  0, 1, 40,  0, 0x0000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L1_2},	// supermissile l3
 	
 	// damages are doubled because fireball can hit twice before dissipating
-	{SPR_SHOT_FIREBALL1,		0,  0, 1, 100, 2, 0x0000, 1, SND_FIREBALL},		// fireball l1
-	{SPR_SHOT_FIREBALL23,	1,  0, 1, 100, 3, 0x0000, 1, SND_FIREBALL},		// fireball l2
-	{SPR_SHOT_FIREBALL23,	2,  0, 1, 100, 3, 0x0000, 1, SND_FIREBALL},		// fireball l3
+	{SPR_SHOT_FIREBALL1,		0,  0, 1, 100, 2, 0x0000, 1, NXE::Sound::SFX::SND_FIREBALL},		// fireball l1
+	{SPR_SHOT_FIREBALL23,	1,  0, 1, 100, 3, 0x0000, 1, NXE::Sound::SFX::SND_FIREBALL},		// fireball l2
+	{SPR_SHOT_FIREBALL23,	2,  0, 1, 100, 3, 0x0000, 1, NXE::Sound::SFX::SND_FIREBALL},		// fireball l3
 	
-	{SPR_SHOT_BLADE_L1,		0,  0, 0, 29, 15, 0x800,  0, SND_FIREBALL},		// Blade L1
-	{SPR_SHOT_BLADE_L2,		1,  0, 0, 17, 6,  0x800,  0, SND_FIREBALL},		// Blade L2
-	{SPR_SHOT_BLADE_L3,		2,  0, 0, 30, 1,  0x800,  0, SND_FIREBALL},		// Blade L3
+	{SPR_SHOT_BLADE_L1,		0,  0, 0, 29, 15, 0x800,  0, NXE::Sound::SFX::SND_FIREBALL},		// Blade L1
+	{SPR_SHOT_BLADE_L2,		1,  0, 0, 17, 6,  0x800,  0, NXE::Sound::SFX::SND_FIREBALL},		// Blade L2
+	{SPR_SHOT_BLADE_L3,		2,  0, 0, 30, 1,  0x800,  0, NXE::Sound::SFX::SND_FIREBALL},		// Blade L3
 	
-	{SPR_SHOT_SNAKE_L1,		0,  0, 1, 20, 4,  0x600,  2, SND_SNAKE_FIRE},	// Snake L1
-	{SPR_SHOT_FIREBALL23,	1,	0, 1, 23, 6,  0x200,  2, SND_SNAKE_FIRE},	// Snake L2
-	{SPR_SHOT_FIREBALL23,	2,	0, 1, 30, 8,  0x200,  2, SND_SNAKE_FIRE},	// Snake L3
+	{SPR_SHOT_SNAKE_L1,		0,  0, 1, 20, 4,  0x600,  2, NXE::Sound::SFX::SND_SNAKE_FIRE},	// Snake L1
+	{SPR_SHOT_FIREBALL23,	1,	0, 1, 23, 6,  0x200,  2, NXE::Sound::SFX::SND_SNAKE_FIRE},	// Snake L2
+	{SPR_SHOT_FIREBALL23,	2,	0, 1, 30, 8,  0x200,  2, NXE::Sound::SFX::SND_SNAKE_FIRE},	// Snake L3
 	
-	{SPR_SHOT_NEMESIS_L1,	0,  0, 2, 20, 12, 0x1000, 0, SND_NEMESIS_FIRE},
-	{SPR_SHOT_NEMESIS_L2,	1,  0, 2, 20, 6,  0x1000, 0, SND_POLAR_STAR_L3},
-	{SPR_SHOT_NEMESIS_L3,	2,  0, 2, 20, 1,  0x555,  0, 0},		// 1/3 speed
+	{SPR_SHOT_NEMESIS_L1,	0,  0, 2, 20, 12, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
+	{SPR_SHOT_NEMESIS_L2,	1,  0, 2, 20, 6,  0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L3},
+	{SPR_SHOT_NEMESIS_L3,	2,  0, 2, 20, 1,  0x555,  0, NXE::Sound::SFX::SND_NULL},		// 1/3 speed
 	
-	{SPR_SHOT_BUBBLER_L1,	0,	0, 1, 40, 1,  0x600,  2, SND_BUBBLER_FIRE},
-	{SPR_SHOT_BUBBLER_L2,	1,	0, 1, 60, 2,  0x600,  2, SND_BUBBLER_FIRE},
-	{SPR_SHOT_BUBBLER_L3,	2,	0, 1, 100,2,  0x600,  2, SND_BUBBLER_FIRE},
+	{SPR_SHOT_BUBBLER_L1,	0,	0, 1, 40, 1,  0x600,  2, NXE::Sound::SFX::SND_BUBBLER_FIRE},
+	{SPR_SHOT_BUBBLER_L2,	1,	0, 1, 60, 2,  0x600,  2, NXE::Sound::SFX::SND_BUBBLER_FIRE},
+	{SPR_SHOT_BUBBLER_L3,	2,	0, 1, 100,2,  0x600,  2, NXE::Sound::SFX::SND_BUBBLER_FIRE},
 	
 	// Spur also messes with it's damage at runtime; see spur.cpp for details.
-	{SPR_SHOT_POLARSTAR,		0,	0, 1, 30, 4,  0x1000, 0, SND_SPUR_FIRE_1},
-	{SPR_SHOT_POLARSTAR,		1,	1, 1, 30, 8,  0x1000, 0, SND_SPUR_FIRE_2},
-	{SPR_SHOT_POLARSTAR_L3,	2,  0, 0, 30, 12, 0x1000, 0, SND_SPUR_FIRE_3},
+	{SPR_SHOT_POLARSTAR,		0,	0, 1, 30, 4,  0x1000, 0, NXE::Sound::SFX::SND_SPUR_FIRE_1},
+	{SPR_SHOT_POLARSTAR,		1,	1, 1, 30, 8,  0x1000, 0, NXE::Sound::SFX::SND_SPUR_FIRE_2},
+	{SPR_SHOT_POLARSTAR_L3,	2,  0, 0, 30, 12, 0x1000, 0, NXE::Sound::SFX::SND_SPUR_FIRE_3},
 	
 	// Curly's Nemesis from Hell (OBJ_CURLY_CARRIED_SHOOTING)
-	{SPR_SHOT_NEMESIS_L1,	0,  0, 1, 20, 12, 0x1000, 0, SND_NEMESIS_FIRE},
+	{SPR_SHOT_NEMESIS_L1,	0,  0, 1, 20, 12, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
 	
-	{0, 0, 0, 0, 0, 0, 0, 0, 0}
+	{0, 0, 0, 0, 0, 0, 0, 0,  NXE::Sound::SFX::SND_NULL}
 };
 
 
@@ -231,14 +231,14 @@ Weapon *spur = &player->weapons[WPN_SPUR];
 			
 			if (IsWeaponMaxed())
 			{
-				sound(SND_SPUR_MAXED);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SPUR_MAXED);
 			}
 			else
 			{
 				spur->chargetimer++;
 				if (spur->chargetimer & 2)
 				{
-					sound(SND_SPUR_CHARGE_1 + spur->level);
+					NXE::Sound::SoundManager::getInstance()->playSfx((NXE::Sound::SFX)((int)NXE::Sound::SFX::SND_SPUR_CHARGE_1 + spur->level));
 				}
 			}
 		}
@@ -577,7 +577,7 @@ int level = curweapon->level;
 	// check if we have enough ammo
 	if (curweapon->maxammo > 0 && curweapon->ammo <= 0)
 	{
-		sound(SND_GUN_CLICK);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
 		if (empty_timer <= 0)
 		{
 			effect(player->CenterX(), player->CenterY(), EFFECT_EMPTY);
@@ -635,7 +635,7 @@ int level = curweapon->level;
 		
 		default:
 			console.Print("FireWeapon: cannot fire unimplemented weapon %d", player->curWeapon);
-			sound(SND_BONK_HEAD);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BONK_HEAD);
 		break;
 	}
 }
@@ -710,8 +710,8 @@ void SetupBullet(Object *shot, int x, int y, int btype, int dir)
 	if (game.debug.infinite_damage)
 		shot->shot.damage = 255;
 	
-	if (info->sound)
-		sound(info->sound);
+	if (info->sound != NXE::Sound::SFX::SND_NULL)
+		NXE::Sound::SoundManager::getInstance()->playSfx(info->sound);
 	
 	if (info->makes_star == 1)
 		effect(x, y, EFFECT_STARPOOF);
@@ -800,4 +800,3 @@ void PMgunFly(void)
 		if (player->yinertia < -0x400) player->yinertia = -0x400;
 	}
 }
-

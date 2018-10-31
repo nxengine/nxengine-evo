@@ -9,7 +9,7 @@
 #include "../../map.h"
 #include "../../player.h"
 
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../graphics/sprites.h"
 #include "../../autogen/sprites.h"
@@ -59,7 +59,7 @@ void ai_misery_frenzied(Object *o)
 			o->savedhp = o->hp;
 			o->nxflags |= NXFLAG_SLOW_X_WHEN_HURT;
 			
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 			o->timer = 1;
 		}
 		case 1:		// transforming
@@ -165,7 +165,7 @@ void ai_misery_frenzied(Object *o)
 			o->xinertia = 0;
 			o->yinertia = 0;
 			FACEPLAYER;
-			sound(SND_CHARGE_GUN);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CHARGE_GUN);
 			
 			// if you are below the 2nd little platform on the left,
 			// she spawns critters, else bats.
@@ -197,7 +197,7 @@ void ai_misery_frenzied(Object *o)
 				if (y < MAPY(2)) y = MAPY(2);
 				if (y > MAPY(map.ysize - 3)) y = MAPY(map.ysize - 3);
 				
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				CreateObject(x, y, o->timer3)->invisible = true;
 			}
 			
@@ -231,7 +231,7 @@ void ai_misery_frenzied(Object *o)
 			o->xinertia = 0;
 			o->yinertia = 0;
 			FACEPLAYER;
-			sound(SND_CHARGE_GUN);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CHARGE_GUN);
 		}
 		case 51:
 		{
@@ -266,7 +266,7 @@ static const int ang_table_left[]  = { 0xD8, 0xEC, 0x14, 0x28 };
 static const int ang_table_right[] = { 0x58, 0x6C, 0x94, 0xA8 };
 
 	Object *shot = CreateObject(o->x, o->y, OBJ_MISERY_MISSILE);
-	sound(SND_EM_FIRE);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 	
 	if (o->dir == LEFT)
 	{
@@ -328,7 +328,7 @@ void ai_misery_critter(Object *o)
 				else
 					o->state = 10;
 				
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 				
 				o->yinertia = -0x600;
 				XMOVE(0x200);
@@ -456,7 +456,7 @@ void ai_sue_frenzied(Object *o)
 			o->savedhp = o->hp;
 			o->nxflags |= NXFLAG_SLOW_X_WHEN_HURT;
 			
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 			o->timer = 1;
 		}
 		case 1:		// transforming
@@ -583,7 +583,7 @@ static void sue_somersault(Object *o)
 			}
 			
 			if ((o->timer % 5) == 1)
-				sound(SND_CRITTER_FLY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CRITTER_FLY);
 		}
 		break;
 		
@@ -785,6 +785,3 @@ static void sidekick_run_defeated(Object *o, int health)
 		case SIDEKICK_CORE_DEFEATED_2: break;
 	}
 }
-
-
-

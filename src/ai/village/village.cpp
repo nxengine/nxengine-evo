@@ -3,7 +3,7 @@
 #include "../stdai.h"
 #include "../ai.h"
 #include "../weed/weed.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -256,7 +256,7 @@ void ai_gravekeeper(Object *o)
 				o->state = 3;
 				o->timer = 0;
 				
-				sound(SND_FIREBALL);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 				o->flags &= ~FLAG_INVULNERABLE;
 			}
 			
@@ -274,7 +274,7 @@ void ai_gravekeeper(Object *o)
 			{
 				o->state = 4;
 				o->timer = 0;
-				sound(SND_SLASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SLASH);
 			}
 		}
 		break;
@@ -325,16 +325,3 @@ void ai_cage(Object *o)
 		o->state = 1;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,7 +7,7 @@
 #include "../../ObjManager.h"
 #include "../../map.h"
 #include "../../caret.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 
@@ -39,7 +39,7 @@ void HeavyPress::OnMapEntry(void)
 	game.stageboss.object = o;
 	shield_left = shield_right = NULL;
 	
-	objprop[o->type].hurt_sound = SND_ENEMY_HURT_COOL;
+	objprop[o->type].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
 	objprop[o->type].shaketime = 8;
 	
 	o->flags = (FLAG_SHOW_FLOATTEXT | FLAG_SCRIPTONDEATH | \
@@ -131,7 +131,7 @@ void HeavyPress::Run()
 			if (o->hp < (uncover_y * 70) && uncover_y > 1)
 			{
 				uncover_y--;
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				
 				for(int x=uncover_left;x<=uncover_right;x++)
 					map_ChangeTileWithSmoke(x, uncover_y, 0, 4);
@@ -173,7 +173,7 @@ void HeavyPress::run_defeated()
 			o->timer++;
 			if ((o->timer % 16) == 0)
 			{
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				SmokePuff(o->x + random(-60 * CSFI, 60 * CSFI),
 						  o->y + random(-40 * CSFI, 40 * CSFI));
 			}
@@ -209,7 +209,7 @@ void HeavyPress::run_defeated()
 				for(int x=uncover_left-1;x<=uncover_right+1;x++)
 				{
 					map_ChangeTileWithSmoke(x, y, 0, 1, true);
-					sound(SND_BLOCK_DESTROY);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 				}
 				
 				if (o->y > HELL_BOTTOM)
@@ -271,7 +271,7 @@ void HeavyPress::run_passageway()
 			if (o->y >= PWAY_BOTTOM)
 			{
 				o->y = PWAY_BOTTOM;
-				sound(SND_MISSILE_HIT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 				
 				o->frame = 0;
 				for(int i=0;i<5;i++)
@@ -296,7 +296,7 @@ void ai_hp_lightning(Object *o)
 	{
 		case 0:
 		{
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 			o->sprite = SPR_HP_CHARGE;
 			o->state = 1;
 		}
@@ -311,7 +311,7 @@ void ai_hp_lightning(Object *o)
 				o->frame = 3;
 				o->damage = 10;
 				o->sprite = SPR_HP_LIGHTNING;
-				sound(SND_LIGHTNING_STRIKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LIGHTNING_STRIKE);
 				
 				// smoke on floor where it struck
 				SmokeXY(o->CenterX(), o->Bottom() - (7 * CSFI), 3, 0, 0);
@@ -329,22 +329,3 @@ void ai_hp_lightning(Object *o)
 	}
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

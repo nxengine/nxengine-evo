@@ -9,7 +9,7 @@ using namespace Graphics;
 
 using namespace Sprites;
 #include "../TextBox/TextBox.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../input.h"
 
 #include "../autogen/sprites.h"
@@ -230,7 +230,7 @@ void Dialog::RunInput()
 		if (!fRepeatTimer)
 		{
 			fRepeatTimer = (lastinputs[UPKEY] || lastinputs[DOWNKEY]) ? REPEAT_RATE : REPEAT_WAIT;
-			sound(SND_MENU_MOVE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 			
 			int nitems = fItems.size();
 			for(;;)
@@ -264,7 +264,7 @@ void Dialog::RunInput()
 			{
 				if (dir == 0)
 				{
-					sound(SND_MENU_MOVE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 					if (ondismiss) (*ondismiss)();
 					return;
 				}
@@ -288,7 +288,7 @@ void Dialog::RunInput()
 	
 	if (justpushed(ESCKEY) || justpushed(FIREKEY))
 	{
-		sound(SND_MENU_MOVE);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
 		if (ondismiss) (*ondismiss)();
 		return;
 //		Dismiss();
@@ -337,6 +337,3 @@ std::vector<ODItem*>& Dialog::Items()
 {
     return fItems;
 }
-
-
-

@@ -9,7 +9,7 @@
 #include "../sym/smoke.h"
 #include "../../ObjManager.h"
 #include "../../map.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 #include "../../common/misc.h"
 
@@ -209,7 +209,7 @@ void ai_toroko(Object *o)
 			o->state = 11;
 			o->frame = 5;
 			o->yinertia = -(2 * CSFI);
-			sound(SND_ENEMY_SQUEAK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_SQUEAK);
 			XMOVE(0x100);
 		break;
 		case 11:	// falling down
@@ -257,7 +257,7 @@ void ai_toroko_teleport_in(Object *o)
 			{
 				o->state = 4;
 				o->frame = 6;		// tripping frame
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 			}
 		break;
 		
@@ -299,7 +299,7 @@ void ai_npc_sue(Object *o)
 			o->state = 7;
 			o->frame = 7;
 			o->timer = 0;
-			sound(SND_ENEMY_SQUEAK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_SQUEAK);
 		case 7:
 			if (++o->timer > 10)
 				o->state = 0;
@@ -311,7 +311,7 @@ void ai_npc_sue(Object *o)
 			o->state = 9;
 			o->frame = 7;
 			o->timer = 0;
-			sound(SND_ENEMY_SQUEAK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_SQUEAK);
 			
 			o->yinertia = -0x200;
 			XMOVE(-0x400);
@@ -485,7 +485,7 @@ void ai_sue_teleport_in(Object *o)
 				o->frame = 13;	// crumpled
 				o->state = 3;
 				o->timer = 0;
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 			}
 		}
 		break;
@@ -581,7 +581,7 @@ Object *sword = o->linkedobject;
 				o->timer = 0;
 				o->yinertia = -0x400;
 				o->xinertia = 0x200;
-				sound(SND_LITTLE_CRASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LITTLE_CRASH);
 				SmokeClouds(o, 4, 8, 8);
 				o->nxflags |= NXFLAG_FOLLOW_SLOPE;
 			}
@@ -670,7 +670,7 @@ void ai_professor_booster(Object *o)
 		case 30:	// teleporting in at Shelter
 		{
 			o->frame = 0;
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 			
 			// move into middle of teleporter
 			o->x -= (TILE_W * CSFI);
@@ -736,7 +736,7 @@ void ai_booster_falling(Object *o)
 		
 		case 20:		// dying (flickering away)
 		{
-			sound(SND_TELEPORT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 			o->state = 21;
 			o->timer = 0;
 		}
@@ -901,9 +901,3 @@ void npc_generic_walk(Object *o, int basestate)
 	ANIMATE(3, 2, 5);
 	XMOVE(0x200);
 }
-
-
-
-
-
-

@@ -7,7 +7,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -261,7 +261,7 @@ int pbottom, crocbottom;
 					o->xinertia = 0;
 					o->state = 2;
 					o->timer = 0;
-					sound(SND_JAWS);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_JAWS);
 					o->frame = 0;
 				}
 			}
@@ -353,7 +353,8 @@ void ai_sunstone(Object *o)
 			
 			if (o->dir==LEFT) o->x -= 0x80; else o->x += 0x80;
 			
-			if ((o->timer & 7) == 0) sound(SND_QUAKE);
+			if ((o->timer & 7) == 0) 
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
 			o->timer++;
 				
 			game.quaketime = 20;
@@ -594,7 +595,7 @@ void ai_skullhead_carried(Object *o)
 			if ((o->timer==30 || o->timer==35) && o->onscreen)
 			{
 				EmFireAngledShot(o, OBJ_SKELETON_SHOT, 2, 0x300);
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 			}
 			else if (o->timer > 50)
 			{
@@ -752,7 +753,7 @@ Object *foot;
 			if (o->timer > 50)
 			{
 				SmokeClouds(o, 8, 8, 8);
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				o->Delete();
 			}
 		}
@@ -917,7 +918,8 @@ uint8_t pnear;
 					o->timer2++;
 					
 					EmFireAngledShot(o, OBJ_SKELETON_SHOT, 0, 0x300);
-					if (o->onscreen) sound(SND_EM_FIRE);
+					if (o->onscreen)
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				}
 				
 				if (o->blockd)
@@ -1139,4 +1141,3 @@ void ai_beetle_horizwait(Object *o)
 		}
 	}
 }
-

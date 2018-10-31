@@ -4,8 +4,7 @@
 #include "../game.h"
 #include "../tsc.h"
 #include "../graphics/font.h"
-#include "../sound/sound.h"
-#include "../sound/org.h"
+#include "../sound/SoundManager.h"
 #include "../common/stat.h"
 #include "../common/misc.h"
 
@@ -147,8 +146,8 @@ CredCommand cmd;
 		case CC_LABEL:
 		break;
 		
-		case CC_MUSIC:		 music(cmd.parm); break;
-		case CC_FADE_MUSIC:	 music_fade(); break;
+		case CC_MUSIC:		 NXE::Sound::SoundManager::getInstance()->music(cmd.parm); break;
+		case CC_FADE_MUSIC:	 NXE::Sound::SoundManager::getInstance()->fadeMusic(); break;
 		
 		case CC_END:		 roll_running = false; break;
 		

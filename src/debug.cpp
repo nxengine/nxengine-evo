@@ -13,7 +13,7 @@
 #include "graphics/sprites.h"
 using namespace Graphics;
 using namespace Sprites;
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "common/stat.h"
 #include "common/misc.h"
 #include "playerstats.h"
@@ -44,20 +44,20 @@ void DrawDebug(void)
 		if (justpushed(DEBUG_GOD_KEY))
 		{
 			game.debug.god ^= 1;
-			sound(SND_MENU_SELECT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 		}
 		
 		if (justpushed(DEBUG_SAVE_KEY))
 		{
 			game_save(settings->last_save_slot);
-			sound(SND_SWITCH_WEAPON);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SWITCH_WEAPON);
 			console.Print("Game saved.");
 		}
 		
 		if (justpushed(F6KEY))
 		{
 			game.debug.DrawBoundingBoxes ^= 1;
-			sound(SND_COMPUTER_BEEP);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_COMPUTER_BEEP);
 		}
 		
 		if (justpushed(F9KEY))
@@ -418,4 +418,3 @@ int x1, y1, x2, y2;
 	y2 = y1 + (TILE_H * CSFI);
 	AddDebugMark(x1, y1, x2, y2, DM_BOX, r, g, b);
 }
-

@@ -7,7 +7,7 @@
 #include "../../game.h"
 #include "../../ObjManager.h"
 #include "../../player.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../graphics/graphics.h"
 #include "../../graphics/tileset.h"
@@ -180,7 +180,7 @@ static void run_red_dash(Object *o)
 				o->timer = 0;
 				o->state++;
 				
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				XMOVE(0x5ff);
 				
 				o->damage = DAMAGE_RED_DASH;
@@ -262,7 +262,7 @@ static void run_mega_bats(Object *o)
 					bat->xinertia = -bat->xinertia;
 				}
 				
-				sound(SND_EM_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 			}
 			
 			if (o->timer > 90)
@@ -486,7 +486,7 @@ static void run_defeat(Object *o)
 			
 			// sound
 			if ((o->timer % 6) == 3)
-				sound(SND_FUNNY_EXPLODE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 			
 			// move energy spawn point
 			if (++o->timer2 >= 8)
@@ -708,28 +708,3 @@ void ai_doctor_bat(Object *o)
 		o->yinertia = -o->yinertia;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

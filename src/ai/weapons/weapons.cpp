@@ -2,7 +2,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../sym/smoke.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 
 #include "../../game.h"
@@ -33,7 +33,7 @@ uint8_t run_shot(Object *o, bool destroys_blocks)
 		if (destroys_blocks)
 		{
 			if (!shot_destroy_blocks(o))
-				sound(SND_SHOT_HIT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
 		}
 		
 		o->Delete();
@@ -98,7 +98,7 @@ Object *enemy;
 		if (enemy->flags & FLAG_INVULNERABLE)
 		{
 			shot_spawn_effect(o, EFFECT_STARSOLID);
-			sound(SND_TINK);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TINK);
 		}
 		else
 		{
@@ -129,7 +129,7 @@ int count = 0;
 					if (enemy->flags & FLAG_INVULNERABLE)
 					{
 						shot_spawn_effect(o, EFFECT_STARSOLID);
-						sound(SND_TINK);
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TINK);
 					}
 					else
 					{
@@ -240,7 +240,7 @@ SIFPointList *plist;
 		SmokeCloudsSlow(((x * TILE_W) + (TILE_W / 2)) * CSFI, \
 						((y * TILE_H) + (TILE_H / 2)) * CSFI, 4);
 		
-		sound(SND_BLOCK_DESTROY);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 		shot_spawn_effect(o, EFFECT_FISHY);
 		return 1;
 	}
@@ -267,5 +267,3 @@ bool IsBlockedInShotDir(Object *o)
 	staterr("IsBlockedInShotDir(%x): invalid direction %d", o, o->shot.dir);
 	return 0;
 }
-
-

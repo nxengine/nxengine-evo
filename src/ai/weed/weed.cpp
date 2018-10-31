@@ -6,7 +6,7 @@
 #include "../sym/smoke.h"
 #include "../../game.h"
 #include "../../caret.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -155,7 +155,7 @@ void ai_critter(Object *o)
 				o->state = 3;
 				o->frame = 2;
 				o->yinertia = -1228;
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 				
 				FACEPLAYER;
 				XMOVE(0x100);
@@ -204,7 +204,8 @@ void ai_critter(Object *o)
 			{
 				// run the propeller
 				ANIMATE(0, 3, 5);
-				if ((o->timer & 3)==1) sound(SND_CRITTER_FLY);
+				if ((o->timer & 3)==1) 
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CRITTER_FLY);
 				
 				if (o->blockd) o->yinertia = -0x200;
 			}
@@ -230,7 +231,7 @@ landed: ;
 				o->timer = 0;
 				o->xinertia = 0;
 				
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 
 				if (o->type == OBJ_POWER_CRITTER)
 					quake(30);
@@ -598,7 +599,7 @@ void ai_mannan(Object *o)
 	// check if we were "killed"
 	if (o->state < 3 && o->hp < 90)
 	{
-		sound(SND_LITTLE_CRASH);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LITTLE_CRASH);
 		SmokeClouds(o, 8, 12, 12);
 		o->SpawnXP(objprop[o->type].xponkill);
 		o->flags &= ~FLAG_SHOOTABLE;
@@ -644,7 +645,7 @@ void ai_mannan_shot(Object *o)
 	ANIMATE(0, 1, 2);
 	
 	if ((o->timer & 3) == 1)
-		sound(SND_IRONH_SHOT_FLY);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_IRONH_SHOT_FLY);
 	
 	if (++o->timer > 100)
 		o->Delete();
@@ -774,7 +775,7 @@ void ai_frog(Object *o)
 			
 			// no jumping sound in cutscenes at ending
 			if (!player->inputs_locked && !player->disabled)
-				sound(SND_ENEMY_JUMP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_JUMP);
 			
 			XMOVE(0x200);
 		}
@@ -837,7 +838,7 @@ void ai_motorbike(Object *o)
 			o->xinertia = -0x800;
 			o->ymark = o->y;
 			
-			sound(SND_MISSILE_HIT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 		}
 		case 31:
 		{
@@ -870,7 +871,7 @@ void ai_motorbike(Object *o)
 	
 	if (o->state >= 20 && (o->timer & 3) == 0)
 	{
-		sound(SND_FIREBALL);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 		
 		// make exhaust puffs, and make them go out horizontal
 		// instead of straight up as this effect usually does
@@ -910,7 +911,7 @@ void ai_malco(Object *o)
 			{
 				if ((o->timer & 1)==0)
 				{
-					sound(SND_COMPUTER_BEEP);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_COMPUTER_BEEP);
 					o->frame ^= 1;
 				}
 			}
@@ -925,7 +926,7 @@ void ai_malco(Object *o)
 			if (o->timer & 2)
 			{
 				o->x += (1 * CSFI);
-				sound(SND_DOOR);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
 			}
 			else
 			{
@@ -938,7 +939,7 @@ void ai_malco(Object *o)
 			o->state = 17;
 			o->frame = 2;
 			o->timer = 0;
-			sound(SND_BLOCK_DESTROY);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 			SmokeClouds(o, 4, 16, 16);
 		case 17:
 			if (++o->timer > 150)
@@ -957,12 +958,13 @@ void ai_malco(Object *o)
 			{
 				o->animtimer = 0;
 				if (++o->frame > 4) o->frame = 3;
-				if (o->frame==3) sound(SND_DOOR);
+				if (o->frame==3)
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
 			}
 			if (++o->timer > 100)
 			{
 				o->state = 20;
-				sound(SND_DOOR);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
 				SmokeClouds(o, 4, 16, 16);
 			}
 		break;
@@ -972,7 +974,7 @@ void ai_malco(Object *o)
 		case 21:	// got smushed!
 			o->state = 22;
 			o->frame = 5;
-			sound(SND_ENEMY_HURT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_HURT);
 		break;
 		
 		case 22:
@@ -1003,7 +1005,7 @@ void ai_malco_broken(Object *o)
 	switch(o->state)
 	{
 		case 10:	// set when pulled out of ground
-			sound(SND_BLOCK_DESTROY);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 			SmokeClouds(o, 4, 16, 16);
 			o->state = 0;
 		break;
@@ -1019,9 +1021,3 @@ void ai_malco_broken(Object *o)
 		break;
 	}
 }
-
-
-
-
-
-

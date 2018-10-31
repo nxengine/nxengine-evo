@@ -6,7 +6,7 @@
 #include "../../game.h"
 #include "../../ObjManager.h"
 #include "../../caret.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../player.h"
@@ -76,7 +76,7 @@ static void run_defeated(Object *o)
 			o->flags &= ~FLAG_SHOOTABLE;
 			effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
 			SmokeClouds(o, 16, 16, 16);
-			sound(SND_BIG_CRASH);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BIG_CRASH);
 			
 			o->xmark = o->x;
 			o->xinertia = 0;
@@ -124,7 +124,7 @@ static void run_defeated(Object *o)
 			if (o->y < 0)
 			{
 				flashscreen.Start();
-				sound(SND_TELEPORT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 				
 				o->xinertia = 0;
 				o->yinertia = 0;
@@ -581,7 +581,7 @@ void ai_ballos_priest(Object *o)
 			
 			if (++o->timer > 20)
 			{
-				sound(SND_FUNNY_EXPLODE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 				
 				if (o->state == BP_PREPARE_FLY_LR+1)
 				{
@@ -623,7 +623,7 @@ void ai_ballos_target(Object *o)
 			// adjust our Y coordinate to match player's
 			o->y = player->CenterY();
 			
-			sound(SND_CHARGE_GUN);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_CHARGE_GUN);
 			o->state = 1;
 		}
 		case 1:
@@ -655,7 +655,7 @@ void ai_ballos_bone_spawner(Object *o)
 	{
 		case 0:
 		{
-			sound(SND_MISSILE_HIT);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 			o->state = 1;
 			
 			XMOVE(0x400);
@@ -673,7 +673,7 @@ void ai_ballos_bone_spawner(Object *o)
 					xi = -xi;
 				
 				CreateObject(o->x, o->y, OBJ_BALLOS_BONE, xi, -0x400);
-				sound(SND_BLOCK_DESTROY);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
 			}
 			
 			if ((o->blockl && o->xinertia < 0) || \
@@ -710,7 +710,3 @@ void ai_ballos_bone(Object *o)
 	o->yinertia += 0x40;
 	LIMITY(0x5ff);
 }
-
-
-
-

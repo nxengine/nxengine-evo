@@ -2,7 +2,7 @@
 #include "../ai.h"
 #include "weapons.h"
 #include "../../ObjManager.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
 #include "../../p_arms.h"
@@ -50,7 +50,7 @@ void ai_blade_l3_shot(Object *o)
 					slash->x -= (10 * CSFI);
 				}
 				
-				sound(SND_SLASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SLASH);
 			}
 			
 			if (++o->timer2 > o->shot.ttl)
@@ -68,7 +68,7 @@ void ai_blade_l3_shot(Object *o)
 					if (enemy->flags & FLAG_INVULNERABLE)
 					{
 						shot_spawn_effect(o, EFFECT_STARSOLID);
-						sound(SND_SHOT_HIT);
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
 						o->Delete();
 					}
 					else
@@ -86,7 +86,7 @@ void ai_blade_l3_shot(Object *o)
 				else if (IsBlockedInShotDir(o))
 				{
 					if (!shot_destroy_blocks(o))
-						sound(SND_SHOT_HIT);
+						NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
 					
 					shot_spawn_effect(o, EFFECT_STARSOLID);
 					o->Delete();
@@ -104,7 +104,7 @@ void ai_blade_l3_shot(Object *o)
 											 OBJ_BLADE_SLASH);
 				
 				slash->dir = random(0, 1) ? LEFT : RIGHT;
-				sound(SND_SLASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SLASH);
 			}
 			
 			if (++o->timer > 50)
@@ -171,7 +171,7 @@ void aftermove_blade_l12_shot(Object *o)
 		else if (IsBlockedInShotDir(o))
 		{
 			if (!shot_destroy_blocks(o))
-				sound(SND_SHOT_HIT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
 			
 			shot_dissipate(o, EFFECT_STARSOLID);
 			return;
@@ -182,13 +182,12 @@ void aftermove_blade_l12_shot(Object *o)
 	{
 		case 0:
 			if ((o->timer % 5) == 1)
-				sound(SND_FIREBALL);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FIREBALL);
 		break;
 		
 		case 1:
 			if ((o->timer % 7) == 1)
-				sound(SND_SLASH);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SLASH);
 		break;
 	}
 }
-

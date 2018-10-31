@@ -7,7 +7,7 @@
 #include "../../caret.h"
 #include "../../tsc.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 #include "../../common/misc.h"
 
@@ -319,7 +319,7 @@ int i;
 			o->timer++;
 			
 			if ((o->timer % 8) == 0)
-				sound(SND_ENEMY_HURT_BIG);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_HURT_BIG);
 			
 			SmokePuff(o->CenterX() + (random(-72, 72) * CSFI),
 					  o->CenterY() + (random(-64, 64) * CSFI));
@@ -327,7 +327,7 @@ int i;
 			if (o->timer > 100)
 			{
 				starflash.Start(o->CenterX(), o->CenterY());
-				sound(SND_EXPLOSION1);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 				o->timer = 0;
 				o->state++;
 			}
@@ -476,14 +476,14 @@ void XBoss::run_tread(int index)
 		case STATE_TREAD_BRAKE+1:
 		{
 			if (o->timer & 1)
-				sound(SND_MOTOR_SKIP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MOTOR_SKIP);
 		}
 		break;
 		
 		case STATE_TREAD_RUN+2:
 		{
 			if ((o->timer % 4) == 1)
-				sound(SND_MOTOR_RUN);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MOTOR_RUN);
 		}
 		break;
 	}
@@ -651,7 +651,7 @@ void XBoss::run_fishy_spawner(int index)
 			Object *missile = CreateObject(o->x, o->y, OBJ_X_FISHY_MISSILE);
 			missile->dir = index;
 			
-			sound(SND_EM_FIRE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 			o->timer = 120;
 		}
 		break;
@@ -694,7 +694,7 @@ void XBoss::run_target(int index)
 				{
 					o->timer = 40;
 					EmFireAngledShot(o, OBJ_GAUDI_FLYING_SHOT, 2, 0x500);
-					sound(SND_EM_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EM_FIRE);
 				}
 			}
 		}
@@ -713,7 +713,7 @@ void XBoss::run_target(int index)
 void ondeath_x_target(Object *o)
 {
 	SmokeClouds(o, 8, 8, 8);
-	sound(SND_LITTLE_CRASH);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LITTLE_CRASH);
 	
 	o->flags &= ~FLAG_SHOOTABLE;
 	o->invisible = true;
@@ -945,7 +945,3 @@ void ai_x_defeated(Object *o)
 		break;
 	}
 }
-
-
-
-

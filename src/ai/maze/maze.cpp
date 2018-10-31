@@ -4,7 +4,7 @@
 #include "../sym/smoke.h"
 #include "../../game.h"
 #include "../../player.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 
 INITFUNC(AIRoutines)
 {
@@ -74,7 +74,7 @@ void ai_block_moveh(Object *o)
 			}
 			
 			if ((++o->timer % 10) == 6)
-				sound(SND_BLOCK_MOVE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_MOVE);
 		}
 		break;
 	}
@@ -135,7 +135,7 @@ void ai_block_movev(Object *o)
 			}
 			
 			if ((++o->timer % 10) == 6)
-				sound(SND_BLOCK_MOVE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_MOVE);
 		}
 		break;
 	}
@@ -170,7 +170,7 @@ void ai_boulder(Object *o)
 		{
 			o->yinertia = -0x400;
 			o->xinertia = 0x100;
-			sound(SND_FUNNY_EXPLODE);
+			NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_FUNNY_EXPLODE);
 			
 			o->state = 21;
 			o->timer = 0;
@@ -181,7 +181,7 @@ void ai_boulder(Object *o)
 			
 			if (o->blockd && o->yinertia >= 0)
 			{
-				sound(SND_EXPLOSION1);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 				game.quaketime = 40;
 				
 				o->xinertia = 0;
@@ -192,18 +192,3 @@ void ai_boulder(Object *o)
 		break;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,7 +7,7 @@ using namespace Graphics;
 #include "graphics/sprites.h"
 #include "autogen/sprites.h"
 #include "graphics/tileset.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "game.h"
 #include "player.h"
 #include "map.h"
@@ -719,8 +719,8 @@ Object * const &o = this;
 		{
 			o->shaketime = objprop[o->type].shaketime;
 			
-			if (objprop[o->type].hurt_sound)
-				sound(objprop[o->type].hurt_sound);
+			if (objprop[o->type].hurt_sound != NXE::Sound::SFX::SND_NULL)
+				NXE::Sound::SoundManager::getInstance()->playSfx(objprop[o->type].hurt_sound);
 			
 			if (shot)
 				effect(shot->CenterX(), shot->CenterY(), EFFECT_BLOODSPLATTER);
@@ -757,8 +757,8 @@ Object * const &o = this;
 		SmokeClouds(o, objprop[o->type].death_smoke_amt, 8, 8);
 		effect(o->CenterX(), o->CenterY(), EFFECT_BOOMFLASH);
 		
-		if (objprop[o->type].death_sound)
-			sound(objprop[o->type].death_sound);
+		if (objprop[o->type].death_sound != NXE::Sound::SFX::SND_NULL)
+			NXE::Sound::SoundManager::getInstance()->playSfx(objprop[o->type].death_sound);
 		
 		if (objprop[o->type].ai_routines.ondeath)
 		{

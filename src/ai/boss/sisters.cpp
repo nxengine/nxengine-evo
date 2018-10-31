@@ -5,7 +5,7 @@
 #include "../sym/smoke.h"
 #include "../../ObjManager.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -99,7 +99,7 @@ int i;
 	}
 	
 	objprop[OBJ_SISTERS_HEAD].shaketime = 8;
-	objprop[OBJ_SISTERS_HEAD].hurt_sound = SND_ENEMY_HURT_COOL;
+	objprop[OBJ_SISTERS_HEAD].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
 	
 	mainangle = 0;
 	if (widescreen)
@@ -286,7 +286,7 @@ int i;
 					hitdetect(head[1], body[0]))
 				{
 					starflash.Start(o->CenterX(), o->CenterY());
-					sound(SND_EXPLOSION1);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPLOSION1);
 					
 					o->state = STATE_STARFLASH;
 					o->timer = 0;
@@ -447,7 +447,7 @@ void SistersBoss::run_head(int index)
 			if (o->shaketime) o->timer2++;
 			if (o->timer2 > 10)
 			{
-				sound(SND_ENEMY_HURT);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_ENEMY_HURT);
 				SmokeClouds(o, 4, 2, 2);
 				
 				o->state = STATE_HEAD_BIT_TONGUE;
@@ -463,7 +463,7 @@ void SistersBoss::run_head(int index)
 			if ((++o->timer % 8) == 1)
 			{
 				EmFireAngledShot(o, OBJ_DRAGON_ZOMBIE_SHOT, 6, 0x200);
-				sound(SND_SNAKE_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SNAKE_FIRE);
 			}
 			
 			if (o->timer > 50)
@@ -489,7 +489,7 @@ void SistersBoss::run_head(int index)
 				if ((o->timer % 32) == 1)
 				{
 					EmFireAngledShot(o, OBJ_DRAGON_ZOMBIE_SHOT, 6, 0x200);
-					sound(SND_SNAKE_FIRE);
+					NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SNAKE_FIRE);
 				}
 			}
 		}
@@ -571,10 +571,3 @@ void SistersBoss::SetBodyStates(int newstate)
 	for(int i=0;i<NUM_SISTERS;i++)
 		body[i]->state = newstate;
 }
-
-
-
-
-
-
-

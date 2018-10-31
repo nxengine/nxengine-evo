@@ -9,8 +9,7 @@
 #include "inventory.h"
 #include "ObjManager.h"
 #include "niku.h"
-#include "sound/sound.h"
-#include "sound/org.h"
+#include "sound/SoundManager.h"
 #include "common/misc.h"
 #include "common/stat.h"
 #include "game.h"
@@ -752,18 +751,18 @@ int cmdip;
 			case OP_FAO: fade.Start(FADE_OUT, parm[0], SPR_FADE_DIAMOND); return;
 			case OP_FLA: flashscreen.Start(); break;
 			
-			case OP_SOU: sound(parm[0]); break;
-			case OP_CMU: music(parm[0]); break;
-			case OP_RMU: music(music_lastsong(), true); break;
-			case OP_FMU: music_fade(); break;
+			case OP_SOU: NXE::Sound::SoundManager::getInstance()->playSfx((NXE::Sound::SFX)parm[0]); break;
+			case OP_CMU: NXE::Sound::SoundManager::getInstance()->music(parm[0]); break;
+			case OP_RMU: NXE::Sound::SoundManager::getInstance()->music(NXE::Sound::SoundManager::getInstance()->lastSong(), true); break;
+			case OP_FMU: NXE::Sound::SoundManager::getInstance()->fadeMusic(); break;
 			
-			case OP_SSS: StartStreamSound(parm[0]); break;
-			case OP_SPS: StartPropSound(); break;
+			case OP_SSS: NXE::Sound::SoundManager::getInstance()->startStreamSound(parm[0]); break;
+			case OP_SPS: NXE::Sound::SoundManager::getInstance()->startPropSound(); break;
 			
 			case OP_CSS:	// these seem identical-- either one will
 			case OP_CPS:	// in fact stop the other.
 			{
-				StopLoopSounds();
+				NXE::Sound::SoundManager::getInstance()->stopLoopSfx();
 			}
 			break;
 			
@@ -1045,7 +1044,7 @@ int cmdip;
 			case OP_QUA:
 			{
 			    s->nod_delay = parm[0];
-			    quake(parm[0],0);
+			    quake(parm[0],NXE::Sound::SFX::SND_NULL);
 			}
 			break;
 			

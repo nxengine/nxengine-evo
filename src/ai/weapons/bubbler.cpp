@@ -6,7 +6,7 @@
 #include "../../game.h"
 #include "../../player.h"
 #include "../../input.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 
@@ -89,7 +89,7 @@ void ai_bubbler_l3(Object *o)
 	if (--o->shot.ttl < 0 || !inputs[FIREKEY])
 	{
 		effect(o->CenterX(), o->CenterY(), EFFECT_FISHY);
-		sound(SND_BUBBLER_LAUNCH);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLER_LAUNCH);
 		
 		Object *shot = CreateObject(o->x, o->y, OBJ_BUBBLER_SHARP);
 		shot->dir = player->dir;
@@ -183,21 +183,3 @@ void ai_bubbler_sharp(Object *o)
 		ANIMATE(1, 0, 1);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

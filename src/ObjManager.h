@@ -2,6 +2,7 @@
 #ifndef _OBJMANAGER_H
 #define _OBJMANAGER_H
 #include "object.h"
+#include "sound/SoundManager.h"
 
 namespace Objects
 {
@@ -53,7 +54,7 @@ struct ObjProp
 	int initial_hp;
 	int xponkill;
 	int damage;
-	int hurt_sound, death_sound;
+	NXE::Sound::SFX hurt_sound, death_sound;
 	int death_smoke_amt;
 	
 	uint32_t defaultflags;

@@ -6,7 +6,7 @@
 #include "../../game.h"
 #include "../../screeneffect.h"
 #include "../../trig.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/stat.h"
 #include "../../common/misc.h"
 
@@ -59,7 +59,7 @@ void ai_misery_float(Object *o)
 			
 			if (o->blockd)
 			{
-				sound(SND_THUD);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_THUD);
 				o->yinertia = 0;
 				o->state = 14;
 				o->flags |= FLAG_IGNORE_SOLID;
@@ -81,7 +81,7 @@ void ai_misery_float(Object *o)
 			
 			if (o->timer == 30)
 			{
-				sound(SND_BUBBLE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLE);
 				CreateObject(o->x, o->y - (16 * CSFI), OBJ_MISERYS_BUBBLE);
 			}
 			
@@ -165,7 +165,7 @@ Object *target;
 			{
 				o->state = 2;
 				o->frame = 2;
-				sound(SND_BUBBLE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLE);
 				
 				if ((target = mbubble_find_target()))
 				{
@@ -241,7 +241,7 @@ void ai_misery_stand(Object *o)
 			ANIMATE(0, 5, 7);
 			if (++o->timer == 20)
 			{
-				sound(SND_LIGHTNING_STRIKE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LIGHTNING_STRIKE);
 				flashscreen.Start();
 				o->state = 27;
 				o->timer = 0;
@@ -286,7 +286,7 @@ void ai_misery_stand(Object *o)
 				shot->xinertia = 0x600;
 				shot->yinertia = random(-0x200, 0);
 				
-				sound(SND_SNAKE_FIRE);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SNAKE_FIRE);
 			}
 			
 			if (o->timer > 50)
@@ -295,20 +295,3 @@ void ai_misery_stand(Object *o)
 		break;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

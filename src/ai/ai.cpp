@@ -3,7 +3,7 @@
 #include "ai.h"
 #include "../caret.h"
 #include "../ObjManager.h"
-#include "../sound/sound.h"
+#include "../sound/SoundManager.h"
 #include "../common/misc.h"
 #include "../common/stat.h"
 #include "sym/smoke.h"
@@ -29,7 +29,7 @@ bool ai_init(void)
 	memcpy(&objprop[OBJ_SKULLHEAD_CARRIED], &objprop[OBJ_SKULLHEAD], sizeof(ObjProp));
 	
 	objprop[OBJ_POLISH].initial_hp = 24;	// is the value of 120 in npc.tbl really wrong? if so why?
-	objprop[OBJ_POLISH].death_sound = 25;	// not sure why this is apparently wrong in file
+	objprop[OBJ_POLISH].death_sound = NXE::Sound::SFX::SND_FUNNY_EXPLODE;	// not sure why this is apparently wrong in file
 	
 	// call all the INITFUNC() routines you find at the beginning
 	// of every AI-related module which assign AI logic to objects.
@@ -60,8 +60,8 @@ int i;
 	//for(i=0;i<nEntries;i++) fgetc(fp);		// spritesheet # or something--but we don't use it
 	fseek(fp, (nEntries * 2 * 2) + nEntries, SEEK_SET);
 	
-	for(i=0;i<nEntries;i++) objprop[i].death_sound = fgetc(fp);
-	for(i=0;i<nEntries;i++) objprop[i].hurt_sound = fgetc(fp);
+	for(i=0;i<nEntries;i++) objprop[i].death_sound = (NXE::Sound::SFX)fgetc(fp);
+	for(i=0;i<nEntries;i++) objprop[i].hurt_sound = (NXE::Sound::SFX)fgetc(fp);
 	for(i=0;i<nEntries;i++) objprop[i].death_smoke_amt = smoke_amounts[fgetc(fp)];
 	for(i=0;i<nEntries;i++) objprop[i].xponkill = fgetl(fp);
 	for(i=0;i<nEntries;i++) objprop[i].damage = fgetl(fp);
@@ -223,7 +223,7 @@ static bool teleffect(Object *o, int slowness, bool teleporting_out)
 	
 	if (!o->timer)
 	{
-		sound(SND_TELEPORT);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 		o->clip_enable = true;
 		o->clipy1 = 0;
 	}
@@ -325,8 +325,3 @@ void onspawn_set_frame_from_id2(Object *o)
 {
 	o->frame = o->id2;
 }
-
-/*
-void c------------------------------() {}
-*/
-

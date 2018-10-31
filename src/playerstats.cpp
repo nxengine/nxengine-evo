@@ -4,7 +4,7 @@
 #include "playerstats.h"
 #include "player.h"
 #include "inventory.h"
-#include "sound/sound.h"
+#include "sound/SoundManager.h"
 #include "common/stat.h"
 #include "caret.h"
 #include "statusbar.h"
@@ -51,12 +51,12 @@ bool leveled_up = false;
 		{
 			if (leveled_up)
 			{
-				sound(SND_LEVEL_UP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_LEVEL_UP);
 				effect(player->CenterX(), player->CenterY(), EFFECT_LEVELUP);
 			}
 			else
 			{
-				sound(SND_GET_XP);
+				NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GET_XP);
 			}
 		}
 		
@@ -106,7 +106,7 @@ void AddInventory(int item)
 	if (player->ninventory+1 >= MAX_INVENTORY)
 		{ staterr("<<<AddInventory: inventory is full>>"); game.running = 0; return; }
 	
-	sound(SND_GET_ITEM);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GET_ITEM);
 	if (FindInventory(item) != -1)
 	{
 	    return;
@@ -179,7 +179,7 @@ void GetWeapon(int wpn, int ammo)
 	}
 	
 	AddAmmo(wpn, ammo);
-	sound(SND_GET_ITEM);
+	NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GET_ITEM);
 }
 
 // AM- command. Drops specified weapon.
@@ -242,4 +242,3 @@ void RefillAllAmmo(void)
 			player->weapons[i].ammo = player->weapons[i].maxammo;
 	}
 }
-

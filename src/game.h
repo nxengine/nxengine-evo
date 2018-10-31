@@ -8,6 +8,7 @@
 #include "ObjManager.h"
 #include "tsc.h"
 #include "i18n/translate.h"
+#include "sound/SoundManager.h"
 
 #define GAME_FPS		50
 
@@ -166,8 +167,8 @@ extern Object *onscreen_objects[MAX_OBJECTS];
 extern int nOnscreenObjects;
 
 void debug(const char *fmt, ...);
-void quake(int quaketime, int snd=-1);
-void megaquake(int quaketime, int snd=-1);
+void quake(int quaketime, NXE::Sound::SFX snd=NXE::Sound::SFX::SND_QUAKE);
+void megaquake(int quaketime, NXE::Sound::SFX snd=NXE::Sound::SFX::SND_QUAKE);
 
 struct Profile;
 bool game_load(int num);

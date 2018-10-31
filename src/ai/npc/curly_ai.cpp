@@ -3,7 +3,7 @@
 #include "../stdai.h"
 #include "../../ObjManager.h"
 #include "../../p_arms.h"
-#include "../../sound/sound.h"
+#include "../../sound/SoundManager.h"
 #include "../../common/misc.h"
 
 #include "../../game.h"
@@ -327,7 +327,7 @@ static void CaiJUMP(Object *o)
 	{
 		o->yinertia = random(-0x600, -0x300);
 		o->frame = 3;
-		sound(SND_PLAYER_JUMP);
+		NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PLAYER_JUMP);
 	}
 }
 
@@ -452,5 +452,3 @@ void aftermove_cai_watershield(Object *o)
 		o->timer = o->frame = 0;
 	}
 }
-
-
