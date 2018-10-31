@@ -1,0 +1,28 @@
+---
+BasedOnStyle: Webkit
+---
+Language:                               Cpp
+PointerAlignment:                       Right
+BreakBeforeBraces:                      Allman
+AllowShortBlocksOnASingleLine:          false
+AllowShortFunctionsOnASingleLine:       Empty
+Cpp11BracedListStyle:                   true
+Standard:                               Cpp11
+ColumnLimit:                            120
+IndentWidth:                            2
+AccessModifierOffset:                   -2
+FixNamespaceComments:                   true
+NamespaceIndentation:                   None
+IncludeBlocks:                          Regroup
+IndentCaseLabels:                       true
+MaxEmptyLinesToKeep:                    1
+UseTab:                                 Never
+AlignAfterOpenBracket:                  Align
+AlignConsecutiveAssignments:            true
+AlignOperands:                          true
+AlignTrailingComments:                  true
+AllowShortCaseLabelsOnASingleLine:      false
+AllowShortIfStatementsOnASingleLine:    false
+AllowShortLoopsOnASingleLine:           false
+CommentPragmas: '^ NOLINT'
+---
