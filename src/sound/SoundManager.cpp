@@ -281,6 +281,36 @@ void SoundManager::runFade()
   }
 }
 
+void SoundManager::pause()
+{
+  Mix_Pause(-1);
+  switch (settings->new_music)
+  {
+    case 0:
+      Organya::getInstance()->pause();
+      break;
+    case 1:
+    case 2:
+      Ogg::getInstance()->pause();
+      break;
+  }
+}
+
+void SoundManager::resume()
+{
+  Mix_Resume(-1);
+  switch (settings->new_music)
+  {
+    case 0:
+      Organya::getInstance()->resume();
+      break;
+    case 1:
+    case 2:
+      Ogg::getInstance()->resume();
+      break;
+  }
+}
+
 bool SoundManager::_shouldMusicPlay(uint32_t songno, uint32_t musicmode)
 {
   if (game.mode == GM_TITLE || game.mode == GM_CREDITS)

@@ -43,6 +43,8 @@ public:
   void fade(void);
   void setVolume(int newvolume);
   void runFade(void);
+  void pause();
+  void resume();
   void musicFinished();
   bool looped();
 

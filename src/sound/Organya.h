@@ -66,6 +66,8 @@ public:
   void fade();
   void setVolume(float newVolume);
   void runFade();
+  void pause();
+  void resume();
   void _musicCallback(void *udata, uint8_t *stream, uint32_t len);
 
 protected:

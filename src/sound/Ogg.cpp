@@ -193,6 +193,16 @@ void Ogg::runFade()
   }
 }
 
+void Ogg::pause()
+{
+  Mix_PauseMusic();
+}
+
+void Ogg::resume()
+{
+  Mix_ResumeMusic();
+}
+
 bool Ogg::looped()
 {
   return _looped;

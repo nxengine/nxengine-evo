@@ -172,8 +172,7 @@ static inline void run_tick()
 void AppMinimized(void)
 {
   stat("Game minimized or lost focus--pausing...");
-  //	music(0);
-  Mix_Pause(-1);
+  NXE::Sound::SoundManager::getInstance()->pause();
   for (;;)
   {
     if (Graphics::WindowVisible())
@@ -184,8 +183,7 @@ void AppMinimized(void)
     input_poll();
     SDL_Delay(20);
   }
-  Mix_Resume(-1);
-  //	music(music_lastsong(), true);
+  NXE::Sound::SoundManager::getInstance()->resume();
   stat("Focus regained, resuming play...");
 }
 

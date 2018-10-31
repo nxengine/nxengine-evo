@@ -285,6 +285,8 @@ void myMusicPlayer(void *udata, uint8_t *stream, int len)
 void Organya::_musicCallback(void *udata, uint8_t *stream, uint32_t len)
 {
   SDL_memset(stream, 0, len);
+  if (!song.playing)
+    return;
   int16_t *str = reinterpret_cast<int16_t *>(stream);
 
   uint32_t idx = song.last_pos;
@@ -363,6 +365,16 @@ void Organya::fade()
 {
   fading         = true;
   last_fade_time = 0;
+}
+
+void Organya::pause()
+{
+  song.playing = false;
+}
+
+void Organya::resume()
+{
+  song.playing = true;
 }
 
 void Organya::setVolume(float newVolume)

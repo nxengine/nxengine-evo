@@ -132,6 +132,8 @@ public:
   uint32_t lastSong();
   void fadeMusic();
   void runFade();
+  void pause();
+  void resume();
 
 protected:
   friend class Singleton<SoundManager>;
