@@ -143,7 +143,11 @@ void HandlePlayer(void)
     PDoWeapons(); // p_arms.cpp
     PDoHurtFlash();
 
-    switch ((inputs[DEBUG_MOVE_KEY] && settings->enable_debug_keys) ? MOVEMODE_DEBUG : player->movementmode)
+#if defined(DEBUG)
+    switch ((inputs[DEBUG_MOVE_KEY]) ? MOVEMODE_DEBUG : player->movementmode)
+#else
+    switch (player->movementmode)
+#endif
     {
       case MOVEMODE_NORMAL:
       {
@@ -733,7 +737,9 @@ void PDoLooking(void)
       if (!player->walking && !player->lookaway && !pinputs[JUMPKEY] && !pinputs[FIREKEY] && !pinputs[UPKEY]
           && (!pinputs[STRAFEKEY] || !settings->strafing))
       {
-        if (!inputs[DEBUG_MOVE_KEY] || !settings->enable_debug_keys)
+#if defined(DEBUG)
+        if (!inputs[DEBUG_MOVE_KEY])
+#endif
         {
           player->lookaway = true;
           player->xinertia = 0;
@@ -1237,8 +1243,10 @@ void hurtplayer(int damage)
     return;
   if (!player || !player->hp)
     return;
-  if (settings->enable_debug_keys && (game.debug.god || inputs[DEBUG_MOVE_KEY]))
+#if defined(DEBUG)
+  if (game.debug.god || inputs[DEBUG_MOVE_KEY])
     return;
+#endif
 
   if (player->hurt_time)
     return;
@@ -1428,8 +1436,10 @@ void PDoRepel(void)
   // directly here.
   static const int REPEL_SPEED = (1 * CSFI);
 
-  if (settings->enable_debug_keys && inputs[DEBUG_MOVE_KEY])
+#if defined(DEBUG)
+  if (inputs[DEBUG_MOVE_KEY])
     return;
+#endif
 
   // pushes player out of walls if he become embedded in them, ala Super Mario 1.
   // this can happen for example because his R,L block points are further out than

@@ -62,6 +62,10 @@ bool input_init(void)
   mappings[FREEZE_FRAME_KEY].key  = SDLK_SPACE;
   mappings[FRAME_ADVANCE_KEY].key = SDLK_c;
   mappings[DEBUG_FLY_KEY].key     = SDLK_v;
+#else
+  mappings[FREEZE_FRAME_KEY].key  = 0;
+  mappings[FRAME_ADVANCE_KEY].key = 0;
+  mappings[DEBUG_FLY_KEY].key     = 0;
 #endif
   mappings[ENTERKEY].key = SDLK_RETURN;
 

@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-const uint32_t SETTINGS_VERSION = (('4' << 24) + ('S' << 16) + ('X' << 8) + 'N'); // serves as both a version and magic
+const uint32_t SETTINGS_VERSION = (('5' << 24) + ('S' << 16) + ('X' << 8) + 'N'); // serves as both a version and magic
 
 Settings normal_settings;
 Settings *settings = &normal_settings;
@@ -77,18 +77,14 @@ bool settings_load(Settings *setfile)
     memset(setfile, 0, sizeof(Settings));
     setfile->resolution     = 2; // 640x480 Windowed, should be safe value
     setfile->last_save_slot = 0;
-    setfile->multisave      = true;
     setfile->fullscreen     = false;
 
-#if defined(DEBUG)
-    setfile->enable_debug_keys = true;
-#else
-    setfile->enable_debug_keys = false;
-#endif
     setfile->sound_enabled = true;
     setfile->music_enabled = 1; // both Boss and Regular music
     setfile->new_music     = 0;
     setfile->rumble        = false;
+    setfile->sfx_volume = 100;
+    setfile->music_volume = 100;
     memset(setfile->language, 0, 256);
     strncpy(setfile->language, "english", 255);
 
@@ -97,11 +93,6 @@ bool settings_load(Settings *setfile)
   else
   {
     input_set_mappings(settings->input_mappings);
-#if defined(DEBUG)
-    setfile->enable_debug_keys = true;
-#else
-    setfile->enable_debug_keys = false;
-#endif
   }
 
   return 0;

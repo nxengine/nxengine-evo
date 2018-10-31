@@ -47,6 +47,7 @@ public:
   void resume();
   void musicFinished();
   bool looped();
+  void updateVolume();
 
 private:
   oggSong _song;

@@ -311,6 +311,16 @@ void SoundManager::resume()
   }
 }
 
+void SoundManager::updateSfxVolume()
+{
+  Mix_Volume(-1, (int)(128. / 100. * (double)settings->sfx_volume));
+}
+
+void SoundManager::updateMusicVolume()
+{
+  Ogg::getInstance()->updateVolume();
+}
+
 bool SoundManager::_shouldMusicPlay(uint32_t songno, uint32_t musicmode)
 {
   if (game.mode == GM_TITLE || game.mode == GM_CREDITS)

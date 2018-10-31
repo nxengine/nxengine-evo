@@ -1068,16 +1068,9 @@ void TSC::ExecScript(ScriptInstance *s)
 
       case OP_SVP:
       {
-        if (!settings->multisave)
-        {
-          game_save(settings->last_save_slot);
-        }
-        else
-        {
-          textbox.SaveSelect.SetVisible(true, SS_SAVING);
-          s->delaytimer = 9999;
-          return;
-        }
+        textbox.SaveSelect.SetVisible(true, SS_SAVING);
+        s->delaytimer = 9999;
+        return;
       }
       break;
       case OP_LDP:

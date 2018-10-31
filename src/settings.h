@@ -9,11 +9,9 @@ struct Settings
   uint32_t version;
   int resolution;
   int last_save_slot;
-  bool multisave;
   bool show_fps;
   bool fullscreen;
 
-  bool enable_debug_keys;
   bool sound_enabled;
   int music_enabled;
   uint8_t new_music;
@@ -21,6 +19,8 @@ struct Settings
   bool skip_intro;
   bool rumble;
   bool strafing;
+  int16_t sfx_volume;
+  int16_t music_volume;
 
   in_action input_mappings[INPUT_COUNT];
   char language[256];

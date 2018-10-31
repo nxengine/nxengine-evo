@@ -173,7 +173,7 @@ static void handle_input()
       }
     }
 
-    if (choice == 1 && settings->multisave)
+    if (choice == 1)// && settings->multisave)
     {
       title.selchoice = 10;
       title.seldelay  = SELECT_MENU_DELAY;

@@ -18,6 +18,11 @@ std::vector<void *> optionstack;
 
 void DialogDismissed();
 static void EnterMainMenu();
+static void EnterSoundMenu(ODItem *item, int dir);
+static void EnterGraphicsMenu(ODItem *item, int dir);
+static void EnterControlsMenu(ODItem *item, int dir);
+static void EnterRebindMenu(ODItem *item, int dir);
+
 void LeavingMainMenu();
 void _res_get(ODItem *item);
 void _res_change(ODItem *item, int dir);
@@ -27,19 +32,20 @@ void _fullscreen_change(ODItem *item, int dir);
 void _lang_get(ODItem *item);
 void _lang_change(ODItem *item, int dir);
 
-void _debug_change(ODItem *item, int dir);
-void _debug_get(ODItem *item);
-void _save_change(ODItem *item, int dir);
-void _save_get(ODItem *item);
 void _sound_change(ODItem *item, int dir);
 void _sound_get(ODItem *item);
 void _music_change(ODItem *item, int dir);
 void _music_get(ODItem *item);
 void _tracks_change(ODItem *item, int dir);
 void _tracks_get(ODItem *item);
+void _sfx_volume_change(ODItem *item, int dir);
+void _sfx_volume_get(ODItem *item);
+void _music_volume_change(ODItem *item, int dir);
+void _music_volume_get(ODItem *item);
+void _rumble_change(ODItem *item, int dir);
+void _rumble_get(ODItem *item);
 void _strafe_change(ODItem *item, int dir);
 void _strafe_get(ODItem *item);
-static void EnterControlsMenu(ODItem *item, int dir);
 static void _upd_control(ODItem *item);
 static void _edit_control(ODItem *item, int dir);
 static void _finish_control_edit(Message *msg);
@@ -72,7 +78,6 @@ bool options_init(int retmode)
   opt.dlg->ondismiss = DialogDismissed;
   opt.dlg->ShowFull();
 
-  inputs[F3KEY] = 0;
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
   return 0;
 }
@@ -97,12 +102,6 @@ void options_tick()
 {
   unsigned int i;
   FocusHolder *fh;
-
-  if (justpushed(F3KEY))
-  {
-    game.pause(0);
-    return;
-  }
 
   Graphics::ClearScreen(BLACK);
   Options::run_and_draw_objects();
@@ -164,26 +163,11 @@ static void EnterMainMenu()
 
   dlg->Clear();
 
-  dlg->AddItem("Resolution: ", _res_change, _res_get, -1, OD_CHOICE);
-  dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get, -1, OD_CHOICE);
+  dlg->AddItem("Graphics", EnterGraphicsMenu);
+  dlg->AddItem("Sound", EnterSoundMenu);
   dlg->AddItem("Controls", EnterControlsMenu);
 
   dlg->AddSeparator();
-
-#if defined(DEBUG)
-  dlg->AddItem("Debug Keys: ", _debug_change, _debug_get, -1, OD_CHOICE);
-  dlg->AddItem("Save Slots: ", _save_change, _save_get, -1, OD_CHOICE);
-
-  dlg->AddSeparator();
-#endif
-
-  dlg->AddItem("Music: ", _music_change, _music_get, -1, OD_CHOICE);
-  dlg->AddItem("Tracks: ", _tracks_change, _tracks_get, -1, OD_CHOICE);
-  dlg->AddItem("Sound: ", _sound_change, _sound_get, -1, OD_CHOICE);
-
-  dlg->AddSeparator();
-
-  dlg->AddItem("Strafing: ", _strafe_change, _strafe_get, -1, OD_CHOICE);
 
   if (game.mode == GM_TITLE)
     dlg->AddItem("Language: ", _lang_change, _lang_get, -1, OD_CHOICE);
@@ -202,6 +186,72 @@ void LeavingMainMenu()
   opt.dlg->onclear = NULL;
   opt.InMainMenu   = false;
 }
+
+static void EnterControlsMenu(ODItem *item, int dir)
+{
+  Dialog *dlg = opt.dlg;
+
+  dlg->Clear();
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
+  dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get, -1, OD_CHOICE);
+  dlg->AddItem("Strafing: ", _strafe_change, _strafe_get, -1, OD_CHOICE);
+  dlg->AddItem("Bind keys", EnterRebindMenu);
+
+  dlg->AddSeparator();
+  dlg->AddDismissalItem();
+}
+
+static void EnterRebindMenu(ODItem *item, int dir)
+{
+  Dialog *dlg = opt.dlg;
+
+  dlg->Clear();
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
+  dlg->AddItem("Left", _edit_control, _upd_control, LEFTKEY);
+  dlg->AddItem("Right", _edit_control, _upd_control, RIGHTKEY);
+  dlg->AddItem("Up", _edit_control, _upd_control, UPKEY);
+  dlg->AddItem("Down", _edit_control, _upd_control, DOWNKEY);
+  dlg->AddItem("Jump", _edit_control, _upd_control, JUMPKEY);
+  dlg->AddItem("Strafe", _edit_control, _upd_control, STRAFEKEY);
+  dlg->AddItem("Fire", _edit_control, _upd_control, FIREKEY);
+  dlg->AddItem("Wpn Prev", _edit_control, _upd_control, PREVWPNKEY);
+  dlg->AddItem("Wpn Next", _edit_control, _upd_control, NEXTWPNKEY);
+  dlg->AddItem("Inventory", _edit_control, _upd_control, INVENTORYKEY);
+  dlg->AddItem("Map", _edit_control, _upd_control, MAPSYSTEMKEY);
+  dlg->AddItem("Pause", _edit_control, _upd_control, ESCKEY);
+
+  dlg->AddSeparator();
+  dlg->AddDismissalItem();
+}
+
+static void EnterGraphicsMenu(ODItem *item, int dir)
+{
+  Dialog *dlg = opt.dlg;
+
+  dlg->Clear();
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
+  dlg->AddItem("Resolution: ", _res_change, _res_get, -1, OD_CHOICE);
+  dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get, -1, OD_CHOICE);
+  dlg->AddSeparator();
+  dlg->AddDismissalItem();
+}
+
+static void EnterSoundMenu(ODItem *item, int dir)
+{
+  Dialog *dlg = opt.dlg;
+
+  dlg->Clear();
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
+  dlg->AddItem("Music: ", _music_change, _music_get, -1, OD_CHOICE);
+  dlg->AddItem("Tracks: ", _tracks_change, _tracks_get, -1, OD_CHOICE);
+  dlg->AddItem("Sound: ", _sound_change, _sound_get, -1, OD_CHOICE);
+  dlg->AddSeparator();
+  dlg->AddItem("SFX volume: ", _sfx_volume_change, _sfx_volume_get, -1, OD_CHOICE);
+  dlg->AddItem("Music volume: ", _music_volume_change, _music_volume_get, -1, OD_CHOICE);
+  dlg->AddSeparator();
+  dlg->AddDismissalItem();
+}
+
 
 void _res_get(ODItem *item)
 {
@@ -305,30 +355,6 @@ void _fullscreen_change(ODItem *item, int dir)
   Graphics::SetFullscreen(settings->fullscreen);
 }
 
-void _debug_change(ODItem *item, int dir)
-{
-  settings->enable_debug_keys ^= 1;
-  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
-}
-
-void _debug_get(ODItem *item)
-{
-  static const char *strs[] = {"Off", "On"};
-  strcpy(item->suffix, strs[settings->enable_debug_keys]);
-}
-
-void _save_change(ODItem *item, int dir)
-{
-  settings->multisave ^= 1;
-  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
-}
-
-void _save_get(ODItem *item)
-{
-  static const char *strs[] = {"1", "5"};
-  strcpy(item->suffix, strs[settings->multisave]);
-}
-
 void _sound_change(ODItem *item, int dir)
 {
   settings->sound_enabled ^= 1;
@@ -387,6 +413,45 @@ void _tracks_get(ODItem *item)
   strcpy(item->suffix, strs[settings->new_music]);
 }
 
+void _sfx_volume_change(ODItem *item, int dir)
+{
+  settings->sfx_volume += 5*dir;
+
+  if (settings->sfx_volume <= 0)
+    settings->sfx_volume = 0;
+  else if (settings->sfx_volume >= 100)
+    settings->sfx_volume = 100;
+  NXE::Sound::SoundManager::getInstance()->updateSfxVolume();
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
+}
+
+void _sfx_volume_get(ODItem *item)
+{
+  char str[10];
+  sprintf(str, "%d%%", settings->sfx_volume);
+  strcpy(item->suffix, str);
+}
+
+void _music_volume_change(ODItem *item, int dir)
+{
+  settings->music_volume += 5*dir;
+
+  if (settings->music_volume <= 0)
+    settings->music_volume = 0;
+  else if (settings->music_volume >= 100)
+    settings->music_volume = 100;
+
+  NXE::Sound::SoundManager::getInstance()->updateMusicVolume();
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
+}
+
+void _music_volume_get(ODItem *item)
+{
+  char str[10];
+  sprintf(str, "%d%%", settings->music_volume);
+  strcpy(item->suffix, str);
+}
+
 /*
 void c------------------------------() {}
 */
@@ -403,32 +468,8 @@ void _rumble_get(ODItem *item)
   strcpy(item->suffix, strs[settings->rumble]);
 }
 
-static void EnterControlsMenu(ODItem *item, int dir)
-{
-  Dialog *dlg = opt.dlg;
 
-  dlg->Clear();
-  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
-  dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get, -1, OD_CHOICE);
-  dlg->AddItem("Left", _edit_control, _upd_control, LEFTKEY);
-  dlg->AddItem("Right", _edit_control, _upd_control, RIGHTKEY);
-  dlg->AddItem("Up", _edit_control, _upd_control, UPKEY);
-  dlg->AddItem("Down", _edit_control, _upd_control, DOWNKEY);
 
-  //	dlg->AddSeparator();
-
-  dlg->AddItem("Jump", _edit_control, _upd_control, JUMPKEY);
-  dlg->AddItem("Strafe", _edit_control, _upd_control, STRAFEKEY);
-  dlg->AddItem("Fire", _edit_control, _upd_control, FIREKEY);
-  dlg->AddItem("Wpn Prev", _edit_control, _upd_control, PREVWPNKEY);
-  dlg->AddItem("Wpn Next", _edit_control, _upd_control, NEXTWPNKEY);
-  dlg->AddItem("Inventory", _edit_control, _upd_control, INVENTORYKEY);
-  dlg->AddItem("Map", _edit_control, _upd_control, MAPSYSTEMKEY);
-  dlg->AddItem("Pause", _edit_control, _upd_control, ESCKEY);
-
-  dlg->AddSeparator();
-  dlg->AddDismissalItem();
-}
 
 static void _upd_control(ODItem *item)
 {

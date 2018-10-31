@@ -96,34 +96,35 @@ static inline void run_tick()
   }
 
   // freeze frame
-  if (settings->enable_debug_keys)
+#if defined(DEBUG)
+  if (inputs[FREEZE_FRAME_KEY] && !last_freezekey)
   {
-    if (inputs[FREEZE_FRAME_KEY] && !last_freezekey)
-    {
-      can_tick = true;
-      freezeframe ^= 1;
-      framecount = 0;
-    }
-
-    if (inputs[FRAME_ADVANCE_KEY] && !last_framekey)
-    {
-      can_tick = true;
-      if (!freezeframe)
-      {
-        freezeframe = 1;
-        framecount  = 0;
-      }
-    }
-
-    last_freezekey = inputs[FREEZE_FRAME_KEY];
-    last_framekey  = inputs[FRAME_ADVANCE_KEY];
+    can_tick = true;
+    freezeframe ^= 1;
+    framecount = 0;
   }
 
+  if (inputs[FRAME_ADVANCE_KEY] && !last_framekey)
+  {
+    can_tick = true;
+    if (!freezeframe)
+    {
+      freezeframe = 1;
+      framecount  = 0;
+    }
+  }
+
+  last_freezekey = inputs[FREEZE_FRAME_KEY];
+  last_framekey  = inputs[FRAME_ADVANCE_KEY];
+
   // fast-forward key (F5)
-  if (inputs[FFWDKEY] && settings->enable_debug_keys)
+
+  if (inputs[FFWDKEY])
   {
     game.ffwdtime = 2;
   }
+
+#endif
 
   if (can_tick)
   {

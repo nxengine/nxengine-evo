@@ -38,7 +38,7 @@ std::vector<std::string> DebugList;
 
 void DrawDebug(void)
 {
-  if (settings->enable_debug_keys)
+#if defined(DEBUG)
   {
     // handle debug keys
     if (justpushed(DEBUG_GOD_KEY))
@@ -114,6 +114,7 @@ void DrawDebug(void)
 
   debug_draw();
   DrawDebugMarks();
+#endif
 }
 
 void DrawBoundingBoxes()

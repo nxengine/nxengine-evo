@@ -972,7 +972,9 @@ void map_scroll_do(void)
       {
         scroll_normal();
 
-        if (!inputs[DEBUG_MOVE_KEY] || !settings->enable_debug_keys)
+#if defined(DEBUG)
+        if (!inputs[DEBUG_MOVE_KEY])
+#endif
           doing_normal_scroll = true;
       }
     }

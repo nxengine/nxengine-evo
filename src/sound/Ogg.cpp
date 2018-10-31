@@ -4,6 +4,7 @@
 #include "../common/basics.h"
 #include "../common/misc.h"
 #include "../common/stat.h"
+#include "../settings.h"
 #include "SoundManager.h" // SAMPLE_RATE
 
 #include <SDL.h>
@@ -118,11 +119,16 @@ bool Ogg::start(const std::string &fname, const std::string &dir, int startbeat,
   {
     Mix_PlayMusic(_song.intro, 0);
   }
-  Mix_VolumeMusic(_song.volume);
+  Mix_VolumeMusic((double)_song.volume * ((double)settings->music_volume / 100.));
   Mix_SetMusicPosition(startbeat / 1000);
 
   Mix_HookMusicFinished(musicFinishedCallback);
   return true;
+}
+
+void Ogg::updateVolume()
+{
+  Mix_VolumeMusic((double)_song.volume * ((double)settings->music_volume / 100.));
 }
 
 // pause/stop playback of the current song

@@ -4,6 +4,7 @@
 #include "../common/glob.h"
 #include "../common/misc.h"
 #include "../common/stat.h"
+#include "../settings.h"
 #include "Pixtone.h"
 #include "SoundManager.h"
 
@@ -298,7 +299,7 @@ void Organya::_musicCallback(void *udata, uint8_t *stream, uint32_t len)
       idx = 0;
     }
     // extended range
-    int32_t sample = song.samples[idx] * 32767.0 * volume;
+    int32_t sample = song.samples[idx] * 32767.0 * volume * (double)(settings->music_volume / 100.);
     // clip to int16
     if (sample > 32767)
     {

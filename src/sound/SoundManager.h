@@ -134,6 +134,8 @@ public:
   void runFade();
   void pause();
   void resume();
+  void updateMusicVolume();
+  void updateSfxVolume();
 
 protected:
   friend class Singleton<SoundManager>;
