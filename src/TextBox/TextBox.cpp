@@ -244,7 +244,7 @@ void TextBox::DrawTextBox()
   { // add text into the box
     if (!fCharsWaiting.empty())
     {
-      if (++fTextTimer >= 4)
+      if (++fTextTimer >= 3)
       {
         fTextTimer = 0;
         AddNextChar();
