@@ -397,11 +397,6 @@ void Pixtone::stop(int32_t slot)
   }
 }
 
-char Pixtone::isPlaying(int32_t slot)
-{
-  return (_sound_fx[slot].channel != -1);
-}
-
 void Pixtone::pxtSoundDone(int32_t channel)
 {
   if (_slots[channel] != -1)

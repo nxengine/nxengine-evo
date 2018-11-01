@@ -118,7 +118,6 @@ public:
   void playSfx(NXE::Sound::SFX snd, int32_t loop = 0);
   void playSfxResampled(NXE::Sound::SFX snd, uint32_t percent);
   void stopSfx(NXE::Sound::SFX snd);
-  bool isSfxPlaying(NXE::Sound::SFX snd);
 
   void startStreamSound(int32_t freq);
   void startPropSound();

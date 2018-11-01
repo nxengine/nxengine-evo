@@ -111,11 +111,6 @@ void SoundManager::stopSfx(NXE::Sound::SFX snd)
   Pixtone::getInstance()->stop((int32_t)snd);
 }
 
-bool SoundManager::isSfxPlaying(NXE::Sound::SFX snd)
-{
-  return Pixtone::getInstance()->isPlaying((int32_t)snd);
-}
-
 void SoundManager::startStreamSound(int32_t freq)
 {
   playSfxResampled(SFX::SND_STREAM1, freq);
