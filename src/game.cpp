@@ -296,6 +296,7 @@ void game_tick_normal(void)
     HandlePlayer_am();
     game.stageboss.RunAftermove();
     Objects::RunAfterMove();
+    FloatText::UpdateAll();
   }
 
   // important to put this before and not after DrawScene(), or non-existant objects

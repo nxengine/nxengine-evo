@@ -111,6 +111,45 @@ void FloatText::Draw()
   FloatText *ft = this;
   int x, y, i;
 
+  // set the SDL clipping region to just above the hold point
+  // so it looks like it "rolls" away.
+  if (ft->state == FT_SCROLL_AWAY)
+  {
+    // this formula is confusing until you realize that FT_Y_HOLD is a negative number
+    int y = ((ft->objY - (map.displayed_yscroll / CSFI)) + FT_Y_HOLD);
+    int h = (SCREEN_HEIGHT - y);
+
+    set_clip_rect(0, y, SCREEN_WIDTH, h);
+  }
+
+  // render the damage amount into a string
+  char text[6] = {10};
+  sprintf(&text[1], "%d", ft->shownAmount);
+  for (i = 1; text[i]; i++)
+    text[i] -= '0';
+  int textlen = i;
+
+  x = ft->objX - (textlen * (8 / 2)); // center the string on the object
+  y = ft->objY + ft->yoff;
+  // adjust to object's onscreen position
+  x -= (map.displayed_xscroll / CSFI);
+  y -= (map.displayed_yscroll / CSFI);
+
+  // draw the text char by char
+  for (i = 0; i < textlen; i++)
+  {
+    draw_sprite(x, y, ft->sprite, text[i], 0);
+    x += 8;
+  }
+
+  if (ft->state == FT_SCROLL_AWAY)
+    clear_clip_rect();
+}
+
+void FloatText::Update()
+{
+  FloatText *ft = this;
+
   switch (ft->state)
   {
     // rise to top point, moving once every other frame
@@ -149,40 +188,6 @@ void FloatText::Draw()
     }
     break;
   }
-
-  // set the SDL clipping region to just above the hold point
-  // so it looks like it "rolls" away.
-  if (ft->state == FT_SCROLL_AWAY)
-  {
-    // this formula is confusing until you realize that FT_Y_HOLD is a negative number
-    int y = ((ft->objY - (map.displayed_yscroll / CSFI)) + FT_Y_HOLD);
-    int h = (SCREEN_HEIGHT - y);
-
-    set_clip_rect(0, y, SCREEN_WIDTH, h);
-  }
-
-  // render the damage amount into a string
-  char text[6] = {10};
-  sprintf(&text[1], "%d", ft->shownAmount);
-  for (i = 1; text[i]; i++)
-    text[i] -= '0';
-  int textlen = i;
-
-  x = ft->objX - (textlen * (8 / 2)); // center the string on the object
-  y = ft->objY + ft->yoff;
-  // adjust to object's onscreen position
-  x -= (map.displayed_xscroll / CSFI);
-  y -= (map.displayed_yscroll / CSFI);
-
-  // draw the text char by char
-  for (i = 0; i < textlen; i++)
-  {
-    draw_sprite(x, y, ft->sprite, text[i], 0);
-    x += 8;
-  }
-
-  if (ft->state == FT_SCROLL_AWAY)
-    clear_clip_rect();
 }
 
 bool FloatText::IsScrollingAway()
@@ -207,6 +212,31 @@ void FloatText::DrawAll(void)
     if (ft->state != FT_IDLE)
     {
       ft->Draw();
+    }
+    else
+    {
+      if (ft->ObjectDestroyed)
+        delete ft;
+    }
+
+    ft = nextft;
+    count++;
+  }
+}
+
+void FloatText::UpdateAll(void)
+{
+  FloatText *ft = first;
+  FloatText *nextft;
+  int count = 0;
+
+  while (ft)
+  {
+    nextft = ft->next;
+
+    if (ft->state != FT_IDLE)
+    {
+      ft->Update();
     }
     else
     {

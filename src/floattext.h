@@ -27,6 +27,7 @@ public:
   void UpdatePos(Object *assoc_object);
 
   static void DrawAll();
+  static void UpdateAll();
   static void DeleteAll();
   static void ResetAll(void);
 
@@ -34,6 +35,7 @@ public:
 
 private:
   void Draw();
+  void Update();
 
   uint8_t state;
 
