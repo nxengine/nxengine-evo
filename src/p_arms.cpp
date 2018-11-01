@@ -279,15 +279,15 @@ static void PHandleSpur(void)
 
 void PDoWeapons(void)
 {
-  // switching weapons. have to check for inputs_frozen since justpushed
-  // reads inputs[] directly, not pinputs[].
-  if (!player->inputs_locked)
-  {
-    if (justpushed(PREVWPNKEY))
-      stat_PrevWeapon();
-    if (justpushed(NEXTWPNKEY))
-      stat_NextWeapon();
-  }
+  run_whimstar(&player->whimstar);
+
+  if (player->inputs_locked)
+    return; // should prevent from firing in cutscenes
+
+  if (justpushed(PREVWPNKEY))
+    stat_PrevWeapon();
+  if (justpushed(NEXTWPNKEY))
+    stat_NextWeapon();
 
   // firing weapon
   if (pinputs[FIREKEY])
@@ -301,7 +301,6 @@ void PDoWeapons(void)
   }
 
   PHandleSpur();
-  run_whimstar(&player->whimstar);
 
   if (empty_timer)
     empty_timer--;

@@ -282,6 +282,9 @@ void ai_ccs_gun(Object *o)
     break;
   }
 
+  if (player->inputs_locked)
+    return;
+
   if (pinputs[FIREKEY] != o->timer2)
   {
     o->timer2 = pinputs[FIREKEY];
