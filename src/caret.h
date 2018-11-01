@@ -34,6 +34,7 @@ bool init(void);
 void close(void);
 
 void DrawAll(void);
+void UpdateAll(void);
 int CountByEffectType(int type);
 int DeleteByEffectType(int type);
 void DestroyAll(void);

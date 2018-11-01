@@ -296,6 +296,7 @@ void game_tick_normal(void)
     HandlePlayer_am();
     game.stageboss.RunAftermove();
     Objects::RunAfterMove();
+    Carets::UpdateAll();
     FloatText::UpdateAll();
   }
 

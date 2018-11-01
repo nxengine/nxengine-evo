@@ -108,13 +108,6 @@ void Carets::DrawAll(void)
     }
     else
     {
-      // do caret ai
-      (*c->OnTick)(c);
-
-      // move caret
-      c->x += c->xinertia;
-      c->y += c->yinertia;
-
       // get caret's onscreen position
       // since caret's are all short-lived we just assume it's still onscreen
       // and let SDL's clipping handle it if not.
@@ -127,6 +120,33 @@ void Carets::DrawAll(void)
 
         draw_sprite(scr_x, scr_y, c->sprite, c->frame, RIGHT);
       }
+    }
+
+    c = next;
+  }
+}
+
+void Carets::UpdateAll(void)
+{
+  Caret *c = firstcaret;
+  Caret *next;
+
+  while (c)
+  {
+    next = c->next;
+
+    if (c->deleted)
+    {
+      c->Destroy();
+    }
+    else
+    {
+      // do caret ai
+      (*c->OnTick)(c);
+
+      // move caret
+      c->x += c->xinertia;
+      c->y += c->yinertia;
     }
 
     c = next;
