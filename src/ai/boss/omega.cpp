@@ -228,8 +228,7 @@ void OmegaBoss::Run(void)
           shot->damage = 4;
         }
       }
-      else if (omg.firecounter >= omg.endfirestate
-               || NXE::Sound::SoundManager::getInstance()->isSfxPlaying(NXE::Sound::SFX::SND_MISSILE_HIT))
+      else if (omg.firecounter >= omg.endfirestate || CountObjectsOfType(OBJ_MISSILE_BOOM_SPAWNER) > 0)
       { // snap jaws shut
         omg.animtimer = 0;
         o->state      = OMG_JAWS_CLOSE;
