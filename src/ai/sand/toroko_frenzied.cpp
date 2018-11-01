@@ -92,10 +92,10 @@ void ai_toroko_frenzied(Object *o)
     case 11:
       FACEPLAYER;
       ANIMATE(4, 0, 1);
-      /// FIXME:: I think Toroko does not like fireball either?
+      // check for boomflash and for > 3 fireballs
       if (o->frame == 0
-          && (NXE::Sound::SoundManager::getInstance()->isSfxPlaying(
-                 NXE::Sound::SFX::SND_MISSILE_HIT) /*|| sound_is_playing(0)*/))
+          && (CountObjectsOfType(OBJ_MISSILE_BOOM_SPAWNER) > 0
+          || (CountObjectsOfType(OBJ_FIREBALL1) + CountObjectsOfType(OBJ_FIREBALL1)) > 3))
       {
         o->state = 20;
       }

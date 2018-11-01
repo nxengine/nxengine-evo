@@ -141,7 +141,8 @@ void ai_curly_boss(Object *o)
   {
     // curly activates her shield anytime a missile's explosion goes off,
     // even if it's nowhere near her at all
-    if (NXE::Sound::SoundManager::getInstance()->isSfxPlaying(NXE::Sound::SFX::SND_MISSILE_HIT))
+    if (CountObjectsOfType(OBJ_MISSILE_BOOM_SPAWNER) > 0)
+//    if (NXE::Sound::SoundManager::getInstance()->isSfxPlaying(NXE::Sound::SFX::SND_MISSILE_HIT))
     {
       o->timer = 0;
       o->state = CURLYB_SHIELD;
