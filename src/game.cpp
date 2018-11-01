@@ -255,10 +255,16 @@ void Game::switchmap(int mapno, int scriptno, int px, int py)
 
 void Game::reset()
 {
-  memset(inputs, 0, sizeof(inputs));
   NXE::Sound::SoundManager::getInstance()->stopLoopSfx();
-  //	StopLoopSounds();
   tsc->StopScripts();
+  memset(inputs, 0, sizeof(inputs));
+  memset(game.flags, 0, sizeof(game.flags));
+  memset(game.skipflags, 0, sizeof(game.skipflags));
+  game.quaketime = game.megaquaketime = 0;
+  game.showmapnametime                = 0;
+  game.debug.god                      = 0;
+  game.running                        = true;
+  game.frozen                         = false;
 
   game.pause(false);
   game.setmode(GM_INTRO, 0, true);
@@ -463,6 +469,15 @@ bool game_load(int num)
     return 1;
   }
   SDL_free(profile_name);
+
+  memset(game.flags, 0, sizeof(game.flags));
+  memset(game.skipflags, 0, sizeof(game.skipflags));
+  game.quaketime = game.megaquaketime = 0;
+  game.showmapnametime                = 0;
+  game.debug.god                      = 0;
+  game.running                        = true;
+  game.frozen                         = false;
+
   return game_load(&p);
 }
 
