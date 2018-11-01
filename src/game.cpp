@@ -298,13 +298,13 @@ void game_tick_normal(void)
     Objects::RunAfterMove();
     Carets::UpdateAll();
     FloatText::UpdateAll();
+    map_scroll_do();
   }
 
   // important to put this before and not after DrawScene(), or non-existant objects
   // can wind up in the onscreen_objects[] array, and blow up the program on the next tick.
   Objects::CullDeleted();
 
-  map_scroll_do();
 
   DrawScene();
   DrawStatusBar();
