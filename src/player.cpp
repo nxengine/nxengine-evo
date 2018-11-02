@@ -1588,7 +1588,7 @@ void PSelectFrame(void)
       player->walkanimtimer = 0;
       if (++player->walkanimframe >= 4)
         player->walkanimframe = 0;
-      if (pwalkanimframes[player->walkanimframe] == 0)
+      if (pwalkanimframes[player->walkanimframe] != 0)
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_PLAYER_WALK);
     }
 
