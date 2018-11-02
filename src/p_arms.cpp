@@ -241,7 +241,7 @@ static void PHandleSpur(void)
       else
       {
         spur->chargetimer++;
-        if (spur->chargetimer & 2)
+        if (spur->chargetimer / 2 & 1)
         {
           NXE::Sound::SoundManager::getInstance()->playSfx(
               (NXE::Sound::SFX)((int)NXE::Sound::SFX::SND_SPUR_CHARGE_1 + spur->level));
