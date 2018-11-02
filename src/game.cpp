@@ -472,14 +472,6 @@ bool game_load(int num)
   }
   SDL_free(profile_name);
 
-  memset(game.flags, 0, sizeof(game.flags));
-  memset(game.skipflags, 0, sizeof(game.skipflags));
-  game.quaketime = game.megaquaketime = 0;
-  game.showmapnametime                = 0;
-  game.debug.god                      = 0;
-  game.running                        = true;
-  game.frozen                         = false;
-
   return game_load(&p);
 }
 
