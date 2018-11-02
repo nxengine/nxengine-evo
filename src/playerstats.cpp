@@ -36,6 +36,8 @@ void AddXP(int xp, bool quiet)
     else
     {
       weapon->xp = weapon->max_xp[weapon->level];
+      if (player->equipmask & EQUIP_WHIMSTAR)
+        add_whimstar(&player->whimstar);
       break;
     }
   }

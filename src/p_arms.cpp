@@ -249,11 +249,10 @@ static void PHandleSpur(void)
       }
     }
     else
-    { // keep flashing even once at max
-      statusbar.xpflashcount = FLASH_TIME;
-
-      if (player->equipmask & EQUIP_WHIMSTAR)
-        add_whimstar(&player->whimstar);
+    {
+      // keep flashing even once at max
+      int amt = (player->equipmask & EQUIP_TURBOCHARGE) ? 3 : 2;
+      AddXP(amt, true);
     }
   }
   else
