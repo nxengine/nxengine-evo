@@ -1382,6 +1382,13 @@ void PHandleZeroG(void)
   if (player->yinertia < -0x400)
     player->yinertia = -0x400;
 
+  int scr_x = (player->x / CSFI) - (map.displayed_xscroll / CSFI);
+
+  if (scr_x <= 10 && player->xinertia < 0)
+    player->xinertia = 0;
+  if (scr_x >= Graphics::SCREEN_WIDTH - (24+5) && player->xinertia > 0)
+    player->xinertia = 0;
+
   player->frame = (player->yinertia > 0) ? 1 : 2;
 }
 
