@@ -101,7 +101,7 @@ void PResetWeapons()
 
 static bool can_fire_spur(void)
 {
-  if (CountObjectsOfType(OBJ_SPUR_SHOT))
+  if (CountObjectsOfType(OBJ_SPUR_TRAIL))
     return false;
 
   return true;
