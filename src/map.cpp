@@ -138,6 +138,10 @@ bool load_map(const std::string &fname)
     for (x = 0; x < map.xsize; x++)
     {
       map.tiles[x][y] = fgetc(fp);
+      if (game.curmap == 31 && (y == 0 || y == 15))
+      {
+        map.tiles[x][y] = 0xF; // block up/down in Main Artery
+      }
     }
 
   fclose(fp);
@@ -429,6 +433,9 @@ bool load_tileattr(const std::string &fname)
     tilecode[i] = tc;
     tileattr[i] = tilekey[tc];
     // stat("Tile %02x   TC %02x    Attr %08x   tilekey[%02x] = %08x", i, tc, tileattr[i], tc, tilekey[tc]);
+
+    if (game.curmap == 31 && tc == 0x46)
+      tileattr[i] = 0; // remove left/right blockers in Mai Artery
 
     if (tc == 0x43) // destroyable block - have to replace graphics
     {
