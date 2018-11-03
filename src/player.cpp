@@ -341,6 +341,7 @@ void PUpdateInput(void)
     {
       if (!game.frozen && !player->dead && game.tsc->GetCurrentScript() == -1)
       {
+        player->inputs_locked = true;
         game.setmode(GM_INVENTORY);
       }
     }

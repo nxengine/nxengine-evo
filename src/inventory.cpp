@@ -186,7 +186,7 @@ static void ExitInventory(void)
 {
   game.tsc->StopScripts();
   game.setmode(GM_NORMAL);
-  memset(inputs, 0, sizeof(inputs));
+  player->inputs_locked = false;
 }
 
 static void RunSelector(stSelector *selector)
