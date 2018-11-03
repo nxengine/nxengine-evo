@@ -516,8 +516,7 @@ static void PFireSpur(void)
 
 static void PFirePolarStar(int level)
 {
-  // at level 3 only two shots per screen permitted
-  if (level < 2 || CountObjectsOfType(OBJ_POLAR_SHOT) < 2)
+  if (CountObjectsOfType(OBJ_POLAR_SHOT) < 2)
   {
     int xoff;
     if (level == 2)
