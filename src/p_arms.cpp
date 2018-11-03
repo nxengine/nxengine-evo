@@ -373,9 +373,7 @@ static void PFireFireball(int level)
 
   count = (CountObjectsOfType(OBJ_FIREBALL1) + CountObjectsOfType(OBJ_FIREBALL23));
   if (count >= max_fireballs[level])
-  {
     return;
-  }
 
   // the 8px offset fires the shot just a tiny bit behind the player--
   // you can't see the difference but it makes the shot correctly bounce if
@@ -487,7 +485,11 @@ static void PFireBubbler(int level)
   int count = CountObjectsOfType(OBJ_BUBBLER12_SHOT) + CountObjectsOfType(OBJ_BUBBLER3_SHOT);
 
   if (count >= max_bubbles[level])
+  {
+    // give back the previously-decremented ammo so they don't lose it (hack)
+    player->weapons[player->curWeapon].ammo++;
     return;
+  }
 
   int objtype = (level != 2) ? OBJ_BUBBLER12_SHOT : OBJ_BUBBLER3_SHOT;
   FireSimpleBulletOffset(objtype, B_BUBBLER_L1 + level, -4 * CSFI, 0);
