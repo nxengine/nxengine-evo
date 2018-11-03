@@ -178,7 +178,8 @@ void GetWeapon(int wpn, int ammo)
     player->weapons[wpn].level     = 0;
     player->weapons[wpn].xp        = 0;
     player->weapons[wpn].hasWeapon = true;
-    player->curWeapon              = wpn;
+    if (player->curWeapon == 0) // if player doesn't have any weapons - activate new weapon
+      player->curWeapon              = wpn;
   }
   else
   { // missile capacity powerups
