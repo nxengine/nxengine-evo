@@ -769,6 +769,11 @@ static void sidekick_run_defeated(Object *o, int health)
 
       if (o->type == OBJ_SUE_FRENZIED)
         sue_was_killed = true; // trigger Misery to start spawning missiles
+      if (o->type == OBJ_MISERY_FRENZIED)
+      {
+        if (game.stageboss.object)
+          game.stageboss.object->frame++; // trigger UDCore open
+      }
     }
     case SIDEKICK_DEFEATED + 1:
     {
