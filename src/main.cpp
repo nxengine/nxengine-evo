@@ -261,7 +261,6 @@ void InitNewGame(bool with_intro)
 
 int main(int argc, char *argv[])
 {
-  bool inhibit_loadfade = false;
   bool error            = false;
   bool freshstart;
 
@@ -358,8 +357,6 @@ int main(int argc, char *argv[])
     game.switchstage.mapno        = 0;
     game.switchstage.eventonentry = 0;
   }
-  if (game.switchstage.mapno == LOAD_GAME)
-    inhibit_loadfade = true;
 
   game.running = true;
   freshstart   = true;
@@ -389,11 +386,7 @@ int main(int argc, char *argv[])
         fatal("savefile error");
         goto ingame_error;
       }
-
-      if (!inhibit_loadfade)
-        fade.Start(FADE_IN, FADE_CENTER);
-      else
-        inhibit_loadfade = false;
+      fade.set_full(FADE_IN);
     }
     else if (game.switchstage.mapno == TITLE_SCREEN)
     {
