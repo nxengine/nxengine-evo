@@ -1,3 +1,7 @@
+/* Based on */
+/* SIMPLE CAVE STORY MUSIC PLAYER (Organya) */
+/* Written by Joel Yliluoma -- http://iki.fi/bisqwit/ */
+/* https://bisqwit.iki.fi/jutut/kuvat/programming_examples/doukutsu-org/orgplay.cc */
 
 #ifndef _PIXTONE_H
 #define _PIXTONE_H
