@@ -303,7 +303,7 @@ bool load_entities(const std::string &fname)
       if (addobject)
       {
         // hack for chests (can we do this elsewhere?)
-        if (type == OBJ_CHEST_OPEN)
+        if (type == OBJ_CHEST_OPEN && dir == RIGHT)
           y++;
         // hack for skydragon in Fall end cinematic
         if (type == OBJ_SKY_DRAGON && id2 == 230)
