@@ -481,7 +481,7 @@ void ai_hidden_powerup(Object *o)
 {
   if (o->hp < 990)
   {
-    SmokeBoomUp(o);
+    SmokeClouds(o, 8, 8, 8, NULL);
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPL_SMALL);
 
     o->ChangeType((o->dir == LEFT) ? OBJ_HEART : OBJ_MISSILE);
