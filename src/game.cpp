@@ -494,6 +494,8 @@ bool game_load(Profile *p)
     player->weapons[i].ammo      = p->weapons[i].ammo;
     player->weapons[i].maxammo   = p->weapons[i].maxammo;
   }
+  for (auto &idx:p->wpnOrder)
+    player->wpnOrder.push_back(idx);
 
   player->curWeapon = p->curWeapon;
 
@@ -554,7 +556,8 @@ bool game_save(Profile *p)
 {
   int i;
 
-  memset(p, 0, sizeof(Profile));
+//  memset(p, 0, sizeof(Profile));
+  p->wpnOrder.clear();
 
   p->stage  = game.curmap;
   p->songno = NXE::Sound::SoundManager::getInstance()->currentSong();
@@ -580,6 +583,9 @@ bool game_save(Profile *p)
     p->weapons[i].ammo      = player->weapons[i].ammo;
     p->weapons[i].maxammo   = player->weapons[i].maxammo;
   }
+  for (auto &idx: player->wpnOrder)
+    p->wpnOrder.push_back(idx);
+
 
   // save inventory
   p->ninventory = player->ninventory;

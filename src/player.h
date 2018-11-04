@@ -7,6 +7,8 @@
 #include "object.h"
 #include "p_arms.h"
 
+#include <vector>
+
 #define MAX_INVENTORY 42
 
 class Player : public Object
@@ -74,6 +76,7 @@ public:
   FloatText *XPText;
 
   Weapon weapons[WPN_COUNT];
+  std::vector<int> wpnOrder;
   int curWeapon;
 
   int maxHealth; // max health

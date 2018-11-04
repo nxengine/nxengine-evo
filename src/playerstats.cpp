@@ -180,6 +180,7 @@ void GetWeapon(int wpn, int ammo)
     player->weapons[wpn].hasWeapon = true;
     if (player->curWeapon == 0) // if player doesn't have any weapons - activate new weapon
       player->curWeapon              = wpn;
+    player->wpnOrder.push_back(wpn);
   }
   else
   { // missile capacity powerups
@@ -195,22 +196,18 @@ void LoseWeapon(int wpn)
 {
   player->weapons[wpn].hasWeapon = false;
 
-  // lost current weapon?
-  if (wpn == player->curWeapon)
+  for (size_t idx = 0; idx < player->wpnOrder.size(); idx++)
   {
-    // in case he has no weapons left at all
-    player->curWeapon = WPN_NONE;
-
-    // find a new weapon for him
-    for (int i = 0; i < WPN_COUNT; i++)
+    if (player->wpnOrder[idx] == wpn)
     {
-      if (player->weapons[i].hasWeapon)
-      {
-        player->curWeapon = i;
+        player->wpnOrder.erase(player->wpnOrder.begin()+idx);
         break;
-      }
     }
   }
+
+  player->curWeapon = WPN_NONE;
+  if (player->wpnOrder.size() > 0 && player->weapons[player->wpnOrder[0]].hasWeapon)
+    player->curWeapon = player->wpnOrder[0];
 }
 
 // TAM command.
@@ -218,12 +215,37 @@ void TradeWeapon(int oldwpn, int newwpn, int ammo)
 {
   int oldcurwpn = player->curWeapon;
 
+  int idx;
+  for (idx = 0; idx < (int)player->wpnOrder.size(); idx++)
+  {
+    if (player->wpnOrder[idx] == oldwpn)
+    {
+        break;
+    }
+  }
+
   // ammo 0 = no change; used when you get missiles are upgraded to Super Missiles
   if (ammo == 0)
     ammo = player->weapons[oldwpn].maxammo;
 
-  GetWeapon(newwpn, ammo);
   LoseWeapon(oldwpn);
+
+  if (!player->weapons[newwpn].hasWeapon)
+  {
+    player->weapons[newwpn].ammo      = 0; // will be filled to full by AddAmmo below
+    player->weapons[newwpn].maxammo   = ammo;
+    player->weapons[newwpn].level     = 0;
+    player->weapons[newwpn].xp        = 0;
+    player->weapons[newwpn].hasWeapon = true;
+    player->wpnOrder.insert(player->wpnOrder.begin()+idx, newwpn);
+  }
+  else
+  {
+    player->weapons[newwpn].maxammo += ammo;
+  }
+
+  AddAmmo(newwpn, ammo);
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GET_ITEM);
 
   // switch to new weapon if the weapon traded was the
   // one we were using. Otherwise, don't change current weapon.

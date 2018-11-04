@@ -26,7 +26,8 @@ bool profile_load(const char *pfname, Profile *file)
   FILE *fp;
 
   stat("Loading profile from %s...", pfname);
-  memset(file, 0, sizeof(Profile));
+//  memset(file, 0, sizeof(Profile));
+  file->wpnOrder.clear();
 
   fp = myfopen(widen(pfname).c_str(), widen("rb").c_str());
   if (!fp)
@@ -76,6 +77,7 @@ bool profile_load(const char *pfname, Profile *file)
     file->weapons[type].xp        = xp;
     file->weapons[type].ammo      = ammo;
     file->weapons[type].maxammo   = maxammo;
+    file->wpnOrder.push_back(type);
 
     if (i == curweaponslot)
     {
@@ -162,7 +164,7 @@ bool profile_save(const char *pfname, Profile *file)
   fseek(fp, PF_WEAPONS_OFFS, SEEK_SET);
   int slotno = 0, curweaponslot = 0;
 
-  for (i = 0; i < WPN_COUNT; i++)
+  for (auto &i : file->wpnOrder)
   {
     if (file->weapons[i].hasWeapon)
     {

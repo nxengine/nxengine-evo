@@ -275,7 +275,7 @@ void TB_SaveSelect::DrawExtendedInfo()
   y = ((SCREEN_HEIGHT - MSG_H) - 2) + 8;
 
   // weapon list
-  for (int i = 0; i < WPN_COUNT; i++)
+  for (auto &i: p->wpnOrder)
   {
     if (p->weapons[i].hasWeapon)
     {

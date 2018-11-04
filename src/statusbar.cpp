@@ -184,48 +184,56 @@ void weapon_introslide()
 // switches to the next weapon in inventory
 void stat_NextWeapon(bool quiet)
 {
-  int w;
-
-  w = player->curWeapon;
-  if (w == WPN_NONE)
+  if (player->curWeapon == WPN_NONE)
     return;
 
-  for (;;)
-  {
-    if (++w >= WPN_COUNT)
-      w = 0;
+  int idx;
 
-    if (player->weapons[w].hasWeapon || w == player->curWeapon)
+  for (idx = 0; idx < (int)player->wpnOrder.size(); idx++)
+  {
+    if (player->wpnOrder[idx] == player->curWeapon)
+      break;
+  }
+
+  if (player->wpnOrder.size() > 0)
+  {
+    if (++idx >= (int)player->wpnOrder.size())
+      idx = 0;
+
+    if (player->weapons[player->wpnOrder[idx]].hasWeapon || player->wpnOrder[idx] == player->curWeapon)
     {
       if (!quiet)
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SWITCH_WEAPON);
-      weapon_slide(LEFT, w);
+      weapon_slide(LEFT, player->wpnOrder[idx]);
       return;
     }
   }
-  while (w != player->curWeapon)
-    ;
 }
 
 // switches to the previous weapon in inventory
 void stat_PrevWeapon(bool quiet)
 {
-  int w;
-
-  w = player->curWeapon;
-  if (w == WPN_NONE)
+  if (player->curWeapon == WPN_NONE)
     return;
 
-  for (;;)
-  {
-    if (--w < 0)
-      w = WPN_COUNT - 1;
+  int idx;
 
-    if (player->weapons[w].hasWeapon || w == player->curWeapon)
+  for (idx = 0; idx < (int)player->wpnOrder.size(); idx++)
+  {
+    if (player->wpnOrder[idx] == player->curWeapon)
+      break;
+  }
+
+  if (player->wpnOrder.size() > 0)
+  {
+    if (--idx < 0)
+      idx = player->wpnOrder.size() - 1;
+
+    if (player->weapons[player->wpnOrder[idx]].hasWeapon || player->wpnOrder[idx] == player->curWeapon)
     {
       if (!quiet)
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SWITCH_WEAPON);
-      weapon_slide(RIGHT, w);
+      weapon_slide(RIGHT, player->wpnOrder[idx]);
       return;
     }
   }
@@ -397,7 +405,7 @@ void niku_draw(int value, bool force_white)
 void DrawStatusBar(void)
 {
   int level, curxp, maxxp;
-  int w, x;
+  int x;
   bool maxed_out;
 
   // debug("%08x", game.bossbar.object);
@@ -497,21 +505,30 @@ void DrawStatusBar(void)
     DrawWeaponAmmo((AMMO_X + slide.wpn_offset + slide.ammo_offset), AMMO_Y, slide.firstWeapon);
 
     // draw other weapons
-    w = slide.firstWeapon;
     x = STATUS_X + 64 + slide.wpn_offset + 1;
-    for (;;)
-    {
-      if (++w >= WPN_COUNT)
-        w = 0;
-      if (w == slide.firstWeapon)
-        break;
 
-      if (player->weapons[w].hasWeapon)
-      {
-        draw_sprite(x, WEAPONBAR_Y, SPR_ARMSICONS, w, RIGHT);
-        x += 16;
-      }
+    int idx;
+
+    for (idx = 0; idx < (int)player->wpnOrder.size(); idx++)
+    {
+      if (player->wpnOrder[idx] == slide.firstWeapon)
+        break;
     }
+
+    if (player->wpnOrder.size() > 0)
+      for (;;)
+      {
+        if (++idx >= (int)player->wpnOrder.size())
+          idx = 0;
+        if (player->wpnOrder[idx] == slide.firstWeapon)
+          break;
+
+        if (player->weapons[player->wpnOrder[idx]].hasWeapon)
+        {
+          draw_sprite(x, WEAPONBAR_Y, SPR_ARMSICONS, player->wpnOrder[idx], RIGHT);
+          x += 16;
+        }
+      }
 
     DrawAirLeft((SCREEN_WIDTH / 2) - (5 * 8), ((SCREEN_HEIGHT) / 2) - 16);
   }

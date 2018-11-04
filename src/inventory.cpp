@@ -50,7 +50,7 @@ int RefreshInventoryScreen(void)
   // find current weapon and count # items for armssel selector
   inv.armssel.items[0] = 0; // show "no weapon" in case of no weapon
   inv.armssel.nitems   = 0;
-  for (i = 1; i < WPN_COUNT; i++)
+  for (auto &i : player->wpnOrder)
   {
     if (!player->weapons[i].hasWeapon)
       continue;
@@ -146,7 +146,7 @@ static void DrawInventory(void)
   DrawSelector(&inv.armssel, x, y);
 
   // draw the arms
-  for (w = 1; w < WPN_COUNT; w++)
+  for (auto &w : player->wpnOrder)
   {
     if (!player->weapons[w].hasWeapon)
       continue;
