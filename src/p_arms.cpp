@@ -379,7 +379,7 @@ static void PFireFireball(int level)
   // you can't see the difference but it makes the shot correctly bounce if
   // you shoot while flat up against a wall, instead of embedding the fireball
   // in the wall.
-  Object *fb = FireSimpleBulletOffset(object_types[level], B_FIREBALL1 + level, -8 * CSFI, 0);
+  Object *fb = FireSimpleBulletOffset(object_types[level], B_FIREBALL1 + level, -6 * CSFI, 0);
   fb->dir    = player->dir;
   fb->nxflags &= ~NXFLAG_NO_RESET_YINERTIA;
 
