@@ -41,7 +41,10 @@ void ai_spur_shot(Object *o)
   {
     o->shot.damage--;
 
-    if (o->shot.damage <= 0 || (enemy->flags & FLAG_INVULNERABLE))
+    if (o->shot.damage < 0)
+      o->shot.damage = 0;
+
+    if (enemy->flags & FLAG_INVULNERABLE)
     {
       o->Delete();
       return;
