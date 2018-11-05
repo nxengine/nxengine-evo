@@ -494,6 +494,7 @@ bool game_load(Profile *p)
     player->weapons[i].ammo      = p->weapons[i].ammo;
     player->weapons[i].maxammo   = p->weapons[i].maxammo;
   }
+  player->wpnOrder.clear();
   for (auto &idx:p->wpnOrder)
     player->wpnOrder.push_back(idx);
 

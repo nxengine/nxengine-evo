@@ -61,6 +61,8 @@ bool profile_load(const char *pfname, Profile *file)
 
   // load weapons
   fseek(fp, PF_WEAPONS_OFFS, SEEK_SET);
+  file->wpnOrder.clear();
+
   for (i = 0; i < MAX_WPN_SLOTS; i++)
   {
     int type = fgetl(fp);
