@@ -201,7 +201,7 @@ void ai_curlyboss_shot(Object *o)
 {
   if (hitdetect(o, player) && !player->hurt_time)
   {
-    hurtplayer(o->shot.damage);
+    hurtplayer(o->damage);
   }
   else if (IsBlockedInShotDir(o))
   {
