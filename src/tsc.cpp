@@ -878,7 +878,7 @@ void TSC::ExecScript(ScriptInstance *s)
       // life capsule--add to max life
       case OP_MLPLUS:
         player->maxHealth += parm[0];
-        player->hp = player->maxHealth;
+        player->hp += parm[0];
         break;
 
       case OP_FON: // focus on NPC
