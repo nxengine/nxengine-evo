@@ -165,7 +165,6 @@ static void curlyboss_fire(Object *o, int dir)
 {
   Object *shot = SpawnObjectAtActionPoint(o, OBJ_CURLYBOSS_SHOT);
 
-  shot->damage   = 6;
   shot->sprite   = SPR_SHOT_MGUN_L1;
   shot->dir      = o->dir;
   shot->shot.dir = dir;
@@ -201,7 +200,7 @@ void ai_curlyboss_shot(Object *o)
 {
   if (hitdetect(o, player) && !player->hurt_time)
   {
-    hurtplayer(o->shot.damage);
+    hurtplayer(6);
   }
   else if (IsBlockedInShotDir(o))
   {
