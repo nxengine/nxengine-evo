@@ -1566,14 +1566,14 @@ void c------------------------------() {}
 // does the invincibility flash when the player has recently been hurt
 void PDoHurtFlash(void)
 {
-  // note that hurt_flash_state is NOT cleared when timer reaches 0,
-  // but this is ok because the number of blinks are and always should be even.
-  // (if not it wouldn't look right when he unhurts).
+  // note that hurt_flash_state needs to be kept updated
+  // because in TSC scripts it may be set to 0
+  // with the player's flash state staying at 1 (invisible)
   if (player->hurt_time)
   {
     player->hurt_time--;
-    player->hurt_flash_state = (player->hurt_time & 2);
   }
+  player->hurt_flash_state = (player->hurt_time & 2);
 }
 
 // decides which player frame to show
