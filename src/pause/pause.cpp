@@ -9,6 +9,7 @@
 #include "../input.h"
 #include "../nx.h"
 #include "../screeneffect.h"
+#include "../endgame/credits.h"
 using namespace Graphics;
 using namespace Sprites;
 #include "dialog.h"
@@ -65,6 +66,12 @@ void pause_tick()
 {
   DrawScene();
   fade.Draw();
+
+  if (game.mode == GM_CREDITS)
+  {
+    credit_draw();
+  }
+
   dlg->RunInput();
   dlg->Draw();
 

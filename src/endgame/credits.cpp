@@ -413,6 +413,15 @@ void credit_tick()
     credits->Tick();
 }
 
+void credit_draw()
+{
+  if (credits)
+  {
+    credits->bigimage.Draw();
+    credits->Draw();
+  }
+}
+
 void credit_set_image(int imgno)
 {
   if (credits)

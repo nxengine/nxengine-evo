@@ -38,6 +38,7 @@ class Credits
 public:
   bool Init();
   void Tick();
+  void Draw();
   ~Credits();
 
   BigImage bigimage; // current "SIL" big left-hand image
@@ -50,7 +51,6 @@ private:
   CredLine *AddLine(CredLine *line);
   void RemoveLine(CredLine *line);
 
-  void Draw();
   bool DrawLine(CredLine *line);
 
   int spawn_y;  // position of next line relative to top of roll
@@ -73,5 +73,6 @@ void credit_tick();
 void credit_set_image(int imgno);
 void credit_clear_image();
 void credit_close();
+void credit_draw();
 
 #endif
