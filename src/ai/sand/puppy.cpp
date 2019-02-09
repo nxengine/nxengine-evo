@@ -222,6 +222,8 @@ void ai_puppy_run(Object *o)
         o->xinertia = -0x400;
       break;
   }
+  o->yinertia += 0x40;
+  LIMITY(0x5FF);
 }
 
 /*
