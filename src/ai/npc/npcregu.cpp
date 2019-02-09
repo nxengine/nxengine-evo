@@ -871,6 +871,7 @@ void ai_generic_npc(Object *o)
 
 void ai_generic_npc_nofaceplayer(Object *o)
 {
+  o->yinertia += 0x40;
   switch (o->state)
   {
     case 0: // stand
@@ -917,6 +918,7 @@ void ai_generic_npc_nofaceplayer(Object *o)
       }
       break;
   }
+  LIMITY(0x5FF);
 }
 
 void npc_generic_walk(Object *o, int basestate)
