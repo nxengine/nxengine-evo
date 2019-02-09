@@ -344,9 +344,9 @@ bool SoundManager::_musicIsBoss(uint32_t songno)
 
 void SoundManager::_start_org_track(int songno, bool resume)
 {
+  _lastSongPos = Organya::getInstance()->stop();
   if (songno == 0)
   {
-    _lastSongPos = Organya::getInstance()->stop();
     return;
   }
 
