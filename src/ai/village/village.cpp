@@ -129,6 +129,7 @@ void ai_mushroom_enemy(Object *o)
   switch (o->state)
   {
     case 0:
+      o->nxflags |= NXFLAG_FOLLOW_SLOPE;
       o->frame     = 0;
       o->animtimer = 0;
       o->xinertia  = 0;
