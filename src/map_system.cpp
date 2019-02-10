@@ -43,7 +43,6 @@ static struct
   const char *bannertext;
   int textx, texty;
 
-  bool lastbuttondown;
 } ms;
 
 // expand/contract effect
@@ -123,7 +122,6 @@ bool ms_init(int return_to_mode)
 {
   memset(&ms, 0, sizeof(ms));
   ms.return_gm      = return_to_mode;
-  ms.lastbuttondown = true;
   ms.w              = map.xsize;
   ms.h              = map.ysize;
 
@@ -169,12 +167,7 @@ void ms_tick(void)
     ms.timer++;
 
     // dismissal
-    if (ms.lastbuttondown)
-    {
-      if (!buttondown())
-        ms.lastbuttondown = false;
-    }
-    else if (buttondown())
+    if (justpushed(JUMPKEY) || justpushed(MAPSYSTEMKEY))
     {
       ms.state = MS_CONTRACTING;
     }
