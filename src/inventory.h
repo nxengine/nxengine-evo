@@ -36,6 +36,7 @@ bool inventory_init(int param);
 void inventory_tick(void);
 int RefreshInventoryScreen(void);
 void UnlockInventoryInput(void);
+void DrawInventory(void);
 
 enum INVENTORY
 {

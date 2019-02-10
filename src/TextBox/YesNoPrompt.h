@@ -15,6 +15,7 @@ public:
   void ResetState();
 
   void Draw();
+  void Tick();
 
   bool IsVisible()
   {

@@ -231,14 +231,14 @@ void Game::tick(void)
     // run scripts
     tsc->RunScripts();
 
-    // call the tick function for the current game mode
-    tickfunctions[game.mode].OnTick();
     if (justpushed(ESCKEY)
         && (game.mode == GM_NORMAL || game.mode == GM_INVENTORY || game.mode == GM_MAP_SYSTEM
             || game.mode == GM_CREDITS))
     {
       game.pause(GP_PAUSED);
     }
+    // call the tick function for the current game mode
+    tickfunctions[game.mode].OnTick();
   }
 
   DrawDebug();
@@ -314,7 +314,7 @@ void game_tick_normal(void)
   if (player->equipmask & EQUIP_NIKUMARU)
     niku_draw(game.counter);
 
-  textbox.Draw();
+  textbox.Tick();
 
   ScreenEffects::Draw();
   map_draw_map_name(); // stage name overlay as on entry

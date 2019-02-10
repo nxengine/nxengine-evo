@@ -17,6 +17,7 @@ public:
   bool IsVisible();
   bool Aborted();
   void Draw();
+  void Tick();
 
 private:
   void Run_Input();

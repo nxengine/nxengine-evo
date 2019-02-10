@@ -97,6 +97,7 @@ public:
 
   void FillRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);
   void FillRect(int x1, int y1, int x2, int y2, NXColor color);
+  void TintRect(int x1, int y1, int x2, int y2, NXColor color, uint16_t alpha);
   void FillRect(NXRect *rect, uint8_t r, uint8_t g, uint8_t b);
   void FillRect(NXRect *rect, NXColor color);
   void ClearRect(int x1, int y1, int x2, int y2);

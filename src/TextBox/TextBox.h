@@ -60,6 +60,7 @@ public:
   bool IsBusy();
 
   void Draw();
+  void Tick();
   static void DrawFrame(int x, int y, int w, int h);
 
   uint8_t GetFlags()
@@ -70,6 +71,7 @@ public:
 
 private:
   void DrawTextBox();
+  void TickTextBox();
   int GetMaxLineLen();
   void AddNextChar();
 

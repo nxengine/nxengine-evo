@@ -149,7 +149,6 @@ void ms_close(void)
 void ms_tick(void)
 {
   DrawScene();
-  draw_banner();
 
   if (ms.state == MS_EXPANDING)
   {
@@ -157,32 +156,17 @@ void ms_tick(void)
 
     if (ms.expandframe > EXPAND_LENGTH)
       ms.state = MS_DISPLAYED;
-    else
-      draw_expand();
   }
 
   if (ms.state == MS_DISPLAYED)
   {
-    // draw map
-    DrawRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
-    FillRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
-    for (int y = 0; y < ms.current_row; y++)
-    {
-      for (int x = 0; x < map.xsize; x++)
-      {
-        int tc = tilecode[map.tiles[x][y]];
-
-        draw_sprite(ms.x + x, ms.y + y, SPR_MAP_PIXELS, get_color(tc));
-      }
-    }
     if (ms.current_row < map.ysize)
       ms.current_row++;
     if (ms.current_row < map.ysize)
       ms.current_row++;
 
     // you-are-here dot
-    if (++ms.timer & 8)
-      draw_sprite(ms.px, ms.py, SPR_MAP_PIXELS, 4);
+    ms.timer++;
 
     // dismissal
     if (ms.lastbuttondown)
@@ -204,9 +188,40 @@ void ms_tick(void)
       int param = (ms.return_gm == GM_INVENTORY) ? 1 : 0;
       game.setmode(ms.return_gm, param);
     }
-    else
+  }
+  ms_draw();
+}
+
+void ms_draw(void)
+{
+  draw_banner();
+
+  if (ms.state == MS_EXPANDING)
+  {
+    draw_expand();
+  }
+
+  if (ms.state == MS_DISPLAYED)
+  {
+    // draw map
+    DrawRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
+    FillRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
+    for (int y = 0; y < ms.current_row; y++)
     {
-      draw_expand();
+      for (int x = 0; x < map.xsize; x++)
+      {
+        int tc = tilecode[map.tiles[x][y]];
+
+        draw_sprite(ms.x + x, ms.y + y, SPR_MAP_PIXELS, get_color(tc));
+      }
     }
+
+    // you-are-here dot
+    if (ms.timer & 8)
+      draw_sprite(ms.px, ms.py, SPR_MAP_PIXELS, 4);
+  }
+  else if (ms.state == MS_CONTRACTING)
+  {
+    draw_expand();
   }
 }

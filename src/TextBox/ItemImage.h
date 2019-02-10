@@ -7,6 +7,7 @@ class TB_ItemImage
 public:
   void ResetState();
   void Draw();
+  void Tick();
 
   void SetVisible(bool enable);
   void SetSprite(int sprite, int frame);

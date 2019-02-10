@@ -130,9 +130,9 @@ static void DrawSelector(stSelector *selector, int x, int y)
   Sprites::draw_sprite(selx, sely, selector->sprite, selector->flashstate, 0);
 }
 
-static void DrawInventory(void)
+void DrawInventory(void)
 {
-  int x, y, w, i, c;
+  int x, y, i, c;
 
   // draw the box
   TextBox::DrawFrame(inv.x, inv.y, inv.w, inv.h);
@@ -363,5 +363,5 @@ void inventory_tick(void)
   // draw
   DrawScene();
   DrawInventory();
-  textbox.Draw();
+  textbox.Tick();
 }

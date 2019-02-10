@@ -310,7 +310,7 @@ void title_tick()
     }
     else
     {
-      textbox.Draw();
+      textbox.Tick();
     }
   }
 }

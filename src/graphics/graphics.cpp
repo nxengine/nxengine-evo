@@ -438,6 +438,15 @@ void Graphics::FillRect(int x1, int y1, int x2, int y2, NXColor color)
   drawtarget->FillRect(x1, y1, x2, y2, color);
 }
 
+void Graphics::TintScreen()
+{
+  NXColor color;
+  color.r=0;
+  color.g=0;
+  color.b=0;
+  drawtarget->TintRect(0, 0, screen->Width(), screen->Height(), color, 150);
+}
+
 void Graphics::DrawPixel(int x, int y, NXColor color)
 {
   drawtarget->DrawPixel(x, y, color);

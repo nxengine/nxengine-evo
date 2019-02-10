@@ -27,6 +27,7 @@ public:
 
   bool IsVisible();
   void Draw();
+  void Tick();
 
 private:
   void HandleInput();

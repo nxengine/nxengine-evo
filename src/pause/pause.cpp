@@ -10,6 +10,8 @@
 #include "../nx.h"
 #include "../screeneffect.h"
 #include "../endgame/credits.h"
+#include "../inventory.h"
+#include "../map_system.h"
 using namespace Graphics;
 using namespace Sprites;
 #include "dialog.h"
@@ -65,12 +67,23 @@ bool pause_init(int param)
 void pause_tick()
 {
   DrawScene();
+  if (game.mode == GM_NORMAL)
+    DrawStatusBar();
+  if (game.mode == GM_INVENTORY)
+    DrawInventory();
+  if (game.mode == GM_MAP_SYSTEM)
+    ms_draw();
+
   fade.Draw();
+
+  textbox.Draw();
 
   if (game.mode == GM_CREDITS)
   {
     credit_draw();
   }
+
+  Graphics::TintScreen();
 
   dlg->RunInput();
   dlg->Draw();

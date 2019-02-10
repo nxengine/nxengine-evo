@@ -43,6 +43,10 @@ void TB_ItemImage::SetSprite(int sprite, int frame)
 void c------------------------------() {}
 */
 
+void TB_ItemImage::Tick(void)
+{
+}
+
 void TB_ItemImage::Draw(void)
 {
   if (!fVisible)

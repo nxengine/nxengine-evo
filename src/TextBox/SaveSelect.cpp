@@ -347,9 +347,6 @@ void TB_SaveSelect::Draw(void)
   if (!fVisible)
     return;
 
-  // handle user input
-  Run_Input();
-
   // draw frame
   TextBox::DrawFrame(fCoords.x, fCoords.y, fCoords.w, fCoords.h);
 
@@ -366,4 +363,15 @@ void TB_SaveSelect::Draw(void)
   // draw extended info for current selection
   if (fHaveProfile[fCurSel])
     DrawExtendedInfo();
+}
+
+void TB_SaveSelect::Tick(void)
+{
+  if (!fVisible)
+    return;
+
+  // handle user input
+  Run_Input();
+
+  Draw();
 }

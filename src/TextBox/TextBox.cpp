@@ -203,11 +203,22 @@ void TextBox::Draw(void)
   }
 }
 
-void TextBox::DrawTextBox()
+void TextBox::Tick(void)
 {
-  int text_top = (fCoords.y + 10);
-  int text_x   = (fCoords.x + 14);
+  if (fVisible)
+  {
+    TickTextBox();
 
+//    ItemImage.Tick();
+    YesNoPrompt.Tick();
+    StageSelect.Tick();
+    SaveSelect.Tick();
+  }
+  Draw();
+}
+
+void TextBox::TickTextBox()
+{
   // allow player to speed up text by holding the button
   if (buttondown())
   {
@@ -252,6 +263,24 @@ void TextBox::DrawTextBox()
     }
   }
 
+  // blink the cursor (it is visible when < 7)
+  if (!fCursorVisible || (fFlags & TB_CURSOR_NEVER_SHOWN))
+  {
+    fCursorTimer = 9999;
+  }
+  else
+  {
+    if (++fCursorTimer >= 20)
+      fCursorTimer = 0;
+  }
+}
+
+
+void TextBox::DrawTextBox()
+{
+  int text_top = (fCoords.y + 10);
+  int text_x   = (fCoords.x + 14);
+
   // draw the frame
   if (!(fFlags & TB_NO_BORDER))
   {
@@ -261,8 +290,6 @@ void TextBox::DrawTextBox()
   // set clipping region to inside of frame, so that text cannot
   // overflow during scrolling, etc.
   set_clip_rect((fCoords.x + 14), text_top, SCREEN_WIDTH, 48);
-
-  // SDL_FillRect(screen, &cliprect, SDL_MapRGB(screen->format,0,0,255));
 
   // draw face
   if (fFace != 0)
@@ -277,17 +304,6 @@ void TextBox::DrawTextBox()
       if (fFaceXOffset > 0)
         fFaceXOffset = 0;
     }
-  }
-
-  // blink the cursor (it is visible when < 7)
-  if (!fCursorVisible || (fFlags & TB_CURSOR_NEVER_SHOWN))
-  {
-    fCursorTimer = 9999;
-  }
-  else
-  {
-    if (++fCursorTimer >= 20)
-      fCursorTimer = 0;
   }
 
   // draw text lines (the 4th line is for the first char shown on the new line during scrolling)

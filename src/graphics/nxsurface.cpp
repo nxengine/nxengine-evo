@@ -325,6 +325,26 @@ void NXSurface::FillRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, u
     SetAsTarget(false);
 }
 
+void NXSurface::TintRect(int x1, int y1, int x2, int y2, NXColor color, uint16_t alpha)
+{
+  if (this != screen)
+    SetAsTarget(true);
+
+  SDL_Rect rect;
+
+  rect.x = x1 * SCALE;
+  rect.y = y1 * SCALE;
+  rect.w = ((x2 - x1) + 1) * SCALE;
+  rect.h = ((y2 - y1) + 1) * SCALE;
+
+SDL_SetRenderDrawBlendMode(renderer,SDL_BLENDMODE_BLEND);
+  SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, alpha);
+  SDL_RenderFillRect(renderer, &rect);
+
+  if (this != screen)
+    SetAsTarget(false);
+}
+
 void NXSurface::ClearRect(int x1, int y1, int x2, int y2)
 {
   if (this != screen)

@@ -49,19 +49,10 @@ void TB_YNJPrompt::SetVisible(bool enable)
 void c------------------------------() {}
 */
 
-void TB_YNJPrompt::Draw()
+void TB_YNJPrompt::Tick()
 {
   if (!fVisible)
     return;
-
-  draw_sprite(YESNO_X, fCoords.y, SPR_YESNO, 0, 0);
-
-  // draw hand selector
-  if (fState == STATE_YES_SELECTED || fState == STATE_NO_SELECTED)
-  {
-    int xoff = (fState == STATE_YES_SELECTED) ? -4 : 37;
-    draw_sprite(YESNO_X + xoff, fCoords.y + 12, SPR_YESNOHAND, 0, 0);
-  }
 
   switch (fState)
   {
@@ -115,6 +106,22 @@ void TB_YNJPrompt::Draw()
       }
     }
     break;
+  }
+  Draw();
+}
+
+void TB_YNJPrompt::Draw()
+{
+  if (!fVisible)
+    return;
+
+  draw_sprite(YESNO_X, fCoords.y, SPR_YESNO, 0, 0);
+
+  // draw hand selector
+  if (fState == STATE_YES_SELECTED || fState == STATE_NO_SELECTED)
+  {
+    int xoff = (fState == STATE_YES_SELECTED) ? -4 : 37;
+    draw_sprite(YESNO_X + xoff, fCoords.y + 12, SPR_YESNOHAND, 0, 0);
   }
 }
 

@@ -67,6 +67,7 @@ void ClearScreen(uint8_t r, uint8_t g, uint8_t b);
 void DrawLine(int x1, int y1, int x2, int y2, NXColor color);
 void DrawRect(int x1, int y1, int x2, int y2, NXColor color);
 void FillRect(int x1, int y1, int x2, int y2, NXColor color);
+void TintScreen();
 void DrawPixel(int x, int y, NXColor color);
 
 void DrawRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b);

@@ -70,13 +70,21 @@ bool TB_StageSelect::IsVisible()
 void c------------------------------() {}
 */
 
-void TB_StageSelect::Draw(void)
+void TB_StageSelect::Tick(void)
 {
   if (!fVisible)
     return;
 
   // handle user input
   HandleInput();
+
+  Draw();
+}
+
+void TB_StageSelect::Draw(void)
+{
+  if (!fVisible)
+    return;
 
   // draw "- WARP -" text
   fWarpY -= WARP_Y_SPEED;
