@@ -1007,6 +1007,25 @@ void map_scroll_do(void)
 
   map_sanitycheck();
 
+  // custom xscroll on ending "maps"
+  switch (game.curmap)
+  {
+    case 74:
+    case 75:
+    case 76:
+    case 77:
+    case 89:
+    case 93:
+      map.displayed_xscroll = -(((SCREEN_WIDTH - (map.xsize*TILE_W)) / 2) * CSFI);
+      break;
+    case 78:
+      // carefully crafted magic number
+      map.displayed_xscroll = -((SCREEN_WIDTH/2 - 208) * CSFI);
+      break;
+    default:
+      break;
+  }
+
   // do quaketime after sanity check so quake works in
   // small levels like Shack.
   if (game.quaketime)
