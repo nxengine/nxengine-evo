@@ -447,8 +447,8 @@ static void __boa(std::vector<std::string> *args, int num)
   game.stageboss.SetState(num);
 }
 
-// skip to good ending sequence
-static void __cre(std::vector<std::string> *args, int num)
+// skip to normal ending sequence
+static void __ending_normal(std::vector<std::string> *args, int num)
 {
   game.reset();
   game.pause(0);
@@ -459,6 +459,36 @@ static void __cre(std::vector<std::string> *args, int num)
   game.switchstage.playerx      = 16;
   game.switchstage.playery      = 16;
   game.switchstage.eventonentry = 400;
+}
+
+// skip to good ending sequence
+static void __ending_good(std::vector<std::string> *args, int num)
+{
+  game.reset();
+  game.pause(0);
+  game.setmode(GM_NORMAL);
+
+  game.flags[1341]              = true;
+  game.flags[2000]              = true;
+  game.switchstage.mapno        = 71;
+  game.switchstage.playerx      = 16;
+  game.switchstage.playery      = 16;
+  game.switchstage.eventonentry = 120;
+}
+
+// skip to credits
+static void __cre(std::vector<std::string> *args, int num)
+{
+  game.reset();
+  game.pause(0);
+  game.setmode(GM_NORMAL);
+
+  game.flags[1341]              = true;
+  game.flags[162]              = true;
+  game.switchstage.mapno        = 0;
+  game.switchstage.playerx      = 16;
+  game.switchstage.playery      = 16;
+  game.switchstage.eventonentry = 100;
 }
 
 static void __reset(std::vector<std::string> *args, int num)
@@ -544,6 +574,8 @@ static CommandEntry commands[] = {{"god", __god, 0, 1},
                                   {"takeitem", __takeitem, 1, 1},
                                   {"qua", __qua, 0, 1},
                                   {"boa", __boa, 1, 1},
+                                  {"ending_normal", __ending_normal, 0, 0},
+                                  {"ending_good", __ending_good, 0, 0},
                                   {"cre", __cre, 0, 0},
                                   {"reset", __reset, 0, 0},
                                   {"fps", __fps, 0, 1},
