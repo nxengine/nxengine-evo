@@ -1009,6 +1009,17 @@ void TSC::ExecScript(ScriptInstance *s)
 
       case OP_WAI:
         s->delaytimer = parm[0];
+
+        // sue running out in dark place
+        if (game.curmap == 68 && s->scriptno == 600 && parm[0] == 100)
+        {
+          s->delaytimer = 130;
+        }
+        // sue running out in balcony
+        if (game.curmap == 70 && s->scriptno == 310 && parm[0] == 60)
+        {
+          s->delaytimer = 110;
+        }
         return;
       case OP_WAS:
         s->wait_standing = true;
