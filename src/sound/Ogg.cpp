@@ -172,7 +172,7 @@ void Ogg::setVolume(int newvolume)
   if (newvolume != _song.volume)
   {
     _song.volume = newvolume;
-    Mix_VolumeMusic(_song.volume);
+    Mix_VolumeMusic((double)_song.volume * ((double)settings->music_volume / 100.));
   }
 }
 
