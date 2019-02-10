@@ -27,12 +27,14 @@ void randblink(Object *o, int blinkframe = 1, int blinktime = 8, int prob = 120)
 
 #define FACEPLAYER                                                                                                     \
   {                                                                                                                    \
-    o->dir = (o->CenterX() > player->CenterX()) ? LEFT : RIGHT;                                                        \
+    if (!player->hide)                                                                                                 \
+      o->dir = (o->CenterX() > player->CenterX()) ? LEFT : RIGHT;                                                      \
   }
 
 #define FACEAWAYPLAYER                                                                                                 \
   {                                                                                                                    \
-    o->dir = (o->CenterX() > player->CenterX()) ? RIGHT : LEFT;                                                        \
+    if (!player->hide)                                                                                                 \
+      o->dir = (o->CenterX() > player->CenterX()) ? RIGHT : LEFT;                                                      \
   }
 
 #define LIMITX(K)                                                                                                      \
