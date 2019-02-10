@@ -908,8 +908,12 @@ void ai_skeleton(Object *o)
 {
   uint8_t pnear;
 #define SKNEAR_X (352 * CSFI)
-#define SKNEAR_BELOW (160 * CSFI)
-#define SKNEAR_ABOVE (64 * CSFI)
+#define SKNEAR_X2 (320 * CSFI)
+#define SKNEAR_BELOW (64 * CSFI)
+#define SKNEAR_ABOVE (160 * CSFI)
+
+  if (!pdistlx(SKNEAR_X2) || !pdistly2(SKNEAR_ABOVE, SKNEAR_BELOW))
+    o->state = 0;
 
   pnear = (pdistlx(SKNEAR_X) && pdistly2(SKNEAR_ABOVE, SKNEAR_BELOW));
 
@@ -937,7 +941,7 @@ void ai_skeleton(Object *o)
       if (++o->timer > 5 && o->blockd)
       {
         // jump if player near, else go to idle
-        o->state = pnear ? 20 : 0;
+        o->state = 20;
       }
       if (o->state != 20)
         break;
