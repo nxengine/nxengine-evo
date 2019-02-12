@@ -1022,6 +1022,20 @@ void TSC::ExecScript(ScriptInstance *s)
           {
             s->delaytimer = 110;
           }
+          // Curly in Almond
+          if (game.curmap == 47 && s->scriptno == 200 && parm[0] == 32)
+          {
+            if (s->program[s->ip] == OP_DNP)
+            {
+              int val = 0;
+              val = ((int)s->program[s->ip+1]) << 8;
+              val |= s->program[s->ip+2];
+              if (val == 300)
+              {
+                s->delaytimer = 153;
+              }
+            }
+          }
         }
         return;
       case OP_WAS:

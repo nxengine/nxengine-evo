@@ -309,6 +309,10 @@ bool load_entities(const std::string &fname)
         if (type == OBJ_SKY_DRAGON && id2 == 230)
           y++;
 
+        // hack for Curly in Almond
+        if (game.curmap == 47 && id2 == 301)
+          y++;
+
         Object *o = CreateObject((x * TILE_W) * CSFI, (y * TILE_H) * CSFI, type, 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
 
         o->id1 = id1;
