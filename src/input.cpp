@@ -60,7 +60,7 @@ bool input_init(void)
   mappings[F12KEY].key = SDLK_F12;
 #if defined(DEBUG)
   mappings[FREEZE_FRAME_KEY].key  = SDLK_SPACE;
-  mappings[FRAME_ADVANCE_KEY].key = SDLK_c;
+  mappings[FRAME_ADVANCE_KEY].key = SDLK_b;
   mappings[DEBUG_FLY_KEY].key     = SDLK_v;
 #else
   mappings[FREEZE_FRAME_KEY].key  = 0;
