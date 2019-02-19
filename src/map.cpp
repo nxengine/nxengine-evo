@@ -441,11 +441,6 @@ bool load_tileattr(const std::string &fname)
     if (game.curmap == 31 && tc == 0x46)
       tileattr[i] = 0; // remove left/right blockers in Mai Artery
 
-    if (tc == 0x43) // destroyable block - have to replace graphics
-    {
-      CopySpriteToTile(SPR_DESTROYABLE, i, 0, 0);
-    }
-
     // add water currents to animation list
     if (tileattr[i] & TA_CURRENT)
     {
@@ -757,15 +752,6 @@ void map_flush_graphics()
     delete backdrop[i];
     backdrop[i] = NULL;
   }
-
-  // re-copy star files
-  for (i = 0; i < 256; i++)
-  {
-    if (tilecode[i] == 0x43)
-    {
-      CopySpriteToTile(SPR_DESTROYABLE, i, 0, 0);
-    }
-  }
 }
 
 /*
@@ -838,7 +824,12 @@ void map_draw(uint8_t foreground)
         {
         }
         else if ((tileattr[t] & TA_FOREGROUND) == foreground)
-          draw_tile(blit_x, blit_y, t);
+        {
+          if (tilecode[t] == 0x43)
+            draw_sprite(blit_x, blit_y, SPR_DESTROYABLE, 0, 0);
+          else
+            draw_tile(blit_x, blit_y, t);
+        }
       }
       blit_x += TILE_W;
     }
