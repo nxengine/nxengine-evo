@@ -6,8 +6,6 @@
 
 #include <string>
 
-#define MAX_MOTION_TILES 20
-
 #define MAP_MAXSIZEX 300
 #define MAP_MAXSIZEY 256
 
@@ -49,15 +47,6 @@ struct stMap
     bool has_target;
   } focus;
 
-  // motion tiles used in Waterway and Main Artery--these tiles use
-  // a sprite as their image data and pan the sprite across them in a specified direction
-  struct
-  {
-    int tileno;  // tile # to animate
-    uint8_t dir; // direction of scrolling
-    int sprite;  // sprite # containing image data
-  } motiontiles[MAX_MOTION_TILES];
-  int nmotiontiles;
   int motionpos;
 
   unsigned char tiles[MAP_MAXSIZEX][MAP_MAXSIZEY];

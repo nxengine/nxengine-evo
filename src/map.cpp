@@ -421,8 +421,6 @@ bool load_tileattr(const std::string &fname)
   int i;
   unsigned char tc;
 
-  map.nmotiontiles = 0;
-
   stat("load_pxa: reading in %s", fname.c_str());
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
@@ -440,17 +438,6 @@ bool load_tileattr(const std::string &fname)
 
     if (game.curmap == 31 && tc == 0x46)
       tileattr[i] = 0; // remove left/right blockers in Mai Artery
-
-    // add water currents to animation list
-    if (tileattr[i] & TA_CURRENT)
-    {
-      map.motiontiles[map.nmotiontiles].tileno = i;
-      map.motiontiles[map.nmotiontiles].dir    = CVTDir(tc & 3);
-      map.motiontiles[map.nmotiontiles].sprite = SPR_WATER_CURRENT;
-
-      map.nmotiontiles++;
-      stat("Added tile %02x to animation list, tc=%02x", i, tc);
-    }
   }
 
   fclose(fp);
@@ -825,7 +812,27 @@ void map_draw(uint8_t foreground)
         }
         else if ((tileattr[t] & TA_FOREGROUND) == foreground)
         {
-          if (tilecode[t] == 0x43)
+          if (tileattr[t] & TA_CURRENT)
+          {
+            switch (CVTDir(tilecode[t] & 3))
+            {
+              case LEFT:
+                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 0);
+                break;
+              case RIGHT:
+                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 0);
+                break;
+              case UP:
+                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 1);
+                break;
+              case DOWN:
+                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 1);
+                break;
+              default:
+                break;
+            }
+          }
+          else if (tilecode[t] == 0x43)
             draw_sprite(blit_x, blit_y, SPR_DESTROYABLE, 0, 0);
           else
             draw_tile(blit_x, blit_y, t);
@@ -1238,41 +1245,8 @@ void map_draw_map_name(void)
 // animate all motion tiles
 void AnimateMotionTiles(void)
 {
-  int i;
-  int x_off, y_off;
-
-  for (i = 0; i < map.nmotiontiles; i++)
-  {
-    switch (map.motiontiles[i].dir)
-    {
-      case LEFT:
-        y_off = 0;
-        x_off = map.motionpos;
-        break;
-      case RIGHT:
-        y_off = 0;
-        x_off = (TILE_W - map.motionpos);
-        break;
-
-      case UP:
-        x_off = 0;
-        y_off = map.motionpos;
-        break;
-      case DOWN:
-        x_off = 0;
-        y_off = (TILE_H - map.motionpos);
-        break;
-
-      default:
-        x_off = y_off = 0;
-        break;
-    }
-
-    CopySpriteToTile(map.motiontiles[i].sprite, map.motiontiles[i].tileno, x_off, y_off);
-  }
-
-  map.motionpos += 2;
-  if (map.motionpos >= TILE_W)
+  map.motionpos ++;
+  if (map.motionpos >= TILE_W / 2)
     map.motionpos = 0;
 }
 

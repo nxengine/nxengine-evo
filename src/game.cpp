@@ -299,6 +299,7 @@ void game_tick_normal(void)
     Carets::UpdateAll();
     FloatText::UpdateAll();
     map_scroll_do();
+    AnimateMotionTiles();
   }
 
   // important to put this before and not after DrawScene(), or non-existant objects
@@ -352,10 +353,6 @@ void DrawScene(void)
   int scr_x, scr_y;
   extern int flipacceltime;
   ClearScreen(BLACK);
-  // sporidically-used animated tile feature,
-  // e.g. water currents in Waterway
-  if (map.nmotiontiles)
-    AnimateMotionTiles();
 
   // draw background map tiles
   if (!flipacceltime)
