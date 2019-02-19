@@ -298,36 +298,6 @@ int Graphics::GetResCount()
 void c------------------------------() {}
 */
 
-// copy a sprite into the current tileset.
-// used to obtain the images for the star tiles (breakable blocks),
-// and for animated motion tiles in Waterway.
-void Graphics::CopySpriteToTile(int spr, int tileno, int offset_x, int offset_y)
-{
-  NXRect srcrect, dstrect;
-
-  srcrect.x = (sprites[spr].frame[0].dir[0].sheet_offset.x + offset_x);
-  srcrect.y = (sprites[spr].frame[0].dir[0].sheet_offset.y + offset_y);
-  srcrect.w = TILE_W;
-  srcrect.h = TILE_H;
-
-  dstrect.x = (tileno % 16) * TILE_W;
-  dstrect.y = (tileno / 16) * TILE_H;
-  dstrect.w = TILE_W;
-  dstrect.h = TILE_H;
-
-  NXSurface *tileset     = Tileset::GetSurface();
-  NXSurface *spritesheet = Sprites::get_spritesheet(sprites[spr].spritesheet);
-
-  if (tileset && spritesheet)
-  {
-    // blank out the old tile data with clear
-    tileset->ClearRect(&dstrect);
-
-    // copy the sprite over
-    BlitSurface(spritesheet, &srcrect, tileset, &dstrect);
-  }
-}
-
 void Graphics::ShowLoadingScreen()
 {
   NXSurface loading;
@@ -341,16 +311,6 @@ void Graphics::ShowLoadingScreen()
   ClearScreen(BLACK);
   DrawSurface(&loading, x, y);
   drawtarget->Flip();
-}
-
-/*
-void c------------------------------() {}
-*/
-
-// blit from one surface to another, just like SDL_BlitSurface.
-void Graphics::BlitSurface(NXSurface *src, NXRect *srcrect, NXSurface *dst, NXRect *dstrect)
-{
-  dst->DrawSurface(src, dstrect->x, dstrect->y, srcrect->x, srcrect->y, srcrect->w, srcrect->h);
 }
 
 /*
