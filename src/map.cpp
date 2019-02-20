@@ -38,8 +38,8 @@ NXSurface *backdrop[MAX_BACKDROPS];
 Object *ID2Lookup[65536];
 
 unsigned char tilecode[MAX_TILES]; // tile codes for every tile in current tileset
-unsigned int tileattr[MAX_TILES];  // tile attribute bits for every tile in current tileset
-unsigned int tilekey[MAX_TILES];   // mapping from tile codes -> tile attributes
+uint32_t tileattr[MAX_TILES];  // tile attribute bits for every tile in current tileset
+uint32_t tilekey[MAX_TILES];   // mapping from tile codes -> tile attributes
 
 unsigned char oob_tile_count;
 unsigned int oob_tiles[4];
