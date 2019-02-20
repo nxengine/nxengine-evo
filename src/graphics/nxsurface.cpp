@@ -3,6 +3,7 @@
 #include "../config.h"
 #include "../settings.h"
 #include "graphics.h"
+#include "zoom.h"
 
 #include <cassert>
 #include <cstdint>
@@ -82,11 +83,6 @@ bool NXSurface::LoadImage(const std::string &pbm_name, bool use_colorkey, int us
 {
   Free();
 
-  // if (use_display_format == -1)
-  // {	// use value specified in settings
-  // 	use_display_format = settings->displayformat;
-  // }
-
   SDL_Surface *image = SDL_LoadBMP(pbm_name.c_str());
   if (!image)
   {
@@ -94,64 +90,26 @@ bool NXSurface::LoadImage(const std::string &pbm_name, bool use_colorkey, int us
     return 1;
   }
 
-  if (use_colorkey)
-  {
-    SDL_SetColorKey(image, SDL_TRUE, SDL_MapRGB(image->format, 0, 0, 0));
-  }
+  tex_w = image->w * SCALE;
+  tex_h = image->h * SCALE;
 
-  SDL_Texture *tmptex = SDL_CreateTextureFromSurface(renderer, image);
-  if (!tmptex)
-  {
-    staterr("NXSurface::LoadImage: SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
-    SDL_FreeSurface(image);
-    return 1;
-  }
+  SDL_Surface *image_scaled = SDL_ZoomSurface(image, SCALE);
 
   SDL_FreeSurface(image);
 
+  if (use_colorkey)
   {
-    int wd, ht, access;
-    Uint32 format;
-    NXFormat nxformat;
-    if (SDL_QueryTexture(tmptex, &format, &access, &wd, &ht))
-      goto error;
-    nxformat.format = format;
-    if (AllocNew(wd, ht, &nxformat))
-      goto error;
-    if (SDL_SetTextureBlendMode(tmptex, SDL_BLENDMODE_NONE))
-      goto error;
-    if (SDL_SetRenderTarget(renderer, fTexture))
-      goto error;
-    if (SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255))
-      goto error;
-    if (SDL_RenderClear(renderer))
-      goto error;
-    if (SDL_RenderCopy(renderer, tmptex, NULL, NULL))
-      goto error;
-    if (SDL_SetRenderTarget(renderer, NULL))
-      goto error;
-    if (SDL_SetTextureBlendMode(fTexture, SDL_BLENDMODE_BLEND))
-      goto error;
-
-    SDL_DestroyTexture(tmptex);
-
-    goto done;
-  error:
-  {
-    staterr("NXSurface::LoadImage failed: %s", SDL_GetError());
-    if (tmptex)
-    {
-      SDL_DestroyTexture(tmptex);
-      tmptex = NULL;
-    }
-    if (fTexture)
-    {
-      SDL_DestroyTexture(fTexture);
-      fTexture = NULL;
-    }
-    SDL_SetRenderTarget(renderer, NULL);
+    SDL_SetColorKey(image_scaled, SDL_TRUE, SDL_MapRGB(image_scaled->format, 0, 0, 0));
   }
-  done:;
+
+  fTexture = SDL_CreateTextureFromSurface(renderer, image_scaled);
+
+  SDL_FreeSurface(image_scaled);
+
+  if (!fTexture)
+  {
+    staterr("NXSurface::LoadImage: SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+    return 1;
   }
 
   return (fTexture == NULL);

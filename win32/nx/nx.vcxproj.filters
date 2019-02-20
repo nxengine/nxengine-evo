@@ -273,6 +273,9 @@
     <ClCompile Include="..\..\src\graphics\tileset.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\graphics\zoom.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\input.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -690,6 +693,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\graphics\tileset.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\graphics\zoom.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\input.h">
