@@ -12,6 +12,13 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 option(LOW_END_HARDWARE "Build for low-end hardware" OFF)
+set(PLATFORM "pc" CACHE STRING "Platform to build for")
+set_property(CACHE PLATFORM PROPERTY STRINGS pc)
+
+IF(PLATFORM STREQUAL "pc")
+ELSE()
+    message(FATAL_ERROR "Wrong platform")
+ENDIF()
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
@@ -71,6 +78,8 @@ add_definitions("-Wall -std=c++11")
 add_executable(nx ${SOURCES})
 target_link_libraries(nx ${SDL2_LIBRARY} ${SDL_MIXER_LIBRARY} ${PNG_LIBRARY})
 
-add_executable(extract ${EXTR_SOURCES})
+IF(PLATFORM STREQUAL "pc")
+    add_executable(extract ${EXTR_SOURCES})
+ENDIF()
 
 
