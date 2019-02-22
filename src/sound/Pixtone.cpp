@@ -242,9 +242,9 @@ Pixtone *Pixtone::getInstance()
   return Singleton<Pixtone>::get();
 }
 
-std::function<void(int32_t chan)> sfxCallback;
+std::function<void(int chan)> sfxCallback;
 
-void mySfxCallback(int32_t chan)
+void mySfxCallback(int chan)
 {
   sfxCallback(chan);
 }
@@ -402,7 +402,7 @@ void Pixtone::stop(int32_t slot)
   }
 }
 
-void Pixtone::pxtSoundDone(int32_t channel)
+void Pixtone::pxtSoundDone(int channel)
 {
   if (_slots[channel] != -1)
   {

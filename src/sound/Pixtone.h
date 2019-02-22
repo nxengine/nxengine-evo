@@ -85,7 +85,7 @@ public:
   int playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t percent);
   void stop(int32_t slot);
 
-  void pxtSoundDone(int32_t channel);
+  void pxtSoundDone(int channel);
 
 protected:
   friend class Singleton<Pixtone>;
