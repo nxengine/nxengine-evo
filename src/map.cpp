@@ -37,12 +37,12 @@ NXSurface *backdrop[MAX_BACKDROPS];
 // for FindObject--finding NPC's by ID2
 Object *ID2Lookup[65536];
 
-unsigned char tilecode[MAX_TILES]; // tile codes for every tile in current tileset
+uint8_t tilecode[MAX_TILES]; // tile codes for every tile in current tileset
 uint32_t tileattr[MAX_TILES];  // tile attribute bits for every tile in current tileset
 uint32_t tilekey[MAX_TILES];   // mapping from tile codes -> tile attributes
 
-unsigned char oob_tile_count;
-unsigned int oob_tiles[4];
+uint8_t oob_tile_count;
+uint32_t oob_tiles[4];
 
 // load stage "stage_no", this entails loading the map (pxm), enemies (pxe), tileset (pbm),
 // tile attributes (pxa), and script (tsc).
