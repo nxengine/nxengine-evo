@@ -11,6 +11,8 @@ set (nx_VERSION_MINOR 6)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
+option(LOW_END_HARDWARE "Build for low-end hardware" OFF)
+
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(PNG REQUIRED)
@@ -59,6 +61,10 @@ IF(CMAKE_BUILD_TYPE MATCHES Debug)
     message("debug mode")
     add_definitions(-DTRACE_SCRIPT)
     add_definitions(-DDEBUG)
+ENDIF()
+
+IF(LOW_END_HARDWARE)
+    add_definitions(-D_LOW_END_HARDWARE)
 ENDIF()
 
 add_definitions("-Wall -std=c++11")
