@@ -229,7 +229,9 @@ void Song::Synth()
       double pos = i.phaseacc;
       // Take a sample from the wave data.
       /* We could do simply this: */
-      // int sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
+#if defined(_LOW_END_HARDWARE)
+      double sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
+#else
       /* But since we have plenty of time, use neat Lanczos filtering. */
       /* This improves especially the low rumble noises substantially. */
       enum
@@ -255,6 +257,7 @@ void Song::Synth()
       }
       if (density > 0.)
         sample /= density; // Normalize*/
+#endif
       // Save audio in float32 format:
       samples[p * 2 + 0] += sample * left;
       samples[p * 2 + 1] += sample * right;
