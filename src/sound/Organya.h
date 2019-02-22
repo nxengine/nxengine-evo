@@ -65,7 +65,7 @@ public:
   void shutdown();
 
   bool load(const std::string &fname);
-  bool start(int32_t startBeat);
+  bool start(int startBeat);
   uint32_t stop();
   bool isPlaying();
   void fade();
