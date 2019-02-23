@@ -275,11 +275,7 @@ int main(int argc, char *argv[])
 
   (void)ResourceManager::getInstance();
 
-  char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string logpath = std::string(prefpath) + "debug.log";
-  SDL_free(prefpath);
-
-  SetLogFilename(logpath.c_str());
+  SetLogFilename(ResourceManager::getInstance()->getPrefPath("debug.log").c_str());
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
   {
