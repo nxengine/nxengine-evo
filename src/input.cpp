@@ -46,6 +46,21 @@ bool input_init(void)
 
   mappings[ESCKEY].key = SDLK_ESCAPE;
 
+#if defined(__VITA__)
+  mappings[MAPSYSTEMKEY].jbut = 0; // Triangle
+  mappings[FIREKEY].jbut      = 1; // Circle
+  mappings[JUMPKEY].jbut      = 2; // Cross
+  mappings[INVENTORYKEY].jbut = 3; // Square
+  mappings[PREVWPNKEY].jbut   = 4; // LTrig
+  mappings[NEXTWPNKEY].jbut   = 5; // Rtrig
+
+  mappings[DOWNKEY].jbut  = 6;
+  mappings[LEFTKEY].jbut  = 7;
+  mappings[UPKEY].jbut    = 8;
+  mappings[RIGHTKEY].jbut = 9;
+  mappings[ESCKEY].jbut   = 11;
+#endif
+
   mappings[F1KEY].key  = SDLK_F1;
   mappings[F2KEY].key  = SDLK_F2;
   mappings[F3KEY].key  = SDLK_F3;
