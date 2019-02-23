@@ -27,8 +27,6 @@ bool Graphics::widescreen   = false;
 
 NXSurface *screen            = NULL;  // created from SDL's screen
 static NXSurface *drawtarget = NULL;  // target of DrawRect etc; almost always screen
-bool use_palette             = false; // true if we are in an indexed-color video mode
-int screen_bpp;
 
 const NXColor DK_BLUE(0, 0, 0x21); // the popular dk blue backdrop color
 const NXColor BLACK(0, 0, 0);      // pure black, only works if no colorkey
@@ -40,15 +38,6 @@ static NXSurface const *current_batch_drawtarget = NULL;
 
 bool Graphics::init(int resolution)
 {
-  if (use_palette)
-  {
-    screen_bpp = 8;
-  }
-  else
-  {
-    screen_bpp = 16; // the default
-  }
-
   if (SetResolution(resolution, false))
     return 1;
 
@@ -96,7 +85,7 @@ bool Graphics::InitVideo()
     stat("second call to Graphics::InitVideo()");
   }
 
-  stat("SDL_CreateWindow: %dx%d @ %dbpp", width, height, screen_bpp);
+  stat("SDL_CreateWindow: %dx%d", width, height);
   if (window)
   {
     SDL_SetWindowSize(window, width, height);

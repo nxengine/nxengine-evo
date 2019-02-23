@@ -18,7 +18,7 @@ public:
 
   void shutdown();
   std::string getLocalizedPath(const std::string &filename);
-  std::string getPrefPath(const char* filename);
+  std::string getPrefPath(const std::string &filename);
   std::string getPathForDir(const std::string &dir);
   std::vector<std::string> &languages();
 

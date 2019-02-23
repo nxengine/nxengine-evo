@@ -165,7 +165,7 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
   // throw std::runtime_error("Can't open file "+_tryPath);
 }
 
-std::string ResourceManager::getPrefPath(const char* filename)
+std::string ResourceManager::getPrefPath(const std::string &filename)
 {
   std::string _tryPath;
 
