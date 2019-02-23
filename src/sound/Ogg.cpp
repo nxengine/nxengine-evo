@@ -56,7 +56,7 @@ bool Ogg::load(const std::string &fname, const std::string &dir)
     return false;
   }
 
-  if (ResourceManager::fileExists(ResourceManager::getInstance()->getLocalizedPath(dir + fname + ".noloop")))
+  if (fname.compare("gameover") == 0 || fname.compare("fanfale1") == 0 || fname.compare("fanfale2") == 0 || fname.compare("fanfale3") == 0)
   {
     _song.doloop = false;
   }
