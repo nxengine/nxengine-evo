@@ -143,8 +143,7 @@ ELSEIF(PLATFORM STREQUAL "switch")
       m
       z
       FLAC
-      vorbisfile
-      vorbis
+      vorbisidec
       ogg
       mikmod
       mpg123
