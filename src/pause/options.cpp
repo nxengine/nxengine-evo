@@ -405,10 +405,12 @@ void _music_get(ODItem *item)
 
 void _tracks_change(ODItem *item, int dir)
 {
+  std::vector<std::string> names = NXE::Sound::SoundManager::getInstance()->music_dir_names();
   int result = settings->new_music + dir;
+
   if (result < 0)
-    result = 2;
-  if (result > 2)
+    result = names.size()-1;
+  if (result >= names.size())
     result = 0;
   NXE::Sound::SoundManager::getInstance()->setNewmusic(result);
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
@@ -416,8 +418,8 @@ void _tracks_change(ODItem *item, int dir)
 
 void _tracks_get(ODItem *item)
 {
-  static const char *strs[] = {"Old", "New", "Remastered"};
-  strcpy(item->suffix, strs[settings->new_music]);
+  std::vector<std::string> names = NXE::Sound::SoundManager::getInstance()->music_dir_names();
+  strcpy(item->suffix, names.at(settings->new_music).c_str());
 }
 
 void _sfx_volume_change(ODItem *item, int dir)

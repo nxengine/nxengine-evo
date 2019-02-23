@@ -1,0 +1,18 @@
+[
+  {
+    "name":"New",
+    "dir":"Ogg/"
+  },
+  {
+    "name":"Remastered",
+    "dir":"Ogg11/"
+  },
+  {
+    "name":"Famitracks",
+    "dir":"Ogg17/"
+  },
+  {
+    "name":"Ridiculon",
+    "dir":"Ogg_ridic/"
+  }
+]

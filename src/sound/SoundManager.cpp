@@ -74,6 +74,32 @@ bool SoundManager::init()
     staterr("Failed to load tracklist");
     return false;
   }
+  fl.close();
+
+  path = ResourceManager::getInstance()->getLocalizedPath("music_dirs.json");
+
+  _music_dirs.clear();
+  _music_dir_names.clear();
+  _music_dirs.push_back("org/");
+  _music_dir_names.push_back("Original");
+
+  fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
+  if (fl.is_open())
+  {
+    nlohmann::json dirlist = nlohmann::json::parse(fl);
+
+    for (auto it = dirlist.begin(); it != dirlist.end(); ++it)
+    {
+      _music_dirs.push_back(it.value().at("dir"));
+      _music_dir_names.push_back(it.value().at("name"));
+    }
+  }
+  else
+  {
+    staterr("Failed to load tracklist");
+    return false;
+  }
+  fl.close();
 
   Pixtone::getInstance()->init();
   Organya::getInstance()->init();
@@ -161,11 +187,8 @@ void SoundManager::music(uint32_t songno, bool resume)
     case 0:
       _start_org_track(songno, resume);
       break;
-    case 1:
-      _start_ogg_track(songno, resume, _ogg_dir);
-      break;
-    case 2:
-      _start_ogg_track(songno, resume, _ogg11_dir);
+    default:
+      _start_ogg_track(songno, resume, _music_dirs.at(settings->new_music));
       break;
   }
 }
@@ -190,20 +213,11 @@ void SoundManager::enableMusic(int newstate)
             _lastSongPos = Organya::getInstance()->stop();
         }
         break;
-      case 1:
+      default:
         if (play != Ogg::getInstance()->isPlaying())
         {
           if (play)
-            _start_ogg_track(_currentSong, 0, _ogg_dir);
-          else
-            _lastSongPos = Ogg::getInstance()->stop();
-        }
-        break;
-      case 2:
-        if (play != Ogg::getInstance()->isPlaying())
-        {
-          if (play)
-            _start_ogg_track(_currentSong, 0, _ogg11_dir);
+            _start_ogg_track(_currentSong, 0, _music_dirs.at(settings->new_music));
           else
             _lastSongPos = Ogg::getInstance()->stop();
         }
@@ -228,11 +242,8 @@ void SoundManager::setNewmusic(int newstate)
       case 0:
         _start_org_track(_currentSong, 0);
         break;
-      case 1:
-        _start_ogg_track(_currentSong, 0, _ogg_dir);
-        break;
-      case 2:
-        _start_ogg_track(_currentSong, 0, _ogg11_dir);
+      default:
+        _start_ogg_track(_currentSong, 0, _music_dirs.at(newstate));
         break;
     }
   }
@@ -351,7 +362,7 @@ void SoundManager::_start_org_track(int songno, bool resume)
   }
 
   if (Organya::getInstance()->load(
-          ResourceManager::getInstance()->getLocalizedPath(_org_dir + _org_names[songno] + ".org")))
+          ResourceManager::getInstance()->getLocalizedPath(_music_dirs.at(0) + _org_names[songno] + ".org")))
   {
     Organya::getInstance()->start(resume ? _lastSongPos : 0);
   }
@@ -367,6 +378,12 @@ void SoundManager::_start_ogg_track(int songno, bool resume, std::string dir)
   }
   Ogg::getInstance()->start(_org_names[songno], dir, resume ? _lastSongPos : 0, resume ? _songlooped : false);
 }
+
+std::vector<std::string> &SoundManager::music_dir_names()
+{
+  return _music_dir_names;
+}
+
 
 } // namespace Sound
 } // namespace NXE

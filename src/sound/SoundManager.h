@@ -139,6 +139,7 @@ public:
   void resume();
   void updateMusicVolume();
   void updateSfxVolume();
+  std::vector<std::string> &music_dir_names();
 
 protected:
   friend class Singleton<SoundManager>;
@@ -160,13 +161,13 @@ private:
   bool _songlooped      = false;
 
   std::vector<std::string> _org_names;
+  std::vector<std::string> _music_dirs;
+  std::vector<std::string> _music_dir_names;
 
   const char _bossmusic[14] = {4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 35, 0};
-
-  const std::string _org_dir   = "org/";
-  const std::string _ogg_dir   = "Ogg/";
-  const std::string _ogg11_dir = "Ogg11/";
 };
+
+
 
 } // namespace Sound
 } // namespace NXE
