@@ -23,9 +23,7 @@ static bool tryload(Settings *setfile)
 {
   FILE *fp;
 
-  char *basepath   = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string path = std::string(basepath) + "settings.dat";
-  SDL_free(basepath);
+  std::string path = ResourceManager::getInstance()->getPrefPath("settings.dat");
 
   stat("Loading settings...");
 
@@ -106,9 +104,7 @@ bool settings_save(Settings *setfile)
 {
   FILE *fp;
 
-  char *basepath   = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string path = std::string(basepath) + "settings.dat";
-  SDL_free(basepath);
+  std::string path = ResourceManager::getInstance()->getPrefPath("settings.dat");
 
   if (!setfile)
     setfile = &normal_settings;
