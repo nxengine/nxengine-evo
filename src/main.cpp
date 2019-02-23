@@ -268,10 +268,12 @@ int main(int argc, char *argv[])
 
 #if defined(_WIN32)
   _chdir(basepath);
-#else
+#elif not defined(__VITA__)
   chdir(basepath);
 #endif
   SDL_free(basepath);
+
+  (void)ResourceManager::getInstance();
 
   char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
   std::string logpath = std::string(prefpath) + "debug.log";
@@ -292,8 +294,6 @@ int main(int argc, char *argv[])
   // load settings, or at least get the defaults,
   // so we know the initial screen resolution.
   settings_load();
-
-  (void)ResourceManager::getInstance();
 
   if (Graphics::init(settings->resolution))
   {
