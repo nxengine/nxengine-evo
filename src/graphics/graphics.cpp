@@ -112,6 +112,7 @@ bool Graphics::InitVideo()
     return 1;
   }
 
+#if not defined(__VITA__)
   SDL_Surface *icon;
   icon = SDL_CreateRGBSurfaceFrom((void *)WINDOW_TITLE_ICON.pixel_data, WINDOW_TITLE_ICON.width,
                                   WINDOW_TITLE_ICON.height, WINDOW_TITLE_ICON.bytes_per_pixel * 8,
@@ -130,10 +131,10 @@ bool Graphics::InitVideo()
   );
   SDL_SetWindowIcon(window, icon);
   SDL_FreeSurface(icon);
+#endif
 
   if (!renderer)
-    renderer = SDL_CreateRenderer(window, -1,
-                                  /*SDL_RENDERER_SOFTWARE | */ SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   if (!renderer)
   {
     staterr("Graphics::InitVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
@@ -148,12 +149,6 @@ bool Graphics::InitVideo()
   }
 
   stat("Graphics::InitVideo: using: %s renderer", info.name);
-
-  if (!(info.flags & SDL_RENDERER_TARGETTEXTURE))
-  {
-    staterr("Graphics::InitVideo: SDL_RENDERER_TARGETTEXTURE is not supported");
-    return 1;
-  }
 
   screen = NXSurface::createScreen(width, height, info.texture_formats[0]);
 
