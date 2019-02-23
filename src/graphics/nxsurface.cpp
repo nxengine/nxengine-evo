@@ -64,7 +64,7 @@ bool NXSurface::AllocNew(int wd, int ht, NXFormat *format)
 {
   Free();
 
-  fTexture = SDL_CreateTexture(renderer, format->format, SDL_TEXTUREACCESS_TARGET, wd * SCALE, ht * SCALE);
+  fTexture = SDL_CreateTexture(renderer, format->format, SDL_TEXTUREACCESS_STATIC, wd * SCALE, ht * SCALE);
 
   if (!fTexture)
   {
