@@ -27,8 +27,6 @@ bool Graphics::widescreen   = false;
 
 NXSurface *screen            = NULL;  // created from SDL's screen
 static NXSurface *drawtarget = NULL;  // target of DrawRect etc; almost always screen
-bool use_palette             = false; // true if we are in an indexed-color video mode
-int screen_bpp;
 
 const NXColor DK_BLUE(0, 0, 0x21); // the popular dk blue backdrop color
 const NXColor BLACK(0, 0, 0);      // pure black, only works if no colorkey
@@ -40,15 +38,6 @@ static NXSurface const *current_batch_drawtarget = NULL;
 
 bool Graphics::init(int resolution)
 {
-  if (use_palette)
-  {
-    screen_bpp = 8;
-  }
-  else
-  {
-    screen_bpp = 16; // the default
-  }
-
   if (SetResolution(resolution, false))
     return 1;
 
@@ -96,7 +85,7 @@ bool Graphics::InitVideo()
     stat("second call to Graphics::InitVideo()");
   }
 
-  stat("SDL_CreateWindow: %dx%d @ %dbpp", width, height, screen_bpp);
+  stat("SDL_CreateWindow: %dx%d", width, height);
   if (window)
   {
     SDL_SetWindowSize(window, width, height);
@@ -112,6 +101,7 @@ bool Graphics::InitVideo()
     return 1;
   }
 
+#if not defined(__VITA__)
   SDL_Surface *icon;
   icon = SDL_CreateRGBSurfaceFrom((void *)WINDOW_TITLE_ICON.pixel_data, WINDOW_TITLE_ICON.width,
                                   WINDOW_TITLE_ICON.height, WINDOW_TITLE_ICON.bytes_per_pixel * 8,
@@ -130,10 +120,10 @@ bool Graphics::InitVideo()
   );
   SDL_SetWindowIcon(window, icon);
   SDL_FreeSurface(icon);
+#endif
 
   if (!renderer)
-    renderer = SDL_CreateRenderer(window, -1,
-                                  /*SDL_RENDERER_SOFTWARE | */ SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
   if (!renderer)
   {
     staterr("Graphics::InitVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
@@ -148,12 +138,6 @@ bool Graphics::InitVideo()
   }
 
   stat("Graphics::InitVideo: using: %s renderer", info.name);
-
-  if (!(info.flags & SDL_RENDERER_TARGETTEXTURE))
-  {
-    staterr("Graphics::InitVideo: SDL_RENDERER_TARGETTEXTURE is not supported");
-    return 1;
-  }
 
   screen = NXSurface::createScreen(width, height, info.texture_formats[0]);
 
@@ -194,6 +178,10 @@ extern std::vector<void *> optionstack;
 
 bool Graphics::SetResolution(int r, bool restoreOnFailure)
 {
+#if defined(__VITA__)
+r = 1; // one fixed resolution
+#endif
+
   stat("Graphics::SetResolution(%d)", r);
   if (r == current_res)
     return 0;
@@ -252,6 +240,9 @@ const Graphics::gres_t *Graphics::GetRes()
       = {//      description, screen_w, screen_h, render_w, render_h, scale_factor, widescreen, enabled
          // 4:3
          {(char *)"---", 0, 0, 0, 0, 1, false, true},
+#if defined(__VITA__)
+         {(char *)"960x544", 960, 544, 480, 272, 2, true, true},
+#else
          {(char *)"320x240", 320, 240, 320, 240, 1, false, true},
          {(char *)"640x480", 640, 480, 320, 240, 2, false, true},
          //        {(char*)"800x600",   800,      600,      320,      240,      2.5,          false,      true },
@@ -265,6 +256,7 @@ const Graphics::gres_t *Graphics::GetRes()
          {(char *)"1366x768", 1366, 768, 455, 256, 3, true, true},
          {(char *)"1440x900", 1440, 900, 480, 300, 3, true, true},
          {(char *)"1920x1080", 1920, 1080, 480, 270, 4, true, true},
+#endif
          {NULL, 0, 0, 0, 0, 0, false, false}};
 
   SDL_DisplayMode dm;

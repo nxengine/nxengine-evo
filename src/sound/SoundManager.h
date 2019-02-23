@@ -8,7 +8,11 @@
 #include <string>
 #include <vector>
 
-#define SAMPLE_RATE 44100
+#if defined(_LOW_END_HARDWARE)
+  #define SAMPLE_RATE 22050
+#else
+  #define SAMPLE_RATE 44100
+#end
 
 namespace NXE
 {

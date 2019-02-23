@@ -268,16 +268,14 @@ int main(int argc, char *argv[])
 
 #if defined(_WIN32)
   _chdir(basepath);
-#else
+#elif not defined(__VITA__)
   chdir(basepath);
 #endif
   SDL_free(basepath);
 
-  char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string logpath = std::string(prefpath) + "debug.log";
-  SDL_free(prefpath);
+  (void)ResourceManager::getInstance();
 
-  SetLogFilename(logpath.c_str());
+  SetLogFilename(ResourceManager::getInstance()->getPrefPath("debug.log").c_str());
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
   {
@@ -292,8 +290,6 @@ int main(int argc, char *argv[])
   // load settings, or at least get the defaults,
   // so we know the initial screen resolution.
   settings_load();
-
-  (void)ResourceManager::getInstance();
 
   if (Graphics::init(settings->resolution))
   {

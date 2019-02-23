@@ -3,12 +3,16 @@
 #include <stdexcept>
 #include <string>
 
-#if defined(__unix__) || defined(__APPLE__)
+#if defined(__unix__) || defined(__APPLE__) || defined(__VITA__)
 #include <sys/stat.h>
 #elif defined(__HAIKU__)
 #include <posix/sys/stat.h> // ugh
 #elif defined(_WIN32) || defined(WIN32)
 #include <windows.h>
+#endif
+
+#if defined(__VITA__)
+#include <psp2/io/stat.h>
 #endif
 
 #include "ResourceManager.h"
@@ -18,7 +22,7 @@
 
 bool ResourceManager::fileExists(const std::string &filename)
 {
-#if defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__)// Linux, OS X, BSD
+#if defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__) || defined(__VITA__)// Linux, OS X, BSD
   struct stat st;
 
   if (stat(filename.c_str(), &st) == 0)
@@ -126,6 +130,28 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
     SDL_free(home);
   }
 
+#elif defined(__VITA__)
+  _tryPath = "ux0:/data/nxengine/data/" + std::string(settings->language) + "/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "ux0:/data/nxengine/data/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "app0:/data/" + std::string(settings->language) + "/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "app0:/data/" + filename;
+  return _tryPath;
+
 #endif
 
   _tryPath = "data/lang/" + std::string(settings->language) + "/" + filename;
@@ -141,6 +167,21 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
   }
 
   // throw std::runtime_error("Can't open file "+_tryPath);
+}
+
+std::string ResourceManager::getPrefPath(const std::string &filename)
+{
+  std::string _tryPath;
+
+#if defined(__VITA__)
+  sceIoMkdir("ux0:/data/nxengine/", 0700);
+  _tryPath = std::string("ux0:/data/nxengine/") + std::string(filename);
+#else
+  char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
+  _tryPath = std::string(prefpath) + std::string(filename);
+  SDL_free(prefpath);
+#endif
+  return _tryPath;
 }
 
 std::string ResourceManager::getPathForDir(const std::string &dir)
@@ -182,6 +223,15 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
     SDL_free(home);
   }
 
+#elif defined(__VITA__)
+  _tryPath = "ux0:/data/nxengine/data/" + dir;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+  _tryPath = "app0:/data/" + dir;
+  return _tryPath;
+
 #endif
 
   _tryPath = "data/" + dir;
@@ -211,7 +261,6 @@ void ResourceManager::findLanguages()
   _languages.push_back("english");
   for (auto &l : langs)
   {
-    std::cout << l << std::endl;
     std::ifstream ifs(widen(l + "/system.json"));
     if (ifs.is_open())
     {

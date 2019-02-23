@@ -53,11 +53,8 @@ bool load_stage(int stage_no)
   stat(" >> Entering stage %d: '%s'.", stage_no, stages[stage_no].stagename);
   game.curmap = stage_no; // do it now so onspawn events will have it
 
-  if (use_palette)
-  {
-    Sprites::FlushSheets();
-    map_flush_graphics();
-  }
+  Sprites::FlushSheets();
+  map_flush_graphics();
 
   if (Tileset::Load(stages[stage_no].tileset))
     return 1;

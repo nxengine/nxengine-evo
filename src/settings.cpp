@@ -23,9 +23,7 @@ static bool tryload(Settings *setfile)
 {
   FILE *fp;
 
-  char *basepath   = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string path = std::string(basepath) + "settings.dat";
-  SDL_free(basepath);
+  std::string path = ResourceManager::getInstance()->getPrefPath("settings.dat");
 
   stat("Loading settings...");
 
@@ -62,6 +60,10 @@ static bool tryload(Settings *setfile)
     strncpy(setfile->language, "english", 255);
   }
 
+#if defined(__VITA__)
+    setfile->resolution     = 1;
+#endif
+
   return 0;
 }
 
@@ -75,7 +77,11 @@ bool settings_load(Settings *setfile)
     stat("No saved settings; using defaults.");
 
     memset(setfile, 0, sizeof(Settings));
+#if defined(__VITA__)
+    setfile->resolution     = 1;
+#else
     setfile->resolution     = 2; // 640x480 Windowed, should be safe value
+#endif
     setfile->last_save_slot = 0;
     setfile->fullscreen     = false;
 
@@ -106,9 +112,7 @@ bool settings_save(Settings *setfile)
 {
   FILE *fp;
 
-  char *basepath   = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string path = std::string(basepath) + "settings.dat";
-  SDL_free(basepath);
+  std::string path = ResourceManager::getInstance()->getPrefPath("settings.dat");
 
   if (!setfile)
     setfile = &normal_settings;
