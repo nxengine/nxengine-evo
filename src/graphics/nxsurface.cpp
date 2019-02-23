@@ -328,7 +328,7 @@ void NXSurface::Clear(uint8_t r, uint8_t g, uint8_t b)
     SetAsTarget(true);
 
   SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
-  // SDL_RenderFillRect(renderer, NULL);
+  SDL_RenderFillRect(renderer, NULL);
   SDL_RenderClear(renderer);
 
   if (this != screen)
