@@ -26,7 +26,7 @@ cp -r ../data/* data/
 cd ..
 mkdir build
 cd build
-cmake -DPLATFORM=vita ..
+cmake -DPLATFORM=vita -DCMAKE_BUILD_TYPE=Release ..
 make
 cd ..
 rm -rf release/data
