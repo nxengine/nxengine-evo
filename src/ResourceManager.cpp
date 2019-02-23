@@ -242,7 +242,6 @@ void ResourceManager::findLanguages()
   _languages.push_back("english");
   for (auto &l : langs)
   {
-    std::cout << l << std::endl;
     std::ifstream ifs(widen(l + "/system.json"));
     if (ifs.is_open())
     {
