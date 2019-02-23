@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-#if defined(__unix__) || defined(__APPLE__)
+#if defined(__unix__) || defined(__APPLE__) || defined(__VITA__)
 #include <sys/stat.h>
 #elif defined(__HAIKU__)
 #include <posix/sys/stat.h> // ugh
@@ -18,7 +18,7 @@
 
 bool ResourceManager::fileExists(const std::string &filename)
 {
-#if defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__)// Linux, OS X, BSD
+#if defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__) || defined(__VITA__)// Linux, OS X, BSD
   struct stat st;
 
   if (stat(filename.c_str(), &st) == 0)
@@ -126,6 +126,28 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
     SDL_free(home);
   }
 
+#elif defined(__VITA__)
+  _tryPath = "ux0:/data/nxengine/data/" + std::string(settings->language) + "/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "ux0:/data/nxengine/data/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "app0:/data/" + std::string(settings->language) + "/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "app0:/data/" + filename;
+  return _tryPath;
+
 #endif
 
   _tryPath = "data/lang/" + std::string(settings->language) + "/" + filename;
@@ -181,6 +203,15 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
     }
     SDL_free(home);
   }
+
+#elif defined(__VITA__)
+  _tryPath = "ux0:/data/nxengine/data/" + dir;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+  _tryPath = "app0:/data/" + dir;
+  return _tryPath;
 
 #endif
 
