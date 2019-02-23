@@ -170,6 +170,7 @@ std::string ResourceManager::getPrefPath(const std::string &filename)
   std::string _tryPath;
 
 #if defined(__VITA__)
+  mkdir("ux0:/data/nxengine/", 0700);
   _tryPath = std::string("ux0:/data/nxengine/") + std::string(filename);
 #else
   char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
