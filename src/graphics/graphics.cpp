@@ -178,6 +178,10 @@ extern std::vector<void *> optionstack;
 
 bool Graphics::SetResolution(int r, bool restoreOnFailure)
 {
+#if defined(__VITA__)
+r = 1; // one fixed resolution
+#endif
+
   stat("Graphics::SetResolution(%d)", r);
   if (r == current_res)
     return 0;
@@ -236,6 +240,9 @@ const Graphics::gres_t *Graphics::GetRes()
       = {//      description, screen_w, screen_h, render_w, render_h, scale_factor, widescreen, enabled
          // 4:3
          {(char *)"---", 0, 0, 0, 0, 1, false, true},
+#if defined(__VITA__)
+         {(char *)"960x544", 960, 544, 480, 272, 2, true, true},
+#else
          {(char *)"320x240", 320, 240, 320, 240, 1, false, true},
          {(char *)"640x480", 640, 480, 320, 240, 2, false, true},
          //        {(char*)"800x600",   800,      600,      320,      240,      2.5,          false,      true },
@@ -249,6 +256,7 @@ const Graphics::gres_t *Graphics::GetRes()
          {(char *)"1366x768", 1366, 768, 455, 256, 3, true, true},
          {(char *)"1440x900", 1440, 900, 480, 300, 3, true, true},
          {(char *)"1920x1080", 1920, 1080, 480, 270, 4, true, true},
+#endif
          {NULL, 0, 0, 0, 0, 0, false, false}};
 
   SDL_DisplayMode dm;
