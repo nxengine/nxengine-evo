@@ -12,7 +12,7 @@
   #define SAMPLE_RATE 22050
 #else
   #define SAMPLE_RATE 44100
-#end
+#endif
 
 namespace NXE
 {
