@@ -165,6 +165,20 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
   // throw std::runtime_error("Can't open file "+_tryPath);
 }
 
+std::string ResourceManager::getPrefPath(const char* filename)
+{
+  std::string _tryPath;
+
+#if defined(__VITA__)
+  _tryPath = std::string("ux0:/data/nxengine/") + std::string(filename);
+#else
+  char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
+  _tryPath = std::string(prefpath) + std::string(filename);
+  SDL_free(prefpath);
+#endif
+  return _tryPath;
+}
+
 std::string ResourceManager::getPathForDir(const std::string &dir)
 {
   std::string _tryPath;
