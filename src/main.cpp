@@ -31,6 +31,10 @@ using namespace Graphics;
 #include "screeneffect.h"
 #include "sound/SoundManager.h"
 
+#if defined(__SWITCH__)
+#include <switch.h>
+#endif
+
 using namespace NXE::Sound;
 
 int fps                  = 0;
@@ -264,14 +268,23 @@ int main(int argc, char *argv[])
   bool error            = false;
   bool freshstart;
 
-  char *basepath = SDL_GetBasePath();
-
 #if defined(_WIN32)
+  char *basepath = SDL_GetBasePath();
   _chdir(basepath);
-#elif not defined(__VITA__)
-  chdir(basepath);
-#endif
   SDL_free(basepath);
+#elif not defined(__VITA__) && not defined(__SWITCH__)
+  char *basepath = SDL_GetBasePath();
+  chdir(basepath);
+  SDL_free(basepath);
+#endif
+
+#if defined(__SWITCH__)
+  if (int res = romfsInit() != 0)
+  {
+    staterr("romfsInit() failed: 0x%x", res);
+    return 1;
+  }
+#endif
 
   (void)ResourceManager::getInstance();
 
@@ -282,7 +295,6 @@ int main(int argc, char *argv[])
     staterr("ack, sdl_init failed: %s.", SDL_GetError());
     return 1;
   }
-  atexit(SDL_Quit);
 
   // start up inputs first thing because settings_load may remap them
   input_init();
@@ -434,6 +446,10 @@ shutdown:;
   NXE::Sound::SoundManager::getInstance()->shutdown();
   //	sound_close();
   textbox.Deinit();
+#if defined(__SWITCH__)
+  romfsExit();
+#endif
+  SDL_Quit();
   return error;
 
 ingame_error:;

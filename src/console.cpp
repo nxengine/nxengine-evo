@@ -24,6 +24,7 @@ using namespace Graphics;
 
 #include <string>
 #include <vector>
+#include <SDL.h>
 
 #define Respond console.Print
 
@@ -875,7 +876,7 @@ char *DebugConsole::SplitCommand(const char *line_in, std::vector<std::string> *
 {
   while (*line_in == ' ' || *line_in == '\t')
     line_in++;
-  char *line = strdup(line_in);
+  char *line = SDL_strdup(line_in);
 
   char *cmd = strtok(line, " \t");
   if (cmd && cmd[0])

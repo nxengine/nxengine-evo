@@ -101,7 +101,7 @@ bool Graphics::InitVideo()
     return 1;
   }
 
-#if not defined(__VITA__)
+#if not defined(__VITA__) && not defined(__SWITCH__)
   SDL_Surface *icon;
   icon = SDL_CreateRGBSurfaceFrom((void *)WINDOW_TITLE_ICON.pixel_data, WINDOW_TITLE_ICON.width,
                                   WINDOW_TITLE_ICON.height, WINDOW_TITLE_ICON.bytes_per_pixel * 8,
@@ -178,7 +178,7 @@ extern std::vector<void *> optionstack;
 
 bool Graphics::SetResolution(int r, bool restoreOnFailure)
 {
-#if defined(__VITA__)
+#if defined(__VITA__) || defined(__SWITCH__)
 r = 1; // one fixed resolution
 #endif
 
@@ -242,6 +242,8 @@ const Graphics::gres_t *Graphics::GetRes()
          {(char *)"---", 0, 0, 0, 0, 1, false, true},
 #if defined(__VITA__)
          {(char *)"960x544", 960, 544, 480, 272, 2, true, true},
+#elif defined(__SWITCH__)
+         {(char *)"1920x1080", 1920, 1080, 480, 270, 4, true, true},
 #else
          {(char *)"320x240", 320, 240, 320, 240, 1, false, true},
          {(char *)"640x480", 640, 480, 320, 240, 2, false, true},

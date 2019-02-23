@@ -61,6 +61,24 @@ bool input_init(void)
   mappings[ESCKEY].jbut   = 11;
 #endif
 
+#if defined(__SWITCH__)
+  mappings[LEFTKEY].jbut      = 16;
+  mappings[UPKEY].jbut        = 17;
+  mappings[RIGHTKEY].jbut     = 18;
+  mappings[DOWNKEY].jbut      = 19;
+
+  mappings[FIREKEY].jbut      = 0;  // A
+  mappings[JUMPKEY].jbut      = 1;  // B
+  mappings[MAPSYSTEMKEY].jbut = 2;  // X
+  mappings[INVENTORYKEY].jbut = 3;  // Y
+
+  mappings[PREVWPNKEY].jbut   = 6;  // L
+  mappings[NEXTWPNKEY].jbut   = 7;  // R
+
+  mappings[ENTERKEY].jbut     = 10; // +
+  mappings[ESCKEY].jbut       = 11; // -
+#endif
+
   mappings[F1KEY].key  = SDLK_F1;
   mappings[F2KEY].key  = SDLK_F2;
   mappings[F3KEY].key  = SDLK_F3;

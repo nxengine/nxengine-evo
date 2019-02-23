@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-#if defined(__unix__) || defined(__APPLE__) || defined(__VITA__)
+#if defined(__unix__) || defined(__APPLE__) || defined(__VITA__) || defined(__SWITCH__)
 #include <sys/stat.h>
 #elif defined(__HAIKU__)
 #include <posix/sys/stat.h> // ugh
@@ -22,7 +22,7 @@
 
 bool ResourceManager::fileExists(const std::string &filename)
 {
-#if defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__) || defined(__VITA__)// Linux, OS X, BSD
+#if defined(__unix__) || defined(__APPLE__) || defined(__HAIKU__) || defined(__VITA__) || defined(__SWITCH__)
   struct stat st;
 
   if (stat(filename.c_str(), &st) == 0)
@@ -152,6 +152,28 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
   _tryPath = "app0:/data/" + filename;
   return _tryPath;
 
+#elif defined(__SWITCH__)
+  _tryPath = "data/" + std::string(settings->language) + "/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "data/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "romfs:/data/" + std::string(settings->language) + "/" + filename;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+
+  _tryPath = "romfs:/data/" + filename;
+  return _tryPath;
+
 #endif
 
   _tryPath = "data/lang/" + std::string(settings->language) + "/" + filename;
@@ -176,6 +198,9 @@ std::string ResourceManager::getPrefPath(const std::string &filename)
 #if defined(__VITA__)
   sceIoMkdir("ux0:/data/nxengine/", 0700);
   _tryPath = std::string("ux0:/data/nxengine/") + std::string(filename);
+#elif defined(__SWITCH__)
+//  mkdir("nxengine/", 0700);
+  _tryPath = std::string(filename);
 #else
   char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
   _tryPath = std::string(prefpath) + std::string(filename);
@@ -230,6 +255,15 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
     return _tryPath;
   }
   _tryPath = "app0:/data/" + dir;
+  return _tryPath;
+
+#elif defined(__SWITCH__)
+  _tryPath = "data/" + dir;
+  if (fileExists(_tryPath))
+  {
+    return _tryPath;
+  }
+  _tryPath = "romfs:/data/" + dir;
   return _tryPath;
 
 #endif
