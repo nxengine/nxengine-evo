@@ -3,6 +3,7 @@
 
 #include "common/misc.h"
 #include "common/stat.h"
+#include "ResourceManager.h"
 
 #include <SDL.h>
 #include <cstdio>
@@ -22,9 +23,7 @@ bool niku_load(uint32_t *value_out)
   uint32_t *result = (uint32_t *)buffer;
   int i, j;
 
-  char *basepath    = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string fname = std::string(basepath) + "290.rec";
-  SDL_free(basepath);
+  std::string fname = ResourceManager::getInstance()->getPrefPath("290.rec");
 
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
@@ -71,9 +70,7 @@ bool niku_save(uint32_t value)
   uint8_t buf_byte[20];
   uint32_t *buf_dword = (uint32_t *)buf_byte;
 
-  char *basepath    = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string fname = std::string(basepath) + "290.rec";
-  SDL_free(basepath);
+  std::string fname = ResourceManager::getInstance()->getPrefPath("290.rec");
 
   // place values
   buf_dword[0] = value;
