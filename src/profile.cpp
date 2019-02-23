@@ -2,6 +2,7 @@
 
 #include "common/misc.h"
 #include "common/stat.h"
+#include "ResourceManager.h"
 #include "nx.h"
 #include "tsc.h"
 
@@ -240,9 +241,8 @@ void c------------------------------() {}
 // returns the filename for a save file given it's number
 char *GetProfileName(int num)
 {
-  char *basepath   = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  std::string prof = std::string(basepath);
-  SDL_free(basepath);
+  std::string prof = ResourceManager::getInstance()->getPrefPath("");
+
   std::string profile;
   if (num == 0)
   {
