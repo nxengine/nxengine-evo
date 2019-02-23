@@ -11,6 +11,10 @@
 #include <windows.h>
 #endif
 
+#if defined(__VITA__)
+#include <psp2/io/stat.h>
+#endif
+
 #include "ResourceManager.h"
 #include "common/glob.h"
 #include "common/misc.h"
@@ -170,7 +174,7 @@ std::string ResourceManager::getPrefPath(const std::string &filename)
   std::string _tryPath;
 
 #if defined(__VITA__)
-  mkdir("ux0:/data/nxengine/", 0700);
+  sceIoMkdir("ux0:/data/nxengine/", 0700);
   _tryPath = std::string("ux0:/data/nxengine/") + std::string(filename);
 #else
   char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
