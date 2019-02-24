@@ -440,12 +440,11 @@ shutdown:;
   game.close();
   Carets::close();
 
-  Graphics::close();
   input_close();
   font_close();
-  NXE::Sound::SoundManager::getInstance()->shutdown();
-  //	sound_close();
   textbox.Deinit();
+  NXE::Sound::SoundManager::getInstance()->shutdown();
+  Graphics::close();
 #if defined(__SWITCH__)
   romfsExit();
 #endif
