@@ -36,8 +36,8 @@ protected:
   Ogg &operator=(const Ogg &) = delete;
 
 public:
-  bool load(const std::string &fname, const std::string &dir);
-  bool start(const std::string &fname, const std::string &dir, int startbeat, bool loop);
+  bool load(const std::string &fname, const std::string &dir, bool doloop);
+  bool start(const std::string &fname, const std::string &dir, int startbeat, bool loop, bool doloop);
   uint32_t stop(void);
   bool isPlaying(void);
   void fade(void);

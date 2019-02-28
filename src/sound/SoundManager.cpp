@@ -57,7 +57,10 @@ bool SoundManager::init()
 
   std::ifstream fl;
 
-  _org_names.clear();
+  _music_names.clear();
+  _music_names.push_back("");
+  _music_loop.clear();
+  _music_loop.push_back(false);
 
   fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
   if (fl.is_open())
@@ -66,7 +69,16 @@ bool SoundManager::init()
 
     for (auto it = tracklist.begin(); it != tracklist.end(); ++it)
     {
-      _org_names.push_back(it.value());
+      auto it_loop = it.value().find("loop");
+      if (it_loop != it.value().end())
+      {
+        _music_loop.push_back(*it_loop);
+      }
+      else
+      {
+        _music_loop.push_back(true);
+      }
+      _music_names.push_back(it.value().at("name"));
     }
     fl.close();
   }
@@ -353,7 +365,7 @@ bool SoundManager::_musicIsBoss(uint32_t songno)
 
 void SoundManager::_start_org_track(int songno, bool resume)
 {
-  if (_org_names.size() == 0) return;
+  if (_music_names.size() < 2) return;
 
   _lastSongPos = Organya::getInstance()->stop();
   if (songno == 0)
@@ -362,7 +374,7 @@ void SoundManager::_start_org_track(int songno, bool resume)
   }
 
   if (Organya::getInstance()->load(
-          ResourceManager::getInstance()->getLocalizedPath(_music_dirs.at(0) + _org_names[songno] + ".org")))
+          ResourceManager::getInstance()->getLocalizedPath(_music_dirs.at(0) + _music_names[songno] + ".org")))
   {
     Organya::getInstance()->start(resume ? _lastSongPos : 0);
   }
@@ -370,7 +382,7 @@ void SoundManager::_start_org_track(int songno, bool resume)
 
 void SoundManager::_start_ogg_track(int songno, bool resume, std::string dir)
 {
-  if (_org_names.size() == 0) return;
+  if (_music_names.size() < 2) return;
 
   if (songno == 0)
   {
@@ -378,7 +390,7 @@ void SoundManager::_start_ogg_track(int songno, bool resume, std::string dir)
     _lastSongPos = Ogg::getInstance()->stop();
     return;
   }
-  Ogg::getInstance()->start(_org_names[songno], dir, resume ? _lastSongPos : 0, resume ? _songlooped : false);
+  Ogg::getInstance()->start(_music_names[songno], dir, resume ? _lastSongPos : 0, resume ? _songlooped : false, _music_loop[songno]);
 }
 
 std::vector<std::string> &SoundManager::music_dir_names()

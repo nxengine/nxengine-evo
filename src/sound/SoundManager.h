@@ -160,7 +160,8 @@ private:
   uint32_t _currentSong = 0;
   bool _songlooped      = false;
 
-  std::vector<std::string> _org_names;
+  std::vector<std::string> _music_names;
+  std::vector<bool> _music_loop;
   std::vector<std::string> _music_dirs;
   std::vector<std::string> _music_dir_names;
 
