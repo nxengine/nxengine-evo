@@ -410,7 +410,7 @@ void _tracks_change(ODItem *item, int dir)
 
   if (result < 0)
     result = names.size()-1;
-  if (result >= names.size())
+  if (result >= (int)names.size())
     result = 0;
   NXE::Sound::SoundManager::getInstance()->setNewmusic(result);
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
