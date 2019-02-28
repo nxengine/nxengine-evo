@@ -68,13 +68,12 @@ bool SoundManager::init()
     {
       _org_names.push_back(it.value());
     }
+    fl.close();
   }
   else
   {
     staterr("Failed to load music.json");
-    return false;
   }
-  fl.close();
 
   path = ResourceManager::getInstance()->getLocalizedPath("music_dirs.json");
 
@@ -354,6 +353,8 @@ bool SoundManager::_musicIsBoss(uint32_t songno)
 
 void SoundManager::_start_org_track(int songno, bool resume)
 {
+  if (_org_names.size() == 0) return;
+
   _lastSongPos = Organya::getInstance()->stop();
   if (songno == 0)
   {
@@ -369,6 +370,8 @@ void SoundManager::_start_org_track(int songno, bool resume)
 
 void SoundManager::_start_ogg_track(int songno, bool resume, std::string dir)
 {
+  if (_org_names.size() == 0) return;
+
   if (songno == 0)
   {
     _songlooped  = Ogg::getInstance()->looped();
