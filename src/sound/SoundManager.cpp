@@ -71,7 +71,7 @@ bool SoundManager::init()
   }
   else
   {
-    staterr("Failed to load tracklist");
+    staterr("Failed to load music.json");
     return false;
   }
   fl.close();
@@ -97,7 +97,7 @@ bool SoundManager::init()
   }
   else
   {
-    staterr("Failed to load tracks dirlist");
+    staterr("Failed to load music_dirs.json");
   }
 
   Pixtone::getInstance()->init();
