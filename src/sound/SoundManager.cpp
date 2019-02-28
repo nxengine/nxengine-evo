@@ -93,13 +93,12 @@ bool SoundManager::init()
       _music_dirs.push_back(it.value().at("dir"));
       _music_dir_names.push_back(it.value().at("name"));
     }
+    fl.close();
   }
   else
   {
-    staterr("Failed to load tracklist");
-    return false;
+    staterr("Failed to load tracks dirlist");
   }
-  fl.close();
 
   Pixtone::getInstance()->init();
   Organya::getInstance()->init();
