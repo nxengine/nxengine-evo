@@ -154,6 +154,7 @@ private:
   bool _musicIsBoss(uint32_t songno);
   void _start_org_track(int songno, bool resume);
   void _start_ogg_track(int songno, bool resume, std::string dir);
+  void _reloadTrackList();
 
   uint32_t _lastSong    = 0;
   uint32_t _lastSongPos = 0;
@@ -164,6 +165,7 @@ private:
   std::vector<bool> _music_loop;
   std::vector<std::string> _music_dirs;
   std::vector<std::string> _music_dir_names;
+  std::vector<std::string> _music_playlists;
 
   const char _bossmusic[14] = {4, 7, 10, 11, 15, 16, 17, 18, 21, 22, 31, 33, 35, 0};
 };
