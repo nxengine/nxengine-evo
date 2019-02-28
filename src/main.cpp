@@ -321,8 +321,12 @@ int main(int argc, char *argv[])
   //	}
 
   Graphics::ShowLoadingScreen();
-  SoundManager::getInstance()->init();
-  //	if (sound_init()) { fatal("Failed to initialize sound."); return 1; }
+  if (!SoundManager::getInstance()->init())
+  {
+    fatal("Failed to initialize sound.");
+    return 1;
+  }
+
   if (trig_init())
   {
     fatal("Failed trig module init.");
