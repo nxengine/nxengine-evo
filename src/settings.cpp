@@ -60,7 +60,7 @@ static bool tryload(Settings *setfile)
     strncpy(setfile->language, "english", 255);
   }
 
-#if defined(__VITA__)
+#if defined(__VITA__) || defined(__SWITCH__)
     setfile->resolution     = 1;
 #endif
 
@@ -77,7 +77,7 @@ bool settings_load(Settings *setfile)
     stat("No saved settings; using defaults.");
 
     memset(setfile, 0, sizeof(Settings));
-#if defined(__VITA__)
+#if defined(__VITA__) || defined(__SWITCH__)
     setfile->resolution     = 1;
 #else
     setfile->resolution     = 2; // 640x480 Windowed, should be safe value
