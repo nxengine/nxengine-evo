@@ -71,18 +71,30 @@ bool SoundManager::init()
 
     for (auto it = dirlist.begin(); it != dirlist.end(); ++it)
     {
-      auto it_playlist = it.value().find("playlist");
-      if (it_playlist != it.value().end())
+      std::string dir = it.value().at("dir");
+      if (
+        ResourceManager::getInstance()->fileExists(
+          ResourceManager::getInstance()->getPathForDir(dir)
+        )
+      )
       {
-        _music_playlists.push_back(*it_playlist);
+        auto it_playlist = it.value().find("playlist");
+        if (it_playlist != it.value().end())
+        {
+          _music_playlists.push_back(*it_playlist);
+        }
+        else
+        {
+          _music_playlists.push_back("music.json");
+        }
+
+        _music_dirs.push_back(dir);
+        _music_dir_names.push_back(it.value().at("name"));
       }
       else
       {
-        _music_playlists.push_back("music.json");
+        staterr("Music dir %s doesn't exist", dir.c_str());
       }
-
-      _music_dirs.push_back(it.value().at("dir"));
-      _music_dir_names.push_back(it.value().at("name"));
     }
     fl.close();
   }
