@@ -185,15 +185,19 @@ void ai_bubbler_sharp(Object *o)
     {
       case LEFT:
         o->xinertia = -speed;
+        o->frame = 0;
         break;
       case RIGHT:
         o->xinertia = speed;
+        o->frame = 0;
         break;
       case UP:
         o->yinertia = -speed;
+        o->frame = 2;
         break;
       case DOWN:
         o->yinertia = speed;
+        o->frame = 2;
         break;
     }
 
@@ -202,6 +206,16 @@ void ai_bubbler_sharp(Object *o)
   }
   else
   {
-    ANIMATE(1, 0, 1);
+    switch (o->shot.dir)
+    {
+      case LEFT:
+      case RIGHT:
+        ANIMATE(1, 0, 1);
+        break;
+      case UP:
+      case DOWN:
+        ANIMATE(1, 2, 3);
+        break;
+    }
   }
 }
