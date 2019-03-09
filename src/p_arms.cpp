@@ -296,6 +296,7 @@ void PDoWeapons(void)
   }
   else
   {
+    player->auto_fire_limit = 6;
     RunWeapon(false);
   }
 
@@ -573,9 +574,6 @@ static void PFireMachineGun(int level)
 // i.e. the fire button is down.
 void FireWeapon(void)
 {
-  if (player->fire_limit)
-    return;
-  player->fire_limit = 4;
 
   Weapon *curweapon = &player->weapons[player->curWeapon];
   int level         = curweapon->level;
@@ -583,14 +581,13 @@ void FireWeapon(void)
   // check if we can fire
   if (curweapon->firerate[level] != 0)
   { // rapid/fully-auto fire
-    // decremented in RunWeapon()
-    if (curweapon->firetimer)
+    if (++player->auto_fire_limit > curweapon->firerate[level])
     {
-      return;
+      player->auto_fire_limit = 0;
     }
     else
     {
-      curweapon->firetimer = curweapon->firerate[level];
+      return;
     }
   }
   else
@@ -598,6 +595,11 @@ void FireWeapon(void)
     if (lastpinputs[FIREKEY])
       return;
   }
+
+  if (player->fire_limit)
+    return;
+
+  player->fire_limit = 4;
 
   // check if we have enough ammo
   if (curweapon->maxammo > 0 && curweapon->ammo <= 0)
