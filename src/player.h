@@ -101,6 +101,7 @@ public:
   Point repel_u[8];
   Point repel_d[8];
   int nrepel_l, nrepel_r, nrepel_u, nrepel_d;
+  int8_t fire_limit;
 };
 
 extern Player *player;

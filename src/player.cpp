@@ -110,6 +110,7 @@ void InitPlayer(void)
   player->touchattr    = TA_WATER;
   player->airleft      = 1000;
   player->airshowtimer = 0;
+  player->fire_limit = 0;
 }
 
 Player::~Player()

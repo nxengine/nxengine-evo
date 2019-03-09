@@ -573,6 +573,10 @@ static void PFireMachineGun(int level)
 // i.e. the fire button is down.
 void FireWeapon(void)
 {
+  if (player->fire_limit)
+    return;
+  player->fire_limit = 4;
+
   Weapon *curweapon = &player->weapons[player->curWeapon];
   int level         = curweapon->level;
 
@@ -668,6 +672,8 @@ void RunWeapon(bool firing)
 {
   Weapon *curweapon = &player->weapons[player->curWeapon];
   int level         = curweapon->level;
+
+  if (player->fire_limit) player->fire_limit--;
 
   // bubbler L1 has recharge but not rapid fire,
   // so it recharges even if the key is held down.
