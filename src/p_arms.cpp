@@ -564,9 +564,12 @@ static void PFireMachineGun(int level)
   }
 
   // do machine-gun flying
-  if (player->look == DOWN && level == 2)
+  if (level == 2)
   {
-    PMgunFly();
+    if (player->look == DOWN)
+      PMgunFly(true);
+    else if (player->look == UP)
+      PMgunFly(false);
   }
 }
 
@@ -813,17 +816,24 @@ void FireLevel23MGun(int x, int y, int level, int dir)
 }
 
 // handles flying when shooting down using Machine Gun at Level 3
-void PMgunFly(void)
+void PMgunFly(bool up)
 {
-  if (player->yinertia > 0)
+  if (up)
   {
-    player->yinertia >>= 1;
-  }
+    if (player->yinertia > 0)
+    {
+      player->yinertia >>= 1;
+    }
 
-  if (player->yinertia > -0x400)
+    if (player->yinertia > -0x400)
+    {
+      player->yinertia -= 0x200;
+      if (player->yinertia < -0x400)
+        player->yinertia = -0x400;
+    }
+  }
+  else
   {
-    player->yinertia -= 0x200;
-    if (player->yinertia < -0x400)
-      player->yinertia = -0x400;
+    player->yinertia += 0x100;
   }
 }
