@@ -96,11 +96,10 @@ int font_draw(int x, int y, const std::string &text, uint32_t color, bool is_sha
 
       if (Graphics::is_set_clip())
         Graphics::clip(srcrect, dstrect);
-      // TODO: I'm not sure, but it looks like original text is outlined, not shadowed
       if (is_shaded)
       {
-        shdrect.x = x + glyph.xoffset + SHADOW_OFFSET;
-        shdrect.y = y + glyph.yoffset + SHADOW_OFFSET;
+        shdrect.x = x + glyph.xoffset;
+        shdrect.y = y + glyph.yoffset + SHADOW_OFFSET*SCALE;
         shdrect.w = glyph.w;
         shdrect.h = glyph.h;
         SDL_SetTextureColorMod(atlas, 0, 0, 0);
