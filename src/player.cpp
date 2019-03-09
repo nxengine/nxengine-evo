@@ -111,6 +111,7 @@ void InitPlayer(void)
   player->airleft      = 1000;
   player->airshowtimer = 0;
   player->fire_limit = 0;
+  player->auto_fire_limit = 0;
 }
 
 Player::~Player()
