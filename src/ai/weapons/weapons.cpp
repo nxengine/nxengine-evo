@@ -69,7 +69,7 @@ Object *check_hit_enemy(Object *shot, uint32_t flags_to_exclude)
     {
       if ((enemy->flags & flags_to_exclude) == 0)
       {
-        if (hitdetect(enemy, shot))
+        if (hitdetect_shot(enemy, shot))
         {
           // can't hit an enemy by shooting up when standing on it
           // (added for omega battle but good probably in other times too)

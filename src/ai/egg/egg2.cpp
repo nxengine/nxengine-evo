@@ -314,10 +314,10 @@ void ai_counter_bomb(Object *o)
           o->y                       = o->CenterY();
           o->invisible               = true;
           o->sprite                  = SPR_BBOX_PUPPET_1;
-          sprites[o->sprite].bbox.x1 = -128;
-          sprites[o->sprite].bbox.y1 = -100;
-          sprites[o->sprite].bbox.x2 = 128;
-          sprites[o->sprite].bbox.y2 = 100;
+          sprites[o->sprite].bbox[o->dir].x1 = -128;
+          sprites[o->sprite].bbox[o->dir].y1 = -100;
+          sprites[o->sprite].bbox[o->dir].x2 = 128;
+          sprites[o->sprite].bbox[o->dir].y2 = 100;
           o->damage                  = 30;
 
           o->yinertia = 0;

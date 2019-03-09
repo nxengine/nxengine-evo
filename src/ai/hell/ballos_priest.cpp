@@ -147,9 +147,6 @@ static void run_intro(Object *o)
       o->dir    = LEFT;
       o->damage = 0;
 
-      // ensure copy pfbox first time
-      o->dirparam = -1;
-
       // closed eyes/mouth
       o->linkedobject = CreateObject(o->x, o->y - (16 * CSFI), OBJ_BALLOS_SMILE);
       o->state        = 1;
@@ -591,13 +588,6 @@ void ai_ballos_priest(Object *o)
       }
     }
     break;
-  }
-
-  // his bounding box is in a slightly different place on L/R frames
-  if (o->dirparam != o->dir)
-  {
-    sprites[o->sprite].bbox = sprites[o->sprite].frame[0].dir[o->dir].pf_bbox;
-    o->dirparam             = o->dir;
   }
 }
 

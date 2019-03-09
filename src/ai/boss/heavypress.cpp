@@ -48,7 +48,8 @@ void HeavyPress::OnMapEntry(void)
   center_bbox    = sprites[o->sprite].frame[0].dir[0].pf_bbox;
   fullwidth_bbox = sprites[o->sprite].frame[2].dir[0].pf_bbox;
 
-  sprites[o->sprite].bbox = fullwidth_bbox;
+  for (int i = 0;i < sprites[o->sprite].ndirs;i++)
+    sprites[o->sprite].bbox[i] = fullwidth_bbox;
 }
 
 /*
@@ -78,17 +79,17 @@ void HeavyPress::Run()
       // don't use puppet 1 because Deleet's use that when they explode.
       shield_left                          = CreateObject(o->x, o->y, OBJ_HEAVY_PRESS_SHIELD);
       shield_left->sprite                  = SPR_BBOX_PUPPET_2;
-      sprites[shield_left->sprite].bbox    = fullwidth_bbox;
-      sprites[shield_left->sprite].bbox.x2 = center_bbox.x1 - 1;
+      sprites[shield_left->sprite].bbox[shield_left->dir]    = fullwidth_bbox;
+      sprites[shield_left->sprite].bbox[shield_left->dir].x2 = center_bbox.x1 - 1;
 
       shield_right                          = CreateObject(o->x, o->y, OBJ_HEAVY_PRESS_SHIELD);
       shield_right->sprite                  = SPR_BBOX_PUPPET_3;
-      sprites[shield_right->sprite].bbox    = fullwidth_bbox;
-      sprites[shield_right->sprite].bbox.x1 = center_bbox.x2 + 1;
+      sprites[shield_right->sprite].bbox[shield_right->dir]    = fullwidth_bbox;
+      sprites[shield_right->sprite].bbox[shield_right->dir].x1 = center_bbox.x2 + 1;
 
       // then switch to small pfbox where we're only hittable in the center
       o->frame                = 0;
-      sprites[o->sprite].bbox = center_bbox;
+      sprites[o->sprite].bbox[o->dir] = center_bbox;
 
       o->flags |= FLAG_SHOOTABLE;
       o->flags &= ~FLAG_INVULNERABLE;
@@ -165,7 +166,7 @@ void HeavyPress::run_defeated()
         shield_right->Delete();
         shield_right = NULL;
       }
-      sprites[o->sprite].bbox = fullwidth_bbox;
+      sprites[o->sprite].bbox[o->dir] = fullwidth_bbox;
 
       // get rid of enemies--the butes can stay, though.
       KillObjectsOfType(OBJ_HP_LIGHTNING);

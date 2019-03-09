@@ -201,7 +201,7 @@ struct SIFSprite
   int ndirs;
   SIFFrame *frame;
 
-  SIFRect bbox;     // bounding box for hit detection with other sprites
+  SIFRect bbox[SIF_MAX_DIRS];     // bounding box for hit detection with other sprites
   SIFRect solidbox; // bounding box for solidity w/ other objects
   SIFRect slopebox; // bounding box for moving up and down slopes (generated at runtime)
 

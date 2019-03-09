@@ -774,10 +774,10 @@ void ai_deleet(Object *o)
           o->sprite    = SPR_BBOX_PUPPET_1;
           o->invisible = true;
 
-          sprites[o->sprite].bbox.x1 = -48;
-          sprites[o->sprite].bbox.x2 = 48;
-          sprites[o->sprite].bbox.y1 = -48;
-          sprites[o->sprite].bbox.y2 = 48;
+          sprites[o->sprite].bbox[o->dir].x1 = -48;
+          sprites[o->sprite].bbox[o->dir].x2 = 48;
+          sprites[o->sprite].bbox[o->dir].y1 = -48;
+          sprites[o->sprite].bbox[o->dir].y2 = 48;
           o->damage                  = 12;
 
           quake(10);

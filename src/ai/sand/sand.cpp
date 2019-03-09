@@ -268,8 +268,8 @@ void ai_sandcroc(Object *o)
       if (pdistlx(19 * CSFI))
       {
         // check if bottoms of player and croc are near
-        pbottom    = player->y + (sprites[player->sprite].bbox.y2 * CSFI);
-        crocbottom = o->y + (sprites[o->sprite].bbox.y2 * CSFI) + 0x600;
+        pbottom    = player->y + (sprites[player->sprite].bbox[player->dir].y2 * CSFI);
+        crocbottom = o->y + (sprites[o->sprite].bbox[o->dir].y2 * CSFI) + 0x600;
 
         if (pbottom <= crocbottom && crocbottom - pbottom < (12 * CSFI))
         { // attack!!

@@ -36,7 +36,8 @@ static void offset_by_draw_points()
     int dx = -sprites[s].frame[0].dir[0].drawpoint.x;
     int dy = -sprites[s].frame[0].dir[0].drawpoint.y;
 
-    sprites[s].bbox.offset(dx, dy);
+    for (int b = 0; b < sprites[s].ndirs; b++)
+      sprites[s].bbox[b].offset(dx, dy);
     sprites[s].slopebox.offset(dx, dy);
     sprites[s].solidbox.offset(dx, dy);
 
@@ -69,6 +70,7 @@ static void expand_single_dir_sprites()
       sprites[s].ndirs = 2;
       for (int f = 0; f < sprites[s].nframes; f++)
         sprites[s].frame[f].dir[1] = sprites[s].frame[f].dir[0];
+      sprites[s].bbox[1] = sprites[s].bbox[0];
     }
   }
 }

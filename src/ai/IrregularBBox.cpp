@@ -106,10 +106,10 @@ void IrregularBBox::set_bbox(int index, int x, int y, int w, int h, uint32_t fla
   box->x = assoc_object->x + (x * CSFI);
   box->y = assoc_object->y + (y * CSFI);
 
-  sprites[box->sprite].bbox.x1 = 0;
-  sprites[box->sprite].bbox.y1 = 0;
-  sprites[box->sprite].bbox.x2 = (w - 1);
-  sprites[box->sprite].bbox.y2 = (h - 1);
+  sprites[box->sprite].bbox[0].x1 = 0;
+  sprites[box->sprite].bbox[0].y1 = 0;
+  sprites[box->sprite].bbox[0].x2 = (w - 1);
+  sprites[box->sprite].bbox[0].y2 = (h - 1);
 
   box->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
   box->flags |= flags;

@@ -82,6 +82,7 @@ extern Object *firstobject, *lastobject;
 extern Object *lowestobject, *highestobject;
 
 bool hitdetect(Object *o1, Object *o2);
+bool hitdetect_shot(Object *o1, Object *o2);
 bool hitdetect_area(Object *o1, int x, int y, int range);
 bool solidhitdetect(Object *o1, Object *o2);
 

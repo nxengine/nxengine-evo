@@ -133,7 +133,7 @@ void UDCoreBoss::OnMapEntry()
     bbox[i]->sprite = SPR_BBOX_PUPPET_1 + i;
     bbox[i]->hp     = 1000;
 
-    sprites[bbox[i]->sprite].bbox = core_bboxes[i].rect;
+    sprites[bbox[i]->sprite].bbox[bbox[i]->dir] = core_bboxes[i].rect;
   }
 
   // o->BringToFront();

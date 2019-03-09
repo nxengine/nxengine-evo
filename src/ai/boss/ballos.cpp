@@ -103,13 +103,13 @@ void BallosBoss::OnMapEntry(void)
   shield->flags     = (FLAG_SOLID_MUSHY | FLAG_SHOOTABLE | FLAG_INVULNERABLE | FLAG_IGNORE_SOLID);
 
   // initilize bboxes
-  sprites[body->sprite].bbox.set(-48, -24, 48, 32);
-  sprites[shield->sprite].bbox.set(-32, -8, 32, 8);
-  sprites[main->sprite].bbox.set(-32, -48, 32, 48);
+  sprites[body->sprite].bbox[0].set(-48, -24, 48, 32);
+  sprites[shield->sprite].bbox[0].set(-32, -8, 32, 8);
+  sprites[main->sprite].bbox[0].set(-32, -48, 32, 48);
 
-  sprites[main->sprite].solidbox   = sprites[main->sprite].bbox;
-  sprites[body->sprite].solidbox   = sprites[body->sprite].bbox;
-  sprites[shield->sprite].solidbox = sprites[shield->sprite].bbox;
+  sprites[main->sprite].solidbox   = sprites[main->sprite].bbox[0];
+  sprites[body->sprite].solidbox   = sprites[body->sprite].bbox[0];
+  sprites[shield->sprite].solidbox = sprites[shield->sprite].bbox[0];
 
   // body and eyes are both directly shootable during one form or another
   // but should not shake as their damage is to be transferred to main object.

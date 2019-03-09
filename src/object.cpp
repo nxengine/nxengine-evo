@@ -31,11 +31,11 @@ int Object::Height()
 
 int Object::BBoxWidth()
 {
-  return (((sprites[this->sprite].bbox.x2 - sprites[this->sprite].bbox.x1) + 1) * CSFI);
+  return (((sprites[this->sprite].bbox[this->dir].x2 - sprites[this->sprite].bbox[this->dir].x1) + 1) * CSFI);
 }
 int Object::BBoxHeight()
 {
-  return (((sprites[this->sprite].bbox.y2 - sprites[this->sprite].bbox.y1) + 1) * CSFI);
+  return (((sprites[this->sprite].bbox[this->dir].y2 - sprites[this->sprite].bbox[this->dir].y1) + 1) * CSFI);
 }
 
 int Object::CenterX()
@@ -58,19 +58,19 @@ void Object::SetCenterY(int y)
 
 int Object::Left()
 {
-  return (this->x + (sprites[this->sprite].bbox.x1 * CSFI));
+  return (this->x + (sprites[this->sprite].bbox[this->dir].x1 * CSFI));
 }
 int Object::Right()
 {
-  return (this->x + (sprites[this->sprite].bbox.x2 * CSFI));
+  return (this->x + (sprites[this->sprite].bbox[this->dir].x2 * CSFI));
 }
 int Object::Top()
 {
-  return (this->y + (sprites[this->sprite].bbox.y1 * CSFI));
+  return (this->y + (sprites[this->sprite].bbox[this->dir].y1 * CSFI));
 }
 int Object::Bottom()
 {
-  return (this->y + (sprites[this->sprite].bbox.y2 * CSFI));
+  return (this->y + (sprites[this->sprite].bbox[this->dir].y2 * CSFI));
 }
 
 int Object::SolidLeft()

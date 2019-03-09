@@ -50,7 +50,9 @@ bool SIFSpritesSect::Decode(const uint8_t *data, int datalen, SIFSprite *sprites
       return 1;
     }
 
-    LoadRect(&sprites[i].bbox, &data, data_end);
+
+    for (f = 0; f < sprites[i].ndirs; f++)
+      LoadRect(&sprites[i].bbox[f], &data, data_end);
     LoadRect(&sprites[i].solidbox, &data, data_end);
 
     LoadPoint(&sprites[i].spawn_point, &data, data_end);

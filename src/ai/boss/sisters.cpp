@@ -547,17 +547,17 @@ void SistersBoss::head_set_bbox(int index)
   { // use mirror image if dragon facing left
     int wd = (head_bboxes[frame].x2 - head_bboxes[frame].x1);
 
-    sprite->bbox.x1 = sprite->w - head_bboxes[frame].x1 - wd;
-    sprite->bbox.x2 = sprite->bbox.x1 + (wd - 1);
+    sprite->bbox[o->dir].x1 = sprite->w - head_bboxes[frame].x1 - wd;
+    sprite->bbox[o->dir].x2 = sprite->bbox[o->dir].x1 + (wd - 1);
   }
   else
   {
-    sprite->bbox.x1 = head_bboxes[frame].x1;
-    sprite->bbox.x2 = head_bboxes[frame].x2;
+    sprite->bbox[o->dir].x1 = head_bboxes[frame].x1;
+    sprite->bbox[o->dir].x2 = head_bboxes[frame].x2;
   }
 
-  sprite->bbox.y1 = head_bboxes[frame].y1;
-  sprite->bbox.y2 = head_bboxes[frame].y2;
+  sprite->bbox[o->dir].y1 = head_bboxes[frame].y1;
+  sprite->bbox[o->dir].y2 = head_bboxes[frame].y2;
 
   o->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
   o->flags |= head_bboxes[frame].flags;
