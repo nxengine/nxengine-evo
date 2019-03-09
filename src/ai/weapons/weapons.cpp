@@ -34,6 +34,10 @@ uint8_t run_shot(Object *o, bool destroys_blocks)
       if (!shot_destroy_blocks(o))
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
     }
+    else
+    {
+      NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
+    }
 
     o->Delete();
     return RS_HIT_WALL;
