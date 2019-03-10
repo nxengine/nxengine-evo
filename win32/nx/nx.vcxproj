@@ -266,7 +266,6 @@
     <ClCompile Include="..\..\src\map.cpp" />
     <ClCompile Include="..\..\src\map_system.cpp" />
     <ClCompile Include="..\..\src\niku.cpp" />
-    <ClCompile Include="..\..\src\nx_math.cpp" />
     <ClCompile Include="..\..\src\object.cpp" />
     <ClCompile Include="..\..\src\ObjManager.cpp" />
     <ClCompile Include="..\..\src\pause\dialog.cpp" />
@@ -408,7 +407,6 @@
     <ClInclude Include="..\..\src\map_system.h" />
     <ClInclude Include="..\..\src\niku.h" />
     <ClInclude Include="..\..\src\nx.h" />
-    <ClInclude Include="..\..\src\nx_math.h" />
     <ClInclude Include="..\..\src\object.h" />
     <ClInclude Include="..\..\src\ObjManager.h" />
     <ClInclude Include="..\..\src\pause\dialog.h" />
