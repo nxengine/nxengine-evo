@@ -70,8 +70,8 @@ BulletInfo bullet_table[] = {
     {SPR_SHOT_FIREBALL23, 1, 0, 1, 23, 6, 0x200, 2, NXE::Sound::SFX::SND_SNAKE_FIRE}, // Snake L2
     {SPR_SHOT_FIREBALL23, 2, 0, 1, 30, 8, 0x200, 2, NXE::Sound::SFX::SND_SNAKE_FIRE}, // Snake L3
 
-    {SPR_SHOT_NEMESIS_L1, 0, 0, 2, 20, 12, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
-    {SPR_SHOT_NEMESIS_L2, 1, 0, 2, 20, 6, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L3},
+    {SPR_SHOT_NEMESIS_L1, 0, 0, 2, 20, 4, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
+    {SPR_SHOT_NEMESIS_L2, 1, 0, 2, 20, 4, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L3},
     {SPR_SHOT_NEMESIS_L3, 2, 0, 2, 20, 1, 0x555, 0, NXE::Sound::SFX::SND_SPUR_CHARGE_2}, // 1/3 speed
 
     {SPR_SHOT_BUBBLER_L1, 0, 0, 1, 40, 1, 0x600, 2, NXE::Sound::SFX::SND_BUBBLER_FIRE},
@@ -84,7 +84,7 @@ BulletInfo bullet_table[] = {
     {SPR_SHOT_POLARSTAR_L3, 2, 0, 0, 30, 12, 0x1000, 0, NXE::Sound::SFX::SND_SPUR_FIRE_3},
 
     // Curly's Nemesis from Hell (OBJ_CURLY_CARRIED_SHOOTING)
-    {SPR_SHOT_NEMESIS_L1, 0, 0, 1, 20, 12, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
+    {SPR_SHOT_NEMESIS_L1, 0, 0, 1, 20, 4, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
 
     {0, 0, 0, 0, 0, 0, 0, 0, NXE::Sound::SFX::SND_NULL}};
 
