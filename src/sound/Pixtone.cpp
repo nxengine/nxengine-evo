@@ -306,11 +306,13 @@ void Pixtone::shutdown()
   {
     if (_sound_fx[i].chunk)
     {
+      SDL_free(_sound_fx[i].chunk->abuf);
       Mix_FreeChunk(_sound_fx[i].chunk);
       _sound_fx[i].chunk = nullptr;
     }
     if (_sound_fx[i].resampled)
     {
+      SDL_free(_sound_fx[i].resampled->abuf);
       Mix_FreeChunk(_sound_fx[i].resampled);
       _sound_fx[i].resampled = nullptr;
     }
@@ -348,23 +350,18 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
     {
       SDL_AudioCVT cvt;
 
-      staterr("SDL_BuildAudioCVT");
-
       if (SDL_BuildAudioCVT(&cvt, AUDIO_S16, 2, SAMPLE_RATE, AUDIO_S16, 2, resampled_rate) == -1)
       {
         staterr("SDL_BuildAudioCVT: %s\n", SDL_GetError());
       }
       cvt.len = _sound_fx[slot].chunk->alen;
       cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
-      staterr("memcpy %d %d", cvt.len * cvt.len_mult, cvt.buf == NULL);
       memcpy(cvt.buf, _sound_fx[slot].chunk->abuf, _sound_fx[slot].chunk->alen);
-      staterr("SDL_ConvertAudio");
 
       if (SDL_ConvertAudio(&cvt) == -1)
       {
         printf("SDL_ConvertAudio: %s\n", SDL_GetError());
       }
-      staterr("SDL_ConvertAudio done");
       if (_sound_fx[slot].resampled != nullptr)
       {
         delete _sound_fx[slot].resampled;
