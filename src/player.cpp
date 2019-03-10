@@ -1568,13 +1568,14 @@ void c------------------------------() {}
 // does the invincibility flash when the player has recently been hurt
 void PDoHurtFlash(void)
 {
-  // note that hurt_flash_state is NOT cleared when timer reaches 0,
-  // but this is ok because the number of blinks are and always should be even.
-  // (if not it wouldn't look right when he unhurts).
   if (player->hurt_time)
   {
     player->hurt_time--;
     player->hurt_flash_state = (player->hurt_time & 2);
+  }
+  else
+  {
+    player->hurt_flash_state = 0;
   }
 }
 
