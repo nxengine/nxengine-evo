@@ -454,6 +454,7 @@ bool TSC::StartScript(int scriptno, ScriptPages pageno)
 
   textbox.ResetState();
   player->hurt_time = 0;
+  player->hurt_flash_state = 0;
 
 #ifdef TRACE_SCRIPT
   stat("  - Started script %04d", scriptno);
@@ -734,6 +735,7 @@ void TSC::ExecScript(ScriptInstance *s)
         game.frozen            = true;
         player->inputs_locked  = false;
         player->hurt_time = 0;
+        player->hurt_flash_state = 0;
         statusbar.xpflashcount = 0; // looks odd if this happens after a long <PRI, even though it's technically correct
       }
       break;
@@ -743,6 +745,7 @@ void TSC::ExecScript(ScriptInstance *s)
         game.frozen           = false;
         player->inputs_locked = true;
         player->hurt_time = 0;
+        player->hurt_flash_state = 0;
       }
       break;
 
