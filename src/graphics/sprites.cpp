@@ -236,11 +236,6 @@ void Sprites::draw_sprite(int x, int y, int s, int frame, uint8_t dir)
   BlitSprite(x, y, s, frame, dir, 0, 0, sprites[s].w, sprites[s].h);
 }
 
-RectI Sprites::get_sprite_rect(int x, int y, int s, int /* frame*/, uint8_t /* dir*/)
-{
-  return RectI(x, y, sprites[s].w, sprites[s].h);
-}
-
 // draw sprite "s", place it's draw point at [x,y] instead of it's upper-left corner.
 void Sprites::draw_sprite_at_dp(int x, int y, int s, int frame, uint8_t dir)
 {

@@ -9,8 +9,6 @@
 #include "nxsurface.h"
 extern SIFSprite sprites[MAX_SPRITES];
 
-#include "../nx_math.h"
-
 namespace Sprites
 {
 bool Init();
@@ -26,8 +24,6 @@ void draw_sprite_clipped(int x, int y, int s, int frame, uint8_t dir, int clipx1
 void draw_sprite_clip_width(int x, int y, int s, int frame, int wd);
 void draw_sprite_chopped(int x, int y, int s, int frame, int wd, int repeat_at, int alpha = 255);
 void draw_sprite_repeating_x(int x, int y, int s, int frame, int wd);
-
-RectI get_sprite_rect(int x, int y, int s, int frame = 0, uint8_t dir = 0);
 
 NXSurface *get_spritesheet(int sheetno);
 int create_spritesheet(int wd, int ht);

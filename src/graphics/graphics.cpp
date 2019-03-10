@@ -139,7 +139,7 @@ bool Graphics::InitVideo()
 
   stat("Graphics::InitVideo: using: %s renderer", info.name);
 
-  screen = NXSurface::createScreen(width, height, info.texture_formats[0]);
+  screen = NXSurface::createScreen(width, height);
 
   if (!screen)
   {

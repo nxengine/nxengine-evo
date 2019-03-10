@@ -39,42 +39,17 @@ struct NXColor
   }
 };
 
-struct NXRect : public SDL_Rect
-{
-  inline NXRect() {}
-
-  inline NXRect(int x, int y, int w, int h)
-  {
-    this->x = x;
-    this->y = y;
-    this->w = w;
-    this->h = h;
-  }
-
-  inline void Set(int x, int y, int w, int h)
-  {
-    this->x = x;
-    this->y = y;
-    this->w = w;
-    this->h = h;
-  }
-};
-
-typedef SDL_PixelFormat NXFormat;
+typedef SDL_Rect NXRect;
 
 class NXSurface
 {
 public:
   NXSurface();
-  NXSurface(int wd, int ht, NXFormat *format = screen->Format());
-  static NXSurface *createScreen(int wd, int ht, Uint32 pixel_format);
-  // NXSurface(SDL_Surface *from_sfc, bool freesurface=true);
-  // NXSurface(SDL_Renderer *renderer);
+  static NXSurface *createScreen(int wd, int ht);
   ~NXSurface();
 
-  bool AllocNew(int wd, int ht, NXFormat *format = screen->Format());
-  bool LoadImage(const std::string &pbm_name, bool use_colorkey = false, int use_display_format = -1);
-  static NXSurface *FromFile(const std::string &pbm_name, bool use_colorkey = false, int use_display_format = -1);
+  bool LoadImage(const std::string &pbm_name, bool use_colorkey = false);
+  static NXSurface *FromFile(const std::string &pbm_name, bool use_colorkey = false);
 
   // blitting
   void DrawSurface(NXSurface *src, int dstx, int dsty);
@@ -117,7 +92,6 @@ public:
 
   int Width();
   int Height();
-  NXFormat *Format();
 
   void Flip();
 
@@ -125,8 +99,6 @@ public:
 
   void SetAsTarget(bool enable);
 
-  void setFormat(NXFormat const *format);
-  void setPixelFormat(Uint32 format);
 
 private:
   void Free();
@@ -134,7 +106,6 @@ private:
   SDL_Texture *fTexture;
   int tex_w;
   int tex_h;
-  NXFormat tex_format;
 
   bool need_clip;
   SDL_Rect clip_rect;

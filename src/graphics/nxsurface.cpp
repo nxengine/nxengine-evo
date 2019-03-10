@@ -16,29 +16,16 @@ NXSurface::NXSurface()
     : fTexture(NULL)
     , tex_w(0)
     , tex_h(0)
-    , tex_format()
     , need_clip(false)
 {
 }
 
-NXSurface::NXSurface(int wd, int ht, NXFormat *format)
-    : fTexture(NULL)
-    , tex_w(0)
-    , tex_h(0)
-    , tex_format()
-    , need_clip(false)
-{
-  AllocNew(wd, ht, format);
-  setFormat(format);
-}
-
-NXSurface *NXSurface::createScreen(int wd, int ht, Uint32 pixel_format)
+NXSurface *NXSurface::createScreen(int wd, int ht)
 {
 
   NXSurface *s = new NXSurface();
   s->tex_w     = wd;
   s->tex_h     = ht;
-  s->setPixelFormat(pixel_format);
 
   return s;
 }
@@ -54,31 +41,8 @@ void NXSurface::SetScale(int factor)
   SCALE = factor;
 }
 
-/*
-void c------------------------------() {}
-*/
-
-// allocate for an empty surface of the given size
-bool NXSurface::AllocNew(int wd, int ht, NXFormat *format)
-{
-  Free();
-
-  fTexture = SDL_CreateTexture(renderer, format->format, SDL_TEXTUREACCESS_STATIC, wd, ht);
-
-  if (!fTexture)
-  {
-    staterr("NXSurface::AllocNew: failed to allocate texture: %s", SDL_GetError());
-    return true;
-  }
-
-  tex_w = wd;
-  tex_h = ht;
-
-  return false;
-}
-
 // load the surface from a .pbm or bitmap file
-bool NXSurface::LoadImage(const std::string &pbm_name, bool use_colorkey, int use_display_format)
+bool NXSurface::LoadImage(const std::string &pbm_name, bool use_colorkey)
 {
   Free();
 
@@ -110,10 +74,10 @@ bool NXSurface::LoadImage(const std::string &pbm_name, bool use_colorkey, int us
   return (fTexture == NULL);
 }
 
-NXSurface *NXSurface::FromFile(const std::string &pbm_name, bool use_colorkey, int use_display_format)
+NXSurface *NXSurface::FromFile(const std::string &pbm_name, bool use_colorkey)
 {
   NXSurface *sfc = new NXSurface;
-  if (sfc->LoadImage(pbm_name, use_colorkey, use_display_format))
+  if (sfc->LoadImage(pbm_name, use_colorkey))
   {
     delete sfc;
     return NULL;
@@ -350,17 +314,9 @@ int NXSurface::Height()
   return tex_h;
 }
 
-NXFormat *NXSurface::Format()
-{
-  return &tex_format;
-}
-
 void NXSurface::Flip()
 {
-  if (this == screen)
-  {
-    SDL_RenderPresent(renderer);
-  }
+  SDL_RenderPresent(renderer);
 }
 
 /*
@@ -482,13 +438,3 @@ void NXSurface::SetAsTarget(bool enabled)
   }
 }
 
-void NXSurface::setFormat(NXFormat const *format)
-{
-  tex_format         = *format;
-  tex_format.palette = NULL;
-}
-
-void NXSurface::setPixelFormat(Uint32 format)
-{
-  tex_format.format = format;
-}
