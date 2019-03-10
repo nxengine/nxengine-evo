@@ -112,15 +112,14 @@ public:
   void set_clip_rect(NXRect *rect);
   void clear_clip_rect();
   bool is_set_clip() const;
-  void clip(SDL_Rect &srcrect, SDL_Rect &dstrect) const;
+  void clip(SDL_Rect &srcrect,SDL_Rect &dstrect) const;
+  void clip_scaled(SDL_Rect &srcrect,SDL_Rect &dstrect) const;
 
   int Width();
   int Height();
-  // void EnableColorKey();
   NXFormat *Format();
 
   void Flip();
-  // SDL_Surface *GetSDLSurface() { return fSurface; }
 
   static void SetScale(int factor);
 
@@ -130,20 +129,12 @@ public:
   void setPixelFormat(Uint32 format);
 
 private:
-  static SDL_Surface *Scale(SDL_Surface *original, int factor, bool use_colorkey, bool free_original,
-                            bool use_display_format);
-  static void Scale8(SDL_Surface *src, SDL_Surface *dst, int factor);
-
-  // inline uint32_t MapColor(uint8_t r, uint8_t g, uint8_t b);
   void Free();
 
-  // SDL_Surface *fSurface;
-  // SDL_Renderer * fRenderer;
   SDL_Texture *fTexture;
   int tex_w;
   int tex_h;
   NXFormat tex_format;
-  // bool fFreeSurface;
 
   bool need_clip;
   SDL_Rect clip_rect;

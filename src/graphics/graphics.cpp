@@ -463,3 +463,8 @@ void Graphics::clip(SDL_Rect &srcrect, SDL_Rect &dstrect)
 {
   drawtarget->clip(srcrect, dstrect);
 }
+
+void Graphics::clip_scaled(SDL_Rect &srcrect, SDL_Rect &dstrect)
+{
+  drawtarget->clip_scaled(srcrect, dstrect);
+}

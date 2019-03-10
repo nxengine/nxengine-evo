@@ -95,7 +95,7 @@ int font_draw(int x, int y, const std::string &text, uint32_t color, bool is_sha
       srcrect.h = dstrect.h;
 
       if (Graphics::is_set_clip())
-        Graphics::clip(srcrect, dstrect);
+        Graphics::clip_scaled(srcrect, dstrect);
       if (is_shaded)
       {
         shdrect.x = x + glyph.xoffset;

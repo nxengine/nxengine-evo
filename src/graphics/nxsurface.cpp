@@ -3,7 +3,6 @@
 #include "../config.h"
 #include "../settings.h"
 #include "graphics.h"
-#include "zoom.h"
 
 #include <cassert>
 #include <cstdint>
@@ -64,7 +63,7 @@ bool NXSurface::AllocNew(int wd, int ht, NXFormat *format)
 {
   Free();
 
-  fTexture = SDL_CreateTexture(renderer, format->format, SDL_TEXTUREACCESS_STATIC, wd * SCALE, ht * SCALE);
+  fTexture = SDL_CreateTexture(renderer, format->format, SDL_TEXTUREACCESS_STATIC, wd, ht);
 
   if (!fTexture)
   {
@@ -72,8 +71,8 @@ bool NXSurface::AllocNew(int wd, int ht, NXFormat *format)
     return true;
   }
 
-  tex_w = wd * SCALE;
-  tex_h = ht * SCALE;
+  tex_w = wd;
+  tex_h = ht;
 
   return false;
 }
@@ -90,21 +89,17 @@ bool NXSurface::LoadImage(const std::string &pbm_name, bool use_colorkey, int us
     return 1;
   }
 
-  tex_w = image->w * SCALE;
-  tex_h = image->h * SCALE;
-
-  SDL_Surface *image_scaled = SDL_ZoomSurface(image, SCALE);
-
-  SDL_FreeSurface(image);
+  tex_w = image->w;
+  tex_h = image->h;
 
   if (use_colorkey)
   {
-    SDL_SetColorKey(image_scaled, SDL_TRUE, SDL_MapRGB(image_scaled->format, 0, 0, 0));
+    SDL_SetColorKey(image, SDL_TRUE, SDL_MapRGB(image->format, 0, 0, 0));
   }
 
-  fTexture = SDL_CreateTextureFromSurface(renderer, image_scaled);
+  fTexture = SDL_CreateTextureFromSurface(renderer, image);
 
-  SDL_FreeSurface(image_scaled);
+  SDL_FreeSurface(image);
 
   if (!fTexture)
   {
@@ -142,18 +137,19 @@ void NXSurface::DrawSurface(NXSurface *src, int dstx, int dsty, int srcx, int sr
 
   SDL_Rect srcrect, dstrect;
 
-  srcrect.x = srcx * SCALE;
-  srcrect.y = srcy * SCALE;
-  srcrect.w = wd * SCALE;
-  srcrect.h = ht * SCALE;
+  srcrect.x = srcx;
+  srcrect.y = srcy;
+  srcrect.w = wd;
+  srcrect.h = ht;
 
   dstrect.x = dstx * SCALE;
   dstrect.y = dsty * SCALE;
-  dstrect.w = srcrect.w;
-  dstrect.h = srcrect.h;
+  dstrect.w = srcrect.w * SCALE;
+  dstrect.h = srcrect.h * SCALE;
 
   if (need_clip)
     clip(srcrect, dstrect);
+
   SDL_SetTextureAlphaMod(src->fTexture, src->alpha);
   if (SDL_RenderCopy(renderer, src->fTexture, &srcrect, &dstrect))
   {
@@ -183,11 +179,11 @@ void NXSurface::BlitPatternAcross(NXSurface *src, int x_dst, int y_dst, int y_sr
 
   srcrect.x = 0;
   srcrect.w = src->tex_w;
-  srcrect.y = (y_src * SCALE);
-  srcrect.h = (height * SCALE);
+  srcrect.y = (y_src);
+  srcrect.h = (height);
 
-  dstrect.w = srcrect.w;
-  dstrect.h = srcrect.h;
+  dstrect.w = srcrect.w * SCALE;
+  dstrect.h = srcrect.h * SCALE;
 
   int x      = (x_dst * SCALE);
   int y      = (y_dst * SCALE);
@@ -201,7 +197,7 @@ void NXSurface::BlitPatternAcross(NXSurface *src, int x_dst, int y_dst, int y_sr
     dstrect.y = y;
 
     SDL_RenderCopy(renderer, src->fTexture, &srcrect, &dstrect);
-    x += src->tex_w;
+    x += src->tex_w * SCALE;
   } while (x < destwd);
 
   if (this != screen)
@@ -346,12 +342,12 @@ void c------------------------------() {}
 
 int NXSurface::Width()
 {
-  return tex_w / SCALE;
+  return tex_w;
 }
 
 int NXSurface::Height()
 {
-  return tex_h / SCALE;
+  return tex_h;
 }
 
 NXFormat *NXSurface::Format()
@@ -398,14 +394,48 @@ bool NXSurface::is_set_clip() const
 
 void NXSurface::clip(SDL_Rect &srcrect, SDL_Rect &dstrect) const
 {
-
-  int w = srcrect.w;
-  int h = srcrect.h;
-
+  int w,h;
   int dx, dy;
 
-  // Code is from SDL_UpperBlit().
-  // This is how SDL performs clip on surface.
+  w = dstrect.w;
+  h = dstrect.h;
+
+  dx = clip_rect.x - dstrect.x;
+  if (dx > 0)
+  {
+    w -= dx;
+    dstrect.x += dx;
+    srcrect.x += dx / SCALE;
+  }
+  dx = dstrect.x + w - clip_rect.x - clip_rect.w;
+  if (dx > 0)
+    w -= dx;
+
+  dy = clip_rect.y - dstrect.y;
+  if (dy > 0)
+  {
+    h -= dy;
+    dstrect.y += dy;
+    srcrect.y += dy / SCALE;
+  }
+  dy = dstrect.y + h - clip_rect.y - clip_rect.h;
+  if (dy > 0)
+    h -= dy;
+
+  dstrect.w = w;
+  dstrect.h = h;
+  srcrect.w = w / SCALE;
+  srcrect.h = h / SCALE;
+}
+
+void NXSurface::clip_scaled(SDL_Rect &srcrect, SDL_Rect &dstrect) const
+{
+
+  int w, h;
+  int dx, dy;
+
+  w = dstrect.w;
+  h = dstrect.h;
 
   dx = clip_rect.x - dstrect.x;
   if (dx > 0)
@@ -432,24 +462,6 @@ void NXSurface::clip(SDL_Rect &srcrect, SDL_Rect &dstrect) const
   dstrect.w = srcrect.w = w;
   dstrect.h = srcrect.h = h;
 }
-
-/*
-void c------------------------------() {}
-*/
-
-/*
-void c------------------------------() {}
-*/
-
-// void NXSurface::EnableColorKey()
-// {
-// 	SDL_SetColorKey(fSurface, SDL_TRUE, SDL_MapRGB(fSurface->format, 0, 0, 0));
-// }
-
-// uint32_t NXSurface::MapColor(uint8_t r, uint8_t g, uint8_t b)
-// {
-// 	return SDL_MapRGB(fSurface->format, r, g, b);
-// }
 
 void NXSurface::Free()
 {

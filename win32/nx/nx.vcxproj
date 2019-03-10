@@ -257,7 +257,6 @@
     <ClCompile Include="..\..\src\graphics\screenshot.cpp" />
     <ClCompile Include="..\..\src\graphics\sprites.cpp" />
     <ClCompile Include="..\..\src\graphics\tileset.cpp" />
-    <ClCompile Include="..\..\src\graphics\zoom.cpp" />
     <ClCompile Include="..\..\src\i18n\translate.cpp" />
     <ClCompile Include="..\..\src\input.cpp" />
     <ClCompile Include="..\..\src\intro\intro.cpp" />
@@ -399,7 +398,6 @@
     <ClInclude Include="..\..\src\graphics\screenshot.h" />
     <ClInclude Include="..\..\src\graphics\sprites.h" />
     <ClInclude Include="..\..\src\graphics\tileset.h" />
-    <ClInclude Include="..\..\src\graphics\zoom.h" />
     <ClInclude Include="..\..\src\i18n\translate.h" />
     <ClInclude Include="..\..\src\input.h" />
     <ClInclude Include="..\..\src\intro\intro.h" />

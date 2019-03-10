@@ -75,6 +75,7 @@ void set_clip_rect(NXRect *rect);
 void clear_clip_rect();
 bool is_set_clip();
 void clip(SDL_Rect &srcrect, SDL_Rect &dstrect);
+void clip_scaled(SDL_Rect &srcrect, SDL_Rect &dstrect);
 }; // namespace Graphics
 
 #endif
