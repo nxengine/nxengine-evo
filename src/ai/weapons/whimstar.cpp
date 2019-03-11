@@ -106,7 +106,7 @@ void draw_whimstars(WhimsicalStar *wh)
     int scr_x = (stars[i].x / CSFI) - (map.displayed_xscroll / CSFI);
     int scr_y = (stars[i].y / CSFI) - (map.displayed_yscroll / CSFI);
 
-    draw_sprite_at_dp(scr_x, scr_y, SPR_WHIMSICAL_STAR, i);
+    drawSpriteAtDp(scr_x, scr_y, SPR_WHIMSICAL_STAR, i);
   }
 }
 

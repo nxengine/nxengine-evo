@@ -2,7 +2,7 @@
 
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -10,7 +10,7 @@
 #include "../sand/sand.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../../autogen/sprites.h"
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
@@ -55,7 +55,7 @@ void ai_night_spirit(Object *o)
     {
       if (pdistly((TILE_H / 2) * CSFI))
       {
-        static const int distance = (SCREEN_HEIGHT * CSFI);
+        static const int distance = (Renderer::getInstance()->screenHeight * CSFI);
         o->y += (o->dir == RIGHT) ? distance : -distance;
 
         o->state     = NS_SEEK_PLAYER;
@@ -123,7 +123,7 @@ void ai_night_spirit(Object *o)
       o->yinertia += (o->y > o->ymark) ? -0x40 : 0x40;
       LIMITY(0x400);
 
-      if (abs(o->y - o->ymark) < (SCREEN_HEIGHT / 2) * CSFI)
+      if (abs(o->y - o->ymark) < (Renderer::getInstance()->screenHeight / 2) * CSFI)
       {
         o->state = NS_GUARD_SET_POINT;
       }
@@ -139,7 +139,7 @@ void ai_night_spirit(Object *o)
       LIMITY(0x400);
 
       // and if player appears again...
-      if (pdistly(SCREEN_HEIGHT * CSFI))
+      if (pdistly(Renderer::getInstance()->screenHeight * CSFI))
       { // ..jump out and fire immediately
         o->state = NS_PREPARE_FIRE;
         o->timer = 0;
@@ -159,10 +159,10 @@ void ai_night_spirit(Object *o)
     if (o->blockd)
       o->yinertia = -0x200;
 
-    // debugHline(o->ymark - (SCREEN_HEIGHT  * CSFI), 0, 255, 0);
+    // debugHline(o->ymark - (Renderer::getInstance()->screenHeight  * CSFI), 0, 255, 0);
 
     // avoid leaving designated area
-    if (abs(o->y - o->ymark) > SCREEN_HEIGHT * CSFI)
+    if (abs(o->y - o->ymark) > Renderer::getInstance()->screenHeight * CSFI)
     {
       if (o->state != NS_FIRING)
       {

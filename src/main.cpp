@@ -10,7 +10,7 @@
 #endif
 //#include "main.h"
 #include "game.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "input.h"
 #include "map.h"
 #include "profile.h"
@@ -20,7 +20,7 @@
 #include "tsc.h"
 
 #include <SDL_mixer.h>
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "ResourceManager.h"
 #include "caret.h"
 #include "common/misc.h"
@@ -79,7 +79,7 @@ void update_fps()
   char fpstext[64];
   sprintf(fpstext, "%d fps", fps);
 
-  int x = (SCREEN_WIDTH - 4) - GetFontWidth(fpstext, true);
+  int x = (Renderer::getInstance()->screenWidth - 4) - GetFontWidth(fpstext, true);
   font_draw(x, 4, fpstext, 0x00FF00, true);
 }
 
@@ -138,10 +138,10 @@ static inline void run_tick()
     {
       char buf[1024];
       sprintf(buf, "[] Tick %d", framecount++);
-      font_draw(4, (SCREEN_HEIGHT - GetFontHeight() - 4), buf, 0x00FF00, true);
+      font_draw(4, (Renderer::getInstance()->screenHeight - GetFontHeight() - 4), buf, 0x00FF00, true);
       sprintf(buf, "Left: %d, Right: %d, JMP: %d, FR: %d, ST: %d", inputs[LEFTKEY], inputs[RIGHTKEY], inputs[JUMPKEY],
               inputs[FIREKEY], inputs[STRAFEKEY]);
-      font_draw(80, (SCREEN_HEIGHT - GetFontHeight() - 4), buf, 0x00FF00, true);
+      font_draw(80, (Renderer::getInstance()->screenHeight - GetFontHeight() - 4), buf, 0x00FF00, true);
       can_tick = false;
     }
 
@@ -152,14 +152,14 @@ static inline void run_tick()
 
     if (!flipacceltime)
     {
-      screen->Flip();
+      Renderer::getInstance()->flip();
     }
     else
     {
       flipacceltime--;
       if (--frameskip < 0)
       {
-        screen->Flip();
+        Renderer::getInstance()->flip();
         frameskip = 256;
       }
     }
@@ -180,7 +180,7 @@ void AppMinimized(void)
   NXE::Sound::SoundManager::getInstance()->pause();
   for (;;)
   {
-    if (Graphics::WindowVisible())
+    if (Renderer::getInstance()->isWindowVisible())
     {
       break;
     }
@@ -216,7 +216,7 @@ void gameloop(void)
       nexttick = curtime + GAME_WAIT;
 
       // pause game if window minimized
-      if (!Graphics::WindowVisible())
+      if (!Renderer::getInstance()->isWindowVisible())
       {
         AppMinimized();
         nexttick = 0;
@@ -303,12 +303,12 @@ int main(int argc, char *argv[])
   // so we know the initial screen resolution.
   settings_load();
 
-  if (Graphics::init(settings->resolution))
+  if (Renderer::getInstance()->init(settings->resolution))
   {
     fatal("Failed to initialize graphics.");
     return 1;
   }
-  Graphics::SetFullscreen(settings->fullscreen);
+  Renderer::getInstance()->setFullscreen(settings->fullscreen);
   if (font_init())
   {
     fatal("Failed to load font.");
@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
   //		return 1;
   //	}
 
-  Graphics::ShowLoadingScreen();
+  Renderer::getInstance()->showLoadingScreen();
   if (!SoundManager::getInstance()->init())
   {
     fatal("Failed to initialize sound.");
@@ -448,7 +448,7 @@ shutdown:;
   font_close();
   textbox.Deinit();
   NXE::Sound::SoundManager::getInstance()->shutdown();
-  Graphics::close();
+  Renderer::getInstance()->close();
 #if defined(__SWITCH__)
   romfsExit();
 #endif

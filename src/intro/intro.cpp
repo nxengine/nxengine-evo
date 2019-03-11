@@ -6,7 +6,7 @@
 #include "../caret.h"
 #include "../common/misc.h"
 #include "../game.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../map.h"
 #include "../nx.h"
@@ -14,7 +14,7 @@
 #include "../screeneffect.h"
 #include "../sound/SoundManager.h"
 #include "../tsc.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 
 static int blanktimer;
 #define EXIT_DELAY 20 // delay between intro and title screen
@@ -37,7 +37,7 @@ void intro_tick()
 {
   if (blanktimer > 0)
   {
-    ClearScreen(BLACK);
+    Renderer::getInstance()->clearScreen(BLACK);
 
     if (--blanktimer == 0)
       game.setmode(GM_TITLE);

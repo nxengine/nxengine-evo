@@ -7,16 +7,17 @@
 
 #include "ItemImage.h"
 
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 using namespace Sprites;
+using namespace NXE::Graphics;
 #include "TextBox.h"
 
 #define ITEMBOX_W 76
 #define ITEMBOX_H 32
 
-#define ITEMBOX_X (Graphics::SCREEN_WIDTH / 2) - 32
-#define ITEMBOX_Y (Graphics::SCREEN_HEIGHT / 2)
+#define ITEMBOX_X (Renderer::getInstance()->screenWidth / 2) - 32
+#define ITEMBOX_Y (Renderer::getInstance()->screenHeight / 2)
 
 /*
 void c------------------------------() {}
@@ -65,5 +66,5 @@ void TB_ItemImage::Draw(void)
   if (sprites[fSprite].w == 14)
     x--; // hack for ArmsIcons
 
-  draw_sprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
+  drawSprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
 }

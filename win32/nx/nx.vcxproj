@@ -251,8 +251,8 @@
     <ClCompile Include="..\..\src\game.cpp" />
     <ClCompile Include="..\..\src\graphics\font.cpp" />
     <ClCompile Include="..\..\src\graphics\bmfont.cpp" />
-    <ClCompile Include="..\..\src\graphics\graphics.cpp" />
-    <ClCompile Include="..\..\src\graphics\nxsurface.cpp" />
+    <ClCompile Include="..\..\src\graphics\Renderer.cpp" />
+    <ClCompile Include="..\..\src\graphics\Surface.cpp" />
     <ClCompile Include="..\..\src\graphics\pngfuncs.cpp" />
     <ClCompile Include="..\..\src\graphics\screenshot.cpp" />
     <ClCompile Include="..\..\src\graphics\sprites.cpp" />
@@ -390,13 +390,14 @@
     <ClInclude Include="..\..\src\game.h" />
     <ClInclude Include="..\..\src\graphics\font.h" />
     <ClInclude Include="..\..\src\graphics\bmfont.h" />
-    <ClInclude Include="..\..\src\graphics\graphics.h" />
-    <ClInclude Include="..\..\src\graphics\nxsurface.h" />
+    <ClInclude Include="..\..\src\graphics\Rendererr.h" />
+    <ClInclude Include="..\..\src\graphics\Surface.h" />
     <ClInclude Include="..\..\src\graphics\nx_icon.h" />
     <ClInclude Include="..\..\src\graphics\pngfuncs.h" />
     <ClInclude Include="..\..\src\graphics\screenshot.h" />
     <ClInclude Include="..\..\src\graphics\sprites.h" />
     <ClInclude Include="..\..\src\graphics\tileset.h" />
+    <ClInclude Include="..\..\src\graphics\types.h" />
     <ClInclude Include="..\..\src\i18n\translate.h" />
     <ClInclude Include="..\..\src\input.h" />
     <ClInclude Include="..\..\src\intro\intro.h" />

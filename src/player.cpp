@@ -8,6 +8,7 @@
 #include "caret.h"
 #include "common/misc.h"
 #include "game.h"
+#include "graphics/Renderer.h"
 #include "graphics/sprites.h"
 #include "input.h"
 #include "map.h"
@@ -16,6 +17,7 @@
 #include "playerstats.h"
 #include "sound/SoundManager.h"
 #include "tsc.h"
+using namespace NXE::Graphics;
 using namespace Sprites;
 #include "inventory.h"
 #include "screeneffect.h"
@@ -1389,7 +1391,7 @@ void PHandleZeroG(void)
 
   if (scr_x <= 10 && player->xinertia < 0)
     player->xinertia = 0;
-  if (scr_x >= Graphics::SCREEN_WIDTH - (24+5) && player->xinertia > 0)
+  if (scr_x >= Renderer::getInstance()->screenWidth - (24+5) && player->xinertia > 0)
     player->xinertia = 0;
 
   player->frame = (player->yinertia > 0) ? 1 : 2;
@@ -1728,7 +1730,7 @@ void DrawPlayer(void)
 
     // draw the gun at the player's Action Point. Since guns have their Draw Point set
     // to point at their handle, this places the handle in the player's hand.
-    draw_sprite_at_dp(scr_x + sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x,
+    drawSpriteAtDp(scr_x + sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x,
                       scr_y + sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y, spr, frame,
                       player->dir);
   }
@@ -1736,13 +1738,13 @@ void DrawPlayer(void)
   // draw the player sprite
   if (!player->hurt_flash_state)
   {
-    draw_sprite(scr_x, scr_y, player->sprite, player->frame, player->dir);
+    drawSprite(scr_x, scr_y, player->sprite, player->frame, player->dir);
 
     // draw the air bubble shield if we have it on
     if (((player->touchattr & TA_WATER) && (player->equipmask & EQUIP_AIRTANK))
         || player->movementmode == MOVEMODE_ZEROG)
     {
-      draw_sprite_at_dp(scr_x, scr_y, SPR_WATER_SHIELD, player->water_shield_frame, player->dir);
+      drawSpriteAtDp(scr_x, scr_y, SPR_WATER_SHIELD, player->water_shield_frame, player->dir);
 
       if (++player->water_shield_timer > 1)
       {

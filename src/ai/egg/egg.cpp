@@ -1,7 +1,7 @@
 #include "egg.h"
 
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../graphics/tileset.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -9,6 +9,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../weed/weed.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -337,7 +339,7 @@ void ai_giant_beetle(Object *o)
 
       // if player runs too far away from us reset to our
       // waiting state and original position.
-      if (!pdistlx((SCREEN_WIDTH + 80) * CSFI))
+      if (!pdistlx((Renderer::getInstance()->screenWidth + 80) * CSFI))
       {
         o->state    = 0;
         o->xinertia = 0;

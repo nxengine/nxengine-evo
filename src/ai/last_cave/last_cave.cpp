@@ -5,7 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+//#include "../../graphics/graphics.h"
 #include "../../graphics/sprites.h"
 #include "../../map.h"
 #include "../../player.h"

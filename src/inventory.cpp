@@ -3,9 +3,9 @@
 
 #include "inventory.h"
 
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "nx.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "autogen/sprites.h"
 #include "game.h"
 #include "graphics/sprites.h"
@@ -41,8 +41,8 @@ int RefreshInventoryScreen(void)
 
   inv.w = 244;
   inv.h = 152;
-  inv.x = (SCREEN_WIDTH / 2) - (inv.w / 2);
-  if (widescreen)
+  inv.x = (Renderer::getInstance()->screenWidth / 2) - (inv.w / 2);
+  if (Renderer::getInstance()->widescreen)
     inv.y = 30;
   else
     inv.y = 8;
@@ -127,7 +127,7 @@ static void DrawSelector(stSelector *selector, int x, int y)
 
   selx = x + (xsel * selector->spacing_x);
   sely = y + (ysel * selector->spacing_y);
-  Sprites::draw_sprite(selx, sely, selector->sprite, selector->flashstate, 0);
+  Sprites::drawSprite(selx, sely, selector->sprite, selector->flashstate, 0);
 }
 
 void DrawInventory(void)
@@ -140,7 +140,7 @@ void DrawInventory(void)
   // - draw the weapons ----
   x = inv.x + ARMS_X;
   y = inv.y + ARMS_Y;
-  Sprites::draw_sprite(x, y, SPR_TEXT_ARMS, 0, 0);
+  Sprites::drawSprite(x, y, SPR_TEXT_ARMS, 0, 0);
   y += sprites[SPR_TEXT_ARMS].h;
 
   DrawSelector(&inv.armssel, x, y);
@@ -151,7 +151,7 @@ void DrawInventory(void)
     if (!player->weapons[w].hasWeapon)
       continue;
 
-    Sprites::draw_sprite(x + 1, y + 1, SPR_ARMSICONS, w, 0);
+    Sprites::drawSprite(x + 1, y + 1, SPR_ARMSICONS, w, 0);
     DrawWeaponLevel(x + 1, y + 16, w);
     DrawWeaponAmmo(x + 1, y + 16 + 8, w);
 
@@ -161,7 +161,7 @@ void DrawInventory(void)
   // - draw the items ----
   x = inv.x + ITEMS_X;
   y = inv.y + ITEMS_Y;
-  Sprites::draw_sprite(x, y, SPR_TEXT_ITEMS, 0, 0);
+  Sprites::drawSprite(x, y, SPR_TEXT_ITEMS, 0, 0);
   y += sprites[SPR_TEXT_ITEMS].h;
 
   DrawSelector(&inv.itemsel, x, y);
@@ -169,7 +169,7 @@ void DrawInventory(void)
   c = 0;
   for (i = 0; i < inv.itemsel.nitems; i++)
   {
-    Sprites::draw_sprite(x, y, SPR_ITEMIMAGE, inv.itemsel.items[i], 0);
+    Sprites::drawSprite(x, y, SPR_ITEMIMAGE, inv.itemsel.items[i], 0);
 
     x += inv.itemsel.spacing_x;
 

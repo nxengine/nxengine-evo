@@ -3,7 +3,7 @@
 
 #include "game.h"
 #include "graphics/font.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "graphics/sprites.h"
 #include "input.h"
 #include "nx.h"
@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 #include <SDL.h>
-using namespace Graphics;
+using namespace NXE::Graphics;
 using namespace Sprites;
 #include "common/misc.h"
 #include "common/stat.h"
@@ -201,7 +201,7 @@ void debug_draw(void)
   {
     const char *text = DebugList.at(i).c_str();
 
-    int x = (SCREEN_WIDTH - 8) - GetFontWidth(text, true);
+    int x = (Renderer::getInstance()->screenWidth - 8) - GetFontWidth(text, true);
     int y = 4 + (i * (GetFontHeight() + 1));
     font_draw(x, y, text, 0x00FF00, true);
   }
@@ -333,27 +333,27 @@ void DrawDebugMarks(void)
     switch (debugmarks[i].type)
     {
       case DM_PIXEL:
-        DrawPixel(x, y, r, g, b);
+        Renderer::getInstance()->drawPixel(x, y, r, g, b);
         break;
 
       case DM_CROSSHAIR:
-        DrawPixel(x, y, r, g, b);
-        DrawPixel(x + 1, y, r, g, b);
-        DrawPixel(x - 1, y, r, g, b);
-        DrawPixel(x, y + 1, r, g, b);
-        DrawPixel(x, y - 1, r, g, b);
+        Renderer::getInstance()->drawPixel(x, y, r, g, b);
+        Renderer::getInstance()->drawPixel(x + 1, y, r, g, b);
+        Renderer::getInstance()->drawPixel(x - 1, y, r, g, b);
+        Renderer::getInstance()->drawPixel(x, y + 1, r, g, b);
+        Renderer::getInstance()->drawPixel(x, y - 1, r, g, b);
         break;
 
       case DM_XLINE:
-        FillRect(x, 0, x, SCREEN_HEIGHT, r, g, b);
+        Renderer::getInstance()->fillRect(x, 0, x, Renderer::getInstance()->screenHeight, r, g, b);
         break;
 
       case DM_YLINE:
-        FillRect(0, y, SCREEN_WIDTH, y, r, g, b);
+        Renderer::getInstance()->fillRect(0, y, Renderer::getInstance()->screenWidth, y, r, g, b);
         break;
 
       case DM_BOX:
-        DrawRect(x, y, x2, y2, r, g, b);
+        Renderer::getInstance()->drawRect(x, y, x2, y2, r, g, b);
         break;
     }
   }

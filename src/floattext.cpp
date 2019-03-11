@@ -1,11 +1,11 @@
 
 #include "floattext.h"
 
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "graphics/sprites.h"
 #include "nx.h"
 #include "object.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 using namespace Sprites;
 #include "map.h"
 
@@ -117,9 +117,9 @@ void FloatText::Draw()
   {
     // this formula is confusing until you realize that FT_Y_HOLD is a negative number
     int y = ((ft->objY - (map.displayed_yscroll / CSFI)) + FT_Y_HOLD);
-    int h = (SCREEN_HEIGHT - y);
+    int h = (Renderer::getInstance()->screenHeight - y);
 
-    set_clip_rect(0, y, SCREEN_WIDTH, h);
+    Renderer::getInstance()->setClip(0, y, Renderer::getInstance()->screenWidth, h);
   }
 
   // render the damage amount into a string
@@ -138,12 +138,12 @@ void FloatText::Draw()
   // draw the text char by char
   for (i = 0; i < textlen; i++)
   {
-    draw_sprite(x, y, ft->sprite, text[i], 0);
+    drawSprite(x, y, ft->sprite, text[i], 0);
     x += 8;
   }
 
   if (ft->state == FT_SCROLL_AWAY)
-    clear_clip_rect();
+    Renderer::getInstance()->clearClip();
 }
 
 void FloatText::Update()

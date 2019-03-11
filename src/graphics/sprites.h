@@ -6,27 +6,25 @@
 #define MAX_SPRITES 512
 
 #include "../siflib/sif.h"
-#include "nxsurface.h"
+#include "Surface.h"
 extern SIFSprite sprites[MAX_SPRITES];
 
 namespace Sprites
 {
-bool Init();
-void Close();
-void FlushSheets();
+bool init();
+void close();
+void flushSheets();
 
-void BlitSprite(int x, int y, int s, int frame, uint8_t dir, int xoff, int yoff, int wd, int ht, int alpha = 255);
-void draw_in_batch(bool enabled);
+void blitSprite(int x, int y, int s, int frame, uint8_t dir, int xoff, int yoff, int wd, int ht, int alpha = 255);
 
-void draw_sprite(int x, int y, int s, int frame = 0, uint8_t dir = 0);
-void draw_sprite_at_dp(int x, int y, int s, int frame = 0, uint8_t dir = 0);
-void draw_sprite_clipped(int x, int y, int s, int frame, uint8_t dir, int clipx1, int clipx2, int clipy1, int clipy2);
-void draw_sprite_clip_width(int x, int y, int s, int frame, int wd);
-void draw_sprite_chopped(int x, int y, int s, int frame, int wd, int repeat_at, int alpha = 255);
-void draw_sprite_repeating_x(int x, int y, int s, int frame, int wd);
+void drawSprite(int x, int y, int s, int frame = 0, uint8_t dir = 0);
+void drawSpriteAtDp(int x, int y, int s, int frame = 0, uint8_t dir = 0);
+void drawSpriteClipped(int x, int y, int s, int frame, uint8_t dir, int clipx1, int clipx2, int clipy1, int clipy2);
+void drawSpriteClipWidth(int x, int y, int s, int frame, int wd);
+void drawSpriteChopped(int x, int y, int s, int frame, int wd, int repeat_at, int alpha = 255);
+void drawSpriteRepeatingX(int x, int y, int s, int frame, int wd);
 
-NXSurface *get_spritesheet(int sheetno);
-int create_spritesheet(int wd, int ht);
+NXE::Graphics::Surface *getSpritesheet(int sheetno);
 }; // namespace Sprites
 
 #endif

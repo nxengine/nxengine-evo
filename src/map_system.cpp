@@ -4,11 +4,11 @@
 
 #include "autogen/sprites.h"
 #include "graphics/font.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "graphics/sprites.h"
 #include "graphics/tileset.h"
 #include "nx.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 using namespace Sprites;
 #include "game.h"
 #include "map.h"
@@ -53,17 +53,17 @@ static void draw_expand(void)
   int wd = (map.xsize * ms.expandframe) / EXPAND_LENGTH;
   int ht = (map.ysize * ms.expandframe) / EXPAND_LENGTH;
 
-  x1 = (SCREEN_WIDTH / 2) - (wd / 2);
-  y1 = (SCREEN_HEIGHT / 2) - (ht / 2);
-  x2 = (SCREEN_WIDTH / 2) + (wd / 2);
-  y2 = (SCREEN_HEIGHT / 2) + (ht / 2);
+  x1 = (Renderer::getInstance()->screenWidth / 2) - (wd / 2);
+  y1 = (Renderer::getInstance()->screenHeight / 2) - (ht / 2);
+  x2 = (Renderer::getInstance()->screenWidth / 2) + (wd / 2);
+  y2 = (Renderer::getInstance()->screenHeight / 2) + (ht / 2);
 
-  FillRect(x1, y1, x2, y2, DK_BLUE);
+  Renderer::getInstance()->fillRect(x1, y1, x2, y2, DK_BLUE);
 }
 
 static void draw_banner(void)
 {
-  FillRect(0, BANNER_TOP, SCREEN_WIDTH, BANNER_BTM, NXColor(0, 0, 0));
+  Renderer::getInstance()->fillRect(0, BANNER_TOP, Renderer::getInstance()->screenWidth, BANNER_BTM, NXColor(0, 0, 0));
   font_draw(ms.textx, ms.texty, _(ms.bannertext));
 }
 
@@ -125,15 +125,15 @@ bool ms_init(int return_to_mode)
   ms.w              = map.xsize;
   ms.h              = map.ysize;
 
-  ms.x = (SCREEN_WIDTH / 2) - (ms.w / 2);
-  ms.y = (SCREEN_HEIGHT / 2) - (ms.h / 2);
+  ms.x = (Renderer::getInstance()->screenWidth / 2) - (ms.w / 2);
+  ms.y = (Renderer::getInstance()->screenHeight / 2) - (ms.h / 2);
 
   // where will we put the dot?
   ms.px = ms.x + ((player->x / CSFI) / TILE_W);
   ms.py = ms.y + ((player->y / CSFI) / TILE_H);
 
   ms.bannertext = stages[game.curmap].stagename;
-  ms.textx      = (SCREEN_WIDTH / 2) - (GetFontWidth(ms.bannertext) / 2);
+  ms.textx      = (Renderer::getInstance()->screenWidth / 2) - (GetFontWidth(ms.bannertext) / 2);
   ms.texty      = BANNER_TOP + 3;
 
   return 0;
@@ -197,21 +197,21 @@ void ms_draw(void)
   if (ms.state == MS_DISPLAYED)
   {
     // draw map
-    DrawRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
-    FillRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
+    Renderer::getInstance()->drawRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
+    Renderer::getInstance()->fillRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
     for (int y = 0; y < ms.current_row; y++)
     {
       for (int x = 0; x < map.xsize; x++)
       {
         int tc = tilecode[map.tiles[x][y]];
 
-        draw_sprite(ms.x + x, ms.y + y, SPR_MAP_PIXELS, get_color(tc));
+        drawSprite(ms.x + x, ms.y + y, SPR_MAP_PIXELS, get_color(tc));
       }
     }
 
     // you-are-here dot
     if (ms.timer & 8)
-      draw_sprite(ms.px, ms.py, SPR_MAP_PIXELS, 4);
+      drawSprite(ms.px, ms.py, SPR_MAP_PIXELS, 4);
   }
   else if (ms.state == MS_CONTRACTING)
   {

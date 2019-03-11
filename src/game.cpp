@@ -8,7 +8,7 @@
 #include "debug.h"
 #include "endgame/credits.h"
 #include "endgame/island.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "intro/intro.h"
 #include "intro/title.h"
 #include "inventory.h"
@@ -23,7 +23,7 @@
 #include "sound/SoundManager.h"
 #include "statusbar.h"
 #include "tsc.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "autogen/AssignSprites.h"
 #include "autogen/sprites.h"
 #include "graphics/sprites.h"
@@ -219,7 +219,7 @@ bool Game::pause(int pausemode, int param)
 
 void Game::tick(void)
 {
-  ClearScreen(BLACK);
+  Renderer::getInstance()->clearScreen(BLACK);
   debug_clear();
 
   if (game.paused)
@@ -352,7 +352,7 @@ void DrawScene(void)
 {
   int scr_x, scr_y;
   extern int flipacceltime;
-  ClearScreen(BLACK);
+  Renderer::getInstance()->clearScreen(BLACK);
 
   // draw background map tiles
   if (!flipacceltime)
@@ -394,7 +394,9 @@ void DrawScene(void)
 
     // don't draw objects that are completely offscreen
     // (+26 so floattext won't suddenly disappear on object near bottom of screen)
-    if (scr_x <= SCREEN_WIDTH && scr_y <= SCREEN_HEIGHT + 26 && scr_x >= -sprites[o->sprite].w
+    if (scr_x <= Renderer::getInstance()->screenWidth
+        && scr_y <= Renderer::getInstance()->screenHeight + 26
+        && scr_x >= -sprites[o->sprite].w
         && scr_y >= -sprites[o->sprite].h)
     {
       if (nOnscreenObjects < MAX_OBJECTS - 1)
@@ -414,11 +416,11 @@ void DrawScene(void)
 
         if (o->clip_enable)
         {
-          draw_sprite_clipped(scr_x, scr_y, o->sprite, o->frame, o->dir, o->clipx1, o->clipx2, o->clipy1, o->clipy2);
+          drawSpriteClipped(scr_x, scr_y, o->sprite, o->frame, o->dir, o->clipx1, o->clipx2, o->clipy1, o->clipy2);
         }
         else
         {
-          draw_sprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
+          drawSprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
         }
       }
     }

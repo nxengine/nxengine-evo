@@ -4,12 +4,14 @@
 #include "../common/json.hpp"
 #include "../common/misc.h"
 #include "../common/stat.h"
+#include "Renderer.h"
 #include "pngfuncs.h"
 
 #include <fstream>
 #include <iostream>
 
-extern SDL_Renderer *renderer;
+using namespace NXE::Graphics;
+
 
 BMFont::BMFont()
     : _height(0)
@@ -48,7 +50,7 @@ bool BMFont::load(const std::string &font)
     {
       std::string atlaspath = ResourceManager::getInstance()->getLocalizedPath(atlas.get<std::string>());
       SDL_Surface *surf     = png_load_surface(atlaspath.c_str());
-      _atlases.push_back(SDL_CreateTextureFromSurface(renderer, surf));
+      _atlases.push_back(SDL_CreateTextureFromSurface(Renderer::getInstance()->renderer(), surf));
       SDL_FreeSurface(surf);
     }
   }

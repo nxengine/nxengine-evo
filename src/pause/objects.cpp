@@ -8,11 +8,11 @@
 #include "../common/llist.h"
 #include "../common/misc.h"
 #include "../game.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../nx.h"
 #include "options.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 using namespace Sprites;
 
 using namespace Options;
@@ -68,13 +68,13 @@ static void ai_oc_controller(Object *o)
       /*if (o->timer < 175)
       {
               if ((o->timer % 6) == 1)
-                      create_object(-16 * CSFI, random(-16, SCREEN_HEIGHT) * CSFI, OC_CURRENT);
+                      create_object(-16 * CSFI, random(-16, Renderer::getInstance()->screenHeight) * CSFI, OC_CURRENT);
       }*/
 
       if (o->timer <= 150)
       {
         if ((o->timer % 10) == 1)
-          create_object(-16 * CSFI, random(-16, SCREEN_HEIGHT) * CSFI, OC_IKACHAN);
+          create_object(-16 * CSFI, random(-16, Renderer::getInstance()->screenHeight) * CSFI, OC_IKACHAN);
       }
 
       if (o->timer > 300)
@@ -92,11 +92,11 @@ static void ai_oc_quote(Object *o)
   {
     case 0:
     {
-      o->xmark  = (SCREEN_WIDTH - 50) * CSFI;
-      o->xmark2 = (SCREEN_WIDTH + 10) * CSFI;
+      o->xmark  = (Renderer::getInstance()->screenWidth - 50) * CSFI;
+      o->xmark2 = (Renderer::getInstance()->screenWidth + 10) * CSFI;
 
       o->x   = o->xmark2;
-      o->y   = (SCREEN_HEIGHT - sprites[o->sprite].h - 8) * CSFI;
+      o->y   = (Renderer::getInstance()->screenHeight - sprites[o->sprite].h - 8) * CSFI;
       o->dir = LEFT;
 
       o->sprite = SPR_OC_QUOTE;
@@ -206,7 +206,7 @@ static void ai_oc_ikachan(Object *o)
     break;
   }
 
-  if (o->x > SCREEN_WIDTH * CSFI)
+  if (o->x > Renderer::getInstance()->screenWidth * CSFI)
     o->deleted = true;
 }
 
@@ -218,7 +218,7 @@ static void ai_oc_current(Object *o)
 
         o->xinertia = 0x400;
 
-        if (o->x > SCREEN_WIDTH * CSFI)
+        if (o->x > Renderer::getInstance()->screenWidth * CSFI)
                 o->deleted = true;
 }
 */
@@ -265,7 +265,7 @@ void Options::run_and_draw_objects(void)
       o->x += o->xinertia;
       o->y += o->yinertia;
 
-      draw_sprite(o->x / CSFI, o->y / CSFI, o->sprite, o->frame, o->dir);
+      drawSprite(o->x / CSFI, o->y / CSFI, o->sprite, o->frame, o->dir);
     }
 
     o = next;

@@ -1,7 +1,6 @@
 
 #ifndef _TEXTBOX_H
 #define _TEXTBOX_H
-#include "../graphics/graphics.h"
 #include "ItemImage.h"
 #include "SaveSelect.h"
 #include "StageSelect.h"
@@ -10,7 +9,6 @@
 #include <array>
 #include <cstdint>
 #include <string>
-using namespace Graphics;
 
 #define MSG_W 244
 #define MSG_H 64

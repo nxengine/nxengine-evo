@@ -6,7 +6,7 @@
 #include "../../common/misc.h"
 #include "../../common/stat.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
 #include "../../map.h"
@@ -18,6 +18,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 #define STATE_X_APPEAR 1       // script-triggered: must stay constant
 #define STATE_X_FIGHT_BEGIN 10 // script-triggered: must stay constant
@@ -98,7 +100,7 @@ void XBoss::Run()
   if (o->state == 0 || (!X.initilized && o->state != STATE_X_APPEAR))
   {
     o->hp = 1;
-    o->x  = -(SCREEN_WIDTH * CSFI);
+    o->x  = -(Renderer::getInstance()->screenWidth * CSFI);
     return;
   }
 

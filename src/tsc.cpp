@@ -21,6 +21,7 @@
 #include "screeneffect.h"
 #include "settings.h"
 #include "sound/SoundManager.h"
+#include "graphics/Renderer.h"
 
 #include <fstream>
 #include <map>
@@ -1013,7 +1014,7 @@ void TSC::ExecScript(ScriptInstance *s)
       case OP_WAI:
         s->delaytimer = parm[0];
 
-        if (widescreen)
+        if (NXE::Graphics::Renderer::getInstance()->widescreen)
         {
           // sue running out in dark place
           if (game.curmap == 68 && s->scriptno == 600 && parm[0] == 100)

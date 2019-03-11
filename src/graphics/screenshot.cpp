@@ -1,5 +1,5 @@
 #include "../common/stat.h"
-#include "graphics.h"
+#include "Renderer.h"
 #include "pngfuncs.h"
 
 #include <cstdio>
@@ -41,7 +41,7 @@ void SaveScreenshot()
     stat("Can not get screenshot name. Too many screenshots in folder");
     return;
   }
-  SDL_RenderGetViewport(renderer, &viewport);
+  SDL_RenderGetViewport(NXE::Graphics::Renderer::getInstance()->renderer(), &viewport);
   surface = SDL_CreateRGBSurface(0, viewport.w, viewport.h, 24,
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
                                  0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
@@ -56,7 +56,7 @@ void SaveScreenshot()
     return;
   }
 
-  if (SDL_RenderReadPixels(renderer, NULL, surface->format->format, surface->pixels, surface->pitch) < 0)
+  if (SDL_RenderReadPixels(NXE::Graphics::Renderer::getInstance()->renderer(), NULL, surface->format->format, surface->pixels, surface->pitch) < 0)
   {
     stat("Couldn't read screen: %s\n", SDL_GetError());
     return;

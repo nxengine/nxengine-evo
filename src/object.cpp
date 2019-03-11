@@ -2,9 +2,9 @@
 
 #include "ai/sym/smoke.h"
 #include "common/llist.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "nx.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "ai/ai.h"
 #include "autogen/sprites.h"
 #include "caret.h"
@@ -759,7 +759,7 @@ void Object::SnapToGround()
   o->flags &= ~FLAG_IGNORE_SOLID;
 
   UpdateBlockStates(DOWNMASK);
-  apply_yinertia(SCREEN_HEIGHT * CSFI);
+  apply_yinertia(Renderer::getInstance()->screenHeight * CSFI);
 
   o->flags  = flags;
   o->blockd = true;

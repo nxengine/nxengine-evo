@@ -3,16 +3,17 @@
 #include "../nx.h"
 #include "dialog.h"
 #include "message.h"
-using namespace Options;
 #include "../ResourceManager.h"
 #include "../common/misc.h"
 #include "../game.h"
 #include "../graphics/font.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../map.h"
 #include "../settings.h"
 #include "../sound/SoundManager.h"
+using namespace Options;
+using namespace NXE::Graphics;
 
 std::vector<void *> optionstack;
 
@@ -104,7 +105,7 @@ void options_tick()
   unsigned int i;
   FocusHolder *fh;
 
-  Graphics::ClearScreen(BLACK);
+  Renderer::getInstance()->clearScreen(BLACK);
   Options::run_and_draw_objects();
 
   fh = (FocusHolder *)optionstack.at(optionstack.size() - 1);
@@ -262,9 +263,9 @@ static void EnterSoundMenu(ODItem *item, int dir)
 
 void _res_get(ODItem *item)
 {
-  const gres_t *reslist = Graphics::GetRes();
+  const gres_t *reslist = Renderer::getInstance()->getResolutions();
 
-  if (settings->resolution < 0 || settings->resolution >= Graphics::GetResCount())
+  if (settings->resolution < 0 || settings->resolution >= Renderer::getInstance()->getResolutionCount())
   {
     item->suffix[0] = 0;
   }
@@ -276,7 +277,7 @@ void _res_get(ODItem *item)
 
 void _res_change(ODItem *item, int dir)
 {
-  int numres = Graphics::GetResCount();
+  int numres = Renderer::getInstance()->getResolutionCount();
   int newres;
 
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
@@ -286,7 +287,7 @@ void _res_change(ODItem *item, int dir)
     newres = 1;
   if (newres < 1)
     newres = (numres - 1);
-  const gres_t *res = Graphics::GetRes();
+  const gres_t *res = Renderer::getInstance()->getResolutions();
   while (!res[newres].enabled)
   {
     newres += dir;
@@ -296,11 +297,11 @@ void _res_change(ODItem *item, int dir)
       newres = (numres - 1);
   }
 
-  if (!Graphics::SetResolution(newres, true))
+  if (!Renderer::getInstance()->setResolution(newres, true))
   {
     settings->resolution = newres;
-    //		Graphics::SetFullscreen(false);
-    //		Graphics::SetFullscreen(settings->fullscreen);
+    //		SetFullscreen(false);
+    //		SetFullscreen(settings->fullscreen);
     //		opt.dlg->UpdateSizePos();
   }
   else
@@ -346,7 +347,7 @@ void _lang_change(ODItem *item, int dir)
   game.lang->load();
   font_reload();
   game.tsc->Init();
-  Graphics::FlushAll();
+  Renderer::getInstance()->flushAll();
 }
 
 void _fullscreen_get(ODItem *item)
@@ -359,7 +360,7 @@ void _fullscreen_change(ODItem *item, int dir)
 {
   settings->fullscreen ^= 1;
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
-  Graphics::SetFullscreen(settings->fullscreen);
+  Renderer::getInstance()->setFullscreen(settings->fullscreen);
 }
 
 void _sound_change(ODItem *item, int dir)

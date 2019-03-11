@@ -8,8 +8,10 @@
 #include "../game.h"
 #include "../nx.h"
 #include "bmfont.h"
-#include "graphics.h"
+#include "Renderer.h"
 #include "sprites.h"
+
+using namespace NXE::Graphics;
 
 #include <SDL.h>
 
@@ -21,11 +23,9 @@ static bool shrink_spaces = true;
 
 static BMFont whitefnt;
 
-extern SDL_Renderer *renderer;
-
 bool font_init(void)
 {
-  whitefnt.load(std::string("font_" + std::to_string(SCALE) + ".fnt"));
+  whitefnt.load(std::string("font_" + std::to_string(Renderer::getInstance()->scale) + ".fnt"));
 
   initilized = true;
   return 0;
@@ -52,8 +52,8 @@ bool font_reload()
 // draw a text string
 int font_draw(int x, int y, const std::string &text, uint32_t color, bool is_shaded)
 {
-  x *= SCALE;
-  y *= SCALE;
+  x *= Renderer::getInstance()->scale;
+  y *= Renderer::getInstance()->scale;
 
   int orgx = x;
   int i    = 0;
@@ -78,8 +78,8 @@ int font_draw(int x, int y, const std::string &text, uint32_t color, bool is_sha
     {
       if (rendering)
       {
-        int offset = (int)round(((double)whitefnt.height() / (double)SCALE - 6.) / 2.);
-        Sprites::draw_sprite((x / SCALE), (y / SCALE) + offset, SPR_TEXTBULLET);
+        int offset = (int)round(((double)whitefnt.height() / (double)Renderer::getInstance()->scale - 6.) / 2.);
+        Sprites::drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
       }
     }
     else if (rendering && ch != ' ')
@@ -94,32 +94,32 @@ int font_draw(int x, int y, const std::string &text, uint32_t color, bool is_sha
       srcrect.w = dstrect.w;
       srcrect.h = dstrect.h;
 
-      if (Graphics::is_set_clip())
-        Graphics::clip_scaled(srcrect, dstrect);
+      if (Renderer::getInstance()->isClipSet())
+        Renderer::getInstance()->clipScaled(srcrect, dstrect);
       if (is_shaded)
       {
         shdrect.x = x + glyph.xoffset;
-        shdrect.y = y + glyph.yoffset + SHADOW_OFFSET*SCALE;
+        shdrect.y = y + glyph.yoffset + SHADOW_OFFSET * Renderer::getInstance()->scale;
         shdrect.w = glyph.w;
         shdrect.h = glyph.h;
         SDL_SetTextureColorMod(atlas, 0, 0, 0);
-        SDL_RenderCopy(renderer, atlas, &srcrect, &shdrect);
+        SDL_RenderCopy(Renderer::getInstance()->renderer(), atlas, &srcrect, &shdrect);
         SDL_SetTextureColorMod(atlas, 255, 255, 255);
       }
       SDL_SetTextureColorMod(atlas, r, g, b);
-      SDL_RenderCopy(renderer, atlas, &srcrect, &dstrect);
+      SDL_RenderCopy(Renderer::getInstance()->renderer(), atlas, &srcrect, &dstrect);
       SDL_SetTextureColorMod(atlas, 255, 255, 255);
     }
 
     if (ch == ' ' && shrink_spaces)
     { // 10.5 px for spaces - make smaller than they really are - the default
-      x += (SCALE == 1) ? 5 : 10;
+      x += (Renderer::getInstance()->scale == 1) ? 5 : 10;
       if (i & 1)
         x++;
     }
     else if (ch == '=' && game.mode != GM_CREDITS)
     {
-      x += 7 * SCALE;
+      x += 7 * Renderer::getInstance()->scale;
     }
     else
     {
@@ -129,7 +129,7 @@ int font_draw(int x, int y, const std::string &text, uint32_t color, bool is_sha
   }
 
   // return the final width of the text drawn
-  return (x - orgx) / SCALE;
+  return (x - orgx) / Renderer::getInstance()->scale;
 }
 
 int GetFontWidth(const std::string &text, bool is_shaded)
@@ -149,10 +149,10 @@ int GetFontWidth(const std::string &text, bool is_shaded)
 
 int GetFontHeight()
 {
-  return whitefnt.height() / SCALE;
+  return whitefnt.height() / Renderer::getInstance()->scale;
 }
 
 int GetFontBase()
 {
-  return whitefnt.base() / SCALE;
+  return whitefnt.base() / Renderer::getInstance()->scale;
 }

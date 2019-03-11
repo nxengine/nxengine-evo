@@ -5,7 +5,7 @@
 #include "../autogen/sprites.h"
 #include "../common/stat.h"
 #include "../graphics/font.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../input.h"
 #include "../map.h"
@@ -15,7 +15,7 @@
 #include "../settings.h"
 #include "../sound/SoundManager.h"
 #include "../statusbar.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 using namespace Sprites;
 
 // music and character selections for the different Counter times
@@ -54,18 +54,18 @@ static struct
 static void draw_title()
 {
   // background is dk grey, not pure black
-  ClearScreen(0x20, 0x20, 0x20);
+  Renderer::getInstance()->clearScreen(0x20, 0x20, 0x20);
   map_draw_backdrop();
   //	DrawFastLeftLayered();
 
   // top logo
-  int tx = (SCREEN_WIDTH / 2) - (sprites[SPR_TITLE].w / 2) - 2;
-  draw_sprite(tx, 40, SPR_TITLE);
+  int tx = (Renderer::getInstance()->screenWidth / 2) - (sprites[SPR_TITLE].w / 2) - 2;
+  drawSprite(tx, 40, SPR_TITLE);
 
   // draw menu
 
-  int cx = (SCREEN_WIDTH / 2) - 32;
-  int cy = (SCREEN_HEIGHT / 2) + 8;
+  int cx = (Renderer::getInstance()->screenWidth / 2) - 32;
+  int cy = (Renderer::getInstance()->screenHeight / 2) + 8;
 
   const char *mymenus[] = {"New game", "Load game", "Options", "Quit"};
 
@@ -76,7 +76,7 @@ static void draw_title()
     font_draw(cx + 10, cy, _(mymenus[i]));
     if (i == title.cursel)
     {
-      draw_sprite(cx - 16, cy - 1, title.sprite, title.selframe);
+      drawSprite(cx - 16, cy - 1, title.sprite, title.selframe);
     }
 
     cy += 12;
@@ -91,13 +91,13 @@ static void draw_title()
   }
 
   // accreditation
-  cx        = (SCREEN_WIDTH / 2) - (sprites[SPR_PIXEL_FOREVER].w / 2);
-  int acc_y = SCREEN_HEIGHT - 48;
-  draw_sprite(cx, acc_y, SPR_PIXEL_FOREVER);
+  cx        = (Renderer::getInstance()->screenWidth / 2) - (sprites[SPR_PIXEL_FOREVER].w / 2);
+  int acc_y = Renderer::getInstance()->screenHeight - 48;
+  drawSprite(cx, acc_y, SPR_PIXEL_FOREVER);
 
   // version
   int wd = GetFontWidth(NXVERSION);
-  cx     = (SCREEN_WIDTH / 2) - (wd / 2);
+  cx     = (Renderer::getInstance()->screenWidth / 2) - (wd / 2);
   font_draw(cx, acc_y + sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
 
   // draw Nikumaru display
@@ -279,7 +279,7 @@ void title_tick()
   {
     if (title.seldelay > 0)
     {
-      ClearScreen(BLACK);
+      Renderer::getInstance()->clearScreen(BLACK);
 
       title.seldelay--;
       if (!title.seldelay)
@@ -293,7 +293,7 @@ void title_tick()
   }
   else
   {
-    ClearScreen(BLACK);
+    Renderer::getInstance()->clearScreen(BLACK);
 
     if (!textbox.SaveSelect.IsVisible())
     { // selection was made, and settings.last_save_slot is now set appropriately

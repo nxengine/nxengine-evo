@@ -4,7 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
 #include "../../player.h"
@@ -14,6 +14,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 // mainstates
 #define STATE_CIRCLE_RIGHT 100 // circling right
@@ -98,7 +100,7 @@ void SistersBoss::OnMapEntry()
   objprop[OBJ_SISTERS_HEAD].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
 
   mainangle = 0;
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
     main->xmark = 180 * 2;
     main->ymark = 61 * 2;
@@ -143,7 +145,7 @@ void SistersBoss::Run(void)
   {
     case 20: // fight begin (script-triggered)
     {
-      if (widescreen)
+      if (Renderer::getInstance()->widescreen)
       {
         main->xmark = 180;
         main->ymark = 61;

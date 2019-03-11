@@ -3,14 +3,14 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../../trig.h"
 #include "../ai.h"
 #include "../stdai.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../../autogen/sprites.h"
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
@@ -45,7 +45,7 @@ void ai_gaudi(Object *o)
     return;
   }
 
-  if (!(pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI)))
+  if (!(pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI)))
     return;
 
   switch (o->state)
@@ -224,7 +224,7 @@ void ai_gaudi_flying(Object *o)
     return;
   }
 
-  if (!(pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI)))
+  if (!(pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI)))
     return;
 
   switch (o->state)
@@ -290,7 +290,7 @@ void ai_gaudi_armored(Object *o)
     return;
   }
 
-  if (!(pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI)))
+  if (!(pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI)))
     return;
 
   FACEPLAYER;

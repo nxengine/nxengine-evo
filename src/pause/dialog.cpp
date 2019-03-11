@@ -2,9 +2,9 @@
 #include "dialog.h"
 
 #include "../game.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../nx.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../graphics/font.h"
 #include "../graphics/sprites.h"
 
@@ -22,17 +22,17 @@ extern std::vector<void *> optionstack;
 
 Dialog::Dialog()
 {
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 110);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 110);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 240;
     DLG_H = 200;
   }
   else
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 88);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 88);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 190;
     DLG_H = 200;
   }
@@ -69,17 +69,17 @@ Dialog::~Dialog()
 
 void Dialog::UpdateSizePos()
 {
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 110);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 110);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 240;
     DLG_H = 200;
   }
   else
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 88);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 88);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 190;
     DLG_H = 200;
   }
@@ -159,7 +159,7 @@ void Dialog::Draw()
       DrawItem(x, y, item);
 
     if (i == (unsigned int)fCurSel)
-      draw_sprite(x - 16, y + 1, SPR_WHIMSICAL_STAR, 1);
+      drawSprite(x - 16, y + 1, SPR_WHIMSICAL_STAR, 1);
     if (item->type == OD_SEPARATOR)
       y += 5;
     else
@@ -186,7 +186,7 @@ void Dialog::DrawItem(int x, int y, ODItem *item)
     /*
     // ... ellipses if too long
     int maxx = (rx - 4);
-    //FillRect(maxx, 0, maxx, SCREEN_HEIGHT, 0,255,0);
+    //FillRect(maxx, 0, maxx, Renderer::getInstance()->screenHeight, 0,255,0);
     for(;;)
     {
             int wd = GetFontWidth(text);

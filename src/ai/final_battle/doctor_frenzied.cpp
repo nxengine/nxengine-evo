@@ -3,7 +3,6 @@
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
 #include "../../graphics/sprites.h"
 #include "../../graphics/tileset.h"
 #include "../../player.h"

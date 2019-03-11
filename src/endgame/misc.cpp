@@ -8,6 +8,8 @@
 #include "../game.h"
 #include "../map.h"
 #include "../player.h"
+#include "../graphics/Renderer.h"
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -73,7 +75,7 @@ void ai_cloud_spawner(Object *o)
     {
       cloud->x = o->x;
       cloud->y = o->y + MAPY(random(-7, 7));
-      if (widescreen)
+      if (Renderer::getInstance()->widescreen)
         cloud->y += (32 * CSFI);
       cloud->xinertia = -(0x400 >> type);
     }

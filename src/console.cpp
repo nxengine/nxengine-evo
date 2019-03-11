@@ -3,14 +3,14 @@
 
 #include "ObjManager.h"
 #include "game.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "nx.h"
 #include "settings.h"
 #include "statusbar.h"
 #include "tsc.h"
 
 #include <cstdarg>
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "common/misc.h"
 #include "common/stat.h"
 #include "debug.h"
@@ -774,7 +774,7 @@ void DebugConsole::Draw()
 
 void DebugConsole::DrawText(const char *text)
 {
-  font_draw(4, (SCREEN_HEIGHT - 16), text, 0xFFAAAA, true);
+  font_draw(4, (Renderer::getInstance()->screenHeight - 16), text, 0xFFAAAA, true);
 }
 
 /*

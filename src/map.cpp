@@ -7,12 +7,12 @@
 #include "caret.h"
 #include "debug.h"
 #include "graphics/font.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "graphics/sprites.h"
 #include "graphics/tileset.h"
 #include "nx.h"
 #include "tsc.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 using namespace Sprites;
 using namespace Tileset;
 
@@ -32,7 +32,7 @@ MapRecord stages[MAX_STAGES];
 int num_stages;
 
 #define MAX_BACKDROPS 32
-NXSurface *backdrop[MAX_BACKDROPS];
+Surface *backdrop[MAX_BACKDROPS];
 
 // for FindObject--finding NPC's by ID2
 Object *ID2Lookup[65536];
@@ -53,10 +53,10 @@ bool load_stage(int stage_no)
   stat(" >> Entering stage %d: '%s'.", stage_no, stages[stage_no].stagename);
   game.curmap = stage_no; // do it now so onspawn events will have it
 
-  Sprites::FlushSheets();
+  Sprites::flushSheets();
   map_flush_graphics();
 
-  if (Tileset::Load(stages[stage_no].tileset))
+  if (Tileset::load(stages[stage_no].tileset))
     return 1;
 
   // get the base name of the stage without extension
@@ -143,41 +143,41 @@ bool load_map(const std::string &fname)
 
   fclose(fp);
 
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
-    if (map.xsize * TILE_W < SCREEN_WIDTH && map.ysize * TILE_W < SCREEN_HEIGHT)
+    if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth && map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
+      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
     }
-    else if (map.xsize * TILE_W < SCREEN_WIDTH)
+    else if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
     {
       if (map.xsize == 25)
       { // MazeI
-        map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 48)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 48)) - 8) * CSFI;
+        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
       }
       else
       { // Others
-        map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
+        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
       }
     }
-    else if (map.ysize * TILE_W < SCREEN_HEIGHT)
+    else if (map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
     }
     else
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+      map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
     }
   }
   else
   {
-    map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
-    map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+    map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+    map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
   }
 
   stat("load_map: '%s' loaded OK! - %dx%d", fname.c_str(), map.xsize, map.ysize);
@@ -186,41 +186,41 @@ bool load_map(const std::string &fname)
 
 void recalc_map_offsets()
 {
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
-    if (map.xsize * TILE_W < SCREEN_WIDTH && map.ysize * TILE_W < SCREEN_HEIGHT)
+    if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth && map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
+      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
     }
-    else if (map.xsize * TILE_W < SCREEN_WIDTH)
+    else if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
     {
       if (map.xsize == 25)
       { // MazeI
-        map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 48)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 48)) - 8) * CSFI;
+        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
       }
       else
       { // Others
-        map.maxxscroll = (((map.xsize * TILE_W) - (SCREEN_WIDTH - 80)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
+        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
       }
     }
-    else if (map.ysize * TILE_W < SCREEN_HEIGHT)
+    else if (map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (SCREEN_HEIGHT - 16)) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
     }
     else
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+      map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
     }
   }
   else
   {
-    map.maxxscroll = (((map.xsize * TILE_W) - SCREEN_WIDTH) - 8) * CSFI;
-    map.maxyscroll = (((map.ysize * TILE_H) - SCREEN_HEIGHT) - 8) * CSFI;
+    map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+    map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
   }
 }
 
@@ -560,7 +560,7 @@ static bool LoadBackdropIfNeeded(int backdrop_no)
     // use chromakey (transparency) on bkwater, all others don't
     bool use_chromakey = (backdrop_no == 8);
 
-    if (widescreen
+    if (Renderer::getInstance()->widescreen
         && (backdrop_no == 9 || backdrop_no == 10 || backdrop_no == 12 || backdrop_no == 13 || backdrop_no == 14))
     {
       fname = std::string(backdrop_names[backdrop_no]) + "480fix.pbm";
@@ -570,7 +570,7 @@ static bool LoadBackdropIfNeeded(int backdrop_no)
       fname = std::string(backdrop_names[backdrop_no]) + ".pbm";
     }
 
-    backdrop[backdrop_no] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), use_chromakey);
+    backdrop[backdrop_no] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), use_chromakey);
     if (!backdrop[backdrop_no])
     {
       staterr("Failed to load backdrop '%s'", fname.c_str());
@@ -613,8 +613,8 @@ void map_draw_backdrop(void)
     case BK_PARALLAX:
       map.parscroll_y = (map.displayed_yscroll / CSFI) / 2;
       map.parscroll_x = (map.displayed_xscroll / CSFI) / 2;
-      map.parscroll_x %= backdrop[map.backdrop]->Width();
-      map.parscroll_y %= backdrop[map.backdrop]->Height();
+      map.parscroll_x %= backdrop[map.backdrop]->width();
+      map.parscroll_y %= backdrop[map.backdrop]->height();
       if (map.parscroll_x < 0)
         map.parscroll_x = map.parscroll_x * 2;
       if (map.parscroll_y < 0)
@@ -640,9 +640,9 @@ void map_draw_backdrop(void)
     case BK_HIDE3:
     {
       if (game.curmap == STAGE_KINGS) // intro cutscene
-        ClearScreen(BLACK);
+        Renderer::getInstance()->clearScreen(BLACK);
       else
-        ClearScreen(DK_BLUE);
+        Renderer::getInstance()->clearScreen(DK_BLUE);
     }
       return;
 
@@ -651,8 +651,8 @@ void map_draw_backdrop(void)
       staterr("map_draw_backdrop: unhandled map scrolling type %d", map.scrolltype);
       break;
   }
-  int w = backdrop[map.backdrop]->Width();
-  int h = backdrop[map.backdrop]->Height();
+  int w = backdrop[map.backdrop]->width();
+  int h = backdrop[map.backdrop]->height();
 
   int mapx = (map.xsize * TILE_W);
   //	int mapy = (map.ysize * TILE_H);
@@ -663,18 +663,18 @@ void map_draw_backdrop(void)
     mapx += 64;
   }
 
-  if (game.curmap == 31 && widescreen)
+  if (game.curmap == 31 && Renderer::getInstance()->widescreen)
   {
     //        map.parscroll_y-= 36;
     //        mapy+=64;
   }
 
-  for (y = 0; y < SCREEN_HEIGHT + map.parscroll_y; y += h)
+  for (y = 0; y < Renderer::getInstance()->screenHeight + map.parscroll_y; y += h)
   {
-    for (x = 0; x < SCREEN_WIDTH + map.parscroll_x; x += w)
+    for (x = 0; x < Renderer::getInstance()->screenWidth + map.parscroll_x; x += w)
     {
       //		    if ( ((x - map.parscroll_x) < mapx) && ((y - map.parscroll_y) < mapy))
-      DrawSurface(backdrop[map.backdrop], x - map.parscroll_x, y - map.parscroll_y);
+      Renderer::getInstance()->drawSurface(backdrop[map.backdrop], x - map.parscroll_x, y - map.parscroll_y);
     }
   }
 }
@@ -683,7 +683,7 @@ void map_draw_backdrop(void)
 void DrawFastLeftLayered(void)
 {
   int layer_ys[] = {87, 122, 145, 176, 240};
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
     layer_ys[4] = 272;
   }
@@ -694,21 +694,21 @@ void DrawFastLeftLayered(void)
   int i, x;
 
   if ((game.mode == GM_NORMAL || game.mode == GM_TITLE) && !game.frozen && !game.paused)
-    if (--map.parscroll_x <= -(480 * SCALE * 2))
+    if (--map.parscroll_x <= -(480 * Renderer::getInstance()->scale * 2))
       map.parscroll_x = 0;
 
   y1 = x = 0;
   // fix for extra height
   if (map.backdrop == 9)
-    ClearScreen(111, 156, 214);
+    Renderer::getInstance()->clearScreen(111, 156, 214);
   else if (map.backdrop == 10 && game.curmap != 64)
-    ClearScreen(107, 105, 82);
+    Renderer::getInstance()->clearScreen(107, 105, 82);
   else if (map.backdrop == 12)
-    ClearScreen(179, 190, 210);
+    Renderer::getInstance()->clearScreen(179, 190, 210);
   else if (map.backdrop == 13)
-    ClearScreen(170, 101, 0);
+    Renderer::getInstance()->clearScreen(170, 101, 0);
   else if (map.backdrop == 14)
-    ClearScreen(202, 97, 97);
+    Renderer::getInstance()->clearScreen(202, 97, 97);
 
   for (i = 0; i < nlayers; i++)
   {
@@ -717,14 +717,14 @@ void DrawFastLeftLayered(void)
     if (i) // not the static moon layer?
     {
       x = (map.parscroll_x * move_spd[i]) >> 1;
-      //			x %= SCREEN_WIDTH;
+      //			x %= Renderer::getInstance()->screenWidth;
     }
-    BlitPatternAcross(backdrop[map.backdrop], x, y1, y1, (y2 - y1) + 1);
+    Renderer::getInstance()->blitPatternAcross(backdrop[map.backdrop], x, y1, y1, (y2 - y1) + 1);
     y1 = (y2 + 1);
   }
   int mapy = map.displayed_yscroll / CSFI;
   if (mapy < 0 && map.backdrop == 9)
-    FillRect(0, 0, SCREEN_WIDTH, -mapy, 0, 0, 0);
+    Renderer::getInstance()->fillRect(0, 0, Renderer::getInstance()->screenWidth, -mapy, 0, 0, 0);
 }
 
 void map_flush_graphics()
@@ -759,16 +759,16 @@ void map_drawwaterlevel(void)
   water_y = (map.waterlevelobject->y / CSFI) - (map.displayed_yscroll / CSFI);
 
   // draw the surface and just under the surface
-  BlitPatternAcross(backdrop[map.backdrop], water_x, water_y, 0, 16);
+  Renderer::getInstance()->blitPatternAcross(backdrop[map.backdrop], water_x, water_y, 0, 16);
   water_y += 16;
 
-  BlitPatternAcross(backdrop[map.backdrop], water_x, water_y, 32, 16);
+  Renderer::getInstance()->blitPatternAcross(backdrop[map.backdrop], water_x, water_y, 32, 16);
   water_y += 16;
 
   // draw the rest of the pattern all the way down
-  while (water_y < (SCREEN_HEIGHT - 1))
+  while (water_y < (Renderer::getInstance()->screenHeight - 1))
   {
-    BlitPatternAcross(backdrop[map.backdrop], water_x, water_y, 16, 32);
+    Renderer::getInstance()->blitPatternAcross(backdrop[map.backdrop], water_x, water_y, 16, 32);
     water_y += 32;
   }
 }
@@ -794,11 +794,11 @@ void map_draw(uint8_t foreground)
 
   // MAP_DRAW_EXTRA_Y etc is 1 if resolution is changed to
   // something not a multiple of TILE_H.
-  for (y = 0; y <= (SCREEN_HEIGHT / TILE_H) + MAP_DRAW_EXTRA_Y; y++)
+  for (y = 0; y <= (Renderer::getInstance()->screenHeight / TILE_H) + MAP_DRAW_EXTRA_Y; y++)
   {
     blit_x = blit_x_start;
 
-    for (x = 0; x <= (SCREEN_WIDTH / TILE_W) + MAP_DRAW_EXTRA_X; x++)
+    for (x = 0; x <= (Renderer::getInstance()->screenWidth / TILE_W) + MAP_DRAW_EXTRA_X; x++)
     {
       if (((mapx + x) >= 0) && ((mapy + y) >= 0) && ((mapx + x) < map.xsize) && ((mapy + y) < map.ysize))
       {
@@ -814,25 +814,25 @@ void map_draw(uint8_t foreground)
             switch (CVTDir(tilecode[t] & 3))
             {
               case LEFT:
-                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 0);
+                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 0);
                 break;
               case RIGHT:
-                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 0);
+                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 0);
                 break;
               case UP:
-                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 1);
+                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 1);
                 break;
               case DOWN:
-                draw_sprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 1);
+                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 1);
                 break;
               default:
                 break;
             }
           }
           else if (tilecode[t] == 0x43)
-            draw_sprite(blit_x, blit_y, SPR_DESTROYABLE, 0, 0);
+            drawSprite(blit_x, blit_y, SPR_DESTROYABLE, 0, 0);
           else
-            draw_tile(blit_x, blit_y, t);
+            drawTile(blit_x, blit_y, t);
         }
       }
       blit_x += TILE_W;
@@ -862,18 +862,18 @@ void map_draw_oob()
   blit_y       = ((-scroll_y) % TILE_H) - TILE_H;
   blit_x_start = ((-scroll_x) % TILE_W) - TILE_W;
 
-  for (y = 0; y <= (SCREEN_HEIGHT / TILE_H) + 2; y++)
+  for (y = 0; y <= (Renderer::getInstance()->screenHeight / TILE_H) + 2; y++)
   {
     blit_x = blit_x_start;
 
-    for (x = 0; x <= (SCREEN_WIDTH / TILE_W) + 2; x++)
+    for (x = 0; x <= (Renderer::getInstance()->screenWidth / TILE_W) + 2; x++)
     {
       if (mapx + x <= 0 || mapy + y <= 0 || mapx + x > map.xsize || mapy + y > map.ysize)
       {
         int t = oob_tiles[0];
         if (oob_tile_count == 4)
           t = oob_tiles[abs(mapx + x + 1) % 2 + (abs(mapy + y + 1) % 2) * 2];
-        draw_tile(blit_x, blit_y, t);
+        drawTile(blit_x, blit_y, t);
       }
       blit_x += TILE_W;
     }
@@ -910,7 +910,7 @@ void scroll_normal(void)
   }
 
   // compute where the map "wants" to be
-  map.target_x = (player->CenterX() + map.scrollcenter_x) - ((SCREEN_WIDTH / 2) * CSFI);
+  map.target_x = (player->CenterX() + map.scrollcenter_x) - ((Renderer::getInstance()->screenWidth / 2) * CSFI);
 
   // Y scrolling
   if (player->lookscroll == UP)
@@ -937,7 +937,7 @@ void scroll_normal(void)
     }
   }
 
-  map.target_y = (player->CenterY() + map.scrollcenter_y) - ((SCREEN_HEIGHT / 2) * CSFI);
+  map.target_y = (player->CenterY() + map.scrollcenter_y) - ((Renderer::getInstance()->screenHeight / 2) * CSFI);
 }
 
 void map_scroll_do(void)
@@ -962,13 +962,13 @@ void map_scroll_do(void)
         // the center ourselves.
         if (sprites[t->sprite].frame[t->frame].dir[t->dir].drawpoint.equ(0, 0))
         {
-          map.target_x = map.focus.target->CenterX() - ((SCREEN_WIDTH / 2) * CSFI);
-          map.target_y = map.focus.target->CenterY() - ((SCREEN_HEIGHT / 2) * CSFI);
+          map.target_x = map.focus.target->CenterX() - ((Renderer::getInstance()->screenWidth / 2) * CSFI);
+          map.target_y = map.focus.target->CenterY() - ((Renderer::getInstance()->screenHeight / 2) * CSFI);
         }
         else
         {
-          map.target_x = map.focus.target->x - ((SCREEN_WIDTH / 2) * CSFI);
-          map.target_y = map.focus.target->y - ((SCREEN_HEIGHT / 2) * CSFI);
+          map.target_x = map.focus.target->x - ((Renderer::getInstance()->screenWidth / 2) * CSFI);
+          map.target_y = map.focus.target->y - ((Renderer::getInstance()->screenHeight / 2) * CSFI);
         }
       }
     }
@@ -1015,11 +1015,11 @@ void map_scroll_do(void)
     case 77:
     case 89:
     case 93:
-      map.displayed_xscroll = -(((SCREEN_WIDTH - (map.xsize*TILE_W)) / 2) * CSFI);
+      map.displayed_xscroll = -(((Renderer::getInstance()->screenWidth - (map.xsize*TILE_W)) / 2) * CSFI);
       break;
     case 78:
       // carefully crafted magic number
-      map.displayed_xscroll = -((SCREEN_WIDTH/2 - 208) * CSFI);
+      map.displayed_xscroll = -((Renderer::getInstance()->screenWidth/2 - 208) * CSFI);
       break;
     default:
       break;
@@ -1150,8 +1150,8 @@ void map_sanitycheck(void)
 
 void map_scroll_jump(int x, int y)
 {
-  map.target_x     = x - ((SCREEN_WIDTH / 2) * CSFI);
-  map.target_y     = y - ((SCREEN_HEIGHT / 2) * CSFI);
+  map.target_x     = x - ((Renderer::getInstance()->screenWidth / 2) * CSFI);
+  map.target_y     = y - ((Renderer::getInstance()->screenHeight / 2) * CSFI);
   map.real_xscroll = map.target_x;
   map.real_yscroll = map.target_y;
 
@@ -1226,7 +1226,7 @@ const std::string &map_get_stage_name(int mapno)
 // show map name for "ticks" ticks
 void map_show_map_name()
 {
-  game.mapname_x       = (SCREEN_WIDTH / 2) - (GetFontWidth(map_get_stage_name(game.curmap)) / 2);
+  game.mapname_x       = (Renderer::getInstance()->screenWidth / 2) - (GetFontWidth(map_get_stage_name(game.curmap)) / 2);
   game.showmapnametime = 120;
 }
 

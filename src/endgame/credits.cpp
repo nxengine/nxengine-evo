@@ -8,14 +8,14 @@
 #include "../console.h"
 #include "../game.h"
 #include "../graphics/font.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../map.h"
 #include "../nx.h"
 #include "../player.h"
 #include "../sound/SoundManager.h"
 #include "../tsc.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 using namespace Sprites;
 
 #define MARGIN 48
@@ -34,7 +34,7 @@ bool Credits::Init()
   if (bigimage.Init())
     return 1;
 
-  spawn_y  = (SCREEN_HEIGHT + 8);
+  spawn_y  = (Renderer::getInstance()->screenHeight + 8);
   scroll_y = 0 * CSFI;
 
   xoffset      = 0;
@@ -62,18 +62,18 @@ void Credits::Tick()
   /*debug("scroll_y: %d", scroll_y/CSFI);
   debug("spawn_y: %d", spawn_y);
   debug("scr_spawn_y: %d", SCREEN_Y(spawn_y));
-  debug("trigger: %d", SCREEN_HEIGHT+MARGIN);
+  debug("trigger: %d", Renderer::getInstance()->screenHeight+MARGIN);
   debug("");*/
   /*debug("imgno: %d", bigimage.imgno);
   debug("state: %d", bigimage.state);
   debug("imagex: %d", bigimage.imagex);*/
 
-  if (roll_running || SCREEN_Y(spawn_y) >= (SCREEN_HEIGHT + 8))
+  if (roll_running || SCREEN_Y(spawn_y) >= (Renderer::getInstance()->screenHeight + 8))
   {
     scroll_y += 0x100;
   }
 
-  while (roll_running && SCREEN_Y(spawn_y) < (SCREEN_HEIGHT + MARGIN))
+  while (roll_running && SCREEN_Y(spawn_y) < (Renderer::getInstance()->screenHeight + MARGIN))
   {
     RunNextCommand();
   }
@@ -117,7 +117,7 @@ void Credits::RunNextCommand()
       // varying font sizes can lead to it being a little bit off
       if (strstr(line->text, "The End"))
       {
-        line->x = (SCREEN_WIDTH / 2) - (GetFontWidth(line->text) / 2);
+        line->x = (Renderer::getInstance()->screenWidth / 2) - (GetFontWidth(line->text) / 2);
       }
 
       spawn_y += 1;
@@ -208,7 +208,7 @@ bool Credits::DrawLine(CredLine *line)
 
   if (line->image)
   {
-    draw_sprite(x - 24, y - 8, SPR_CASTS, line->image);
+    drawSprite(x - 24, y - 8, SPR_CASTS, line->image);
     // DrawBox(x, y, x+GetFontWidth(line->text), y+8,  56, 0, 0);
   }
 
@@ -308,7 +308,7 @@ bool BigImage::Init()
       sprintf(fname, "endpic/credit%02d.bmp", i);
     if (ResourceManager::fileExists(ResourceManager::getInstance()->getLocalizedPath(fname)))
     {
-      images[i] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
+      images[i] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
       if (!images[i])
         staterr("BigImage::Init: image '%s' exists but seems corrupt!", fname);
       else
@@ -337,7 +337,7 @@ void BigImage::Set(int num)
   if (images[num])
   {
     imgno  = num;
-    imagex = -images[num]->Width();
+    imagex = -images[num]->width();
     state  = BI_SLIDE_IN;
   }
   else
@@ -372,17 +372,17 @@ void BigImage::Draw()
     case BI_SLIDE_OUT:
     {
       imagex -= IMAGE_SPEED;
-      if (imagex < -images[imgno]->Width())
+      if (imagex < -images[imgno]->width())
         state = BI_CLEAR;
     }
   }
 
   // take up any unused space with blue
   if (state != BI_HOLD)
-    FillRect(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT, DK_BLUE);
+    Renderer::getInstance()->fillRect(0, 0, Renderer::getInstance()->screenWidth / 2, Renderer::getInstance()->screenHeight, DK_BLUE);
 
   if (state != BI_CLEAR)
-    DrawSurface(images[imgno], imagex, 0);
+    Renderer::getInstance()->drawSurface(images[imgno], imagex, 0);
 }
 
 /*

@@ -6,7 +6,7 @@
 #include "../../common/stat.h"
 #include "../../debug.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../playerstats.h"
@@ -15,7 +15,7 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../../autogen/sprites.h"
 #include "../../graphics/sprites.h"
 #include "../../screeneffect.h"
@@ -267,7 +267,7 @@ void ai_xp(Object *o)
     {
       if (o->blockl)
       {
-        if (o->onscreen || pdistly((SCREEN_HEIGHT - (SCREEN_HEIGHT / 3)) * CSFI))
+        if (o->onscreen || pdistly((Renderer::getInstance()->screenHeight - (Renderer::getInstance()->screenHeight / 3)) * CSFI))
           NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_XP_BOUNCE);
 
         o->xinertia = 0x100;
@@ -294,7 +294,7 @@ void ai_xp(Object *o)
         return;
       }
 
-      if (o->onscreen || pdistlx((SCREEN_WIDTH - (SCREEN_WIDTH / 3)) * CSFI))
+      if (o->onscreen || pdistlx((Renderer::getInstance()->screenWidth - (Renderer::getInstance()->screenWidth / 3)) * CSFI))
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_XP_BOUNCE);
 
       o->yinertia = -0x280;
@@ -835,7 +835,7 @@ void ai_fan_vert(Object *o)
   ANIMATE(0, 0, 2);
 
   // spawn droplet effects
-  if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
+  if (pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
     if (!random(0, 5))
     {
@@ -870,7 +870,7 @@ void ai_fan_hoz(Object *o)
   ANIMATE(0, 0, 2);
 
   // spawn droplet effects
-  if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
+  if (pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
     if (!random(0, 5))
     {
@@ -960,7 +960,7 @@ void ai_sprinkler(Object *o)
 // generates small splash water droplets
 void ai_droplet_spawner(Object *o)
 {
-  if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
+  if (pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
     if (!random(0, 80))
     {

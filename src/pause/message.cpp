@@ -2,11 +2,11 @@
 #include "message.h"
 
 #include "../graphics/font.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../nx.h"
 
 #include <vector>
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../TextBox/TextBox.h"
 #include "../game.h"
 #include "../input.h"
@@ -19,8 +19,8 @@ extern std::vector<void *> optionstack;
 
 Message::Message(const std::string &msg, const std::string &msg2)
 {
-  MESSAGE_X = ((SCREEN_WIDTH / 2) - 112);
-  MESSAGE_Y = ((SCREEN_HEIGHT / 2) - 30);
+  MESSAGE_X = ((Renderer::getInstance()->screenWidth / 2) - 112);
+  MESSAGE_Y = ((Renderer::getInstance()->screenHeight / 2) - 30);
 
   rawKeyReturn          = NULL;
   on_dismiss            = NULL;
