@@ -147,6 +147,7 @@ void c------------------------------() {}
 
 void Dialog::Draw()
 {
+  UpdateSizePos();
   TextBox::DrawFrame(fCoords.x, fCoords.y, fCoords.w, fCoords.h);
 
   int x = fTextX;

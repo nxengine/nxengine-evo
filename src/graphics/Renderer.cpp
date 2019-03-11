@@ -149,7 +149,6 @@ void Renderer::setFullscreen(bool enable)
 
 bool Renderer::setResolution(int r, bool restoreOnFailure)
 {
-//  extern std::vector<void *> optionstack;
 #if defined(__VITA__) || defined(__SWITCH__)
   r = 1; // one fixed resolution
 #endif
@@ -174,8 +173,6 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
   }
 
   stat("Setting scaling %d", scale);
-
-//  Surface::SetScale(factor);
 
   _current_res = r;
 
@@ -202,10 +199,7 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
 
   recalc_map_offsets();
   textbox.RecalculateOffsets();
-//  for (auto dlg : optionstack)
-//  {
-//    ((Options::Dialog *)dlg)->UpdateSizePos();
-//  }
+
   return 0;
 }
 
