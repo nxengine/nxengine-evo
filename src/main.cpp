@@ -26,7 +26,6 @@ using namespace NXE::Graphics;
 #include "common/misc.h"
 #include "common/stat.h"
 #include "console.h"
-#include "graphics/font.h"
 #include "graphics/screenshot.h"
 #include "screeneffect.h"
 #include "sound/SoundManager.h"
@@ -79,8 +78,8 @@ void update_fps()
   char fpstext[64];
   sprintf(fpstext, "%d fps", fps);
 
-  int x = (Renderer::getInstance()->screenWidth - 4) - GetFontWidth(fpstext, true);
-  font_draw(x, 4, fpstext, 0x00FF00, true);
+  int x = (Renderer::getInstance()->screenWidth - 4) - Renderer::getInstance()->font.getWidth(fpstext);
+  Renderer::getInstance()->font.draw(x, 4, fpstext, 0x00FF00, true);
 }
 
 static inline void run_tick()
@@ -138,10 +137,10 @@ static inline void run_tick()
     {
       char buf[1024];
       sprintf(buf, "[] Tick %d", framecount++);
-      font_draw(4, (Renderer::getInstance()->screenHeight - GetFontHeight() - 4), buf, 0x00FF00, true);
+      Renderer::getInstance()->font.draw(4, (Renderer::getInstance()->screenHeight - Renderer::getInstance()->font.getHeight() - 4), buf, 0x00FF00, true);
       sprintf(buf, "Left: %d, Right: %d, JMP: %d, FR: %d, ST: %d", inputs[LEFTKEY], inputs[RIGHTKEY], inputs[JUMPKEY],
               inputs[FIREKEY], inputs[STRAFEKEY]);
-      font_draw(80, (Renderer::getInstance()->screenHeight - GetFontHeight() - 4), buf, 0x00FF00, true);
+      Renderer::getInstance()->font.draw(80, (Renderer::getInstance()->screenHeight - Renderer::getInstance()->font.getHeight() - 4), buf, 0x00FF00, true);
       can_tick = false;
     }
 
@@ -309,11 +308,6 @@ int main(int argc, char *argv[])
     return 1;
   }
   Renderer::getInstance()->setFullscreen(settings->fullscreen);
-  if (font_init())
-  {
-    fatal("Failed to load font.");
-    return 1;
-  }
 
   //	if (check_data_exists())
   //	{
@@ -445,7 +439,6 @@ shutdown:;
   Carets::close();
 
   input_close();
-  font_close();
   textbox.Deinit();
   NXE::Sound::SoundManager::getInstance()->shutdown();
   Renderer::getInstance()->close();

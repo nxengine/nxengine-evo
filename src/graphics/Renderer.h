@@ -3,6 +3,7 @@
 
 #include "../Singleton.h"
 #include "Surface.h"
+#include "Font.h"
 
 #include <SDL.h>
 
@@ -87,6 +88,7 @@ class Renderer
     void flip();
     SDL_Renderer* renderer();
     SDL_Window* window();
+    Font font;
 
   private:
     SDL_Window *_window = nullptr;

@@ -6,7 +6,6 @@
 #include "../ResourceManager.h"
 #include "../common/misc.h"
 #include "../game.h"
-#include "../graphics/font.h"
 #include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../map.h"
@@ -345,7 +344,7 @@ void _lang_change(ODItem *item, int dir)
   memset(settings->language, 0, 256);
   strncpy(settings->language, langs[i].c_str(), 255);
   game.lang->load();
-  font_reload();
+//  font_reload();
   game.tsc->Init();
   Renderer::getInstance()->flushAll();
 }

@@ -4,7 +4,6 @@
 #include "../TextBox/TextBox.h"
 #include "../autogen/sprites.h"
 #include "../common/stat.h"
-#include "../graphics/font.h"
 #include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../input.h"
@@ -73,7 +72,7 @@ static void draw_title()
 
   for (int i = 0; i <= 3; i++)
   {
-    font_draw(cx + 10, cy, _(mymenus[i]));
+    Renderer::getInstance()->font.draw(cx + 10, cy, _(mymenus[i]));
     if (i == title.cursel)
     {
       drawSprite(cx - 16, cy - 1, title.sprite, title.selframe);
@@ -96,9 +95,9 @@ static void draw_title()
   drawSprite(cx, acc_y, SPR_PIXEL_FOREVER);
 
   // version
-  int wd = GetFontWidth(NXVERSION);
+  int wd = Renderer::getInstance()->font.getWidth(NXVERSION);
   cx     = (Renderer::getInstance()->screenWidth / 2) - (wd / 2);
-  font_draw(cx, acc_y + sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
+  Renderer::getInstance()->font.draw(cx, acc_y + sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
 
   // draw Nikumaru display
   if (title.besttime != 0xffffffff)

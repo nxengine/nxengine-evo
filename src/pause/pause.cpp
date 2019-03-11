@@ -3,7 +3,6 @@
 
 #include "../autogen/sprites.h"
 #include "../game.h"
-#include "../graphics/font.h"
 #include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../input.h"
@@ -56,7 +55,7 @@ bool pause_init(int param)
   int maxsize = 0;
   for (auto &item : dlg->Items())
   {
-    int x = GetFontWidth(_(item->text));
+    int x = Renderer::getInstance()->font.getWidth(_(item->text));
     if (x > maxsize)
       maxsize = x;
   }

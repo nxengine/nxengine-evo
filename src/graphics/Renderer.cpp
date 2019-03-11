@@ -8,7 +8,6 @@
 #include "../nx.h"
 #include "../pause/dialog.h"
 #include "../version.h"
-#include "font.h"
 #include "Renderer.h"
 #include "nx_icon.h"
 #include "sprites.h"
@@ -35,6 +34,8 @@ bool Renderer::init(int resolution)
   if (setResolution(resolution, false))
     return 1;
 
+//  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+
   if (Tileset::init())
     return 1;
 
@@ -47,6 +48,9 @@ bool Renderer::init(int resolution)
 void Renderer::close()
 {
   stat("Renderer::Close()");
+  font.cleanup();
+  Tileset::close();
+  Sprites::close();
   SDL_ShowCursor(true);
   SDL_DestroyWindow(_window);
   _window = NULL;
@@ -137,7 +141,9 @@ bool Renderer::flushAll()
 //  Sprites::flushSheets();
 //  Tileset::reload();
 //  map_flush_graphics();
-  return font_reload();
+  font.cleanup();
+  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+  return false;
 }
 
 void Renderer::setFullscreen(bool enable)

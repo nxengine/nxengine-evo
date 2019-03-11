@@ -5,7 +5,6 @@
 #include "../graphics/Renderer.h"
 #include "../nx.h"
 using namespace NXE::Graphics;
-#include "../graphics/font.h"
 #include "../graphics/sprites.h"
 
 using namespace Sprites;
@@ -151,7 +150,7 @@ void Dialog::Draw()
   TextBox::DrawFrame(fCoords.x, fCoords.y, fCoords.w, fCoords.h);
 
   int x = fTextX;
-  int y = (fCoords.y + GetFontBase());
+  int y = (fCoords.y + Renderer::getInstance()->font.getBase());
   for (unsigned int i = 0; i < fItems.size(); i++)
   {
     ODItem *item = (ODItem *)fItems.at(i);
@@ -164,7 +163,7 @@ void Dialog::Draw()
     if (item->type == OD_SEPARATOR)
       y += 5;
     else
-      y += GetFontHeight();
+      y += Renderer::getInstance()->font.getHeight();
   }
 
   if (fNumShown < 99)
@@ -182,15 +181,15 @@ void Dialog::DrawItem(int x, int y, ODItem *item)
   if (item->raligntext[0])
   {
     int rx = (fCoords.x + fCoords.w) - 10;
-    rx -= GetFontWidth(_(item->raligntext));
-    font_draw(rx, y, _(item->raligntext));
+    rx -= Renderer::getInstance()->font.getWidth(_(item->raligntext));
+    Renderer::getInstance()->font.draw(rx, y, _(item->raligntext));
     /*
     // ... ellipses if too long
     int maxx = (rx - 4);
     //FillRect(maxx, 0, maxx, Renderer::getInstance()->screenHeight, 0,255,0);
     for(;;)
     {
-            int wd = GetFontWidth(text);
+            int wd = Renderer::getInstance()->font.getWidth(text);
             if (x+wd < maxx) break;
 
             int len = strlen(text);
@@ -203,12 +202,12 @@ void Dialog::DrawItem(int x, int y, ODItem *item)
     }*/
   }
 
-  font_draw(x, y, text);
+  Renderer::getInstance()->font.draw(x, y, text);
 
   // for key remaps
   if (item->righttext[0])
   {
-    font_draw((fCoords.x + fCoords.w) - 62, y, item->righttext);
+    Renderer::getInstance()->font.draw((fCoords.x + fCoords.w) - 62, y, item->righttext);
   }
 }
 

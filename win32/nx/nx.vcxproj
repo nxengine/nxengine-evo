@@ -249,8 +249,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\floattext.cpp" />
     <ClCompile Include="..\..\src\game.cpp" />
-    <ClCompile Include="..\..\src\graphics\font.cpp" />
-    <ClCompile Include="..\..\src\graphics\bmfont.cpp" />
+    <ClCompile Include="..\..\src\graphics\Font.cpp" />
     <ClCompile Include="..\..\src\graphics\Renderer.cpp" />
     <ClCompile Include="..\..\src\graphics\Surface.cpp" />
     <ClCompile Include="..\..\src\graphics\pngfuncs.cpp" />
@@ -388,8 +387,7 @@
     <ClInclude Include="..\..\src\endgame\misc.h" />
     <ClInclude Include="..\..\src\floattext.h" />
     <ClInclude Include="..\..\src\game.h" />
-    <ClInclude Include="..\..\src\graphics\font.h" />
-    <ClInclude Include="..\..\src\graphics\bmfont.h" />
+    <ClInclude Include="..\..\src\graphics\Font.h" />
     <ClInclude Include="..\..\src\graphics\Rendererr.h" />
     <ClInclude Include="..\..\src\graphics\Surface.h" />
     <ClInclude Include="..\..\src\graphics\nx_icon.h" />

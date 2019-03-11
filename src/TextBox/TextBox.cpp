@@ -3,7 +3,6 @@
 
 #include "../autogen/sprites.h"
 #include "../common/utf8.h"
-#include "../graphics/font.h"
 #include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../input.h"
@@ -311,13 +310,13 @@ void TextBox::DrawTextBox()
 
   for (int i = 0; i < MSG_NLINES; i++)
   {
-    int lineWidth = font_draw(text_x, y, fLines[i]);
+    int lineWidth = Renderer::getInstance()->font.draw(text_x, y, fLines[i]);
 
     // draw the cursor
     if (i == fCurLine && fCursorTimer < 7)
     {
       int x = (text_x + lineWidth);
-      Renderer::getInstance()->fillRect(x, y, x + 4, y + GetFontBase(), 255, 255, 255);
+      Renderer::getInstance()->fillRect(x, y, x + 4, y + Renderer::getInstance()->font.getBase(), 255, 255, 255);
     }
 
     y += MSG_LINE_SPACING;

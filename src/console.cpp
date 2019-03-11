@@ -14,7 +14,6 @@ using namespace NXE::Graphics;
 #include "common/misc.h"
 #include "common/stat.h"
 #include "debug.h"
-#include "graphics/font.h"
 #include "graphics/sprites.h"
 #include "map.h"
 #include "p_arms.h"
@@ -774,7 +773,7 @@ void DebugConsole::Draw()
 
 void DebugConsole::DrawText(const char *text)
 {
-  font_draw(4, (Renderer::getInstance()->screenHeight - 16), text, 0xFFAAAA, true);
+  Renderer::getInstance()->font.draw(4, (Renderer::getInstance()->screenHeight - 16), text, 0xFFAAAA, true);
 }
 
 /*

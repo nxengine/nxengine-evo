@@ -7,7 +7,6 @@
 
 #include "../autogen/sprites.h"
 #include "../game.h"
-#include "../graphics/font.h"
 #include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../input.h"
@@ -212,7 +211,7 @@ void TB_SaveSelect::DrawProfile(int x, int y, int index)
   if (fHaveProfile[index])
   {
     const std::string &stage = map_get_stage_name(p->stage);
-    font_draw(x + 8, y - 1, stage);
+    Renderer::getInstance()->font.draw(x + 8, y - 1, stage);
 
     // draw health.
     DrawHealth(x + w, y, p);
@@ -220,8 +219,8 @@ void TB_SaveSelect::DrawProfile(int x, int y, int index)
   else if (fCurSel == index)
   {
     std::string str = "available";
-    int fx          = (w / 2) - (GetFontWidth(_(str)) / 2);
-    font_draw(x + fx, y - 1, _(str));
+    int fx          = (w / 2) - (Renderer::getInstance()->font.getWidth(_(str)) / 2);
+    Renderer::getInstance()->font.draw(x + fx, y - 1, _(str));
   }
 }
 

@@ -7,7 +7,6 @@
 #include "../common/stat.h"
 #include "../console.h"
 #include "../game.h"
-#include "../graphics/font.h"
 #include "../graphics/Renderer.h"
 #include "../graphics/sprites.h"
 #include "../map.h"
@@ -117,7 +116,7 @@ void Credits::RunNextCommand()
       // varying font sizes can lead to it being a little bit off
       if (strstr(line->text, "The End"))
       {
-        line->x = (Renderer::getInstance()->screenWidth / 2) - (GetFontWidth(line->text) / 2);
+        line->x = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->font.getWidth(line->text) / 2);
       }
 
       spawn_y += 1;
@@ -209,11 +208,11 @@ bool Credits::DrawLine(CredLine *line)
   if (line->image)
   {
     drawSprite(x - 24, y - 8, SPR_CASTS, line->image);
-    // DrawBox(x, y, x+GetFontWidth(line->text), y+8,  56, 0, 0);
+    // DrawBox(x, y, x+Renderer::getInstance()->font.getWidth(line->text), y+8,  56, 0, 0);
   }
 
   // DrawRect(x, y, x+63, y+8, 128, 0, 0);
-  font_draw(x, y, line->text);
+  Renderer::getInstance()->font.draw(x, y, line->text);
 
   return false;
 }

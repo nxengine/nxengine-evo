@@ -3,7 +3,6 @@
 #include "map_system.h"
 
 #include "autogen/sprites.h"
-#include "graphics/font.h"
 #include "graphics/Renderer.h"
 #include "graphics/sprites.h"
 #include "graphics/tileset.h"
@@ -64,7 +63,7 @@ static void draw_expand(void)
 static void draw_banner(void)
 {
   Renderer::getInstance()->fillRect(0, BANNER_TOP, Renderer::getInstance()->screenWidth, BANNER_BTM, NXColor(0, 0, 0));
-  font_draw(ms.textx, ms.texty, _(ms.bannertext));
+  Renderer::getInstance()->font.draw(ms.textx, ms.texty, _(ms.bannertext));
 }
 
 /*
@@ -133,7 +132,7 @@ bool ms_init(int return_to_mode)
   ms.py = ms.y + ((player->y / CSFI) / TILE_H);
 
   ms.bannertext = stages[game.curmap].stagename;
-  ms.textx      = (Renderer::getInstance()->screenWidth / 2) - (GetFontWidth(ms.bannertext) / 2);
+  ms.textx      = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->font.getWidth(ms.bannertext) / 2);
   ms.texty      = BANNER_TOP + 3;
 
   return 0;
