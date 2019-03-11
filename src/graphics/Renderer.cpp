@@ -134,9 +134,9 @@ bool Renderer::flushAll()
 {
   stat("Renderer::flushAll()");
   SDL_RenderPresent(_renderer);
-  Sprites::flushSheets();
-  Tileset::reload();
-  map_flush_graphics();
+//  Sprites::flushSheets();
+//  Tileset::reload();
+//  map_flush_graphics();
   return font_reload();
 }
 
