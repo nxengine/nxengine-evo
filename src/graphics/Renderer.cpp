@@ -261,7 +261,7 @@ void Renderer::showLoadingScreen()
 {
   Surface loading;
 
-  if (loading.loadImage(ResourceManager::getInstance()->getLocalizedPath("Loading.pbm")))
+  if (!loading.loadImage(ResourceManager::getInstance()->getLocalizedPath("Loading.pbm")))
     return;
 
   int x = (screenWidth / 2) - (loading.width() / 2);
