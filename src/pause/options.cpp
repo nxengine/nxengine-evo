@@ -296,12 +296,9 @@ void _res_change(ODItem *item, int dir)
       newres = (numres - 1);
   }
 
-  if (!Renderer::getInstance()->setResolution(newres, true))
+  if (Renderer::getInstance()->setResolution(newres, true))
   {
     settings->resolution = newres;
-    //		SetFullscreen(false);
-    //		SetFullscreen(settings->fullscreen);
-    //		opt.dlg->UpdateSizePos();
   }
   else
   {

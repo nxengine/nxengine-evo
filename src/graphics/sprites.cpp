@@ -156,10 +156,10 @@ bool Sprites::init()
 
   // load sprites info--sheet positions, bounding boxes etc
   if (load_sif(ResourceManager::getInstance()->getLocalizedPath("sprites.sif")))
-    return 1;
+    return false;
 
   num_spritesheets = sheetfiles.size();
-  return 0;
+  return true;
 }
 
 void Sprites::close()

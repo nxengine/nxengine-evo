@@ -31,18 +31,19 @@ Renderer *Renderer::getInstance()
 
 bool Renderer::init(int resolution)
 {
-  if (setResolution(resolution, false))
-    return 1;
+  _current_res = resolution;
+  if (!initVideo())
+    return false;
 
-//  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
 
-  if (Tileset::init())
-    return 1;
+  if (!Tileset::init())
+    return false;
 
-  if (Sprites::init())
-    return 1;
+  if (!Sprites::init())
+    return false;
 
-  return 0;
+  return true;
 }
 
 void Renderer::close()
@@ -72,26 +73,24 @@ bool Renderer::initVideo()
 
   uint32_t width  = res[_current_res].width;
   uint32_t height = res[_current_res].height;
+  scale        = res[_current_res].scale;
+  screenHeight = res[_current_res].base_height;
+  screenWidth  = res[_current_res].base_width;
+  widescreen   = res[_current_res].widescreen;
 
   if (_window)
   {
-    stat("second call to Renderer::InitVideo()");
+    staterr("second call to Renderer::InitVideo()");
+    return false;
   }
 
   stat("SDL_CreateWindow: %dx%d", width, height);
-  if (_window)
-  {
-    SDL_SetWindowSize(_window, width, height);
-  }
-  else
-  {
-    _window = SDL_CreateWindow(NXVERSION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
-  }
+  _window = SDL_CreateWindow(NXVERSION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 
   if (!_window)
   {
     staterr("Renderer::initVideo: error setting video mode (SDL_CreateWindow: %s)", SDL_GetError());
-    return 1;
+    return false;
   }
 
 #if not defined(__VITA__) && not defined(__SWITCH__)
@@ -120,37 +119,36 @@ bool Renderer::initVideo()
   if (!_renderer)
   {
     staterr("Renderer::initVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
-    return 1;
+    return false;
   }
 
   SDL_RendererInfo info;
   if (SDL_GetRendererInfo(_renderer, &info))
   {
     staterr("Renderer::initVideo: SDL_GetRendererInfo failed: %s", SDL_GetError());
-    return 1;
+    return false;
   }
 
   stat("Renderer::initVideo: using: %s renderer", info.name);
-  return 0;
+  return true;
 }
 
 bool Renderer::flushAll()
 {
   stat("Renderer::flushAll()");
   SDL_RenderPresent(_renderer);
-//  Sprites::flushSheets();
-//  Tileset::reload();
-//  map_flush_graphics();
+  Sprites::flushSheets();
+  Tileset::reload();
+  map_flush_graphics();
   font.cleanup();
   font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
-  return false;
+  return true;
 }
 
 void Renderer::setFullscreen(bool enable)
 {
   SDL_ShowCursor(!enable);
   SDL_SetWindowFullscreen(_window, (enable ? SDL_WINDOW_FULLSCREEN : 0));
-  flushAll();
 }
 
 bool Renderer::setResolution(int r, bool restoreOnFailure)
@@ -163,11 +161,13 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
   if (r == _current_res)
     return 0;
 
-  int old_res = _current_res;
+  uint32_t width  = screenWidth;
+  uint32_t height = screenHeight;
 
   if (r == 0)
   {
     scale = 1;
+    widescreen = false;
   }
   else
   {
@@ -176,37 +176,23 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
     screenHeight = res[r].base_height;
     screenWidth  = res[r].base_width;
     widescreen   = res[r].widescreen;
+    width        = res[r].width;
+    height       = res[r].height;
   }
 
   stat("Setting scaling %d", scale);
 
+  SDL_SetWindowSize(_window, width, height);
+
   _current_res = r;
 
-  if (initVideo())
-  {
-    staterr("Switch to resolution %d failed!", r);
-
-    if (restoreOnFailure)
-    {
-      staterr("Trying to recover old mode %d.", r, old_res);
-      if (setResolution(old_res, false))
-      {
-        staterr("Fatal error: vidmode recovery failed!!!");
-      }
-      _current_res = old_res;
-    }
-
-    return 1;
-  }
-  _current_res = r;
-
-  if (flushAll())
-    return 1;
+  if (!flushAll())
+    return false;
 
   recalc_map_offsets();
   textbox.RecalculateOffsets();
 
-  return 0;
+  return true;
 }
 
 const Graphics::gres_t *Renderer::getResolutions()

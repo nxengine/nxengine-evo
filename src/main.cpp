@@ -302,7 +302,7 @@ int main(int argc, char *argv[])
   // so we know the initial screen resolution.
   settings_load();
 
-  if (Renderer::getInstance()->init(settings->resolution))
+  if (!Renderer::getInstance()->init(settings->resolution))
   {
     fatal("Failed to initialize graphics.");
     return 1;
@@ -315,6 +315,7 @@ int main(int argc, char *argv[])
   //	}
 
   Renderer::getInstance()->showLoadingScreen();
+
   if (!SoundManager::getInstance()->init())
   {
     fatal("Failed to initialize sound.");

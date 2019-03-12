@@ -21,7 +21,7 @@ bool Tileset::init()
 {
   tileset         = NULL;
   current_tileset = -1;
-  return 0;
+  return true;
 }
 
 void Tileset::close()
