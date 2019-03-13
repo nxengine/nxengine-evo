@@ -253,7 +253,6 @@
     <ClCompile Include="..\..\src\graphics\Renderer.cpp" />
     <ClCompile Include="..\..\src\graphics\Surface.cpp" />
     <ClCompile Include="..\..\src\graphics\pngfuncs.cpp" />
-    <ClCompile Include="..\..\src\graphics\screenshot.cpp" />
     <ClCompile Include="..\..\src\graphics\sprites.cpp" />
     <ClCompile Include="..\..\src\graphics\Tileset.cpp" />
     <ClCompile Include="..\..\src\i18n\translate.cpp" />
@@ -392,7 +391,6 @@
     <ClInclude Include="..\..\src\graphics\Surface.h" />
     <ClInclude Include="..\..\src\graphics\nx_icon.h" />
     <ClInclude Include="..\..\src\graphics\pngfuncs.h" />
-    <ClInclude Include="..\..\src\graphics\screenshot.h" />
     <ClInclude Include="..\..\src\graphics\sprites.h" />
     <ClInclude Include="..\..\src\graphics\Tileset.h" />
     <ClInclude Include="..\..\src\graphics\types.h" />

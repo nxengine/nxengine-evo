@@ -85,6 +85,8 @@ class Renderer
     void clip(SDL_Rect &srcrect, SDL_Rect &dstrect);
     void clipScaled(SDL_Rect &srcrect, SDL_Rect &dstrect);
 
+    void saveScreenshot();
+
     void tintScreen();
     void flip();
     SDL_Renderer* renderer();

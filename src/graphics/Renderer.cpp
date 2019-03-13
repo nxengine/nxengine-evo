@@ -11,9 +11,12 @@
 #include "Renderer.h"
 #include "nx_icon.h"
 #include "sprites.h"
+#include "pngfuncs.h"
 
 #include <SDL.h>
 #include <cstdlib>
+#include <sstream>
+#include <iomanip>
 
 namespace NXE
 {
@@ -465,6 +468,67 @@ void Renderer::clipScaled(SDL_Rect &srcrect, SDL_Rect &dstrect)
 
   dstrect.w = srcrect.w = w;
   dstrect.h = srcrect.h = h;
+}
+
+void Renderer::saveScreenshot()
+{
+  auto filename = []()
+  {
+    int iter = 0;
+    std::string name;
+    do
+    {
+      std::ostringstream oss;
+      oss << "screenshot";
+      oss << std::setfill('0') << std::setw(3);
+      oss << ++iter;
+      oss << ".png";
+      name = ResourceManager::getInstance()->getPrefPath(oss.str());
+    } while (ResourceManager::getInstance()->fileExists(name) && iter < 1000);
+    if (ResourceManager::getInstance()->fileExists(name))
+    {
+        return std::string();
+    }
+    return name;
+  }();
+
+  if (filename.empty())
+  {
+    staterr("Can not get screenshot name. Too many screenshots in folder");
+    return;
+  }
+
+  SDL_Rect viewport;
+  SDL_RenderGetViewport(_renderer, &viewport);
+  SDL_Surface* surface = SDL_CreateRGBSurface(0, viewport.w, viewport.h, 24,
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+                                 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff
+#else
+                                 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000
+#endif
+  );
+
+  if (!surface)
+  {
+    staterr("Couldn't create surface: %s", SDL_GetError());
+    return;
+  }
+
+  if (SDL_RenderReadPixels(_renderer, NULL, surface->format->format, surface->pixels, surface->pitch) < 0)
+  {
+    staterr("Couldn't read screen: %s", SDL_GetError());
+    return;
+  }
+
+  if (png_save_surface(filename, surface) < 0)
+  {
+    SDL_FreeSurface(surface);
+    staterr("Couldn't save screen");
+    return;
+  }
+  SDL_FreeSurface(surface);
+  stat("Saved %s", filename.c_str());
+  return;
 }
 
 };

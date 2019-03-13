@@ -58,7 +58,7 @@ void png_user_error(png_structp ctx, png_const_charp str)
   staterr("libpng: error: %s\n", str);
 }
 
-int png_save_surface(char *filename, SDL_Surface *surf)
+int png_save_surface(std::string& filename, SDL_Surface *surf)
 {
   FILE *fp;
   png_structp png_ptr;

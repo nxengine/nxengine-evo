@@ -26,7 +26,6 @@ using namespace NXE::Graphics;
 #include "common/misc.h"
 #include "common/stat.h"
 #include "console.h"
-#include "graphics/screenshot.h"
 #include "screeneffect.h"
 #include "sound/SoundManager.h"
 
@@ -95,7 +94,7 @@ static inline void run_tick()
 
   if (justpushed(F9KEY))
   {
-    SaveScreenshot();
+    Renderer::getInstance()->saveScreenshot();
   }
 
   // freeze frame
