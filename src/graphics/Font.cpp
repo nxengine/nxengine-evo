@@ -60,7 +60,7 @@ bool Font::load(const std::string &font)
     for (auto atlas : fontdef["pages"])
     {
       std::string atlaspath = ResourceManager::getInstance()->getLocalizedPath(atlas.get<std::string>());
-      SDL_Surface *surf     = png_load_surface(atlaspath.c_str());
+      SDL_Surface *surf     = png_load_surface(atlaspath);
       _atlases.push_back(SDL_CreateTextureFromSurface(Renderer::getInstance()->renderer(), surf));
       SDL_FreeSurface(surf);
     }
