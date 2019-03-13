@@ -13,7 +13,6 @@
 #include "../sym/smoke.h"
 using namespace NXE::Graphics;
 #include "../../autogen/sprites.h"
-#include "../../graphics/tileset.h"
 
 INITFUNC(AIRoutines)
 {

@@ -4,6 +4,7 @@
 #include "../Singleton.h"
 #include "Surface.h"
 #include "Font.h"
+#include "Tileset.h"
 
 #include <SDL.h>
 
@@ -89,6 +90,7 @@ class Renderer
     SDL_Renderer* renderer();
     SDL_Window* window();
     Font font;
+    Tileset tileset;
 
   private:
     SDL_Window *_window = nullptr;

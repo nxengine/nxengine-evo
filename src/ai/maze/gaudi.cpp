@@ -13,7 +13,6 @@
 using namespace NXE::Graphics;
 #include "../../autogen/sprites.h"
 #include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
 
 #define GAUDI_HP 15
 #define GAUDI_FLYING_HP 15

@@ -5,7 +5,6 @@
 #include "autogen/sprites.h"
 #include "graphics/Renderer.h"
 #include "graphics/sprites.h"
-#include "graphics/tileset.h"
 #include "nx.h"
 using namespace NXE::Graphics;
 using namespace Sprites;

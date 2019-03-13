@@ -4,6 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
+#include "../../graphics/Tileset.h"
 #include "../../map.h"
 #include "../../sound/SoundManager.h"
 #include "../../tsc.h"

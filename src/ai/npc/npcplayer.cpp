@@ -3,7 +3,7 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Tileset.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"

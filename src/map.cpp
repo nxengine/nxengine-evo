@@ -8,12 +8,10 @@
 #include "debug.h"
 #include "graphics/Renderer.h"
 #include "graphics/sprites.h"
-#include "graphics/tileset.h"
 #include "nx.h"
 #include "tsc.h"
 using namespace NXE::Graphics;
 using namespace Sprites;
-using namespace Tileset;
 
 #include "ResourceManager.h"
 #include "common/json.hpp"
@@ -55,7 +53,7 @@ bool load_stage(int stage_no)
   Sprites::flushSheets();
   map_flush_graphics();
 
-  if (Tileset::load(stages[stage_no].tileset))
+  if (!Renderer::getInstance()->tileset.load(stages[stage_no].tileset))
     return 1;
 
   // get the base name of the stage without extension
@@ -831,7 +829,7 @@ void map_draw(uint8_t foreground)
           else if (tilecode[t] == 0x43)
             drawSprite(blit_x, blit_y, SPR_DESTROYABLE, 0, 0);
           else
-            drawTile(blit_x, blit_y, t);
+            Renderer::getInstance()->tileset.drawTile(blit_x, blit_y, t);
         }
       }
       blit_x += TILE_W;
@@ -872,7 +870,7 @@ void map_draw_oob()
         int t = oob_tiles[0];
         if (oob_tile_count == 4)
           t = oob_tiles[abs(mapx + x + 1) % 2 + (abs(mapy + y + 1) % 2) * 2];
-        drawTile(blit_x, blit_y, t);
+        Renderer::getInstance()->tileset.drawTile(blit_x, blit_y, t);
       }
       blit_x += TILE_W;
     }

@@ -2,7 +2,6 @@
 
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
-#include "../../graphics/tileset.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../../trig.h"

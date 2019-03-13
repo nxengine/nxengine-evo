@@ -11,7 +11,6 @@ using namespace NXE::Graphics;
 #include "debug.h"
 #include "game.h"
 #include "graphics/sprites.h"
-#include "graphics/tileset.h"
 #include "map.h"
 #include "player.h"
 #include "slope.h"

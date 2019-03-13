@@ -11,7 +11,6 @@
 #include "Renderer.h"
 #include "nx_icon.h"
 #include "sprites.h"
-#include "tileset.h"
 
 #include <SDL.h>
 #include <cstdlib>
@@ -37,9 +36,6 @@ bool Renderer::init(int resolution)
 
   font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
 
-  if (!Tileset::init())
-    return false;
-
   if (!Sprites::init())
     return false;
 
@@ -50,7 +46,6 @@ void Renderer::close()
 {
   stat("Renderer::Close()");
   font.cleanup();
-  Tileset::close();
   Sprites::close();
   SDL_ShowCursor(true);
   SDL_DestroyWindow(_window);
@@ -138,7 +133,7 @@ bool Renderer::flushAll()
   stat("Renderer::flushAll()");
   SDL_RenderPresent(_renderer);
   Sprites::flushSheets();
-  Tileset::reload();
+  tileset.reload();
   map_flush_graphics();
   font.cleanup();
   font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
