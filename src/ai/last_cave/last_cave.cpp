@@ -120,12 +120,19 @@ void ai_critter_hopping_red(Object *o)
         {
           if (pdistlx((6 * TILE_W) * CSFI))
           {
-            o->state = 1;
-            o->timer = 0;
           }
           else if (pdistlx((9 * TILE_W) * CSFI))
           {
             o->frame = 1;
+          }
+        }
+
+        if (pdistly2((5 * TILE_H) * CSFI, (6 * TILE_H) * CSFI))
+        {
+          if (pdistlx((6 * TILE_W) * CSFI))
+          {
+            o->state = 1;
+            o->timer = 0;
           }
         }
       }
