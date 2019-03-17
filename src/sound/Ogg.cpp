@@ -15,6 +15,11 @@
 #include <functional>
 #include <string>
 
+namespace NXE
+{
+namespace Sound
+{
+
 Ogg *Ogg::getInstance()
 {
   return Singleton<Ogg>::get();
@@ -206,3 +211,6 @@ bool Ogg::looped()
 {
   return _looped;
 }
+
+}; // namespace Sound
+}; // namespace NXE

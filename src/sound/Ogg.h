@@ -9,6 +9,11 @@
 
 typedef void (*music_finished_cb)(void);
 
+namespace NXE
+{
+namespace Sound
+{
+
 struct oggSong
 {
   Mix_Music *intro = nullptr;
@@ -55,12 +60,7 @@ private:
   bool _looped  = false;
 };
 
-bool ogg11_load(const std::string &fname, const std::string &dir);
-bool ogg11_start(const std::string &fname, const std::string &dir, int startbeat, bool loop);
-uint32_t ogg11_stop(void);
-bool ogg11_is_playing(void);
-void ogg11_fade(void);
-void ogg11_set_volume(int newvolume);
-void ogg11_run_fade(void);
+}; // namespace Sound
+}; // namespace NXE
 
 #endif
