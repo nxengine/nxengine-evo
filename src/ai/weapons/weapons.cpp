@@ -4,16 +4,13 @@
 #include "../../caret.h"
 #include "../../common/stat.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../sym/smoke.h"
 
-/*
-void c------------------------------() {}
-*/
+using namespace NXE::Graphics;
 
 // a convenience function which does some stuff common to a basic weapon--
 // damage enemies, hit walls, and ttl dispersion.
@@ -235,16 +232,16 @@ bool shot_destroy_blocks(Object *o)
   switch (o->shot.dir)
   {
     case LEFT:
-      plist = &sprites[o->sprite].block_l;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_l;
       break;
     case RIGHT:
-      plist = &sprites[o->sprite].block_r;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_r;
       break;
     case UP:
-      plist = &sprites[o->sprite].block_u;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_u;
       break;
     case DOWN:
-      plist = &sprites[o->sprite].block_d;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_d;
       break;
     default:
       return 0;

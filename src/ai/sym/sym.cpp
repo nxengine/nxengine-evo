@@ -1,5 +1,6 @@
 #include "sym.h"
 
+#include "../../autogen/sprites.h"
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
@@ -13,13 +14,12 @@
 #include "../../sound/SoundManager.h"
 #include "../../tsc.h"
 #include "../ai.h"
-#include "../stdai.h"
-#include "../sym/smoke.h"
-using namespace NXE::Graphics;
-#include "../../autogen/sprites.h"
-#include "../../graphics/sprites.h"
 #include "../../screeneffect.h"
 #include "../../settings.h"
+#include "../stdai.h"
+#include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -1232,11 +1232,11 @@ void ai_generic_angled_shot(Object *o)
 
   if (o->sprite == SPR_GAUDI_FLYING_SHOT)
   {
-    ANIMATE(0, 0, sprites[o->sprite].nframes - 1);
+    ANIMATE(0, 0, Renderer::getInstance()->sprites.sprites[o->sprite].nframes - 1);
   }
   else
   {
-    ANIMATE(2, 0, sprites[o->sprite].nframes - 1);
+    ANIMATE(2, 0, Renderer::getInstance()->sprites.sprites[o->sprite].nframes - 1);
   }
 
   if (o->blockl && o->xinertia < 0)

@@ -3,17 +3,8 @@
 
 #include "game.h"
 #include "graphics/Renderer.h"
-#include "graphics/sprites.h"
 #include "input.h"
 #include "nx.h"
-
-#include <cstring>
-#include <stdarg.h>
-#include <string>
-#include <vector>
-#include <SDL.h>
-using namespace NXE::Graphics;
-using namespace Sprites;
 #include "common/misc.h"
 #include "common/stat.h"
 #include "console.h"
@@ -24,6 +15,14 @@ using namespace Sprites;
 #include "settings.h"
 #include "siflib/sif.h"
 #include "sound/SoundManager.h"
+
+#include <cstring>
+#include <stdarg.h>
+#include <string>
+#include <vector>
+#include <SDL.h>
+
+using namespace NXE::Graphics;
 
 #define MAX_DEBUG_MARKS 80
 static struct
@@ -170,10 +169,10 @@ void DrawAttrPoints()
   Object *o;
   FOREACH_OBJECT(o)
   {
-    draw_pointlist(o, &sprites[o->sprite].block_l);
-    draw_pointlist(o, &sprites[o->sprite].block_r);
-    draw_pointlist(o, &sprites[o->sprite].block_u);
-    draw_pointlist(o, &sprites[o->sprite].block_d);
+    draw_pointlist(o, &Renderer::getInstance()->sprites.sprites[o->sprite].block_l);
+    draw_pointlist(o, &Renderer::getInstance()->sprites.sprites[o->sprite].block_r);
+    draw_pointlist(o, &Renderer::getInstance()->sprites.sprites[o->sprite].block_u);
+    draw_pointlist(o, &Renderer::getInstance()->sprites.sprites[o->sprite].block_d);
   }
 }
 

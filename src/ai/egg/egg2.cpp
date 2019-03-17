@@ -5,7 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../../trig.h"
@@ -14,6 +14,8 @@
 #include "../sym/smoke.h"
 #include "../weed/weed.h"
 #include "egg.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -237,7 +239,7 @@ void ai_falling_spike_large(Object *o)
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
         SmokeClouds(o, 4, 2, 2);
 
-        effect(o->CenterX(), o->y + (sprites[o->sprite].block_d[0].y * CSFI), EFFECT_STARSOLID);
+        effect(o->CenterX(), o->y + (Renderer::getInstance()->sprites.sprites[o->sprite].block_d[0].y * CSFI), EFFECT_STARSOLID);
       }
     }
     break;
@@ -314,10 +316,10 @@ void ai_counter_bomb(Object *o)
           o->y                       = o->CenterY();
           o->invisible               = true;
           o->sprite                  = SPR_BBOX_PUPPET_1;
-          sprites[o->sprite].bbox[o->dir].x1 = -128;
-          sprites[o->sprite].bbox[o->dir].y1 = -100;
-          sprites[o->sprite].bbox[o->dir].x2 = 128;
-          sprites[o->sprite].bbox[o->dir].y2 = 100;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].x1 = -128;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].y1 = -100;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].x2 = 128;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].y2 = 100;
           o->damage                  = 30;
 
           o->yinertia = 0;

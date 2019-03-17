@@ -5,12 +5,13 @@
 #include "../../autogen/sprites.h"
 #include "../../caret.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "weapons.h"
-using namespace Sprites;
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -106,7 +107,7 @@ void draw_whimstars(WhimsicalStar *wh)
     int scr_x = (stars[i].x / CSFI) - (map.displayed_xscroll / CSFI);
     int scr_y = (stars[i].y / CSFI) - (map.displayed_yscroll / CSFI);
 
-    drawSpriteAtDp(scr_x, scr_y, SPR_WHIMSICAL_STAR, i);
+    Renderer::getInstance()->sprites.drawSpriteAtDp(scr_x, scr_y, SPR_WHIMSICAL_STAR, i);
   }
 }
 

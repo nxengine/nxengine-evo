@@ -1,5 +1,6 @@
 #include "plantation.h"
 
+#include "../../autogen/sprites.h"
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
@@ -14,9 +15,8 @@
 #include "../sand/puppy.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
 using namespace NXE::Graphics;
-#include "../../autogen/sprites.h"
-#include "../../graphics/sprites.h"
 
 INITFUNC(AIRoutines)
 {
@@ -109,7 +109,7 @@ void ai_stumpy(Object *o)
     }
     case 5:
     {
-      SIFSprite *sprite = &sprites[o->sprite];
+      SIFSprite *sprite = &Renderer::getInstance()->sprites.sprites[o->sprite];
 
       // don't bounce off slopes--some crap in here that should probably
       // be handled by the main engine somehow, maybe not setting blockl/r
@@ -447,7 +447,7 @@ void ai_gunfish_shot(Object *o)
 
   if (++o->timer > 10)
   {
-    SIFSprite *sprite = &sprites[o->sprite];
+    SIFSprite *sprite = &Renderer::getInstance()->sprites.sprites[o->sprite];
     if (o->CheckAttribute(&sprite->block_u, TA_WATER))
     {
       hit_something = true;

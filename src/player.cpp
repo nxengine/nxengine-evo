@@ -9,7 +9,6 @@
 #include "common/misc.h"
 #include "game.h"
 #include "graphics/Renderer.h"
-#include "graphics/sprites.h"
 #include "input.h"
 #include "map.h"
 #include "nx.h"
@@ -18,7 +17,6 @@
 #include "sound/SoundManager.h"
 #include "tsc.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 #include "inventory.h"
 #include "screeneffect.h"
 #include "settings.h"
@@ -1131,7 +1129,7 @@ void PHandleSolidBrickObjects(void)
       else if (o->yinertia <= player->yinertia)
       {
         // snap his Y right on top if it
-        player->y = o->SolidTop() - (sprites[player->sprite].block_d[0].y * CSFI);
+        player->y = o->SolidTop() - (Renderer::getInstance()->sprites.sprites[player->sprite].block_d[0].y * CSFI);
       }
     }
   }
@@ -1406,33 +1404,33 @@ void PInitRepel(void)
   const int s = SPR_MYCHAR;
   int i;
 
-  player->nrepel_l = sprites[s].block_l.count;
-  player->nrepel_r = sprites[s].block_r.count;
-  player->nrepel_d = sprites[s].block_d.count;
-  player->nrepel_u = sprites[s].block_u.count;
+  player->nrepel_l = Renderer::getInstance()->sprites.sprites[s].block_l.count;
+  player->nrepel_r = Renderer::getInstance()->sprites.sprites[s].block_r.count;
+  player->nrepel_d = Renderer::getInstance()->sprites.sprites[s].block_d.count;
+  player->nrepel_u = Renderer::getInstance()->sprites.sprites[s].block_u.count;
 
   for (i = 0; i < player->nrepel_l; i++)
   {
-    player->repel_l[i].x = sprites[s].block_l[i].x + 1;
-    player->repel_l[i].y = sprites[s].block_l[i].y;
+    player->repel_l[i].x = Renderer::getInstance()->sprites.sprites[s].block_l[i].x + 1;
+    player->repel_l[i].y = Renderer::getInstance()->sprites.sprites[s].block_l[i].y;
   }
 
   for (i = 0; i < player->nrepel_r; i++)
   {
-    player->repel_r[i].x = sprites[s].block_r[i].x - 1;
-    player->repel_r[i].y = sprites[s].block_r[i].y;
+    player->repel_r[i].x = Renderer::getInstance()->sprites.sprites[s].block_r[i].x - 1;
+    player->repel_r[i].y = Renderer::getInstance()->sprites.sprites[s].block_r[i].y;
   }
 
   for (i = 0; i < player->nrepel_d; i++)
   {
-    player->repel_d[i].x = sprites[s].block_d[i].x;
-    player->repel_d[i].y = sprites[s].block_d[i].y - 1;
+    player->repel_d[i].x = Renderer::getInstance()->sprites.sprites[s].block_d[i].x;
+    player->repel_d[i].y = Renderer::getInstance()->sprites.sprites[s].block_d[i].y - 1;
   }
 
   for (i = 0; i < player->nrepel_u; i++)
   {
-    player->repel_u[i].x = sprites[s].block_u[i].x;
-    player->repel_u[i].y = sprites[s].block_u[i].y + 1;
+    player->repel_u[i].x = Renderer::getInstance()->sprites.sprites[s].block_u[i].x;
+    player->repel_u[i].y = Renderer::getInstance()->sprites.sprites[s].block_u[i].y + 1;
   }
 }
 
@@ -1459,7 +1457,7 @@ void PDoRepel(void)
   // embed the R or L points further into the block than they should be
   if (player->CheckAttribute(player->repel_r, player->nrepel_r, TA_SOLID_PLAYER))
   {
-    if (!player->CheckAttribute(&sprites[player->sprite].block_l, TA_SOLID_PLAYER))
+    if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_l, TA_SOLID_PLAYER))
     {
       player->x -= REPEL_SPEED;
       // debug("REPEL [to left]");
@@ -1468,7 +1466,7 @@ void PDoRepel(void)
 
   if (player->CheckAttribute(player->repel_l, player->nrepel_l, TA_SOLID_PLAYER))
   {
-    if (!player->CheckAttribute(&sprites[player->sprite].block_r, TA_SOLID_PLAYER))
+    if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_r, TA_SOLID_PLAYER))
     {
       player->x += REPEL_SPEED;
       // debug("REPEL [to right]");
@@ -1481,7 +1479,7 @@ void PDoRepel(void)
   // do repel down
   if (player->CheckAttribute(player->repel_u, player->nrepel_u, TA_SOLID_PLAYER))
   {
-          if (!player->CheckAttribute(&sprites[player->sprite].block_d, TA_SOLID_PLAYER))
+          if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_d, TA_SOLID_PLAYER))
           {
                   player->y += REPEL_SPEED;
                   //debug("REPEL [down]");
@@ -1491,7 +1489,7 @@ void PDoRepel(void)
   // do repel up
   if (player->CheckAttribute(player->repel_d, player->nrepel_d, TA_SOLID_PLAYER))
   {
-    if (!player->CheckAttribute(&sprites[player->sprite].block_u, TA_SOLID_PLAYER))
+    if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_u, TA_SOLID_PLAYER))
     {
       player->y -= REPEL_SPEED;
       // debug("REPEL [up]");
@@ -1693,13 +1691,13 @@ void GetPlayerShootPoint(int *x_out, int *y_out)
   // we have to figure out where the gun is being carried, then figure out where the
   // gun's sprite is drawn relative to that, then finally we can offset in the
   // shoot point of the gun's sprite.
-  x = player->x + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x * CSFI);
-  x -= sprites[spr].frame[frame].dir[player->dir].drawpoint.x * CSFI;
-  x += sprites[spr].frame[frame].dir[player->dir].actionpoint.x * CSFI;
+  x = player->x + (Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x * CSFI);
+  x -= Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].drawpoint.x * CSFI;
+  x += Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].actionpoint.x * CSFI;
 
-  y = player->y + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y * CSFI);
-  y -= sprites[spr].frame[frame].dir[player->dir].drawpoint.y * CSFI;
-  y += sprites[spr].frame[frame].dir[player->dir].actionpoint.y * CSFI;
+  y = player->y + (Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y * CSFI);
+  y -= Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].drawpoint.y * CSFI;
+  y += Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].actionpoint.y * CSFI;
 
   *x_out = x;
   *y_out = y;
@@ -1730,21 +1728,23 @@ void DrawPlayer(void)
 
     // draw the gun at the player's Action Point. Since guns have their Draw Point set
     // to point at their handle, this places the handle in the player's hand.
-    drawSpriteAtDp(scr_x + sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x,
-                      scr_y + sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y, spr, frame,
-                      player->dir);
+    Renderer::getInstance()->sprites.drawSpriteAtDp(
+      scr_x + Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x,
+      scr_y + Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y,
+      spr, frame, player->dir
+    );
   }
 
   // draw the player sprite
   if (!player->hurt_flash_state)
   {
-    drawSprite(scr_x, scr_y, player->sprite, player->frame, player->dir);
+    Renderer::getInstance()->sprites.drawSprite(scr_x, scr_y, player->sprite, player->frame, player->dir);
 
     // draw the air bubble shield if we have it on
     if (((player->touchattr & TA_WATER) && (player->equipmask & EQUIP_AIRTANK))
         || player->movementmode == MOVEMODE_ZEROG)
     {
-      drawSpriteAtDp(scr_x, scr_y, SPR_WATER_SHIELD, player->water_shield_frame, player->dir);
+      Renderer::getInstance()->sprites.drawSpriteAtDp(scr_x, scr_y, SPR_WATER_SHIELD, player->water_shield_frame, player->dir);
 
       if (++player->water_shield_timer > 1)
       {

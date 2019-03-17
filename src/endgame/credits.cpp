@@ -8,14 +8,12 @@
 #include "../console.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../map.h"
 #include "../nx.h"
 #include "../player.h"
 #include "../sound/SoundManager.h"
 #include "../tsc.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 
 #define MARGIN 48
 #define SCREEN_Y(Y) ((Y) - (scroll_y / CSFI))
@@ -207,7 +205,7 @@ bool Credits::DrawLine(CredLine *line)
 
   if (line->image)
   {
-    drawSprite(x - 24, y - 8, SPR_CASTS, line->image);
+    Renderer::getInstance()->sprites.drawSprite(x - 24, y - 8, SPR_CASTS, line->image);
     // DrawBox(x, y, x+Renderer::getInstance()->font.getWidth(line->text), y+8,  56, 0, 0);
   }
 

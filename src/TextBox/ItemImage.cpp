@@ -8,8 +8,6 @@
 #include "ItemImage.h"
 
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
-using namespace Sprites;
 using namespace NXE::Graphics;
 #include "TextBox.h"
 
@@ -54,7 +52,7 @@ void TB_ItemImage::Draw(void)
     return;
 
   // animate moving item downwards into box
-  int desty = (ITEMBOX_H / 2) - (sprites[fSprite].h / 2);
+  int desty = (ITEMBOX_H / 2) - (Renderer::getInstance()->sprites.sprites[fSprite].h / 2);
   if (++fYOffset > desty)
     fYOffset = desty;
 
@@ -62,9 +60,9 @@ void TB_ItemImage::Draw(void)
   TextBox::DrawFrame(ITEMBOX_X, ITEMBOX_Y, ITEMBOX_W, ITEMBOX_H);
 
   // draw the item
-  int x = ITEMBOX_X + ((ITEMBOX_W / 2) - (sprites[fSprite].w / 2));
-  if (sprites[fSprite].w == 14)
+  int x = ITEMBOX_X + ((ITEMBOX_W / 2) - (Renderer::getInstance()->sprites.sprites[fSprite].w / 2));
+  if (Renderer::getInstance()->sprites.sprites[fSprite].w == 14)
     x--; // hack for ArmsIcons
 
-  drawSprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
+  Renderer::getInstance()->sprites.drawSprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
 }

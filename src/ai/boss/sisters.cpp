@@ -5,7 +5,6 @@
 #include "../../common/misc.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
-#include "../../graphics/sprites.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
 #include "../../sound/SoundManager.h"
@@ -68,10 +67,10 @@ void SistersBoss::OnMapEntry()
   int i;
 
   /*stat("%d %d %d %d",
-          sprites[SPR_SISTERS_HEAD].bbox.x1,
-          sprites[SPR_SISTERS_HEAD].bbox.y1,
-          sprites[SPR_SISTERS_HEAD].bbox.x2,
-          sprites[SPR_SISTERS_HEAD].bbox.y2
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.x1,
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.y1,
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.x2,
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.y2
           ); exit(1);*/
 
   main            = CreateObject(((10 * TILE_W)) * CSFI, ((8 * TILE_H) - 4) * CSFI, OBJ_SISTERS_MAIN);
@@ -540,7 +539,7 @@ void SistersBoss::run_head(int index)
 // I did this because the heads move around quite a bit in the different frames.
 void SistersBoss::head_set_bbox(int index)
 {
-  SIFSprite *sprite = &sprites[SPR_SISTERS_HEAD_1 + index];
+  SIFSprite *sprite = &Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD_1 + index];
   Object *o         = head[index];
   int frame         = o->frame;
 

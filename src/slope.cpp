@@ -3,9 +3,11 @@
 
 #include "common/stat.h"
 #include "game.h"
-#include "graphics/sprites.h"
+#include "graphics/Renderer.h"
 #include "map.h"
 #include "nx.h"
+
+using namespace NXE::Graphics;
 
 //#define DEBUG_SLOPE
 static SlopeTable slopetable[SLOPE_LAST + 1];
@@ -125,12 +127,12 @@ int CheckStandOnSlope(Object *o)
 {
   int x, y, st;
 
-  y = (o->y / CSFI) + sprites[o->sprite].slopebox.y2 + 1;
+  y = (o->y / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y2 + 1;
   x = (o->x / CSFI);
 
-  if ((st = ReadSlopeTable(x + sprites[o->sprite].slopebox.x1, y)))
+  if ((st = ReadSlopeTable(x + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x1, y)))
     return st;
-  if ((st = ReadSlopeTable(x + sprites[o->sprite].slopebox.x2, y)))
+  if ((st = ReadSlopeTable(x + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x2, y)))
     return st;
 
   return 0;
@@ -142,15 +144,15 @@ int CheckBoppedHeadOnSlope(Object *o)
 {
   int x, y, st;
 
-  y = (o->y / CSFI) + sprites[o->sprite].slopebox.y1 - 1;
+  y = (o->y / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y1 - 1;
   x = (o->x / CSFI);
 
   // without this, you get stuck in the save area below Gum Door in Grasstown
   // if (o == player) y += 4;
 
-  if ((st = ReadSlopeTable(x + sprites[o->sprite].slopebox.x1, y)))
+  if ((st = ReadSlopeTable(x + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x1, y)))
     return st;
-  if ((st = ReadSlopeTable(x + sprites[o->sprite].slopebox.x2, y)))
+  if ((st = ReadSlopeTable(x + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x2, y)))
     return st;
 
   return 0;
@@ -194,20 +196,20 @@ bool movehandleslope(Object *o, int xinertia)
   // we're traveling
   if (xinertia > 0)
   { // moving right (right side of slopebox hits slopes first)
-    opposing_x = sprites[o->sprite].slopebox.x1;
-    xoff       = sprites[o->sprite].slopebox.x2;
+    opposing_x = Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x1;
+    xoff       = Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x2;
   }
   else
   { // move left (left side of slopebox hits slopes first)
-    opposing_x = sprites[o->sprite].slopebox.x2;
-    xoff       = sprites[o->sprite].slopebox.x1;
+    opposing_x = Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x2;
+    xoff       = Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.x1;
   }
 
   // check the opposing side at y+1 to see if we were standing on a slope before the move.
   uint8_t old_floor_slope, old_ceil_slope;
-  old_floor_slope = ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + sprites[o->sprite].slopebox.y2 + 1);
+  old_floor_slope = ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y2 + 1);
 
-  old_ceil_slope = ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + sprites[o->sprite].slopebox.y1 - 1);
+  old_ceil_slope = ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y1 - 1);
 
   // move the object
   newx += xinertia;
@@ -215,7 +217,7 @@ bool movehandleslope(Object *o, int xinertia)
   // check the opposing side again and if now we're not standing any more,
   // we moved down the slope, so add +1 to the object's Y coordinate.
   if (old_floor_slope
-      && !ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + sprites[o->sprite].slopebox.y2 + 1))
+      && !ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y2 + 1))
   {
     bool walking_down = false;
 
@@ -244,7 +246,7 @@ bool movehandleslope(Object *o, int xinertia)
   }
 
   // the same for ceiling slopes
-  if (old_ceil_slope && !ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + sprites[o->sprite].slopebox.y1 - 1))
+  if (old_ceil_slope && !ReadSlopeTable((newx / CSFI) + opposing_x, (newy / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y1 - 1))
   {
     bool moveme = false;
 
@@ -272,13 +274,13 @@ bool movehandleslope(Object *o, int xinertia)
 
   // check the coordinate and see if it's inside a slope tile.
   // if so, move the object up 1 Y pixel.
-  uint8_t moved_into_ceil_slope = ReadSlopeTable((newx / CSFI) + xoff, (newy / CSFI) + sprites[o->sprite].slopebox.y1);
+  uint8_t moved_into_ceil_slope = ReadSlopeTable((newx / CSFI) + xoff, (newy / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y1);
   if (moved_into_ceil_slope)
   {
     newy += (1 * CSFI);
   }
 
-  uint8_t moved_into_floor_slope = ReadSlopeTable((newx / CSFI) + xoff, (newy / CSFI) + sprites[o->sprite].slopebox.y2);
+  uint8_t moved_into_floor_slope = ReadSlopeTable((newx / CSFI) + xoff, (newy / CSFI) + Renderer::getInstance()->sprites.sprites[o->sprite].slopebox.y2);
   if (moved_into_floor_slope)
   {
     newy -= (1 * CSFI);

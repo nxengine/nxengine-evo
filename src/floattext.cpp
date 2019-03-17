@@ -2,11 +2,9 @@
 #include "floattext.h"
 
 #include "graphics/Renderer.h"
-#include "graphics/sprites.h"
 #include "nx.h"
 #include "object.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 #include "map.h"
 
 FloatText *FloatText::first = NULL;
@@ -96,11 +94,11 @@ void FloatText::AddQty(int amt)
 void FloatText::UpdatePos(Object *assoc_object)
 {
   // get the center pixel of the object we're associated with
-  this->objX = (assoc_object->x / CSFI) + (sprites[assoc_object->sprite].w / 2);
-  this->objY = (assoc_object->y / CSFI) + (sprites[assoc_object->sprite].h / 2);
+  this->objX = (assoc_object->x / CSFI) + (Renderer::getInstance()->sprites.sprites[assoc_object->sprite].w / 2);
+  this->objY = (assoc_object->y / CSFI) + (Renderer::getInstance()->sprites.sprites[assoc_object->sprite].h / 2);
 
   // adjust for possible draw point
-  SIFDir *dir = &sprites[assoc_object->sprite].frame[assoc_object->frame].dir[assoc_object->dir];
+  SIFDir *dir = &Renderer::getInstance()->sprites.sprites[assoc_object->sprite].frame[assoc_object->frame].dir[assoc_object->dir];
   this->objX -= dir->drawpoint.x;
   this->objY -= dir->drawpoint.y;
 }
@@ -138,7 +136,7 @@ void FloatText::Draw()
   // draw the text char by char
   for (i = 0; i < textlen; i++)
   {
-    drawSprite(x, y, ft->sprite, text[i], 0);
+    Renderer::getInstance()->sprites.drawSprite(x, y, ft->sprite, text[i], 0);
     x += 8;
   }
 

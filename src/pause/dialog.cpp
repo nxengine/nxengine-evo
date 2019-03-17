@@ -5,9 +5,6 @@
 #include "../graphics/Renderer.h"
 #include "../nx.h"
 using namespace NXE::Graphics;
-#include "../graphics/sprites.h"
-
-using namespace Sprites;
 #include "../TextBox/TextBox.h"
 #include "../autogen/sprites.h"
 #include "../input.h"
@@ -159,7 +156,7 @@ void Dialog::Draw()
       DrawItem(x, y, item);
 
     if (i == (unsigned int)fCurSel)
-      drawSprite(x - 16, y + 1, SPR_WHIMSICAL_STAR, 1);
+      Renderer::getInstance()->sprites.drawSprite(x - 16, y + 1, SPR_WHIMSICAL_STAR, 1);
     if (item->type == OD_SEPARATOR)
       y += 5;
     else

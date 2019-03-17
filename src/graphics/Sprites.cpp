@@ -1,36 +1,27 @@
+#include "Sprites.h"
 
-// sprites routines
 #include "../autogen/sprites.h"
-
 #include "../ResourceManager.h"
 #include "../nx.h"
 #include "../settings.h"
 #include "../siflib/sectSprites.h"
 #include "../siflib/sectStringArray.h"
-#include "../siflib/sif.h"
 #include "../siflib/sifloader.h"
 #include "Renderer.h"
 #include "Surface.h"
 
 #include <cstring>
-#include <string>
-#include <vector>
-using namespace NXE::Graphics;
 
-#include "sprites.h"
-
-static Surface *spritesheet[MAX_SPRITESHEETS];
-static int num_spritesheets;
-static std::vector<std::string> sheetfiles;
-
-SIFSprite sprites[MAX_SPRITES];
-int num_sprites;
+namespace NXE
+{
+namespace Graphics
+{
 
 // offset things like blockl/r/u/d, bounding box etc by the draw point of all
 // sprites so that these things are consistent with where the sprite appears to be
-static void offset_by_draw_points()
+void Sprites::_offset_by_draw_points()
 {
-  for (int s = 0; s < num_sprites; s++)
+  for (int s = 0; s < _num_sprites; s++)
   {
     int dx = -sprites[s].frame[0].dir[0].drawpoint.x;
     int dy = -sprites[s].frame[0].dir[0].drawpoint.y;
@@ -60,9 +51,9 @@ static void offset_by_draw_points()
 // for sprites which only have 1 dir (no separate frames for left & right),
 // create a 2nd identical dir as the rest of the engine doesn't bother
 // with this complication.
-static void expand_single_dir_sprites()
+void Sprites::_expand_single_dir_sprites()
 {
-  for (int s = 0; s < num_sprites; s++)
+  for (int s = 0; s < _num_sprites; s++)
   {
     if (sprites[s].ndirs == 1)
     {
@@ -77,9 +68,9 @@ static void expand_single_dir_sprites()
 // create slope boxes for all sprites, used by the slope-handling routines
 // these are basically just a form of bounding box describing the bounds of the
 // blockd points.
-static void create_slope_boxes()
+void Sprites::_create_slope_boxes()
 {
-  for (int s = 0; s < num_sprites; s++)
+  for (int s = 0; s < _num_sprites; s++)
   {
     if (sprites[s].block_d.count != 0)
     {
@@ -108,113 +99,108 @@ static void create_slope_boxes()
   sprites[SPR_MYCHAR].slopebox.y1 += 3;
 }
 
-static bool load_sif(const std::string &fname)
+bool Sprites::_load_sif(const std::string &fname)
 {
   SIFLoader sif;
   uint8_t *sheetdata, *spritesdata;
   int sheetdatalength, spritesdatalength;
 
   if (sif.LoadHeader(fname))
-    return 1;
+    return false;
 
   if (!(sheetdata = sif.FindSection(SIF_SECTION_SHEETS, &sheetdatalength)))
   {
     staterr("load_sif: file '%s' missing SIF_SECTION_SHEETS", fname.c_str());
-    return 1;
+    return false;
   }
 
   if (!(spritesdata = sif.FindSection(SIF_SECTION_SPRITES, &spritesdatalength)))
   {
     staterr("load_sif: file '%s' missing SIF_SECTION_SPRITES", fname.c_str());
-    return 1;
+    return false;
   }
 
   // decode sheets
-  sheetfiles.clear();
-  if (SIFStringArraySect::Decode(sheetdata, sheetdatalength, &sheetfiles))
-    return 1;
+  _sheetfiles.clear();
+  if (SIFStringArraySect::Decode(sheetdata, sheetdatalength, &_sheetfiles))
+    return false;
 
   // decode sprites
-  if (SIFSpritesSect::Decode(spritesdata, spritesdatalength, &sprites[0], &num_sprites, MAX_SPRITES))
+  if (SIFSpritesSect::Decode(spritesdata, spritesdatalength, &sprites[0], &_num_sprites, MAX_SPRITES))
   {
     staterr("load_sif: SIFSpritesSect decoder failed");
-    return 1;
+    return false;
   }
 
   sif.CloseFile();
 
-  create_slope_boxes();
-  offset_by_draw_points();
-  expand_single_dir_sprites();
+  _create_slope_boxes();
+  _offset_by_draw_points();
+  _expand_single_dir_sprites();
 
-  return 0;
+  return true;
+}
+
+Sprites::Sprites() {}
+Sprites::~Sprites()
+{
+  close();
 }
 
 bool Sprites::init()
 {
-  memset(spritesheet, 0, sizeof(spritesheet));
+  memset(_spritesheets, 0, sizeof(_spritesheets));
 
   // load sprites info--sheet positions, bounding boxes etc
-  if (load_sif(ResourceManager::getInstance()->getLocalizedPath("sprites.sif")))
+  if (!_load_sif(ResourceManager::getInstance()->getLocalizedPath("sprites.sif")))
     return false;
 
-  num_spritesheets = sheetfiles.size();
+  _num_spritesheets = _sheetfiles.size();
   return true;
 }
 
 void Sprites::close()
 {
   flushSheets();
-  sheetfiles.clear();
+  _sheetfiles.clear();
 }
 
 void Sprites::flushSheets()
 {
   for (int i = 0; i < MAX_SPRITESHEETS; i++)
   {
-    if (spritesheet[i])
+    if (_spritesheets[i] != nullptr)
     {
-      delete spritesheet[i];
-      spritesheet[i] = NULL;
+      delete _spritesheets[i];
+      _spritesheets[i] = nullptr;
     }
   }
 }
 
-/*
-void c------------------------------() {}
-*/
-
-namespace Sprites
-{
 // ensure the given spritesheet is loaded
-static void LoadSheetIfNeeded(int sheetno)
+void Sprites::_loadSheetIfNeeded(int sheetno)
 {
-  if (!spritesheet[sheetno])
+  if (!_spritesheets[sheetno])
   {
-    spritesheet[sheetno] = new Surface;
-    spritesheet[sheetno]->loadImage(ResourceManager::getInstance()->getLocalizedPath(sheetfiles.at(sheetno)), true);
+    _spritesheets[sheetno] = new Surface;
+    _spritesheets[sheetno]->loadImage(ResourceManager::getInstance()->getLocalizedPath(_sheetfiles.at(sheetno)), true);
   }
 }
-} // namespace Sprites
 
 // master sprite drawing function
 void Sprites::blitSprite(int x, int y, int s, int frame, uint8_t dir, int xoff, int yoff, int wd, int ht, int alpha)
 {
-  LoadSheetIfNeeded(sprites[s].spritesheet);
+  _loadSheetIfNeeded(sprites[s].spritesheet);
 
   dir %= sprites[s].ndirs;
   SIFDir *sprdir = &sprites[s].frame[frame].dir[dir];
 
-  spritesheet[sprites[s].spritesheet]->alpha = alpha;
+  _spritesheets[sprites[s].spritesheet]->alpha = alpha;
 
-  Renderer::getInstance()->drawSurface(spritesheet[sprites[s].spritesheet], x, y, (sprdir->sheet_offset.x + xoff),
+  Renderer::getInstance()->drawSurface(_spritesheets[sprites[s].spritesheet], x, y, (sprdir->sheet_offset.x + xoff),
                 (sprdir->sheet_offset.y + yoff), wd, ht);
-  spritesheet[sprites[s].spritesheet]->alpha = 255;
+  _spritesheets[sprites[s].spritesheet]->alpha = 255;
 }
-
-/*
-void c------------------------------() {}
-*/
 
 // draw sprite "s" at [x,y]. drawing frame "frame" and dir "dir".
 void Sprites::drawSprite(int x, int y, int s, int frame, uint8_t dir)
@@ -287,13 +273,5 @@ void Sprites::drawSpriteRepeatingX(int x, int y, int s, int frame, int wd)
   }
 }
 
-/*
-void c------------------------------() {}
-*/
-
-// return the NXSurface for a given spritesheet #
-Surface *Sprites::getSpritesheet(int sheetno)
-{
-  LoadSheetIfNeeded(sheetno);
-  return spritesheet[sheetno];
-}
+}; // namespace Graphics
+}; // namespace NXE

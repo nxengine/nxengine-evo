@@ -10,7 +10,6 @@
 #include "../version.h"
 #include "Renderer.h"
 #include "nx_icon.h"
-#include "sprites.h"
 #include "pngfuncs.h"
 
 #include <SDL.h>
@@ -39,7 +38,7 @@ bool Renderer::init(int resolution)
 
   font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
 
-  if (!Sprites::init())
+  if (!sprites.init())
     return false;
 
   return true;
@@ -49,7 +48,7 @@ void Renderer::close()
 {
   stat("Renderer::Close()");
   font.cleanup();
-  Sprites::close();
+  sprites.close();
   SDL_ShowCursor(true);
   SDL_DestroyWindow(_window);
   _window = NULL;
@@ -135,7 +134,7 @@ bool Renderer::flushAll()
 {
   stat("Renderer::flushAll()");
   SDL_RenderPresent(_renderer);
-  Sprites::flushSheets();
+  sprites.flushSheets();
   tileset.reload();
   map_flush_graphics();
   font.cleanup();

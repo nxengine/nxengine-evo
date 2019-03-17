@@ -4,7 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../graphics/Tileset.h"
 #include "../../map.h"
 #include "../../player.h"
@@ -14,6 +14,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 enum Frames
 {
@@ -448,7 +450,7 @@ void BalfrogBoss::RunEntryAnim()
     // transformation complete: puff away balrog, and appear solid now
     case STATE_READY:
     {
-      SmokeXY(o->x + ((sprites[SPR_BALROG_GREEN].w / 2) * CSFI), o->y + (48 * CSFI), 8, 16, 16);
+      SmokeXY(o->x + ((Renderer::getInstance()->sprites.sprites[SPR_BALROG_GREEN].w / 2) * CSFI), o->y + (48 * CSFI), 8, 16, 16);
 
       o->state++;
       o->frame = FRAME_MOUTH_OPEN;

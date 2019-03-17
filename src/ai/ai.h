@@ -77,7 +77,8 @@ void randblink(Object *o, int blinkframe = 1, int blinktime = 8, int prob = 120)
 
 #define COPY_PFBOX                                                                                                     \
   {                                                                                                                    \
-    sprites[o->sprite].bbox[o->dir] = sprites[o->sprite].frame[o->frame].dir[o->dir].pf_bbox;                                  \
+    Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir] =                                                 \
+     Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].pf_bbox;                          \
   }
 
 #define AIDEBUG                                                                                                        \

@@ -3,18 +3,18 @@
 
 #include "inventory.h"
 
+#include "autogen/sprites.h"
 #include "graphics/Renderer.h"
 #include "nx.h"
-using namespace NXE::Graphics;
-#include "autogen/sprites.h"
 #include "game.h"
-#include "graphics/sprites.h"
 #include "input.h"
 #include "p_arms.h"
 #include "player.h"
 #include "sound/SoundManager.h"
 #include "statusbar.h"
 #include "tsc.h"
+
+using namespace NXE::Graphics;
 
 #define ARMS_X 10
 #define ARMS_Y 8
@@ -73,8 +73,8 @@ int RefreshInventoryScreen(void)
   for (i = 0; i < player->ninventory; i++)
     inv.itemsel.items[i] = player->inventory[i];
 
-  inv.itemsel.spacing_x  = sprites[SPR_ITEMIMAGE].w;
-  inv.itemsel.spacing_y  = sprites[SPR_ITEMIMAGE].h + 2;
+  inv.itemsel.spacing_x  = Renderer::getInstance()->sprites.sprites[SPR_ITEMIMAGE].w;
+  inv.itemsel.spacing_y  = Renderer::getInstance()->sprites.sprites[SPR_ITEMIMAGE].h + 2;
   inv.itemsel.sprite     = SPR_SELECTOR_ITEMS;
   inv.itemsel.sound      = NXE::Sound::SFX::SND_MENU_MOVE;
   inv.itemsel.rowlen     = 6;
@@ -127,7 +127,7 @@ static void DrawSelector(stSelector *selector, int x, int y)
 
   selx = x + (xsel * selector->spacing_x);
   sely = y + (ysel * selector->spacing_y);
-  Sprites::drawSprite(selx, sely, selector->sprite, selector->flashstate, 0);
+  Renderer::getInstance()->sprites.drawSprite(selx, sely, selector->sprite, selector->flashstate, 0);
 }
 
 void DrawInventory(void)
@@ -140,8 +140,8 @@ void DrawInventory(void)
   // - draw the weapons ----
   x = inv.x + ARMS_X;
   y = inv.y + ARMS_Y;
-  Sprites::drawSprite(x, y, SPR_TEXT_ARMS, 0, 0);
-  y += sprites[SPR_TEXT_ARMS].h;
+  Renderer::getInstance()->sprites.drawSprite(x, y, SPR_TEXT_ARMS, 0, 0);
+  y += Renderer::getInstance()->sprites.sprites[SPR_TEXT_ARMS].h;
 
   DrawSelector(&inv.armssel, x, y);
 
@@ -151,7 +151,7 @@ void DrawInventory(void)
     if (!player->weapons[w].hasWeapon)
       continue;
 
-    Sprites::drawSprite(x + 1, y + 1, SPR_ARMSICONS, w, 0);
+    Renderer::getInstance()->sprites.drawSprite(x + 1, y + 1, SPR_ARMSICONS, w, 0);
     DrawWeaponLevel(x + 1, y + 16, w);
     DrawWeaponAmmo(x + 1, y + 16 + 8, w);
 
@@ -161,15 +161,15 @@ void DrawInventory(void)
   // - draw the items ----
   x = inv.x + ITEMS_X;
   y = inv.y + ITEMS_Y;
-  Sprites::drawSprite(x, y, SPR_TEXT_ITEMS, 0, 0);
-  y += sprites[SPR_TEXT_ITEMS].h;
+  Renderer::getInstance()->sprites.drawSprite(x, y, SPR_TEXT_ITEMS, 0, 0);
+  y += Renderer::getInstance()->sprites.sprites[SPR_TEXT_ITEMS].h;
 
   DrawSelector(&inv.itemsel, x, y);
 
   c = 0;
   for (i = 0; i < inv.itemsel.nitems; i++)
   {
-    Sprites::drawSprite(x, y, SPR_ITEMIMAGE, inv.itemsel.items[i], 0);
+    Renderer::getInstance()->sprites.drawSprite(x, y, SPR_ITEMIMAGE, inv.itemsel.items[i], 0);
 
     x += inv.itemsel.spacing_x;
 

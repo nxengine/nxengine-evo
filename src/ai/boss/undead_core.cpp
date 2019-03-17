@@ -5,7 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
@@ -15,6 +15,8 @@
 #include "../stdai.h"
 #include "../sym/smoke.h"
 #include "ballos.h"
+
+using namespace NXE::Graphics;
 
 static struct
 {
@@ -133,7 +135,7 @@ void UDCoreBoss::OnMapEntry()
     bbox[i]->sprite = SPR_BBOX_PUPPET_1 + i;
     bbox[i]->hp     = 1000;
 
-    sprites[bbox[i]->sprite].bbox[bbox[i]->dir] = core_bboxes[i].rect;
+    Renderer::getInstance()->sprites.sprites[bbox[i]->sprite].bbox[bbox[i]->dir] = core_bboxes[i].rect;
   }
 
   // o->BringToFront();
@@ -944,7 +946,7 @@ void ai_ud_smoke(Object *o)
       o->yinertia /= 21;
 
       ANIMATE_FWD(1);
-      if (o->frame > sprites[o->sprite].nframes)
+      if (o->frame > Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
         o->Delete();
     }
     break;

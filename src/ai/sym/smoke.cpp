@@ -4,9 +4,11 @@
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../trig.h"
 #include "../stdai.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -160,7 +162,7 @@ void ai_smokecloud(Object *o)
   if (++o->animtimer >= 5)
   {
     o->animtimer = 0;
-    if (++o->frame >= sprites[o->sprite].nframes)
+    if (++o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
       o->Delete();
   }
 

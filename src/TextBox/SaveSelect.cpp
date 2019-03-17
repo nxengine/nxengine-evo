@@ -8,7 +8,6 @@
 #include "../autogen/sprites.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../input.h"
 #include "../inventory.h"
 #include "../map.h"
@@ -20,10 +19,9 @@
 #include "../statusbar.h"
 #include "../tsc.h"
 #include "TextBox.h" // for textbox coordinates; MSG_W etc
+#include "../sound/SoundManager.h"
 
 using namespace NXE::Graphics;
-using namespace Sprites;
-#include "../sound/SoundManager.h"
 
 // moved here as static data so that the compiler will shut up about a circular dependency
 // that happens if you try to include profile.h from SaveSelect.h.
@@ -43,12 +41,12 @@ static void DrawHealth(int xright, int y, Profile *p)
     hx -= 8;
   }
   len = (p->hp > 99) ? 8 : 0;
-  drawSprite(hx - len, y - 1, SPR_SS_HEALTH_ICON, 0, 0);
+  Renderer::getInstance()->sprites.drawSprite(hx - len, y - 1, SPR_SS_HEALTH_ICON, 0, 0);
   DrawNumberRAlign(hx + 24, y, SPR_WHITENUMBERS, p->hp);
 
   hx  = xright - 4;
   len = (p->maxhp > 99) ? 32 : 24;
-  drawSprite(hx - len, y, SPR_WHITENUMBERS, 11); // '/' character
+  Renderer::getInstance()->sprites.drawSprite(hx - len, y, SPR_WHITENUMBERS, 11); // '/' character
   DrawNumberRAlign(hx, y, SPR_WHITENUMBERS, p->maxhp);
 }
 
@@ -198,13 +196,13 @@ void TB_SaveSelect::DrawProfile(int x, int y, int index)
   Profile *p  = &fProfiles[index];
   const int w = fCoords.w - 33;
 
-  int sidewd   = sprites[SPR_SAVESELECTOR_SIDES].w;
+  int sidewd   = Renderer::getInstance()->sprites.sprites[SPR_SAVESELECTOR_SIDES].w;
   int repeatwd = w - (sidewd * 2);
   int frame    = (index == fCurSel) ? 0 : 1;
 
-  drawSprite(x, y, SPR_SAVESELECTOR_SIDES, frame, LEFT);
-  drawSpriteRepeatingX(x + sidewd, y, SPR_SAVESELECTOR_MIDDLE, frame, repeatwd);
-  drawSprite(x + sidewd + repeatwd, y, SPR_SAVESELECTOR_SIDES, frame, RIGHT);
+  Renderer::getInstance()->sprites.drawSprite(x, y, SPR_SAVESELECTOR_SIDES, frame, LEFT);
+  Renderer::getInstance()->sprites.drawSpriteRepeatingX(x + sidewd, y, SPR_SAVESELECTOR_MIDDLE, frame, repeatwd);
+  Renderer::getInstance()->sprites.drawSprite(x + sidewd + repeatwd, y, SPR_SAVESELECTOR_SIDES, frame, RIGHT);
 
   y += 4;
 
@@ -236,14 +234,14 @@ void TB_SaveSelect::DrawExtendedInfo()
   }
 
   // player pic
-  drawSprite((((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2)) + 8) + fPicXOffset, ((Renderer::getInstance()->screenHeight - MSG_H) - 2) + 8,
+  Renderer::getInstance()->sprites.drawSprite((((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2)) + 8) + fPicXOffset, ((Renderer::getInstance()->screenHeight - MSG_H) - 2) + 8,
               SPR_SELECTOR_ARMS);
 
   x = (((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2)) + 12) + fPicXOffset;
   y = ((Renderer::getInstance()->screenHeight - MSG_H) - 2) + 12;
   s = (p->equipmask & EQUIP_MIMIGA_MASK) ? SPR_MYCHAR_MIMIGA : SPR_MYCHAR;
 
-  drawSprite(x, y, s, 0, RIGHT);
+  Renderer::getInstance()->sprites.drawSprite(x, y, s, 0, RIGHT);
 
   // player gun
   if (p->curWeapon != WPN_NONE && p->curWeapon != WPN_BLADE)
@@ -251,8 +249,8 @@ void TB_SaveSelect::DrawExtendedInfo()
     int spr, frame;
     GetSpriteForGun(p->curWeapon, 0, &spr, &frame);
 
-    drawSpriteAtDp(x + sprites[s].frame[0].dir[RIGHT].actionpoint.x,
-                      y + sprites[s].frame[0].dir[RIGHT].actionpoint.y, spr, frame, RIGHT);
+    Renderer::getInstance()->sprites.drawSpriteAtDp(x + Renderer::getInstance()->sprites.sprites[s].frame[0].dir[RIGHT].actionpoint.x,
+                      y + Renderer::getInstance()->sprites.sprites[s].frame[0].dir[RIGHT].actionpoint.y, spr, frame, RIGHT);
   }
 
   Renderer::getInstance()->clearClip();
@@ -265,7 +263,7 @@ void TB_SaveSelect::DrawExtendedInfo()
     for (int i = 0; i < 3; i++)
     {
       static int frames[] = {1, 0, 2};
-      drawSprite(x, y + 20, SPR_WHIMSICAL_STAR, frames[i]);
+      Renderer::getInstance()->sprites.drawSprite(x, y + 20, SPR_WHIMSICAL_STAR, frames[i]);
       x += 10;
     }
   }
@@ -279,7 +277,7 @@ void TB_SaveSelect::DrawExtendedInfo()
   {
     if (p->weapons[i].hasWeapon)
     {
-      drawSprite(x, y, SPR_ARMSICONS, i);
+      Renderer::getInstance()->sprites.drawSprite(x, y, SPR_ARMSICONS, i);
       x += 20;
     }
   }
@@ -294,16 +292,16 @@ void TB_SaveSelect::DrawExtendedInfo()
     int curxp = p->weapons[p->curWeapon].xp;
     int maxxp = player->weapons[p->curWeapon].max_xp[level];
 
-    drawSprite(xb, yb, SPR_XPLEVELICON);
+    Renderer::getInstance()->sprites.drawSprite(xb, yb, SPR_XPLEVELICON);
     xb += 16;
-    drawSprite(xb, yb, SPR_WHITENUMBERS, level + 1);
+    Renderer::getInstance()->sprites.drawSprite(xb, yb, SPR_WHITENUMBERS, level + 1);
     xb += 8;
-    drawSprite(xb, yb, SPR_XPBAR);
+    Renderer::getInstance()->sprites.drawSprite(xb, yb, SPR_XPBAR);
 
     if ((curxp == maxxp) && level == 2)
-      drawSprite(xb, yb, SPR_XPBAR, 3); // MAX
+      Renderer::getInstance()->sprites.drawSprite(xb, yb, SPR_XPBAR, 3); // MAX
     else
-      DrawPercentage(xb, yb, SPR_XPBAR, 1, curxp, maxxp, sprites[SPR_XPBAR].w);
+      DrawPercentage(xb, yb, SPR_XPBAR, 1, curxp, maxxp, Renderer::getInstance()->sprites.sprites[SPR_XPBAR].w);
   }
 
   // ITEMS:
@@ -330,10 +328,10 @@ void TB_SaveSelect::DrawExtendedInfo()
   {
     if (CheckInventoryList(items[i], p->inventory, p->ninventory) != -1)
     {
-      drawSprite(x, y, SPR_ITEMIMAGE, items[i]);
+      Renderer::getInstance()->sprites.drawSprite(x, y, SPR_ITEMIMAGE, items[i]);
       x += 28;
 
-      if (x + sprites[SPR_ITEMIMAGE].w > (((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2)) + MSG_W) - 8)
+      if (x + Renderer::getInstance()->sprites.sprites[SPR_ITEMIMAGE].w > (((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2)) + MSG_W) - 8)
         break;
     }
   }
@@ -357,7 +355,7 @@ void TB_SaveSelect::Draw(void)
   for (int i = 0; i < fNumFiles; i++)
   {
     DrawProfile(x, y, i);
-    y += (sprites[SPR_SAVESELECTOR_MIDDLE].h + 10);
+    y += (Renderer::getInstance()->sprites.sprites[SPR_SAVESELECTOR_MIDDLE].h + 10);
   }
 
   // draw extended info for current selection

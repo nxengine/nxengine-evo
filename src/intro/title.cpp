@@ -5,7 +5,6 @@
 #include "../autogen/sprites.h"
 #include "../common/stat.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../input.h"
 #include "../map.h"
 #include "../niku.h"
@@ -15,7 +14,6 @@
 #include "../sound/SoundManager.h"
 #include "../statusbar.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 
 // music and character selections for the different Counter times
 static struct
@@ -58,8 +56,8 @@ static void draw_title()
   //	DrawFastLeftLayered();
 
   // top logo
-  int tx = (Renderer::getInstance()->screenWidth / 2) - (sprites[SPR_TITLE].w / 2) - 2;
-  drawSprite(tx, 40, SPR_TITLE);
+  int tx = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->sprites.sprites[SPR_TITLE].w / 2) - 2;
+  Renderer::getInstance()->sprites.drawSprite(tx, 40, SPR_TITLE);
 
   // draw menu
 
@@ -75,7 +73,7 @@ static void draw_title()
     Renderer::getInstance()->font.draw(cx + 10, cy, _(mymenus[i]));
     if (i == title.cursel)
     {
-      drawSprite(cx - 16, cy - 1, title.sprite, title.selframe);
+      Renderer::getInstance()->sprites.drawSprite(cx - 16, cy - 1, title.sprite, title.selframe);
     }
 
     cy += 12;
@@ -85,19 +83,19 @@ static void draw_title()
   if (++title.seltimer > 8)
   {
     title.seltimer = 0;
-    if (++title.selframe >= sprites[title.sprite].nframes)
+    if (++title.selframe >= Renderer::getInstance()->sprites.sprites[title.sprite].nframes)
       title.selframe = 0;
   }
 
   // accreditation
-  cx        = (Renderer::getInstance()->screenWidth / 2) - (sprites[SPR_PIXEL_FOREVER].w / 2);
+  cx        = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->sprites.sprites[SPR_PIXEL_FOREVER].w / 2);
   int acc_y = Renderer::getInstance()->screenHeight - 48;
-  drawSprite(cx, acc_y, SPR_PIXEL_FOREVER);
+  Renderer::getInstance()->sprites.drawSprite(cx, acc_y, SPR_PIXEL_FOREVER);
 
   // version
   int wd = Renderer::getInstance()->font.getWidth(NXVERSION);
   cx     = (Renderer::getInstance()->screenWidth / 2) - (wd / 2);
-  Renderer::getInstance()->font.draw(cx, acc_y + sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
+  Renderer::getInstance()->font.draw(cx, acc_y + Renderer::getInstance()->sprites.sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
 
   // draw Nikumaru display
   if (title.besttime != 0xffffffff)

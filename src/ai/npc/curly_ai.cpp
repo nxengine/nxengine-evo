@@ -4,14 +4,15 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../p_arms.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../ai.h"
 #include "../stdai.h"
+
+using namespace NXE::Graphics;
 
 #define CAI_INIT 20  // ANP'd to this by the entry script in Lab M
 #define CAI_START 21 // ANP'd to this by Almond script

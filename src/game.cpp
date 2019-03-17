@@ -26,8 +26,6 @@
 using namespace NXE::Graphics;
 #include "autogen/AssignSprites.h"
 #include "autogen/sprites.h"
-#include "graphics/sprites.h"
-using namespace Sprites;
 #include "caret.h"
 #include "screeneffect.h"
 
@@ -389,15 +387,15 @@ void DrawScene(void)
     // get object's onscreen position
     scr_x = (o->x / CSFI) - (map.displayed_xscroll / CSFI);
     scr_y = (o->y / CSFI) - (map.displayed_yscroll / CSFI);
-    scr_x -= sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.x;
-    scr_y -= sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.y;
+    scr_x -= Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.x;
+    scr_y -= Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.y;
 
     // don't draw objects that are completely offscreen
     // (+26 so floattext won't suddenly disappear on object near bottom of screen)
     if (scr_x <= Renderer::getInstance()->screenWidth
         && scr_y <= Renderer::getInstance()->screenHeight + 26
-        && scr_x >= -sprites[o->sprite].w
-        && scr_y >= -sprites[o->sprite].h)
+        && scr_x >= -Renderer::getInstance()->sprites.sprites[o->sprite].w
+        && scr_y >= -Renderer::getInstance()->sprites.sprites[o->sprite].h)
     {
       if (nOnscreenObjects < MAX_OBJECTS - 1)
       {
@@ -416,11 +414,11 @@ void DrawScene(void)
 
         if (o->clip_enable)
         {
-          drawSpriteClipped(scr_x, scr_y, o->sprite, o->frame, o->dir, o->clipx1, o->clipx2, o->clipy1, o->clipy2);
+          Renderer::getInstance()->sprites.drawSpriteClipped(scr_x, scr_y, o->sprite, o->frame, o->dir, o->clipx1, o->clipx2, o->clipy1, o->clipy2);
         }
         else
         {
-          drawSprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
+          Renderer::getInstance()->sprites.drawSprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
         }
       }
     }

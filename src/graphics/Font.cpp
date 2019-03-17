@@ -11,8 +11,6 @@
 #include "../config.h"
 #include "../game.h"
 #include "../nx.h"
-#include "sprites.h"
-
 
 #include <fstream>
 #include <iostream>
@@ -148,7 +146,7 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
       if (_rendering)
       {
         int offset = (int)round(((double)height() / (double)Renderer::getInstance()->scale - 6.) / 2.);
-        Sprites::drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
+        Renderer::getInstance()->sprites.drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
       }
     }
     else if (_rendering && ch != ' ')

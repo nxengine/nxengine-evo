@@ -3,9 +3,11 @@
 #include "../../ObjManager.h"
 #include "../../autogen/sprites.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../sound/SoundManager.h"
 #include "weapons.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -60,13 +62,13 @@ void ai_fireball(Object *o)
   // spin in shot direction
   if (o->dir == RIGHT)
   {
-    if (++o->frame >= sprites[o->sprite].nframes)
+    if (++o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
       o->frame = 0;
   }
   else
   {
     if (--o->frame < 0)
-      o->frame = sprites[o->sprite].nframes - 1;
+      o->frame = Renderer::getInstance()->sprites.sprites[o->sprite].nframes - 1;
   }
 
   Object *enemy;
@@ -168,7 +170,7 @@ void ai_fireball_trail(Object *o)
 {
   static const int ccw_trail_frames[] = {2, 1, 0, 5, 4, 3, 8, 7, 6};
 
-  if (++o->animframe >= sprites[o->sprite].nframes)
+  if (++o->animframe >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
   {
     o->Delete();
   }

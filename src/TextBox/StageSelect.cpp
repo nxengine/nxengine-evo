@@ -15,8 +15,6 @@
 #include "../tsc.h"
 using namespace NXE::Graphics;
 #include "../autogen/sprites.h"
-#include "../graphics/sprites.h"
-using namespace Sprites;
 
 #define WARP_X (Renderer::getInstance()->screenWidth / 2) - 32
 #define WARP_Y (Renderer::getInstance()->screenHeight / 2) - 74
@@ -91,12 +89,12 @@ void TB_StageSelect::Draw(void)
   if (fWarpY < WARP_Y)
     fWarpY = WARP_Y;
 
-  drawSprite(WARP_X, fWarpY, SPR_TEXT_WARP, 0);
+  Renderer::getInstance()->sprites.drawSprite(WARP_X, fWarpY, SPR_TEXT_WARP, 0);
 
   // draw teleporter locations
   int nslots        = CountActiveSlots();
   int total_spacing = ((nslots - 1) * LOCS_SPACING);
-  int total_width   = total_spacing + (nslots * sprites[SPR_STAGEIMAGE].w);
+  int total_width   = total_spacing + (nslots * Renderer::getInstance()->sprites.sprites[SPR_STAGEIMAGE].w);
   int x             = (Renderer::getInstance()->screenWidth / 2) - (total_width / 2);
 
   for (int i = 0; i < nslots; i++)
@@ -104,15 +102,15 @@ void TB_StageSelect::Draw(void)
     int sprite;
     GetSlotByIndex(i, &sprite, NULL);
 
-    drawSprite(x, LOCS_Y, SPR_STAGEIMAGE, sprite);
+    Renderer::getInstance()->sprites.drawSprite(x, LOCS_Y, SPR_STAGEIMAGE, sprite);
 
     if (i == fSelectionIndex)
     {
       fSelectionFrame ^= 1;
-      drawSprite(x, LOCS_Y, SPR_SELECTOR_ITEMS, fSelectionFrame);
+      Renderer::getInstance()->sprites.drawSprite(x, LOCS_Y, SPR_SELECTOR_ITEMS, fSelectionFrame);
     }
 
-    x += (sprites[SPR_STAGEIMAGE].w + LOCS_SPACING);
+    x += (Renderer::getInstance()->sprites.sprites[SPR_STAGEIMAGE].w + LOCS_SPACING);
   }
 }
 

@@ -4,13 +4,15 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../../trig.h"
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -827,7 +829,7 @@ void ai_motorbike(Object *o)
       break;
 
     case 10: // kazuma and booster mounted
-      o->y -= (sprites[SPR_MOTORBIKE_MOUNTED].h - sprites[SPR_MOTORBIKE].h) * CSFI;
+      o->y -= (Renderer::getInstance()->sprites.sprites[SPR_MOTORBIKE_MOUNTED].h - Renderer::getInstance()->sprites.sprites[SPR_MOTORBIKE].h) * CSFI;
       o->sprite = SPR_MOTORBIKE_MOUNTED;
       o->state++;
       break;

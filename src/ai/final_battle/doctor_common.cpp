@@ -2,9 +2,11 @@
 
 #include "../../ObjManager.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../sound/SoundManager.h"
 #include "../stdai.h"
+
+using namespace NXE::Graphics;
 
 int crystal_xmark, crystal_ymark;
 bool crystal_tofront;
@@ -58,7 +60,7 @@ void c------------------------------() {}
 
 void dr_tp_in_init(Object *o)
 {
-  o->clipy1 = o->clipy2 = (sprites[o->sprite].h / 2);
+  o->clipy1 = o->clipy2 = (Renderer::getInstance()->sprites.sprites[o->sprite].h / 2);
   o->clip_enable        = true;
   o->invisible          = false;
 }
@@ -68,7 +70,7 @@ bool dr_tp_in(Object *o)
   o->clipy1 -= 2;
   o->clipy2 += 2;
 
-  if (o->clipy1 <= 0 || o->clipy2 >= sprites[o->sprite].h)
+  if (o->clipy1 <= 0 || o->clipy2 >= Renderer::getInstance()->sprites.sprites[o->sprite].h)
   {
     o->clip_enable = false;
     o->ResetClip();

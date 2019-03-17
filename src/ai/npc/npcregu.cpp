@@ -5,8 +5,7 @@
 #include "../../common/misc.h"
 #include "../../common/stat.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -16,6 +15,8 @@
 #include "../sand/puppy.h"                 // for ZZZZ
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -462,8 +463,8 @@ void aftermove_npc_sue(Object *o)
   {
     Object *link = o->sue.carried_by;
 
-    o->x = ((link->x / CSFI) + sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.x) * CSFI;
-    o->y = ((link->y / CSFI) + sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.y) * CSFI;
+    o->x = ((link->x / CSFI) + Renderer::getInstance()->sprites.sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.x) * CSFI;
+    o->y = ((link->y / CSFI) + Renderer::getInstance()->sprites.sprites[link->sprite].frame[link->frame].dir[link->dir].actionpoint2.y) * CSFI;
 
     o->dir = (link->dir ^ 1);
   }

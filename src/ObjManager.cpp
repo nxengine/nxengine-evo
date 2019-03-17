@@ -4,11 +4,13 @@
 #include "autogen/sprites.h"
 #include "common/llist.h"
 #include "game.h"
-#include "graphics/sprites.h"
+#include "graphics/Renderer.h"
 #include "map.h"
 #include "nx.h"
 #include "object.h"
 #include "player.h"
+
+using namespace NXE::Graphics;
 
 static Object ZERO_OBJECT;
 static Player ZERO_PLAYER;
@@ -45,8 +47,8 @@ Object *CreateObject(int x, int y, int type, int xinertia, int yinertia, int dir
   o->flags      = objprop[type].defaultflags;
   o->DamageText = new FloatText(SPR_REDNUMBERS);
 
-  o->x            = x - (sprites[o->sprite].spawn_point.x * CSFI);
-  o->y            = y - (sprites[o->sprite].spawn_point.y * CSFI);
+  o->x            = x - (Renderer::getInstance()->sprites.sprites[o->sprite].spawn_point.x * CSFI);
+  o->y            = y - (Renderer::getInstance()->sprites.sprites[o->sprite].spawn_point.y * CSFI);
   o->dir          = dir;
   o->xinertia     = xinertia;
   o->yinertia     = yinertia;

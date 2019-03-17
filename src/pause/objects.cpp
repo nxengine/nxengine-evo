@@ -9,11 +9,9 @@
 #include "../common/misc.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../nx.h"
 #include "options.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 
 using namespace Options;
 
@@ -96,7 +94,7 @@ static void ai_oc_quote(Object *o)
       o->xmark2 = (Renderer::getInstance()->screenWidth + 10) * CSFI;
 
       o->x   = o->xmark2;
-      o->y   = (Renderer::getInstance()->screenHeight - sprites[o->sprite].h - 8) * CSFI;
+      o->y   = (Renderer::getInstance()->screenHeight - Renderer::getInstance()->sprites.sprites[o->sprite].h - 8) * CSFI;
       o->dir = LEFT;
 
       o->sprite = SPR_OC_QUOTE;
@@ -265,7 +263,7 @@ void Options::run_and_draw_objects(void)
       o->x += o->xinertia;
       o->y += o->yinertia;
 
-      drawSprite(o->x / CSFI, o->y / CSFI, o->sprite, o->frame, o->dir);
+      Renderer::getInstance()->sprites.drawSprite(o->x / CSFI, o->y / CSFI, o->sprite, o->frame, o->dir);
     }
 
     o = next;

@@ -6,8 +6,7 @@
 #include "../../common/misc.h"
 #include "../../common/stat.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -16,6 +15,8 @@
 #include "../almond/almond.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 /* ------------------------------------------------------------------------------------------ */
 /*        CODE FOR THE CORE BOSS (ALMOND)
@@ -335,7 +336,7 @@ void CoreBoss::Run()
       // NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 
       pieces[CFRONT]->clip_enable = pieces[CBACK]->clip_enable = 1;
-      o->timer                                                 = sprites[pieces[CFRONT]->sprite].h;
+      o->timer = Renderer::getInstance()->sprites.sprites[pieces[CFRONT]->sprite].h;
     }
     case 601:
     {

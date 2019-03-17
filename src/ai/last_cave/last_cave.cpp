@@ -5,8 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -16,7 +15,8 @@
 #include "../stdai.h"
 #include "../sym/smoke.h"
 #include "../sym/sym.h" // ai_press
-using namespace Sprites;
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -218,7 +218,7 @@ void ai_lava_drip(Object *o)
   o->yinertia += 0x40;
   LIMITY(0x5ff);
 
-  if (o->blockd || (++o->timer > 10 && o->CheckAttribute(&sprites[o->sprite].block_u, TA_WATER)))
+  if (o->blockd || (++o->timer > 10 && o->CheckAttribute(&Renderer::getInstance()->sprites.sprites[o->sprite].block_u, TA_WATER)))
   {
     for (int i = 0; i < 3; i++)
     {

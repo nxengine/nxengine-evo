@@ -4,14 +4,12 @@
 #include "../autogen/sprites.h"
 #include "../common/utf8.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../input.h"
 #include "../nx.h"
 #include "../sound/SoundManager.h"
 
 #include <iostream>
 using namespace NXE::Graphics;
-using namespace Sprites;
 
 #define MAXLINELEN_FACE 26
 #define MAXLINELEN_NO_FACE 35
@@ -293,13 +291,13 @@ void TextBox::DrawTextBox()
   // draw face
   if (fFace != 0)
   {
-    drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+    Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
     text_x += (FACE_W + 8); // move text over by width of face
 
     // face slide-in animation
     if (fFaceXOffset < 0)
     {
-      fFaceXOffset += (sprites[SPR_FACES].w / 6);
+      fFaceXOffset += (Renderer::getInstance()->sprites.sprites[SPR_FACES].w / 6);
       if (fFaceXOffset > 0)
         fFaceXOffset = 0;
     }
@@ -406,14 +404,14 @@ void c------------------------------() {}
 // the specified coordinates.
 void TextBox::DrawFrame(int x, int y, int w, int h)
 {
-  drawSpriteChopped(x, y, SPR_TEXTBOX, 0, w, 8, 210); // draw top
+  Renderer::getInstance()->sprites.drawSpriteChopped(x, y, SPR_TEXTBOX, 0, w, 8, 210); // draw top
   y += 8;
 
   for (int draw = 0; draw < h - 16; draw += 8)
   {
-    drawSpriteChopped(x, y, SPR_TEXTBOX, 1, w, 8, 210); // draw middle
+    Renderer::getInstance()->sprites.drawSpriteChopped(x, y, SPR_TEXTBOX, 1, w, 8, 210); // draw middle
     y += 8;
   }
 
-  drawSpriteChopped(x, y, SPR_TEXTBOX, 2, w, 8, 210); // draw bottom
+  Renderer::getInstance()->sprites.drawSpriteChopped(x, y, SPR_TEXTBOX, 2, w, 8, 210); // draw bottom
 }

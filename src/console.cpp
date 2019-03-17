@@ -9,18 +9,18 @@
 #include "statusbar.h"
 #include "tsc.h"
 
-#include <cstdarg>
 using namespace NXE::Graphics;
+
 #include "common/misc.h"
 #include "common/stat.h"
 #include "debug.h"
-#include "graphics/sprites.h"
 #include "map.h"
 #include "p_arms.h"
 #include "player.h"
 #include "playerstats.h"
 #include "sound/SoundManager.h"
 
+#include <cstdarg>
 #include <string>
 #include <vector>
 #include <SDL.h>
@@ -287,7 +287,7 @@ static void __spawn(std::vector<std::string> *args, int num)
   // get starting spawn position and spacing
   int x = player->x + ((player->dir == RIGHT) ? (24 * CSFI) : -(24 * CSFI));
   int y = player->y - (16 * CSFI);
-  int w = (sprites[objprop[type].sprite].w + 4) * CSFI;
+  int w = (Renderer::getInstance()->sprites.sprites[objprop[type].sprite].w + 4) * CSFI;
 
   // create 'em
   for (i = 0; i < count; i++)

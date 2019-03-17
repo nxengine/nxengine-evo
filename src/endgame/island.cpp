@@ -6,12 +6,10 @@
 #include "../autogen/sprites.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../nx.h"
 #include "../player.h"
 #include "../statusbar.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 
 static struct
 {
@@ -33,14 +31,14 @@ bool island_init(int parameter)
   island.survives     = parameter;
   island.scene_length = (!island.survives) ? 900 : 750;
 
-  island.scene_x = (Renderer::getInstance()->screenWidth / 2) - (sprites[SPR_ISLAND_SCENE].w / 2);
-  island.scene_y = (Renderer::getInstance()->screenHeight / 2) - (sprites[SPR_ISLAND_SCENE].h / 2);
+  island.scene_x = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->sprites.sprites[SPR_ISLAND_SCENE].w / 2);
+  island.scene_y = (Renderer::getInstance()->screenHeight / 2) - (Renderer::getInstance()->sprites.sprites[SPR_ISLAND_SCENE].h / 2);
 
   island.trees_x = island.scene_x;
-  island.trees_y = (island.scene_y + sprites[SPR_ISLAND_SCENE].h) - sprites[SPR_ISLAND_TREES].h;
+  island.trees_y = (island.scene_y + Renderer::getInstance()->sprites.sprites[SPR_ISLAND_SCENE].h) - Renderer::getInstance()->sprites.sprites[SPR_ISLAND_TREES].h;
 
-  island.x = (Renderer::getInstance()->screenWidth / 2) - (sprites[SPR_ISLAND].w / 2);
-  island.y = (island.scene_y - sprites[SPR_ISLAND].h) * CSFI;
+  island.x = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->sprites.sprites[SPR_ISLAND].w / 2);
+  island.y = (island.scene_y - Renderer::getInstance()->sprites.sprites[SPR_ISLAND].h) * CSFI;
 
   return 0;
 }
@@ -79,12 +77,12 @@ void island_tick()
   // draw the scene
   Renderer::getInstance()->clearScreen(BLACK);
 
-  Renderer::getInstance()->setClip(island.scene_x, island.scene_y, sprites[SPR_ISLAND_SCENE].w, sprites[SPR_ISLAND_SCENE].h);
+  Renderer::getInstance()->setClip(island.scene_x, island.scene_y, Renderer::getInstance()->sprites.sprites[SPR_ISLAND_SCENE].w, Renderer::getInstance()->sprites.sprites[SPR_ISLAND_SCENE].h);
 
-  drawSprite(island.scene_x, island.scene_y, SPR_ISLAND_SCENE);
-  drawSprite(island.x, (island.y / CSFI), SPR_ISLAND);
+  Renderer::getInstance()->sprites.drawSprite(island.scene_x, island.scene_y, SPR_ISLAND_SCENE);
+  Renderer::getInstance()->sprites.drawSprite(island.x, (island.y / CSFI), SPR_ISLAND);
 
-  drawSprite(island.trees_x, island.trees_y, SPR_ISLAND_TREES);
+  Renderer::getInstance()->sprites.drawSprite(island.trees_x, island.trees_y, SPR_ISLAND_TREES);
 
   Renderer::getInstance()->clearClip();
 

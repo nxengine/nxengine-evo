@@ -1,5 +1,6 @@
 #include "oside.h"
 
+#include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
@@ -10,9 +11,8 @@
 #include "../sand/sand.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
 using namespace NXE::Graphics;
-#include "../../autogen/sprites.h"
-#include "../../graphics/sprites.h"
 
 INITFUNC(AIRoutines)
 {
@@ -248,9 +248,9 @@ void ai_hoppy(Object *o)
       {
         // don't stop if all of the blockl's are just touching slope
         bool stop = false;
-        for (int i = 0; i < sprites[o->sprite].block_l.count; i++)
+        for (int i = 0; i < Renderer::getInstance()->sprites.sprites[o->sprite].block_l.count; i++)
         {
-          uint32_t attr = o->GetAttributes(&sprites[o->sprite].block_l[i], 1, NULL);
+          uint32_t attr = o->GetAttributes(&Renderer::getInstance()->sprites.sprites[o->sprite].block_l[i], 1, NULL);
           if (!(attr & TA_SLOPE))
           {
             stop = true;

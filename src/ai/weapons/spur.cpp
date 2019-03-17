@@ -3,9 +3,11 @@
 #include "../../ObjManager.h"
 #include "../../autogen/sprites.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../sound/SoundManager.h"
 #include "weapons.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -117,7 +119,7 @@ void ai_spur_trail(Object *o)
   if (++o->timer > 20)
   {
     o->frame++;
-    if (o->frame >= sprites[o->sprite].nframes)
+    if (o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
     {
       o->Delete();
       return;

@@ -4,13 +4,14 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 #define FRAME_STAND 0
 #define FRAME_DYING 1
@@ -170,8 +171,8 @@ void ai_pooh_black_bubble(Object *o)
 
   // adjust bubble target position so that they try to align
   // their centers with the mark instead of their upper-left corners.
-  int xmark = bubble_xmark - ((sprites[SPR_POOH_BLACK_BUBBLE].w / 2) * CSFI);
-  int ymark = bubble_ymark - ((sprites[SPR_POOH_BLACK_BUBBLE].h / 2) * CSFI);
+  int xmark = bubble_xmark - ((Renderer::getInstance()->sprites.sprites[SPR_POOH_BLACK_BUBBLE].w / 2) * CSFI);
+  int ymark = bubble_ymark - ((Renderer::getInstance()->sprites.sprites[SPR_POOH_BLACK_BUBBLE].h / 2) * CSFI);
 
   o->xinertia += (o->x > xmark) ? -0x40 : 0x40;
   o->yinertia += (o->y > ymark) ? -0x40 : 0x40;

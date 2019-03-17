@@ -5,6 +5,7 @@
 #include "Surface.h"
 #include "Font.h"
 #include "Tileset.h"
+#include "Sprites.h"
 
 #include <SDL.h>
 
@@ -93,6 +94,7 @@ class Renderer
     SDL_Window* window();
     Font font;
     Tileset tileset;
+    Sprites sprites;
 
   private:
     SDL_Window *_window = nullptr;

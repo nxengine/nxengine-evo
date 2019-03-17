@@ -3,12 +3,10 @@
 
 #include "../autogen/sprites.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../input.h"
 #include "../nx.h"
 #include "../player.h"
 #include "../sound/SoundManager.h"
-using namespace Sprites;
 using namespace NXE::Graphics;;
 
 enum
@@ -116,13 +114,13 @@ void TB_YNJPrompt::Draw()
   if (!fVisible)
     return;
 
-  drawSprite(YESNO_X, fCoords.y, SPR_YESNO, 0, 0);
+  Renderer::getInstance()->sprites.drawSprite(YESNO_X, fCoords.y, SPR_YESNO, 0, 0);
 
   // draw hand selector
   if (fState == STATE_YES_SELECTED || fState == STATE_NO_SELECTED)
   {
     int xoff = (fState == STATE_YES_SELECTED) ? -4 : 37;
-    drawSprite(YESNO_X + xoff, fCoords.y + 12, SPR_YESNOHAND, 0, 0);
+    Renderer::getInstance()->sprites.drawSprite(YESNO_X + xoff, fCoords.y + 12, SPR_YESNOHAND, 0, 0);
   }
 }
 

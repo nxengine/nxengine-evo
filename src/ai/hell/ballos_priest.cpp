@@ -5,8 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
@@ -14,6 +13,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 enum STATES
 {
@@ -600,7 +601,7 @@ void ai_ballos_target(Object *o)
     case 0:
     {
       // position to shoot lightning at passed as x,y
-      o->xmark = o->CenterX() - ((sprites[SPR_LIGHTNING].w / 2) * CSFI);
+      o->xmark = o->CenterX() - ((Renderer::getInstance()->sprites.sprites[SPR_LIGHTNING].w / 2) * CSFI);
       o->ymark = o->CenterY();
 
       // adjust our Y coordinate to match player's

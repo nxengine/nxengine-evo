@@ -7,7 +7,6 @@
 #include "../../common/stat.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
-#include "../../graphics/sprites.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
@@ -506,8 +505,8 @@ void XBoss::run_body(int i)
   body[i]->y = (mainobject->y + treads[i]->y) / 2;
 
   // ...and place our center pixel at those coordinates.
-  int dx = (sprites[body[i]->sprite].w / 2) - 8;
-  int dy = (sprites[body[i]->sprite].h / 2) - 8;
+  int dx = (Renderer::getInstance()->sprites.sprites[body[i]->sprite].w / 2) - 8;
+  int dy = (Renderer::getInstance()->sprites.sprites[body[i]->sprite].h / 2) - 8;
   body[i]->x -= dx * CSFI;
   body[i]->y -= dy * CSFI;
 
@@ -784,10 +783,10 @@ void XBoss::Init()
     doors[i]->dir    = i;
   }
 
-  sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.x  = 40;
-  sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.y  = 16;
-  sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.x = -9;
-  sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.y = 16;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.x  = 40;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.y  = 16;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.x = -9;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.y = 16;
 }
 
 // create an object and record it as a piece of the monster

@@ -2,11 +2,9 @@
 #include "screeneffect.h"
 
 #include "graphics/Renderer.h"
-#include "graphics/sprites.h"
 #include "nx.h"
 #include "sound/SoundManager.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 #include "map.h"
 
 SE_FlashScreen flashscreen;
@@ -188,7 +186,7 @@ void SE_Fade::Draw(void)
             frame = FADE_LAST_FRAME;
 
           for (y = 0; y < Renderer::getInstance()->screenHeight; y += 16)
-            drawSprite(x, y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
@@ -203,7 +201,7 @@ void SE_Fade::Draw(void)
             frame = FADE_LAST_FRAME;
 
           for (y = 0; y < Renderer::getInstance()->screenHeight; y += 16)
-            drawSprite(x, y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
@@ -218,7 +216,7 @@ void SE_Fade::Draw(void)
             frame = FADE_LAST_FRAME;
 
           for (x = 0; x < Renderer::getInstance()->screenWidth; x += 16)
-            drawSprite(x, y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
@@ -233,7 +231,7 @@ void SE_Fade::Draw(void)
             frame = FADE_LAST_FRAME;
 
           for (x = 0; x < Renderer::getInstance()->screenWidth; x += 16)
-            drawSprite(x, y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
@@ -256,10 +254,10 @@ void SE_Fade::Draw(void)
             if (frame > FADE_LAST_FRAME)
               frame = FADE_LAST_FRAME;
 
-            drawSprite(centerx + x, centery + y, fade.sprite, frame);
-            drawSprite(centerx - x, centery + y, fade.sprite, frame);
-            drawSprite(centerx + x, centery - y, fade.sprite, frame);
-            drawSprite(centerx - x, centery - y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx + x, centery + y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx - x, centery + y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx + x, centery - y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx - x, centery - y, fade.sprite, frame);
           }
 
           frame++;

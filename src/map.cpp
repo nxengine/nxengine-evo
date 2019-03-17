@@ -7,11 +7,9 @@
 #include "caret.h"
 #include "debug.h"
 #include "graphics/Renderer.h"
-#include "graphics/sprites.h"
 #include "nx.h"
 #include "tsc.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 
 #include "ResourceManager.h"
 #include "common/json.hpp"
@@ -50,7 +48,7 @@ bool load_stage(int stage_no)
   stat(" >> Entering stage %d: '%s'.", stage_no, stages[stage_no].stagename);
   game.curmap = stage_no; // do it now so onspawn events will have it
 
-  Sprites::flushSheets();
+  Renderer::getInstance()->sprites.flushSheets();
   map_flush_graphics();
 
   if (!Renderer::getInstance()->tileset.load(stages[stage_no].tileset))
@@ -811,23 +809,23 @@ void map_draw(uint8_t foreground)
             switch (CVTDir(tilecode[t] & 3))
             {
               case LEFT:
-                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 0);
+                Renderer::getInstance()->sprites.drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 0);
                 break;
               case RIGHT:
-                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 0);
+                Renderer::getInstance()->sprites.drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 0);
                 break;
               case UP:
-                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 1);
+                Renderer::getInstance()->sprites.drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, map.motionpos, 1);
                 break;
               case DOWN:
-                drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 1);
+                Renderer::getInstance()->sprites.drawSprite(blit_x, blit_y, SPR_WATER_CURRENT, 7-map.motionpos, 1);
                 break;
               default:
                 break;
             }
           }
           else if (tilecode[t] == 0x43)
-            drawSprite(blit_x, blit_y, SPR_DESTROYABLE, 0, 0);
+            Renderer::getInstance()->sprites.drawSprite(blit_x, blit_y, SPR_DESTROYABLE, 0, 0);
           else
             Renderer::getInstance()->tileset.drawTile(blit_x, blit_y, t);
         }
@@ -957,7 +955,7 @@ void map_scroll_do(void)
         // that affect the positioning of the scene. If the object has a drawpoint,
         // we'll assume it's in an appropriate position, otherwise, we'll try to find
         // the center ourselves.
-        if (sprites[t->sprite].frame[t->frame].dir[t->dir].drawpoint.equ(0, 0))
+        if (Renderer::getInstance()->sprites.sprites[t->sprite].frame[t->frame].dir[t->dir].drawpoint.equ(0, 0))
         {
           map.target_x = map.focus.target->CenterX() - ((Renderer::getInstance()->screenWidth / 2) * CSFI);
           map.target_y = map.focus.target->CenterY() - ((Renderer::getInstance()->screenHeight / 2) * CSFI);

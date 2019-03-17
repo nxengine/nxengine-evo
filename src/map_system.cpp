@@ -4,10 +4,8 @@
 
 #include "autogen/sprites.h"
 #include "graphics/Renderer.h"
-#include "graphics/sprites.h"
 #include "nx.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 #include "game.h"
 #include "map.h"
 #include "player.h"
@@ -203,13 +201,13 @@ void ms_draw(void)
       {
         int tc = tilecode[map.tiles[x][y]];
 
-        drawSprite(ms.x + x, ms.y + y, SPR_MAP_PIXELS, get_color(tc));
+        Renderer::getInstance()->sprites.drawSprite(ms.x + x, ms.y + y, SPR_MAP_PIXELS, get_color(tc));
       }
     }
 
     // you-are-here dot
     if (ms.timer & 8)
-      drawSprite(ms.px, ms.py, SPR_MAP_PIXELS, 4);
+      Renderer::getInstance()->sprites.drawSprite(ms.px, ms.py, SPR_MAP_PIXELS, 4);
   }
   else if (ms.state == MS_CONTRACTING)
   {

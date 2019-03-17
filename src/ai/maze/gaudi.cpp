@@ -1,5 +1,6 @@
 #include "gaudi.h"
 
+#include "../../autogen/sprites.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
@@ -10,9 +11,8 @@
 #include "../../trig.h"
 #include "../ai.h"
 #include "../stdai.h"
+
 using namespace NXE::Graphics;
-#include "../../autogen/sprites.h"
-#include "../../graphics/sprites.h"
 
 #define GAUDI_HP 15
 #define GAUDI_FLYING_HP 15

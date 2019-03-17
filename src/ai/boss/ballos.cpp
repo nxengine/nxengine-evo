@@ -6,8 +6,7 @@
 #include "../../common/misc.h"
 #include "../../common/stat.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/Tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
@@ -16,6 +15,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 static int platform_speed;
 static int rotators_left;
@@ -103,13 +104,13 @@ void BallosBoss::OnMapEntry(void)
   shield->flags     = (FLAG_SOLID_MUSHY | FLAG_SHOOTABLE | FLAG_INVULNERABLE | FLAG_IGNORE_SOLID);
 
   // initilize bboxes
-  sprites[body->sprite].bbox[0].set(-48, -24, 48, 32);
-  sprites[shield->sprite].bbox[0].set(-32, -8, 32, 8);
-  sprites[main->sprite].bbox[0].set(-32, -48, 32, 48);
+  Renderer::getInstance()->sprites.sprites[body->sprite].bbox[0].set(-48, -24, 48, 32);
+  Renderer::getInstance()->sprites.sprites[shield->sprite].bbox[0].set(-32, -8, 32, 8);
+  Renderer::getInstance()->sprites.sprites[main->sprite].bbox[0].set(-32, -48, 32, 48);
 
-  sprites[main->sprite].solidbox   = sprites[main->sprite].bbox[0];
-  sprites[body->sprite].solidbox   = sprites[body->sprite].bbox[0];
-  sprites[shield->sprite].solidbox = sprites[shield->sprite].bbox[0];
+  Renderer::getInstance()->sprites.sprites[main->sprite].solidbox   = Renderer::getInstance()->sprites.sprites[main->sprite].bbox[0];
+  Renderer::getInstance()->sprites.sprites[body->sprite].solidbox   = Renderer::getInstance()->sprites.sprites[body->sprite].bbox[0];
+  Renderer::getInstance()->sprites.sprites[shield->sprite].solidbox = Renderer::getInstance()->sprites.sprites[shield->sprite].bbox[0];
 
   // body and eyes are both directly shootable during one form or another
   // but should not shake as their damage is to be transferred to main object.

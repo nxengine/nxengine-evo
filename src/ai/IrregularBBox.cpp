@@ -5,8 +5,9 @@
 #include "../autogen/sprites.h"
 #include "../common/stat.h"
 #include "../game.h"
-#include "../graphics/sprites.h"
+#include "../graphics/Renderer.h"
 #include "../nx.h"
+using namespace NXE::Graphics;
 
 bool IrregularBBox::init(Object *associatedObject, int max_rectangles)
 {
@@ -101,15 +102,15 @@ void IrregularBBox::set_bbox(int index, int x, int y, int w, int h, uint32_t fla
   // coordinates passed in here are for the right-facing frame,
   // if we are currently left-facing then flip them.
   if (assoc_object->dir == LEFT)
-    x = sprites[assoc_object->sprite].w - x - w;
+    x = Renderer::getInstance()->sprites.sprites[assoc_object->sprite].w - x - w;
 
   box->x = assoc_object->x + (x * CSFI);
   box->y = assoc_object->y + (y * CSFI);
 
-  sprites[box->sprite].bbox[0].x1 = 0;
-  sprites[box->sprite].bbox[0].y1 = 0;
-  sprites[box->sprite].bbox[0].x2 = (w - 1);
-  sprites[box->sprite].bbox[0].y2 = (h - 1);
+  Renderer::getInstance()->sprites.sprites[box->sprite].bbox[0].x1 = 0;
+  Renderer::getInstance()->sprites.sprites[box->sprite].bbox[0].y1 = 0;
+  Renderer::getInstance()->sprites.sprites[box->sprite].bbox[0].x2 = (w - 1);
+  Renderer::getInstance()->sprites.sprites[box->sprite].bbox[0].y2 = (h - 1);
 
   box->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
   box->flags |= flags;

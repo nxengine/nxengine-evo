@@ -9,13 +9,13 @@
 #include "common/llist.h"
 #include "common/misc.h"
 #include "common/stat.h"
-#include "graphics/sprites.h"
+#include "graphics/Renderer.h"
 #include "map.h"
 #include "nx.h"
 #include "trig.h"
 
 #include <cmath>
-using namespace Sprites;
+using namespace NXE::Graphics;
 #include "game.h"
 
 Caret *firstcaret      = NULL;
@@ -115,10 +115,10 @@ void Carets::DrawAll(void)
       {
         scr_x = (c->x / CSFI) - (map.displayed_xscroll / CSFI);
         scr_y = (c->y / CSFI) - (map.displayed_yscroll / CSFI);
-        scr_x -= sprites[c->sprite].frame[c->frame].dir[0].drawpoint.x;
-        scr_y -= sprites[c->sprite].frame[c->frame].dir[0].drawpoint.y;
+        scr_x -= Renderer::getInstance()->sprites.sprites[c->sprite].frame[c->frame].dir[0].drawpoint.x;
+        scr_y -= Renderer::getInstance()->sprites.sprites[c->sprite].frame[c->frame].dir[0].drawpoint.y;
 
-        drawSprite(scr_x, scr_y, c->sprite, c->frame, RIGHT);
+        Renderer::getInstance()->sprites.drawSprite(scr_x, scr_y, c->sprite, c->frame, RIGHT);
       }
     }
 
@@ -343,7 +343,7 @@ void Caret::anim(int speed)
   {
     c->animtimer = 0;
 
-    if (++c->frame >= sprites[c->sprite].nframes)
+    if (++c->frame >= Renderer::getInstance()->sprites.sprites[c->sprite].nframes)
       c->frame = 0;
   }
 }
@@ -356,7 +356,7 @@ void Caret::animdie(int speed)
   {
     c->animtimer = 0;
 
-    if (++c->frame >= sprites[c->sprite].nframes)
+    if (++c->frame >= Renderer::getInstance()->sprites.sprites[c->sprite].nframes)
       c->Delete();
   }
 }

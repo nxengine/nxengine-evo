@@ -4,7 +4,6 @@
 #include "../autogen/sprites.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
-#include "../graphics/sprites.h"
 #include "../input.h"
 #include "../nx.h"
 #include "../screeneffect.h"
@@ -12,7 +11,6 @@
 #include "../inventory.h"
 #include "../map_system.h"
 using namespace NXE::Graphics;
-using namespace Sprites;
 #include "dialog.h"
 using namespace Options;
 
