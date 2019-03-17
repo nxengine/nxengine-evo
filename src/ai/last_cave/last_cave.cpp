@@ -111,7 +111,7 @@ void ai_critter_hopping_red(Object *o)
 
       if (o->shaketime)
       {
-        o->state = 2;
+        o->state = 1;
         o->timer = 0;
       }
       else if (++o->timer >= 8)
