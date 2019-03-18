@@ -116,12 +116,14 @@ void DrawDebug(void)
 #endif
 }
 
+extern Object* bullets[64];
+
 void DrawBoundingBoxes()
 {
   Object *o;
   FOREACH_OBJECT(o)
   {
-    if (o->onscreen || o == player)
+    if ((o->onscreen && !o->invisible) || o == player)
     {
       uint32_t color;
 
@@ -149,6 +151,14 @@ void DrawBoundingBoxes()
       AddDebugMark(o->Left(), o->Top(), o->Right(), o->Bottom(), DM_BOX, color >> 16, (color >> 8) & 0xff,
                    color & 0xff);
       AddDebugMark(o->CenterX(), o->CenterY(), o->CenterX(), o->CenterY(), DM_PIXEL, 255, 0, 255);
+    }
+  }
+
+  for (int i=0;i<64;i++)
+  {
+    if (bullets[i]!=NULL)
+    {
+      AddDebugMark(bullets[i]->Left(), bullets[i]->Top(), bullets[i]->Right(), bullets[i]->Bottom(), DM_BOX, 0, 0, 255);
     }
   }
 }
