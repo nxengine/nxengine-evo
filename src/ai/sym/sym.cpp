@@ -251,13 +251,16 @@ void ai_xp(Object *o)
 {
   if (o->state == 0)
   {
-    o->yinertia = random(-1024, 0);
-    o->xinertia = random(-512, 512);
-    o->frame    = random(0, 4);
-    if (random(0, 1))
-      o->dir = CVTDir(0);
-    else
-      o->dir = CVTDir(2);
+    o->yinertia = random(-0x7f, 0x100);
+    o->xinertia = random(-0x80, 0x80);
+    if (map.scrolltype != BK_FASTLEFT && map.scrolltype != BK_FASTLEFT_LAYERS)
+    {
+      o->frame = random(0, 4);
+      if (random(0, 1))
+        o->dir = CVTDir(0);
+      else
+        o->dir = CVTDir(2);
+    }
     o->state = 1;
   }
 
@@ -269,10 +272,6 @@ void ai_xp(Object *o)
       {
         if (o->onscreen || pdistly((Renderer::getInstance()->screenHeight - (Renderer::getInstance()->screenHeight / 3)) * CSFI))
           NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_XP_BOUNCE);
-
-        o->xinertia = 0x100;
-        o->yinertia *= 2;
-        o->yinertia /= 3;
       }
 
       if (o->blocku || o->blockd)
@@ -283,7 +282,11 @@ void ai_xp(Object *o)
   }
   else
   { // normal bouncing
-    o->yinertia += 42;
+    if (o->GetAttributes(&Renderer::getInstance()->sprites.sprites[o->sprite].block_u) & TA_WATER)
+      o->yinertia += 21;
+    else
+      o->yinertia += 42;
+
     if (o->blockd)
     {
       // disappear if we were spawned embedded in ground
@@ -325,18 +328,18 @@ void ai_xp(Object *o)
       o->frame = 0;
   }
 
-  if (++o->timer > 0x1f4)
+  if (++o->timer > 500)
   {
     o->Delete();
     return;
   }
-  else if (o->timer > 0x1f2)
+  else if (o->timer > 498)
   { // twinkle before disappearing
     o->frame     = 0;
     o->invisible = 0;
     return;
   }
-  else if (o->timer > 0x190)
+  else if (o->timer > 400)
   {
     o->invisible = (o->timer & 2);
   }
@@ -364,7 +367,25 @@ void ai_xp(Object *o)
 // Hearts and Missiles
 void ai_powerup(Object *o)
 {
-  // if o->state == 0, then was present in map; not dropped by an enemy...lasts forever
+  if (o->state == -1)
+  {
+    if (map.scrolltype == BK_FASTLEFT || map.scrolltype == BK_FASTLEFT_LAYERS)
+    {
+        o->yinertia = random(-0x7f, 0x100);
+        o->xinertia = random(-0x20, 0x20);
+    }
+    o->state = 1;
+  }
+  else if (o->state == 0)
+  { // adjust position of map-spawned missiles
+    if (o->type == OBJ_MISSILE)
+    {
+      o->x += (3 * CSFI);
+      o->y += (4 * CSFI);
+    }
+    o->state = -2;
+  }
+
   if (o->state > 0)
   {
     Handle_Falling_Left(o);
@@ -372,7 +393,6 @@ void ai_powerup(Object *o)
     switch (o->state)
     {
       case 1:   // animating
-      case 101: // animating (in left-fall mode)
         if (++o->timer >= 256)
         {
           o->timer = 0;
@@ -381,7 +401,6 @@ void ai_powerup(Object *o)
         else
           break;
       case 2:   // start blinking--we're about to go away!!
-      case 102: // blinking (in left-fall mode)
         if (++o->timer > 48)
         {
           effect(o->CenterX() - (1 * CSFI), o->CenterY() - (1 * CSFI), EFFECT_BONUSFLASH);
@@ -400,15 +419,6 @@ void ai_powerup(Object *o)
       o->animtimer = 0;
       o->frame ^= 1;
     }
-  }
-  else if (!o->state)
-  { // adjust position of map-spawned missiles
-    if (o->type == OBJ_MISSILE)
-    {
-      o->x += (3 * CSFI);
-      o->y += (4 * CSFI);
-    }
-    o->state = -1;
   }
 
   // hand over the powerup if player touches it
@@ -445,26 +455,20 @@ bool Handle_Falling_Left(Object *o)
 {
   if (map.scrolltype == BK_FASTLEFT || map.scrolltype == BK_FASTLEFT_LAYERS)
   {
-    if (o->state < 100) // initilize
-    {
-      o->state += 100;
-      o->yinertia = random(-0x20, 0x20);
-      o->xinertia = random(127, 256);
-      // o->nxflags |= NXFLAG_FOLLOW_SLOPE;
-    }
-
     o->xinertia -= 0x08;
     if (o->xinertia < -0x600)
       o->xinertia = -0x600;
 
     if (map.scrolltype == BK_FASTLEFT)
     {
-      if (o->x < ((5 * TILE_W) * CSFI))
+      if (o->x < ((3 * TILE_W) * CSFI))
         o->Delete(); // went off screen in IronH
     }
-
-    if (o->blockl && o->xinertia <= 0)
-      o->xinertia = 0x40;
+    else
+    {
+      if (o->blockl && o->xinertia <= 0)
+        o->xinertia = 0x100;
+    }
     if (o->blocku && o->yinertia <= 0)
       o->yinertia = 0x40;
     if (o->blockd && o->yinertia >= 0)

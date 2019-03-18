@@ -916,7 +916,7 @@ void Object::SpawnPowerups()
   powerup->x -= (powerup->Width() / 2);
   powerup->y -= (powerup->Height() / 2);
 
-  powerup->state = 1; // make it animate
+  powerup->state = -1; // make it animate
 }
 
 // spawn the given quantity of XP at the center of the object.
