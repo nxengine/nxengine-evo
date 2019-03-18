@@ -196,10 +196,10 @@ bool hitdetect_shot(Object *o1, Object *o2)
   rect1y2 = o1->y + (s1->bbox[o1->dir].y2 * CSFI);
 
   // get the bounding rectangle of the second object
-  rect2x1 = o2->x + (s2->bbox[o2->shot.dir].x1 * CSFI);
-  rect2x2 = o2->x + (s2->bbox[o2->shot.dir].x2 * CSFI);
-  rect2y1 = o2->y + (s2->bbox[o2->shot.dir].y1 * CSFI);
-  rect2y2 = o2->y + (s2->bbox[o2->shot.dir].y2 * CSFI);
+  rect2x1 = o2->x + (s2->bbox[o2->dir].x1 * CSFI);
+  rect2x2 = o2->x + (s2->bbox[o2->dir].x2 * CSFI);
+  rect2y1 = o2->y + (s2->bbox[o2->dir].y1 * CSFI);
+  rect2y2 = o2->y + (s2->bbox[o2->dir].y2 * CSFI);
 
   // find out if the rectangles overlap
   if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1))
