@@ -136,7 +136,7 @@ void ai_mgun_spawner(Object *o)
 
   if (!o->timer)
   { // first layer (leader)
-    shot            = CreateObject(o->x, o->y, OBJ_MGUN_LEADER);
+    shot            = CreateBullet(o->x, o->y, OBJ_MGUN_LEADER);
     o->linkedobject = shot;
   }
   else

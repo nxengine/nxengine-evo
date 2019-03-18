@@ -102,7 +102,7 @@ void ai_bubbler_l3(Object *o)
     effect(o->CenterX(), o->CenterY(), EFFECT_FISHY);
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BUBBLER_LAUNCH);
 
-    Object *shot      = CreateObject(o->x, o->y, OBJ_BUBBLER_SHARP);
+    Object *shot      = CreateBullet(o->x, o->y, OBJ_BUBBLER_SHARP);
     shot->dir         = player->dir;
     shot->shot.dir    = (player->look) ? player->look : player->dir;
     shot->shot.damage = 3;
