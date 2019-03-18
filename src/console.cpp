@@ -151,10 +151,7 @@ static void __giveweapon(std::vector<std::string> *args, int num)
 {
   if (num >= 0 && num < WPN_COUNT)
   {
-    player->weapons[num].hasWeapon = 1;
-    player->weapons[num].maxammo   = 0; // gives it unlimited ammo
-    player->weapons[num].ammo      = 0;
-    player->curWeapon              = num;
+    GetWeapon(num, 100);
   }
 }
 
