@@ -195,7 +195,7 @@ void ai_critter(Object *o)
         o->damage = o->critter.falldmg; // increased damage if falls on player
         o->state  = 5;
         o->frame  = 2;
-        o->yinertia /= 2;
+        o->xinertia /= 2;
       }
       else
       {
@@ -254,7 +254,7 @@ void ai_critter(Object *o)
   }
   else
   {
-    o->yinertia += 0x40;
+    o->yinertia += 0x20;
   }
 
   LIMITY(0x5ff);
