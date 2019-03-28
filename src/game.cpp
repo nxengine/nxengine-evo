@@ -17,6 +17,7 @@
 #include "nx.h"
 #include "pause/options.h"
 #include "pause/pause.h"
+#include "pause/mods.h"
 #include "player.h"
 #include "profile.h"
 #include "slope.h"
@@ -44,7 +45,8 @@ static struct TickFunctions
     {intro_tick, intro_init, NULL},             // GM_INTRO
     {title_tick, title_init, NULL},             // GM_TITLE
     {pause_tick, pause_init, NULL},             // GP_PAUSED
-    {options_tick, options_init, options_close} // GP_OPTIONS
+    {options_tick, options_init, options_close},// GP_OPTIONS
+    {mods_tick, mods_init, mods_close} // GP_MODS
                                                 //{old_options_tick,		old_options_init,	old_options_close}	// GP_OPTIONS
 };
 

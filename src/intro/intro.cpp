@@ -13,6 +13,7 @@
 #include "../player.h"
 #include "../screeneffect.h"
 #include "../sound/SoundManager.h"
+#include "../ResourceManager.h"
 #include "../tsc.h"
 using namespace NXE::Graphics;
 
@@ -35,6 +36,11 @@ bool intro_init(int param)
 
 void intro_tick()
 {
+  if (blanktimer == 0 &&ResourceManager::getInstance()->isMod() && ResourceManager::getInstance()->mod().skip_intro)
+  {
+    game.tsc->StopScripts();
+    blanktimer = EXIT_DELAY;
+  }
   if (blanktimer > 0)
   {
     Renderer::getInstance()->clearScreen(BLACK);

@@ -15,7 +15,8 @@ enum OD_TYPES
   OD_ACTIVATED,
   OD_SEPARATOR,
   OD_DISMISS,
-  OD_CHOICE
+  OD_CHOICE,
+  OD_DISABLED,
 };
 
 class Dialog : public FocusHolder
@@ -32,6 +33,7 @@ public:
   ODItem *AddItem(const char *text, void (*activate)(ODItem *, int) = NULL, void (*update)(ODItem *) = NULL,
                   int id = -1, int type = OD_ACTIVATED);
   ODItem *AddSeparator();
+  ODItem *AddDisabledItem(const char *text);
   ODItem *AddDismissalItem(const char *text = NULL);
 
   void Draw();

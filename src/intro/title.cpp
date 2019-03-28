@@ -10,6 +10,7 @@
 #include "../niku.h"
 #include "../nx.h"
 #include "../profile.h"
+#include "../ResourceManager.h"
 #include "../settings.h"
 #include "../sound/SoundManager.h"
 #include "../statusbar.h"
@@ -48,6 +49,14 @@ static struct
   uint32_t besttime; // Nikumaru display
 } title;
 
+typedef struct
+{
+  std::string text;
+  bool enabled;
+} menuitem;
+
+std::vector<menuitem> _menuitems;
+
 static void draw_title()
 {
   // background is dk grey, not pure black
@@ -62,16 +71,17 @@ static void draw_title()
   // draw menu
 
   int cx = (Renderer::getInstance()->screenWidth / 2) - 32;
-  int cy = (Renderer::getInstance()->screenHeight / 2) + 8;
+  int cy = (Renderer::getInstance()->screenHeight / 2) - 8;
 
-  const char *mymenus[] = {"New game", "Load game", "Options", "Quit"};
+  TextBox::DrawFrame(cx - 32, cy - 16 , 128, 96);
 
-  TextBox::DrawFrame(cx - 32, cy - 16, 128, 80);
-
-  for (int i = 0; i <= 3; i++)
+  for (size_t i = 0; i < _menuitems.size(); i++)
   {
-    Renderer::getInstance()->font.draw(cx + 10, cy, _(mymenus[i]));
-    if (i == title.cursel)
+    if (_menuitems[i].enabled)
+      Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text));
+    else
+      Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text), 0x666666);
+    if (i == (size_t)title.cursel)
     {
       Renderer::getInstance()->sprites.drawSprite(cx - 16, cy - 1, title.sprite, title.selframe);
     }
@@ -129,14 +139,20 @@ static void handle_input()
   if (justpushed(DOWNKEY))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
-    if (++title.cursel >= 4)
-      title.cursel = 0;
+    do
+    {
+      if (++title.cursel >= (int)_menuitems.size())
+        title.cursel = 0;
+    } while (!_menuitems.at(title.cursel).enabled);
   }
   else if (justpushed(UPKEY))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
-    if (--title.cursel < 0)
-      title.cursel = 3;
+    do
+    {
+      if (--title.cursel < 0)
+        title.cursel = _menuitems.size()-1;
+    } while (!_menuitems.at(title.cursel).enabled);
   }
 
   if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
@@ -217,7 +233,12 @@ static void selectoption(int index)
       game.pause(GP_OPTIONS);
     }
     break;
-    case 3: // Quit
+    case 3: // Mods
+    {
+      game.pause(GP_MODS);
+    }
+    break;
+    case 4: // Quit
     {
       NXE::Sound::SoundManager::getInstance()->music(0);
       game.running = false;
@@ -266,6 +287,23 @@ bool title_init(int param)
     title.cursel = 1; // Load Game
   else
     title.cursel = 0; // New Game
+
+  _menuitems.clear();
+  _menuitems.push_back({"New game",true});
+
+  if (AnyProfileExists())
+    _menuitems.push_back({"Load game",true});
+  else
+    _menuitems.push_back({"Load game",false});
+
+  _menuitems.push_back({"Options",true});
+
+  if (ResourceManager::getInstance()->mods().size() > 0 )
+    _menuitems.push_back({"Mods",true});
+  else
+    _menuitems.push_back({"Mods",false});
+
+  _menuitems.push_back({"Quit",true});
 
   return 0;
 }

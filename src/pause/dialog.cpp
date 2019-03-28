@@ -130,6 +130,11 @@ ODItem *Dialog::AddSeparator()
   return AddItem("", NULL, NULL, -1, OD_SEPARATOR);
 }
 
+ODItem *Dialog::AddDisabledItem(const char *text)
+{
+  return AddItem(text, NULL, NULL, -1, OD_DISABLED);
+}
+
 ODItem *Dialog::AddDismissalItem(const char *text)
 {
   if (!text)
@@ -180,26 +185,12 @@ void Dialog::DrawItem(int x, int y, ODItem *item)
     int rx = (fCoords.x + fCoords.w) - 10;
     rx -= Renderer::getInstance()->font.getWidth(_(item->raligntext));
     Renderer::getInstance()->font.draw(rx, y, _(item->raligntext));
-    /*
-    // ... ellipses if too long
-    int maxx = (rx - 4);
-    //FillRect(maxx, 0, maxx, Renderer::getInstance()->screenHeight, 0,255,0);
-    for(;;)
-    {
-            int wd = Renderer::getInstance()->font.getWidth(text);
-            if (x+wd < maxx) break;
-
-            int len = strlen(text);
-            if (len <= 3) { *text = 0; break; }
-
-            text[len-1] = 0;
-            text[len-2] = '.';
-            text[len-3] = '.';
-            text[len-4] = '.';
-    }*/
   }
 
-  Renderer::getInstance()->font.draw(x, y, text);
+  if (item->type == OD_DISABLED)
+    Renderer::getInstance()->font.draw(x, y, text, 0x666666);
+  else
+    Renderer::getInstance()->font.draw(x, y, text);
 
   // for key remaps
   if (item->righttext[0])
@@ -235,7 +226,7 @@ void Dialog::RunInput()
         if (fCurSel >= 0 && fCurSel < (int)fItems.size())
         {
           ODItem *item = fItems.at(fCurSel);
-          if (item && item->type != OD_SEPARATOR)
+          if (item && item->type != OD_SEPARATOR && item->type != OD_DISABLED)
             break;
         }
       }
