@@ -877,17 +877,37 @@ void PDoBooster(void)
   /*static const char *statedesc[] = { "OFF", "UP", "DN", "HOZ", "0.8" };
   debug("fuel: %d", player->boosterfuel);
   debug("booststate: %s", statedesc[player->booststate]);
-  debug("xinertia: %d", player->xinertia);
+  debug("xinertia: %x", player->xinertia);
   debug("yinertia: %d", player->yinertia);*/
 
   if (!(player->equipmask & (EQUIP_BOOSTER08 | EQUIP_BOOSTER20)))
   {
+    switch (player->booststate)
+    {
+      case BOOST_HOZ:
+        player->xinertia >>= 1;
+        break;
+
+      case BOOST_UP:
+        player->yinertia >>= 1;
+        break;
+    }
     player->booststate = BOOST_OFF;
     return;
   }
 
   if (!pinputs[JUMPKEY])
   {
+    switch (player->booststate)
+    {
+      case BOOST_HOZ:
+        player->xinertia >>= 1;
+        break;
+
+      case BOOST_UP:
+        player->yinertia >>= 1;
+        break;
+    }
     player->booststate = BOOST_OFF;
 
     if (player->blockd)
@@ -902,6 +922,16 @@ void PDoBooster(void)
   // player seems to want it active...check the fuel
   if (player->boosterfuel <= 0)
   {
+    switch (player->booststate)
+    {
+      case BOOST_HOZ:
+        player->xinertia >>= 1;
+        break;
+
+      case BOOST_UP:
+        player->yinertia >>= 1;
+        break;
+    }
     player->booststate = BOOST_OFF;
     return;
   }
@@ -992,23 +1022,6 @@ void PDoBoosterEnd()
   // put here to be sure it catches all the different ways the Booster can get turned off
   // if (!player->booststate)
   // player->hitwhileboosting = false;
-
-  if (player->booststate != player->lastbooststate)
-  {
-    if (player->booststate == BOOST_OFF && (player->equipmask & EQUIP_BOOSTER20))
-    {
-      switch (player->lastbooststate)
-      {
-        case BOOST_HOZ:
-          player->xinertia >>= 1;
-          break;
-
-        case BOOST_UP:
-          player->yinertia >>= 1;
-          break;
-      }
-    }
-  }
 
   // in the original touching a slope while boosting horizontally
   // disables the booster. In that case, we don't want to half the xinertia,
