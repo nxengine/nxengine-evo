@@ -268,6 +268,7 @@
     <ClCompile Include="..\..\src\ObjManager.cpp" />
     <ClCompile Include="..\..\src\pause\dialog.cpp" />
     <ClCompile Include="..\..\src\pause\message.cpp" />
+    <ClCompile Include="..\..\src\pause\mods.cpp" />
     <ClCompile Include="..\..\src\pause\objects.cpp" />
     <ClCompile Include="..\..\src\pause\options.cpp" />
     <ClCompile Include="..\..\src\pause\pause.cpp" />
@@ -408,6 +409,7 @@
     <ClInclude Include="..\..\src\ObjManager.h" />
     <ClInclude Include="..\..\src\pause\dialog.h" />
     <ClInclude Include="..\..\src\pause\message.h" />
+    <ClInclude Include="..\..\src\pause\mods.h" />
     <ClInclude Include="..\..\src\pause\objects.h" />
     <ClInclude Include="..\..\src\pause\options.h" />
     <ClInclude Include="..\..\src\pause\pause.h" />
