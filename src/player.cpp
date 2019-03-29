@@ -1040,7 +1040,8 @@ void PBoosterSmokePuff()
   // these are the directions the SMOKE is traveling, not the player
   //                                 RT   LT    UP    DN
   static const int smoke_xoffs[] = {10, 4, 7, 7};
-  static const int smoke_yoffs[] = {10, 10, 0, 14};
+  static const int smoke_yoffs[] = {9, 9, 0, 14};
+
   int smokedir;
 
   switch (player->booststate)
@@ -1065,7 +1066,7 @@ void PBoosterSmokePuff()
   int y = player->y + (smoke_yoffs[smokedir] * CSFI);
 
   Caret *smoke = effect(x, y, EFFECT_SMOKETRAIL_SLOW);
-  smoke->MoveAtDir(smokedir, 0x200);
+  smoke->MoveAtDir(smokedir, 0x400);
 
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BOOSTER);
 }
