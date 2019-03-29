@@ -497,8 +497,8 @@ bool UDCoreBoss::RunDefeated()
       if ((o->timer % 8) == 0)
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 
-      int x = o->x + random(-72 * CSFI, 72 * CSFI);
-      int y = o->y + random(-64 * CSFI, 64 * CSFI);
+      int x = o->x + random(-72, 72) * CSFI;
+      int y = o->y + random(-64, 64) * CSFI;
       SmokePuff(x, y);
       effect(x, y, EFFECT_BOOMFLASH);
 
