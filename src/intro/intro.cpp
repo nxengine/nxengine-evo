@@ -129,7 +129,7 @@ void ai_intro_crown(Object *o)
     {
       if ((++o->timer % 8) == 1)
       {
-        effect(o->x + random(-8 * CSFI, 8 * CSFI), o->y + (8 * CSFI), EFFECT_GHOST_SPARKLE);
+        effect(o->x + random(-8, 8) * CSFI, o->y + (8 * CSFI), EFFECT_GHOST_SPARKLE);
       }
     }
     break;
