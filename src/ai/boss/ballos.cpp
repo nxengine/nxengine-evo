@@ -673,8 +673,8 @@ void BallosBoss::RunDefeated(Object *o)
     }
     case 1001:
     {
-      int x = o->x + random(-60 * CSFI, 60 * CSFI);
-      int y = o->y + random(-60 * CSFI, 60 * CSFI);
+      int x = o->x + random(-60, 60) * CSFI;
+      int y = o->y + random(-60, 60) * CSFI;
       SmokePuff(x, y);
       effect(x, y, EFFECT_BOOMFLASH);
 
