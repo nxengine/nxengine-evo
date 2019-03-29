@@ -142,13 +142,13 @@ void fputstringnonull(const char *buf, FILE *fp)
 bool fverifystring(FILE *fp, const char *str)
 {
   int i;
-  char result      = 1;
+  bool result      = true;
   int stringlength = strlen(str);
 
   for (i = 0; i < stringlength; i++)
   {
     if (fgetc(fp) != str[i])
-      result = 0;
+      result = false;
   }
 
   return result;
