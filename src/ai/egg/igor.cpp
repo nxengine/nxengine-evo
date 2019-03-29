@@ -183,8 +183,7 @@ void ai_boss_igor(Object *o)
           o->state    = STATE_JUMPING;
           o->timer    = 0;
 
-          o->xinertia *= 2;
-          o->xinertia /= 3;
+          o->xinertia = 3 * o->xinertia / 2;
 
           o->damage = 2;
         }
