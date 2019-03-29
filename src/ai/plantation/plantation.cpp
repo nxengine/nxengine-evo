@@ -72,6 +72,7 @@ void ai_stumpy(Object *o)
     {
       o->state = 1;
       o->flags |= NXFLAG_FOLLOW_SLOPE;
+      o->flags &= ~FLAG_SOLID_MUSHY;
     }
     case 1:
     {
