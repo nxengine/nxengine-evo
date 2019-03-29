@@ -96,8 +96,8 @@ void ai_pooh_black(Object *o)
       // spawn bubbles when hit
       if (o->shaketime && (o->shaketime & 1))
       {
-        int x = o->CenterX() + random(-12 * CSFI, 12 * CSFI);
-        int y = o->CenterY() + random(-12 * CSFI, 12 * CSFI);
+        int x = o->CenterX() + random(-12, 12) * CSFI;
+        int y = o->CenterY() + random(-12, 12) * CSFI;
 
         Object *bubble = CreateObject(x, y, OBJ_POOH_BLACK_BUBBLE);
 
@@ -229,13 +229,13 @@ void ai_pooh_black_dying(Object *o)
 
   if (o->timer & 1)
   {
-    int x = o->CenterX() + random(-12 * CSFI, 12 * CSFI);
+    int x = o->CenterX() + random(-12, 12) * CSFI;
     int y;
 
     if (o->state == 2)
-      y = o->y + (o->clipy1 * CSFI) + random(-4 * CSFI, 4 * CSFI);
+      y = o->y + (o->clipy1 * CSFI) + (random(-4, 4) * CSFI);
     else
-      y = o->CenterY() + random(-12 * CSFI, 12 * CSFI);
+      y = o->CenterY() + random(-12, 12) * CSFI;
 
     Object *bubble   = CreateObject(x, y, OBJ_POOH_BLACK_BUBBLE);
     bubble->xinertia = random(-0x200, 0x200);

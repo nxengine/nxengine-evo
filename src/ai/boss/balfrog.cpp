@@ -261,7 +261,8 @@ void BalfrogBoss::RunJumping()
 
         // shake a small frog loose from the ceiling on every landing
         SpawnFrogs(OBJ_MINIFROG, 1);
-        SpawnSmoke(LANDING_SMOKE_COUNT, LANDING_SMOKE_YTOP);
+        SmokeSide(o, 8, DOWN);
+//        SpawnSmoke(LANDING_SMOKE_COUNT, LANDING_SMOKE_YTOP);
       }
     }
     break;
@@ -309,7 +310,8 @@ void BalfrogBoss::RunJumping()
 
         SpawnFrogs(OBJ_MINIFROG, 6);
         SpawnFrogs(OBJ_FROG, 2);
-        SpawnSmoke(LANDING_SMOKE_COUNT, LANDING_SMOKE_YTOP);
+        SmokeSide(o, 8, DOWN);
+//        SpawnSmoke(LANDING_SMOKE_COUNT, LANDING_SMOKE_YTOP);
 
         // player ran under us? turn around and fire!
         if ((o->dir == RIGHT && o->x >= player->x) || (o->dir == LEFT && o->x <= player->x))
@@ -450,7 +452,7 @@ void BalfrogBoss::RunEntryAnim()
     // transformation complete: puff away balrog, and appear solid now
     case STATE_READY:
     {
-      SmokeXY(o->x + ((Renderer::getInstance()->sprites.sprites[SPR_BALROG_GREEN].w / 2) * CSFI), o->y + (48 * CSFI), 8, 16, 16);
+      SmokeBoomUp(o);
 
       o->state++;
       o->frame = FRAME_MOUTH_OPEN;
@@ -473,14 +475,14 @@ void BalfrogBoss::RunDeathAnim()
       o->timer    = 0;
       o->state++;
 
-      SpawnSmoke(DEATH_SMOKE_COUNT, DEATH_SMOKE_YTOP);
+      SmokeBoomUp(o, 8);
     }
     case STATE_DEATH + 1: // shaking with mouth open
     {
       o->timer++;
       if ((o->timer % 5) == 0)
       {
-        SpawnSmoke(1, DEATH_SMOKE_YTOP);
+        SmokeBoomUp(o, 1);
       }
 
       // at a glance it might seem like this has it alternate
@@ -522,7 +524,7 @@ void BalfrogBoss::RunDeathAnim()
       o->timer++;
 
       if ((o->timer % 9) == 0)
-        SpawnSmoke(1, DEATH_SMOKE_YTOP);
+        SmokeBoomUp(o, 1);
 
       if (o->timer <= 150)
       {
@@ -607,23 +609,6 @@ void BalfrogBoss::SpawnFrogs(int objtype, int count)
 
     child      = CreateObject((x * TILE_W) * CSFI, (y * TILE_H) * CSFI, objtype);
     child->dir = DOWN; // allow fall through ceiling
-  }
-}
-
-// spawn the smoke clouds from landing after a jump
-// or during the death sequence.
-void BalfrogBoss::SpawnSmoke(int count, int ytop)
-{
-  Object *smoke;
-
-  for (int i = 0; i < count; i++)
-  {
-    int x = random(o->Left() + (4 * CSFI), o->Right() - (4 * CSFI));
-    int y = o->Bottom() + random(ytop * CSFI, 4 * CSFI);
-
-    smoke           = CreateObject(x, y, OBJ_SMOKE_CLOUD);
-    smoke->xinertia = random(-0x155, 0x155);
-    smoke->yinertia = random(-0x600, 0);
   }
 }
 

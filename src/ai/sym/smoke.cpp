@@ -137,11 +137,11 @@ void SmokeCloudsSlow(int x, int y, int nclouds)
   }
 }
 
-void SmokeBoomUp(Object *o)
+void SmokeBoomUp(Object *o, int count)
 {
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < count; i++)
   {
-    CreateObject(o->CenterX() + random(-16 * CSFI, 16 * CSFI), o->CenterY() + random(-16 * CSFI, 16 * CSFI),
+    CreateObject(o->CenterX() + random(-16, 16) * CSFI, o->CenterY() + random(-16, 16) * CSFI,
                  OBJ_SMOKE_CLOUD, random(-0x155, 0x155), random(-0x600, 0));
   }
 }

@@ -6,7 +6,7 @@ void SmokeClouds(Object *o, int nclouds, int rangex = 0, int rangey = 0, Object 
 void SmokeXY(int x, int y, int nclouds, int rangex = 0, int rangey = 0, Object *pushbehind = NULL);
 void SmokeSide(Object *o, int nclouds, int dir);
 void SmokeCloudsSlow(int x, int y, int nclouds);
-void SmokeBoomUp(Object *o);
+void SmokeBoomUp(Object *o, int count = 8);
 void ai_smokecloud(Object *o);
 
 #endif

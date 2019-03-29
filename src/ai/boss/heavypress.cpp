@@ -180,7 +180,7 @@ void HeavyPress::run_defeated()
       if ((o->timer % 16) == 0)
       {
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BLOCK_DESTROY);
-        SmokePuff(o->x + random(-60 * CSFI, 60 * CSFI), o->y + random(-40 * CSFI, 40 * CSFI));
+        SmokePuff(o->x + random(-60, 60) * CSFI, o->y + random(-40, 40) * CSFI);
       }
 
       // eye opens

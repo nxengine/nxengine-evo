@@ -523,7 +523,7 @@ void ai_crowwithskull(Object *o)
   // switch over to the main crow AI, but only move up & down
   o->yinertia  = random(-0x200, -0x100);
   o->xmark     = o->x;
-  o->ymark     = o->y + random(-(28 * CSFI), (10 * CSFI));
+  o->ymark     = o->y + random(-28, 10) * CSFI;
   o->animframe = random(0, 1);
   o->animtimer = random(0, 4);
   o->state     = 101;

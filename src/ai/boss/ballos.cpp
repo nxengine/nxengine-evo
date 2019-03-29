@@ -645,7 +645,7 @@ void BallosBoss::RunForm3(Object *o)
       int prob = (o->hp <= 500) ? 4 : 10;
       if (!random(0, prob))
       {
-        CreateObject(o->x + random(-40 * CSFI, 40 * CSFI), o->y + random(0, 40 * CSFI), OBJ_RED_ENERGY)->angle = DOWN;
+        CreateObject(o->x + random(-40, 40) * CSFI, o->y + random(0, 40) * CSFI, OBJ_RED_ENERGY)->angle = DOWN;
       }
     }
     break;

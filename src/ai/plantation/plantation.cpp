@@ -273,7 +273,7 @@ void ai_orangebell_baby(Object *o)
       o->flags |= FLAG_IGNORE_SOLID;
 
       o->timer  = 0;                             // time until can dive-bomb
-      o->ymark2 = random(-32 * CSFI, 32 * CSFI); // unique target point on main bat
+      o->ymark2 = random(-32, 32) * CSFI; // unique target point on main bat
 
       o->state = 1;
     }

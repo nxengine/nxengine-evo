@@ -407,7 +407,7 @@ void ai_ma_pignon_rock(Object *o)
           // these smoke clouds appear BEHIND the map tiles
           for (int i = 0; i < 2; i++)
           {
-            Object *smoke   = CreateObject(o->CenterX() + random(-12 * CSFI, 12 * CSFI), o->Bottom() + (16 * CSFI),
+            Object *smoke   = CreateObject(o->CenterX() + random(-12, 12) * CSFI, o->Bottom() + (16 * CSFI),
                                          OBJ_SMOKE_CLOUD);
             smoke->xinertia = random(-0x155, 0x155);
             smoke->yinertia = random(-0x600, 0);

@@ -403,7 +403,7 @@ static void smoke_puff(Object *o, bool initial)
 {
   Object *smoke;
 
-  smoke = CreateObject(o->CenterX() + random(-16 * CSFI, 16 * CSFI), o->CenterY() + random(-16 * CSFI, 16 * CSFI),
+  smoke = CreateObject(o->CenterX() + random(-16, 16) * CSFI, o->CenterY() + random(-16, 16) * CSFI,
                        OBJ_SMOKE_CLOUD);
 
   if (initial)

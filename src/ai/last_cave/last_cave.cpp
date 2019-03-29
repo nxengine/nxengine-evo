@@ -258,7 +258,7 @@ void ai_red_bat_spawner(Object *o)
     {
       if (--o->timer < 0)
       {
-        Object *bat = CreateObject(o->CenterX(), o->CenterY() + random(-32 * CSFI, 32 * CSFI), OBJ_RED_BAT);
+        Object *bat = CreateObject(o->CenterX(), o->CenterY() + random(-32, 32) * CSFI, OBJ_RED_BAT);
         bat->x -= (bat->Width() / 2);
         bat->y -= (bat->Height() / 2);
         bat->dir = o->dir;

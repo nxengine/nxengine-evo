@@ -926,8 +926,8 @@ void ai_fan_droplet(Object *o)
 
       o->dir = RIGHT; // so frame is correct
 
-      o->xinertia *= random((2 * CSFI), (4 * CSFI));
-      o->yinertia *= random((2 * CSFI), (4 * CSFI));
+      o->xinertia *= random(2, 4) * CSFI;
+      o->yinertia *= random(2, 4) * CSFI;
     case 1:
       ANIMATE_FWD(6);
       if (o->frame > 4)
@@ -956,8 +956,8 @@ void ai_sprinkler(Object *o)
 
     drop = CreateObject(o->CenterX() + (1 * CSFI), o->CenterY() + (1 * CSFI), OBJ_WATER_DROPLET);
 
-    drop->xinertia = random(-(2 * CSFI), (2 * CSFI));
-    drop->yinertia = random(-(3 * CSFI), 384);
+    drop->xinertia = 2 * random(-CSFI, CSFI);
+    drop->yinertia = 3 * random(-CSFI, 0x80);
   }
 }
 
@@ -966,9 +966,9 @@ void ai_droplet_spawner(Object *o)
 {
   if (pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
-    if (!random(0, 80))
+    if (random(0, 100) == 2)
     {
-      CreateObject(o->x + (random(2, (TILE_W - 2)) * CSFI), o->y, OBJ_WATER_DROPLET);
+      CreateObject(o->CenterX() + (random(-6, 6) * CSFI), o->y, OBJ_WATER_DROPLET);
     }
   }
 }
