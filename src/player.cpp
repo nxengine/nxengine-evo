@@ -296,14 +296,14 @@ void c------------------------------() {}
 
 void PDoPhysics(void)
 {
-  if (player->xinertia > 0x5ff)
-    player->xinertia = 0x5ff;
-  if (player->xinertia < -0x5ff)
-    player->xinertia = -0x5ff;
-  if (player->yinertia > 0x5ff)
-    player->yinertia = 0x5ff;
-  if (player->yinertia < -0x5ff)
-    player->yinertia = -0x5ff;
+  if (player->xinertia > player->fallspeed)
+    player->xinertia = player->fallspeed;
+  if (player->xinertia < -player->fallspeed)
+    player->xinertia = -player->fallspeed;
+  if (player->yinertia > player->fallspeed)
+    player->yinertia = player->fallspeed;
+  if (player->yinertia < -player->fallspeed)
+    player->yinertia = -player->fallspeed;
 
   if (player->blockd && player->yinertia > 0)
     player->yinertia = 0;
@@ -527,6 +527,8 @@ void DoWaterCurrents(void)
       return;
   }
 
+  player->fallspeed = 0x5FF;
+
   // these constants are very critical for Waterway to work properly.
   // please be careful with them.
   if (currentmask & LEFTMASK)
@@ -536,7 +538,7 @@ void DoWaterCurrents(void)
   if (currentmask & UPMASK)
     player->yinertia -= 0x80;
   if (currentmask & DOWNMASK)
-    player->yinertia += 0x50;
+    player->yinertia += 0x55;
 }
 
 void PDoWalking(void)
