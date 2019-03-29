@@ -542,7 +542,7 @@ void ai_giant_jelly(Object *o)
 
     case 20: // shot/freeze over/go invulnerable
     {
-      o->frame = 4;
+//      o->frame = 4;
       o->xinertia >>= 1;
       o->yinertia += 0x20;
 
@@ -597,7 +597,7 @@ void ai_giant_jelly(Object *o)
 
     o->yinertia += 0x10;
     if (o->blockd)
-      o->yinertia = -0x300;
+      o->yinertia = -0x400;
   }
 
   LIMITX(0x100);
