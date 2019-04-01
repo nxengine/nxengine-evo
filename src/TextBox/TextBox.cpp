@@ -6,6 +6,7 @@
 #include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../nx.h"
+#include "../settings.h"
 #include "../sound/SoundManager.h"
 
 #include <iostream>
@@ -159,8 +160,16 @@ void TextBox::SetFace(int newface)
   // stat("TextBox::SetFace(%d)", newface);
   fFace        = newface;
   fFaceXOffset = -FACE_W;
-  faceFrame = 0;
-  faceStep = 1;
+  if (settings->animated_facepics)
+  {
+    faceFrame = 0;
+    faceStep = 1;
+  }
+  else
+  {
+    faceFrame = 2;
+    faceStep = 0;
+  }
 }
 
 void TextBox::ShowCursor(bool enable)
@@ -264,8 +273,11 @@ void TextBox::TickTextBox()
     }
     else
     {
+      if (settings->animated_facepics)
         faceFrame = 0;
-        faceStep = 0;
+      else
+        faceFrame = 2;
+      faceStep = 0;
     }
   }
 
@@ -340,21 +352,29 @@ void TextBox::AddNextChar(void)
   bool line_at_once = (fFlags & TB_LINE_AT_ONCE);
   int maxlinelen    = GetMaxLineLen();
 
-  if (++faceTimer > 1)
+  if (settings->animated_facepics)
   {
-    faceTimer = 0;
-    faceFrame += faceStep;
+    if (++faceTimer > 1)
+    {
+      faceTimer = 0;
+      faceFrame += faceStep;
 
-    if (faceFrame < 0)
-    {
-      faceStep = 1;
-      faceFrame = 0;
+      if (faceFrame < 0)
+      {
+        faceStep = 1;
+        faceFrame = 0;
+      }
+      if (faceFrame >= 3)
+      {
+        faceStep = -1;
+        faceFrame = 2;
+      }
     }
-    if (faceFrame >= 3)
-    {
-      faceStep = -1;
-      faceFrame = 2;
-    }
+  }
+  else
+  {
+    faceStep = 0;
+    faceFrame = 2;
   }
 
   while (!fCharsWaiting.empty())

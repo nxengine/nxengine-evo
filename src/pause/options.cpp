@@ -28,6 +28,8 @@ void _res_get(ODItem *item);
 void _res_change(ODItem *item, int dir);
 void _fullscreen_get(ODItem *item);
 void _fullscreen_change(ODItem *item, int dir);
+void _facepics_get(ODItem *item);
+void _facepics_change(ODItem *item, int dir);
 
 void _lang_get(ODItem *item);
 void _lang_change(ODItem *item, int dir);
@@ -239,6 +241,7 @@ static void EnterGraphicsMenu(ODItem *item, int dir)
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
   dlg->AddItem("Resolution: ", _res_change, _res_get, -1, OD_CHOICE);
   dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get, -1, OD_CHOICE);
+  dlg->AddItem("Animated facepics: ", _facepics_change, _facepics_get, -1, OD_CHOICE);
   dlg->AddSeparator();
   dlg->AddDismissalItem();
 }
@@ -357,6 +360,18 @@ void _fullscreen_change(ODItem *item, int dir)
   settings->fullscreen ^= 1;
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
   Renderer::getInstance()->setFullscreen(settings->fullscreen);
+}
+
+void _facepics_get(ODItem *item)
+{
+  static const char *strs[] = {"Off", "On"};
+  strcpy(item->suffix, strs[settings->animated_facepics]);
+}
+
+void _facepics_change(ODItem *item, int dir)
+{
+  settings->animated_facepics ^= 1;
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _sound_change(ODItem *item, int dir)
