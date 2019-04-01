@@ -78,6 +78,9 @@ private:
 
   uint8_t fFace;    // current NPC face or 0 if none
   int fFaceXOffset; // for face slide-in animation
+  uint8_t faceFrame;
+  uint8_t faceStep = 1;
+  uint32_t faceTimer = 0;
 
   // currently visible lines
   std::array<std::string, MSG_NLINES> fLines;

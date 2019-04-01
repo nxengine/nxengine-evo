@@ -121,6 +121,8 @@ void TextBox::AddText(const std::string &str)
   if (!fVisible)
     return;
   fCharsWaiting.append(str);
+  faceFrame = 0;
+  faceStep = 1;
 }
 
 // clear all text in the message box
@@ -157,6 +159,8 @@ void TextBox::SetFace(int newface)
   // stat("TextBox::SetFace(%d)", newface);
   fFace        = newface;
   fFaceXOffset = -FACE_W;
+  faceFrame = 0;
+  faceStep = 1;
 }
 
 void TextBox::ShowCursor(bool enable)
@@ -258,6 +262,11 @@ void TextBox::TickTextBox()
         AddNextChar();
       }
     }
+    else
+    {
+        faceFrame = 0;
+        faceStep = 0;
+    }
   }
 
   // blink the cursor (it is visible when < 7)
@@ -291,7 +300,7 @@ void TextBox::DrawTextBox()
   // draw face
   if (fFace != 0)
   {
-    Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+    Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace + (30*faceFrame));
     text_x += (FACE_W + 8); // move text over by width of face
 
     // face slide-in animation
@@ -330,6 +339,23 @@ void TextBox::AddNextChar(void)
 {
   bool line_at_once = (fFlags & TB_LINE_AT_ONCE);
   int maxlinelen    = GetMaxLineLen();
+
+  if (++faceTimer > 1)
+  {
+    faceTimer = 0;
+    faceFrame += faceStep;
+
+    if (faceFrame < 0)
+    {
+      faceStep = 1;
+      faceFrame = 0;
+    }
+    if (faceFrame >= 3)
+    {
+      faceStep = -1;
+      faceFrame = 2;
+    }
+  }
 
   while (!fCharsWaiting.empty())
   {
