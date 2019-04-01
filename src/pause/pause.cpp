@@ -21,6 +21,8 @@ void _resume(ODItem *item, int dir)
 {
   lastinputs[F1KEY] = true;
   game.pause(false);
+  delete dlg;
+  dlg = nullptr;
 }
 
 void _options(ODItem *item, int dir)
@@ -32,6 +34,8 @@ void _reset(ODItem *item, int dir)
 {
   lastinputs[F2KEY] = true;
   game.reset();
+  delete dlg;
+  dlg = nullptr;
 }
 
 void _exit(ODItem *item, int dir)
@@ -63,6 +67,7 @@ bool pause_init(int param)
 
 void pause_tick()
 {
+  if (dlg == nullptr) return;
   DrawScene();
   if (game.mode == GM_NORMAL)
     DrawStatusBar();
@@ -83,6 +88,7 @@ void pause_tick()
   Renderer::getInstance()->tintScreen();
 
   dlg->RunInput();
+  if (dlg == nullptr) return;
   dlg->Draw();
 
   if (justpushed(ESCKEY))
