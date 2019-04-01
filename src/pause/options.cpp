@@ -48,6 +48,9 @@ void _rumble_change(ODItem *item, int dir);
 void _rumble_get(ODItem *item);
 void _strafe_change(ODItem *item, int dir);
 void _strafe_get(ODItem *item);
+void _scheme_change(ODItem *item, int dir);
+void _scheme_get(ODItem *item);
+void _scheme_get2(ODItem *item);
 static void _upd_control(ODItem *item);
 static void _edit_control(ODItem *item, int dir);
 static void _finish_control_edit(Message *msg);
@@ -202,6 +205,10 @@ static void EnterControlsMenu(ODItem *item, int dir)
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
   dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get, -1, OD_CHOICE);
   dlg->AddItem("Strafing: ", _strafe_change, _strafe_get, -1, OD_CHOICE);
+  dlg->AddSeparator();
+  dlg->AddItem("Ok: ", _scheme_change, _scheme_get, -1, OD_CHOICE);
+  dlg->AddItem("Cancel: ", _scheme_change, _scheme_get2, -1, OD_CHOICE);
+  dlg->AddSeparator();
   dlg->AddItem("Bind keys", EnterRebindMenu);
 
   dlg->AddSeparator();
@@ -490,7 +497,34 @@ void _rumble_get(ODItem *item)
 }
 
 
+void _scheme_change(ODItem *item, int dir)
+{
+  settings->control_scheme ^= 1;
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
+  opt.dlg->Refresh();
+  if (settings->control_scheme)
+  {
+    ACCEPT_BUTTON = FIREKEY;
+    DECLINE_BUTTON = JUMPKEY;
+  }
+  else
+  {
+    ACCEPT_BUTTON = JUMPKEY;
+    DECLINE_BUTTON = FIREKEY;
+  }
+}
 
+void _scheme_get(ODItem *item)
+{
+  static const char *strs[] = {"Jump", "Fire"};
+  strcpy(item->suffix, strs[settings->control_scheme]);
+}
+
+void _scheme_get2(ODItem *item)
+{
+  static const char *strs[] = {"Fire", "Jump"};
+  strcpy(item->suffix, strs[settings->control_scheme]);
+}
 
 static void _upd_control(ODItem *item)
 {

@@ -92,6 +92,7 @@ bool settings_load(Settings *setfile)
     setfile->sfx_volume = 100;
     setfile->music_volume = 100;
     setfile->animated_facepics = true;
+    setfile->control_scheme = false;
     memset(setfile->language, 0, 256);
     strncpy(setfile->language, "english", 255);
 
@@ -100,6 +101,17 @@ bool settings_load(Settings *setfile)
   else
   {
     input_set_mappings(settings->input_mappings);
+  }
+
+  if (settings->control_scheme)
+  {
+    ACCEPT_BUTTON = FIREKEY;
+    DECLINE_BUTTON = JUMPKEY;
+  }
+  else
+  {
+    ACCEPT_BUTTON = JUMPKEY;
+    DECLINE_BUTTON = FIREKEY;
   }
 
   return 0;
