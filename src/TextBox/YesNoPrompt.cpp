@@ -90,16 +90,16 @@ void TB_YNJPrompt::Tick()
         fState = (fState == STATE_YES_SELECTED) ? STATE_NO_SELECTED : STATE_YES_SELECTED;
       }
 
-      if (justpushed(JUMPKEY))
+      if (justpushed(ACCEPT_BUTTON))
       {
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
-        lastinputs[JUMPKEY]  = true;
-        lastpinputs[JUMPKEY] = true;
+        lastinputs[ACCEPT_BUTTON]  = true;
+        lastpinputs[ACCEPT_BUTTON] = true;
 
         fAnswer = (fState == STATE_YES_SELECTED) ? YES : NO;
         SetVisible(false);
       }
-      if (justpushed(FIREKEY))
+      if (justpushed(DECLINE_BUTTON))
       {
         fState = STATE_NO_SELECTED;
       }

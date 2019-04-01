@@ -160,7 +160,7 @@ void TB_SaveSelect::Run_Input()
     fPicXOffset = -24;
   }
 
-  if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
+  if (justpushed(ACCEPT_BUTTON) || justpushed(ENTERKEY))
   {
     fAborted = false;
     if (fSaving)
@@ -178,7 +178,7 @@ void TB_SaveSelect::Run_Input()
     if (s)
       s->delaytimer = 0;
   }
-  else if (justpushed(FIREKEY) || justpushed(ESCKEY))
+  else if (justpushed(DECLINE_BUTTON) || justpushed(ESCKEY))
   {
     fAborted = true;
     SetVisible(false);

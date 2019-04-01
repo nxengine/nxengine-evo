@@ -163,7 +163,7 @@ void ms_tick(void)
     ms.timer++;
 
     // dismissal
-    if (justpushed(JUMPKEY) || justpushed(MAPSYSTEMKEY))
+    if (justpushed(DECLINE_BUTTON) || justpushed(MAPSYSTEMKEY))
     {
       ms.state = MS_CONTRACTING;
     }

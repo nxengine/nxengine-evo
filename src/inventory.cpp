@@ -308,14 +308,14 @@ static void RunSelector(stSelector *selector)
   }
   else // selecting an item
   {
-    if (justpushed(JUMPKEY))
+    if (justpushed(ACCEPT_BUTTON))
     { // bring up "more info" or "equip" script for this item
       game.tsc->StartScript(selector->items[selector->cursel] + selector->scriptbase + 1000,
                             TSC::ScriptPages::SP_ARMSITEM);
       inv.lockinput = 1;
     }
 
-    if (justpushed(INVENTORYKEY) || justpushed(FIREKEY))
+    if (justpushed(INVENTORYKEY) || justpushed(DECLINE_BUTTON))
       ExitInventory();
   }
 }

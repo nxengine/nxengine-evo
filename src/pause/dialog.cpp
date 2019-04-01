@@ -237,10 +237,10 @@ void Dialog::RunInput()
   else
     fRepeatTimer = 0;
 
-  if (justpushed(JUMPKEY) || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
+  if (justpushed(ACCEPT_BUTTON) || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
   {
     int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(ENTERKEY)) ? 1 : -1;
-    if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
+    if (justpushed(ACCEPT_BUTTON) || justpushed(ENTERKEY))
       dir = 0;
 
     ODItem *item = NULL;
@@ -275,7 +275,7 @@ void Dialog::RunInput()
     }
   }
 
-  if (justpushed(ESCKEY) || justpushed(FIREKEY))
+  if (justpushed(ESCKEY) || justpushed(DECLINE_BUTTON))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
     if (ondismiss)

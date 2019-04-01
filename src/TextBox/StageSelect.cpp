@@ -133,7 +133,7 @@ void TB_StageSelect::HandleInput()
   }
 
   // when user picks a location return the new script to execute
-  if (justpushed(JUMPKEY))
+  if (justpushed(ACCEPT_BUTTON))
   {
     int scriptno;
     if (!GetSlotByIndex(fSelectionIndex, NULL, &scriptno))
@@ -148,7 +148,7 @@ void TB_StageSelect::HandleInput()
 
     fMadeSelection = true;
   }
-  else if (justpushed(FIREKEY))
+  else if (justpushed(DECLINE_BUTTON))
   {
     game.tsc->JumpScript(0);
   }

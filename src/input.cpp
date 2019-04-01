@@ -18,6 +18,10 @@ in_action last_sdl_action;
 SDL_Joystick *joy;
 SDL_Haptic *haptic;
 
+int ACCEPT_BUTTON = JUMPKEY;
+int DECLINE_BUTTON = FIREKEY;
+
+
 bool input_init(void)
 {
   memset(inputs, 0, sizeof(inputs));
@@ -431,7 +435,7 @@ void input_close(void)
 void c------------------------------() {}
 */
 
-static const int buttons[] = {JUMPKEY, FIREKEY, STRAFEKEY, 0};
+static const int buttons[] = {JUMPKEY, FIREKEY, STRAFEKEY, ACCEPT_BUTTON, DECLINE_BUTTON, 0};
 
 bool buttondown(void)
 {

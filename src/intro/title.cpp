@@ -155,7 +155,7 @@ static void handle_input()
     } while (!_menuitems.at(title.cursel).enabled);
   }
 
-  if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
+  if (justpushed(ACCEPT_BUTTON) || justpushed(ENTERKEY))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
     int choice = title.cursel;
