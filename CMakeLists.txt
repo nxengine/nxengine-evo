@@ -130,12 +130,12 @@ ELSEIF(PLATFORM STREQUAL "vita")
     FILE vita/sce_sys sce_sys
     FILE release/data data
   )
-  add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/nx.vpk
-    COMMAND cp nx.vpk ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release
+  add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
+    COMMAND cp nx.vpk ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
     DEPENDS nx.vpk
     COMMENT "Moving vpk to release"
   )
-  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/nx.vpk)
+  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk)
 
 ELSEIF(PLATFORM STREQUAL "switch")
     add_definitions("-D__SWITCH__")
