@@ -24,6 +24,7 @@ This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sou
 * Modern main menu.
 * Support for custom soundtracks.
 * Initial mod support.
+* Vita/Switch ports.
 * Cleaner and partly refactored code.
 * Removed built-in data extractor.
 * Removed replays, as they were buggy/not implemented anyway.
