@@ -284,18 +284,18 @@ void Renderer::drawSurface(Surface *src, int dstx, int dsty, int srcx, int srcy,
 
   SDL_Rect srcrect, dstrect;
 
-  srcrect.x = srcx;
-  srcrect.y = srcy;
-  srcrect.w = wd;
-  srcrect.h = ht;
+  srcrect.x = srcx * scale;
+  srcrect.y = srcy * scale;
+  srcrect.w = wd * scale;
+  srcrect.h = ht * scale;
 
   dstrect.x = dstx * scale;
   dstrect.y = dsty * scale;
-  dstrect.w = srcrect.w * scale;
-  dstrect.h = srcrect.h * scale;
+  dstrect.w = srcrect.w;
+  dstrect.h = srcrect.h;
 
   if (_need_clip)
-    clip(srcrect, dstrect);
+    clipScaled(srcrect, dstrect);
 
   SDL_SetTextureAlphaMod(src->texture(), src->alpha);
   if (SDL_RenderCopy(_renderer, src->texture(), &srcrect, &dstrect))
@@ -310,12 +310,12 @@ void Renderer::blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, 
   SDL_Rect srcrect, dstrect;
 
   srcrect.x = 0;
-  srcrect.w = sfc->width();
-  srcrect.y = (y_src);
-  srcrect.h = (height);
+  srcrect.w = sfc->width() * scale;
+  srcrect.y = (y_src * scale);
+  srcrect.h = (height * scale);
 
-  dstrect.w = srcrect.w * scale;
-  dstrect.h = srcrect.h * scale;
+  dstrect.w = srcrect.w;
+  dstrect.h = srcrect.h;
 
   int x      = (x_dst * scale);
   int y      = (y_dst * scale);
@@ -328,7 +328,7 @@ void Renderer::blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, 
     dstrect.x = x;
     dstrect.y = y;
     SDL_RenderCopy(_renderer, sfc->texture(), &srcrect, &dstrect);
-    x += sfc->width() * scale;
+    x += sfc->width()  * scale;
   } while (x < destwd);
 }
 

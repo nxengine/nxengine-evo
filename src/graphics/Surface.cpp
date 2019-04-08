@@ -1,6 +1,7 @@
 #include "Surface.h"
 #include "Renderer.h"
 #include "../common/stat.h"
+#include "zoom.h"
 
 namespace NXE
 {
@@ -31,17 +32,20 @@ bool Surface::loadImage(const std::string &pbm_name, bool use_colorkey)
     return false;
   }
 
-  _width = image->w;
-  _height = image->h;
+  _width = image->w * Renderer::getInstance()->scale;
+  _height = image->h * Renderer::getInstance()->scale;
+
+  SDL_Surface *image_scaled = SDL_ZoomSurface(image, Renderer::getInstance()->scale);
+  SDL_FreeSurface(image);
 
   if (use_colorkey)
   {
-    SDL_SetColorKey(image, SDL_TRUE, SDL_MapRGB(image->format, 0, 0, 0));
+    SDL_SetColorKey(image_scaled, SDL_TRUE, SDL_MapRGB(image_scaled->format, 0, 0, 0));
   }
 
-  _texture = SDL_CreateTextureFromSurface(Renderer::getInstance()->renderer(), image);
+  _texture = SDL_CreateTextureFromSurface(Renderer::getInstance()->renderer(), image_scaled);
 
-  SDL_FreeSurface(image);
+  SDL_FreeSurface(image_scaled);
 
   if (!_texture)
   {
@@ -66,12 +70,12 @@ Surface *Surface::fromFile(const std::string &pbm_name, bool use_colorkey)
 
 int Surface::width()
 {
-  return _width;
+  return _width / Renderer::getInstance()->scale;
 }
 
 int Surface::height()
 {
-  return _height;
+  return _height / Renderer::getInstance()->scale;
 }
 
 SDL_Texture* Surface::texture()
