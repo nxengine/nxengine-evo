@@ -124,6 +124,7 @@ void run_konami_code()
       if (kc_table[title.kc_pos] == -1)
       {
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
+        game.debug.god = 1;
         title.kc_pos = 0;
       }
     }

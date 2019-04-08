@@ -1263,9 +1263,12 @@ void hurtplayer(int damage)
   if (!player || !player->hp)
     return;
 #if defined(DEBUG)
-  if (game.debug.god || inputs[DEBUG_MOVE_KEY])
+  if (inputs[DEBUG_MOVE_KEY])
     return;
 #endif
+
+  if (game.debug.god)
+    return;
 
   if (player->hurt_time)
     return;
