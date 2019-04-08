@@ -160,16 +160,8 @@ void TextBox::SetFace(int newface)
   // stat("TextBox::SetFace(%d)", newface);
   fFace        = newface;
   fFaceXOffset = -FACE_W;
-  if (settings->animated_facepics)
-  {
-    faceFrame = 0;
-    faceStep = 1;
-  }
-  else
-  {
-    faceFrame = 2;
-    faceStep = 0;
-  }
+  faceFrame = 0;
+  faceStep = 1;
 }
 
 void TextBox::ShowCursor(bool enable)
@@ -273,10 +265,7 @@ void TextBox::TickTextBox()
     }
     else
     {
-      if (settings->animated_facepics)
-        faceFrame = 0;
-      else
-        faceFrame = 2;
+      faceFrame = 0;
       faceStep = 0;
     }
   }
@@ -312,7 +301,11 @@ void TextBox::DrawTextBox()
   // draw face
   if (fFace != 0)
   {
-    Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace + (30*faceFrame));
+    if (settings->animated_facepics)
+      Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES_0 + faceFrame, fFace);
+    else
+      Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+
     text_x += (FACE_W + 8); // move text over by width of face
 
     // face slide-in animation
@@ -370,11 +363,6 @@ void TextBox::AddNextChar(void)
         faceFrame = 2;
       }
     }
-  }
-  else
-  {
-    faceStep = 0;
-    faceFrame = 2;
   }
 
   while (!fCharsWaiting.empty())

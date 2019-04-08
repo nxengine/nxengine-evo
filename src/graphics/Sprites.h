@@ -2,7 +2,7 @@
 #ifndef _SPRITES_H
 #define _SPRITES_H
 
-#define MAX_SPRITESHEETS 64
+#define MAX_SPRITESHEETS 128
 #define MAX_SPRITES 512
 
 #include "../siflib/sif.h"
