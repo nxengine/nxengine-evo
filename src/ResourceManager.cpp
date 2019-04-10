@@ -232,9 +232,11 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
 
 #endif
 
+#if !defined(__VITA__) and !defined(__SWITCH__)
   if (!_mod.empty())
     _paths.push_back("data/mods/" + _mod + "/" + dir);
   _paths.push_back("data/" + dir);
+#endif
 
   for (auto &_tryPath: _paths)
   {
