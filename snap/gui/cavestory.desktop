@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Cave Story
+GenericName=Jump-and-run platformer
+Comment=NXEngine Evo clone/rewrite of Doukutsu Monogatari
+Exec=cavestory
+Categories=Game
+Icon=${SNAP}/meta/gui/icon_x256.png
+Type=Application
+Terminal=false

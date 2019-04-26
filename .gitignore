@@ -1,3 +1,4 @@
 build/
 tools/
 bin/
+*.snap
