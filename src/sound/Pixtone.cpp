@@ -362,18 +362,14 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
       {
         printf("SDL_ConvertAudio: %s\n", SDL_GetError());
       }
-      if (_sound_fx[slot].resampled != nullptr)
+
+      if (_sound_fx[slot].resampled != NULL)
       {
-        delete _sound_fx[slot].resampled;
+        SDL_free(_sound_fx[slot].resampled);
+        _sound_fx[slot].resampled = NULL;
       }
       _sound_fx[slot].resampled = Mix_QuickLoad_RAW((Uint8 *)cvt.buf, cvt.len_cvt);
-/*      _sound_fx[slot].resampled            = new Mix_Chunk;
-      _sound_fx[slot].resampled->allocated = _sound_fx[slot].chunk->allocated;
-      _sound_fx[slot].resampled->abuf      = (Uint8 *)SDL_malloc(cvt.len_cvt);
-      _sound_fx[slot].resampled->alen      = cvt.len_cvt;
-      _sound_fx[slot].resampled->volume    = 128;
-      memcpy(_sound_fx[slot].resampled->abuf, cvt.buf, cvt.len_cvt);
-      SDL_free(cvt.buf);*/
+      _sound_fx[slot].resampled_rate = resampled_rate;
     }
 
     chan                    = Mix_PlayChannel(chan, _sound_fx[slot].resampled, loop);
