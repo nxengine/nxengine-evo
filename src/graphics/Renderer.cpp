@@ -17,6 +17,10 @@
 #include <sstream>
 #include <iomanip>
 
+#if defined(__VITA__)
+#include <vita2d.h>
+#endif
+
 namespace NXE
 {
 namespace Graphics
@@ -112,7 +116,12 @@ bool Renderer::initVideo()
 #endif
 
   if (!_renderer)
+  {
+#if defined(__VITA__)
+    vita2d_init_advanced(2 * 1024 * 1024);
+#endif
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
+  }
   if (!_renderer)
   {
     staterr("Renderer::initVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
