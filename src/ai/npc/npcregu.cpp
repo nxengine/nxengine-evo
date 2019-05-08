@@ -44,9 +44,11 @@ INITFUNC(AIRoutines)
   ONTICK(OBJ_PROFESSOR_BOOSTER, ai_professor_booster);
   ONTICK(OBJ_BOOSTER_FALLING, ai_booster_falling);
 
-  GENERIC_NPC(OBJ_SANTA);
-  GENERIC_NPC(OBJ_CHACO);
-  GENERIC_NPC(OBJ_JACK);
+  ONTICK(OBJ_SANTA, ai_santa);
+  ONTICK(OBJ_CHACO, ai_chaco);
+  ONSPAWN(OBJ_JACK, onspawn_generic_npc);
+  ONTICK(OBJ_JACK, ai_jack);
+
   GENERIC_NPC_NOFACEPLAYER(OBJ_KAZUMA);
 }
 
@@ -847,18 +849,108 @@ void ai_npc_at_computer(Object *o)
   }
 }
 
+void ai_santa(Object *o)
+{
+  switch (o->state)
+  {
+    case 0: // stand
+    {
+      FACEPLAYER;
+      o->nxflags |= NXFLAG_FOLLOW_SLOPE;
+      o->frame    = 0;
+      o->xinertia = 0;
+      o->yinertia = 0;
+      randblink(o, 1, 8, 100);
+    }
+    break;
+
+    case 3: // walking
+    case 4:
+      npc_generic_walk(o, 3);
+      break;
+
+    case 5: // face away
+      o->frame    = 6;
+      o->xinertia = 0;
+      break;
+  }
+}
+
+void ai_chaco(Object *o)
+{
+  switch (o->state)
+  {
+    case 0: // stand
+    {
+      FACEPLAYER;
+      o->nxflags |= NXFLAG_FOLLOW_SLOPE;
+      o->frame    = 0;
+      o->xinertia = 0;
+      o->yinertia = 0;
+      randblink(o, 1, 8, 100);
+    }
+    break;
+
+    case 3: // walking
+    case 4:
+      npc_generic_walk(o, 3);
+      break;
+
+    case 5: // face away
+      o->frame    = 6;
+      o->xinertia = 0;
+      break;
+
+    case 10: // sleeping
+      o->dir   = 0;
+      o->frame = 6;
+      o->flags &= ~FLAG_SCRIPTONACTIVATE;
+      o->state = 11;
+      break;
+    case 11: // sleeping
+      ai_zzzz_spawner(o);
+      break;
+  }
+}
+
+void ai_jack(Object *o)
+{
+  o->yinertia += 0x40;
+
+  switch (o->state)
+  {
+    case 0: // stand
+    {
+      o->nxflags |= NXFLAG_FOLLOW_SLOPE;
+      o->frame    = 0;
+      o->xinertia = 0;
+      o->yinertia = 0;
+      randblink(o, 1, 8, 100);
+    }
+    break;
+
+    case 3: // walking
+    case 4:
+    case 8:
+      npc_generic_walk(o, 3);
+      break;
+
+    case 5: // face away
+      o->frame    = 6;
+      o->xinertia = 0;
+      break;
+  }
+  LIMITY(0x5FF);
+}
+
+
 /*
 void c------------------------------() {}
 */
 
 void onspawn_generic_npc(Object *o)
 {
-  // these exceptions are because the Balcony helicopter has a state
-  // which lets them ride in it and executing this messes it up.
-  if (o->type != OBJ_SANTA && o->type != OBJ_CHACO)
-  {
-    o->SnapToGround();
-  }
+  o->SnapToGround();
 }
 
 void ai_generic_npc(Object *o)
@@ -874,6 +966,7 @@ void ai_generic_npc(Object *o)
 void ai_generic_npc_nofaceplayer(Object *o)
 {
   o->yinertia += 0x40;
+
   switch (o->state)
   {
     case 0: // stand
