@@ -1044,8 +1044,7 @@ void ai_malco_broken(Object *o)
       o->frame = 0;
       randblink(o, 1, 8, 50);
 
-      if (game.mode != GM_CREDITS)
-        FACEPLAYER;
+      FACEPLAYERIFNEARBY;
     }
     break;
   }

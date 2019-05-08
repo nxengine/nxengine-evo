@@ -58,7 +58,7 @@ void ai_ma_pignon(Object *o)
     }
     case 1:
     {
-      FACEPLAYER;
+      FACEPLAYERIFNEARBY;
       o->frame = 0;
       randblink(o);
     }

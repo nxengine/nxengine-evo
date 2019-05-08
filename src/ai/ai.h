@@ -89,6 +89,12 @@ void randblink(Object *o, int blinkframe = 1, int blinktime = 8, int prob = 120)
     debug("timer2: %d", o->timer2);                                                                                    \
   }
 
+#define FACEPLAYERIFNEARBY                                                                                             \
+  {                                                                                                                    \
+    if (!player->hide && pdistlx(0x4000) && pdistly2(0x4000, 0x2000))                                                  \
+      o->dir = (o->CenterX() > player->CenterX()) ? LEFT : RIGHT;                                                      \
+  }
+
 Object *SpawnObjectAtActionPoint(Object *o, int otype);
 
 bool ai_init(void);

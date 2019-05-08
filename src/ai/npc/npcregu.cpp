@@ -855,7 +855,7 @@ void ai_santa(Object *o)
   {
     case 0: // stand
     {
-      FACEPLAYER;
+      FACEPLAYERIFNEARBY;
       o->nxflags |= NXFLAG_FOLLOW_SLOPE;
       o->frame    = 0;
       o->xinertia = 0;
@@ -882,7 +882,7 @@ void ai_chaco(Object *o)
   {
     case 0: // stand
     {
-      FACEPLAYER;
+      FACEPLAYERIFNEARBY;
       o->nxflags |= NXFLAG_FOLLOW_SLOPE;
       o->frame    = 0;
       o->xinertia = 0;
