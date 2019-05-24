@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctype.h>
+#include <SDL.h>
 #if defined(_WIN32)
 #include <windows.h>
 #endif
@@ -17,7 +18,7 @@
 
 void stat(const char *fmt, ...);
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
 uint16_t fgeti(FILE *fp)
 {
   uint16_t value;
