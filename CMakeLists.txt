@@ -165,6 +165,7 @@ ENDIF()
 
 IF(PLATFORM STREQUAL "pc")
     add_executable(extract ${EXTR_SOURCES})
+    target_link_libraries(extract ${SDL2_LIBRARY})
 ENDIF()
 
 
