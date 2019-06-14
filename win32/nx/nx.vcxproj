@@ -441,7 +441,7 @@
     <ClInclude Include="..\..\src\trig.h" />
     <ClInclude Include="..\..\src\tsc.h" />
     <ClInclude Include="..\..\src\version.h" />
-    <ClCompile Include="..\..\src\Utils\Logger.h" />
+    <ClInclude Include="..\..\src\Utils\Logger.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
