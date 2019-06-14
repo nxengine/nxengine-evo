@@ -1,7 +1,6 @@
 #include "SoundManager.h"
 
 #include "../ResourceManager.h"
-#include "../common/json.hpp"
 #include "../common/misc.h"
 #include "../common/stat.h"
 #include "../game.h"
@@ -10,6 +9,7 @@
 #include "Organya.h"
 #include "Pixtone.h"
 
+#include <json.hpp>
 #include <fstream>
 #include <iostream>
 

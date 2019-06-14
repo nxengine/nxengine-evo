@@ -1,7 +1,6 @@
 #include "Font.h"
 
 #include "../ResourceManager.h"
-#include "../common/json.hpp"
 #include "../common/misc.h"
 #include "../common/stat.h"
 #include "Renderer.h"
@@ -11,6 +10,7 @@
 #include "../game.h"
 #include "../nx.h"
 
+#include <json.hpp>
 #include <utf8.h>
 #include <fstream>
 #include <iostream>

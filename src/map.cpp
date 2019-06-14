@@ -12,13 +12,13 @@
 using namespace NXE::Graphics;
 
 #include "ResourceManager.h"
-#include "common/json.hpp"
 #include "common/misc.h"
 #include "common/stat.h"
 #include "game.h"
 #include "player.h"
 #include "settings.h"
 
+#include <json.hpp>
 #include <fstream>
 
 stMap map;

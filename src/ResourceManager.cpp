@@ -17,9 +17,10 @@
 
 #include "ResourceManager.h"
 #include "common/glob.h"
-#include "common/json.hpp"
 #include "common/misc.h"
 #include "settings.h"
+
+#include <json.hpp>
 
 bool ResourceManager::fileExists(const std::string &filename)
 {
