@@ -65,6 +65,7 @@ file(GLOB EXTR_SOURCES "src/extract/[a-zA-Z]*.cpp")
 set(EXTR_SOURCES
     ${EXTR_SOURCES}
     "src/common/misc.cpp"
+    "src/Utils/Logger.cpp"
     "src/stagedata.cpp"
 )
 
