@@ -98,7 +98,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RemoveUnreferencedCodeData>false</RemoveUnreferencedCodeData>
     </ClCompile>
     <Link>
@@ -116,7 +116,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -134,7 +134,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,7 +154,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -378,7 +378,6 @@
     <ClInclude Include="..\..\src\common\llist.h" />
     <ClInclude Include="..\..\src\common\misc.h" />
     <ClInclude Include="..\..\src\common\stat.h" />
-    <ClInclude Include="..\..\src\common\utf8.h" />
     <ClInclude Include="..\..\src\config.h" />
     <ClInclude Include="..\..\src\console.h" />
     <ClInclude Include="..\..\src\debug.h" />
@@ -389,7 +388,7 @@
     <ClInclude Include="..\..\src\floattext.h" />
     <ClInclude Include="..\..\src\game.h" />
     <ClInclude Include="..\..\src\graphics\Font.h" />
-    <ClInclude Include="..\..\src\graphics\Rendererr.h" />
+    <ClInclude Include="..\..\src\graphics\Renderer.h" />
     <ClInclude Include="..\..\src\graphics\Surface.h" />
     <ClInclude Include="..\..\src\graphics\nx_icon.h" />
     <ClInclude Include="..\..\src\graphics\pngfuncs.h" />
