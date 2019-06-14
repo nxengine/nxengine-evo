@@ -742,7 +742,7 @@ void DebugConsole::Draw()
 {
   if (fResponse[0])
   {
-    this->DrawText(fResponse);
+    this->DrawDebugText(fResponse);
 
     if (--fResponseTimer <= 0)
       fResponse[0] = 0;
@@ -761,14 +761,14 @@ void DebugConsole::Draw()
 
     sprintf(buffer, "-> %s%c", fLine, (fCursorTimer < 20) ? '_' : ' ');
 
-    this->DrawText(buffer);
+    this->DrawDebugText(buffer);
 
     if (++fCursorTimer > 30)
       fCursorTimer = 0;
   }
 }
 
-void DebugConsole::DrawText(const char *text)
+void DebugConsole::DrawDebugText(const char *text)
 {
   Renderer::getInstance()->font.draw(4, (Renderer::getInstance()->screenHeight - 16), text, 0xFFAAAA, true);
 }
