@@ -2,13 +2,13 @@
 #include "TextBox.h"
 
 #include "../autogen/sprites.h"
-#include "../common/utf8.h"
 #include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../nx.h"
 #include "../settings.h"
 #include "../sound/SoundManager.h"
 
+#include <utf8.h>
 #include <iostream>
 using namespace NXE::Graphics;
 

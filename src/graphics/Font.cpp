@@ -7,11 +7,11 @@
 #include "Renderer.h"
 #include "pngfuncs.h"
 #include "../autogen/sprites.h"
-#include "../common/utf8.h"
 #include "../config.h"
 #include "../game.h"
 #include "../nx.h"
 
+#include <utf8.h>
 #include <fstream>
 #include <iostream>
 

@@ -46,6 +46,7 @@ find_package(PNG REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${PNG_PNG_INCLUDE_DIR})
+include_directories("${nx_SOURCE_DIR}/deps")
 
 file(GLOB APP_SOURCES "src/[a-zA-Z]*.cpp")
 file(GLOB TB_SOURCES "src/TextBox/[a-zA-Z]*.cpp")
