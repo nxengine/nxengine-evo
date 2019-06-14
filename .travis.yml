@@ -4,16 +4,16 @@ matrix:
   include:
     - os: linux
       sudo: required
-      dist: trusty
+      dist: xenial
       compiler: gcc
       env:
          - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-         - INSTALLGCC=1
+#         - INSTALLGCC=1
 
     - os: linux
       compiler: clang
       sudo: required
-      dist: trusty
+      dist: xenial
 
     - os: osx
       compiler: clang
