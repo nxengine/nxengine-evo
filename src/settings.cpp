@@ -3,7 +3,7 @@
 
 #include "ResourceManager.h"
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "input.h"
 
 #include <SDL.h>
@@ -25,12 +25,12 @@ static bool tryload(Settings *setfile)
 
   std::string path = ResourceManager::getInstance()->getPrefPath("settings.dat");
 
-  stat("Loading settings...");
+  LOG_INFO("Loading settings...");
 
   fp = myfopen(widen(path).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    stat("Couldn't open file %s.", path.c_str());
+    LOG_ERROR("Couldn't open file {}.", path);
     return 1;
   }
 
@@ -38,7 +38,7 @@ static bool tryload(Settings *setfile)
   fread(setfile, sizeof(Settings), 1, fp);
   if (setfile->version != SETTINGS_VERSION)
   {
-    stat("Wrong settings version %04x.", setfile->version);
+    LOG_ERROR("Wrong settings version {:#04x}.", setfile->version);
     fclose(fp);
     return 1;
   }
@@ -74,7 +74,7 @@ bool settings_load(Settings *setfile)
 
   if (tryload(settings))
   {
-    stat("No saved settings; using defaults.");
+    LOG_INFO("No saved settings; using defaults.");
 
     memset(setfile, 0, sizeof(Settings));
 #if defined(__VITA__) || defined(__SWITCH__)
@@ -130,11 +130,11 @@ bool settings_save(Settings *setfile)
   if (!setfile)
     setfile = &normal_settings;
 
-  stat("Writing settings...");
+  LOG_INFO("Writing settings...");
   fp = myfopen(widen(path).c_str(), widen("wb").c_str());
   if (!fp)
   {
-    stat("Couldn't open file %s.", path.c_str());
+    LOG_ERROR("Couldn't open file {}.", path);
     return 1;
   }
 

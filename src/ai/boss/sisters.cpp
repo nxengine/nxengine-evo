@@ -12,6 +12,7 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+#include "../../Utils/Logger.h"
 
 using namespace NXE::Graphics;
 
@@ -66,7 +67,7 @@ void SistersBoss::OnMapEntry()
 {
   int i;
 
-  /*stat("%d %d %d %d",
+  /*LOG_TRACE("{} {} {} {}",
           Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.x1,
           Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.y1,
           Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.x2,

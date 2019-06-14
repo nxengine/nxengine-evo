@@ -24,7 +24,7 @@
 #include "pngfuncs.h"
 
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -50,12 +50,12 @@ void user_read_fn(png_structp png_ptr, png_bytep data, png_size_t length)
 
 void png_user_warn(png_structp ctx, png_const_charp str)
 {
-  staterr("libpng: warning: %s\n", str);
+  LOG_WARN("libpng: %s", str);
 }
 
 void png_user_error(png_structp ctx, png_const_charp str)
 {
-  staterr("libpng: error: %s\n", str);
+  LOG_ERROR("libpng: %s", str);
 }
 
 int png_save_surface(const std::string& filename, SDL_Surface *surf)
@@ -70,7 +70,7 @@ int png_save_surface(const std::string& filename, SDL_Surface *surf)
   fp = myfopen(widen(filename).c_str(), widen("wb").c_str());
   if (fp == NULL)
   {
-    staterr("fopen error");
+    LOG_ERROR("fopen error");
     return -1;
   }
 
@@ -78,7 +78,7 @@ int png_save_surface(const std::string& filename, SDL_Surface *surf)
   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, png_user_error, png_user_warn);
   if (png_ptr == NULL)
   {
-    staterr("png_create_write_struct error!\n");
+    LOG_ERROR("png_create_write_struct error!");
     fclose(fp);
     return -1;
   }
@@ -87,7 +87,7 @@ int png_save_surface(const std::string& filename, SDL_Surface *surf)
   if (info_ptr == NULL)
   {
     png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
-    staterr("png_create_info_struct error!\n");
+    LOG_ERROR("png_create_info_struct error!");
     fclose(fp);
     exit(-1);
   }
@@ -137,7 +137,7 @@ SDL_Surface *png_load_surface(const std::string& name)
 
   if ((fp = myfopen(widen(name).c_str(), widen("rb").c_str())) == NULL)
   {
-    staterr("Can't open file\n");
+    LOG_ERROR("Can't open file");
 
     return NULL;
   }
@@ -146,7 +146,7 @@ SDL_Surface *png_load_surface(const std::string& name)
 
   if (png_ptr == NULL)
   {
-    staterr("libpng: can't create read struct\n");
+    LOG_ERROR("libpng: can't create read struct");
     fclose(fp);
     return NULL;
   }
@@ -154,14 +154,14 @@ SDL_Surface *png_load_surface(const std::string& name)
   info_ptr = png_create_info_struct(png_ptr);
   if (info_ptr == NULL)
   {
-    staterr("libpng: can't create info struct\n");
+    LOG_ERROR("libpng: can't create info struct");
     fclose(fp);
     png_destroy_read_struct(&png_ptr, NULL, NULL);
     return NULL;
   }
   if (setjmp(png_jmpbuf(png_ptr)))
   {
-    staterr("libpng: can't setjmp\n");
+    LOG_ERROR("libpng: can't setjmp");
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
     fclose(fp);
     return NULL;

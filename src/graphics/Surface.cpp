@@ -1,6 +1,6 @@
 #include "Surface.h"
 #include "Renderer.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "zoom.h"
 
 namespace NXE
@@ -28,7 +28,7 @@ bool Surface::loadImage(const std::string &pbm_name, bool use_colorkey)
   SDL_Surface *image = SDL_LoadBMP(pbm_name.c_str());
   if (!image)
   {
-    staterr("Surface::LoadImage: load failed of '%s'! %s", pbm_name.c_str(), SDL_GetError());
+    LOG_ERROR("Surface::LoadImage: load failed of '{}'! {}", pbm_name, SDL_GetError());
     return false;
   }
 
@@ -49,7 +49,7 @@ bool Surface::loadImage(const std::string &pbm_name, bool use_colorkey)
 
   if (!_texture)
   {
-    staterr("Surface::LoadImage: SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+    LOG_ERROR("Surface::LoadImage: SDL_CreateTextureFromSurface failed: {}", SDL_GetError());
     return false;
   }
 

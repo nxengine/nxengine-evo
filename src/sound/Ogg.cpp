@@ -3,7 +3,7 @@
 #include "../ResourceManager.h"
 #include "../common/basics.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../settings.h"
 #include "SoundManager.h" // SAMPLE_RATE
 
@@ -43,7 +43,7 @@ bool Ogg::load(const std::string &fname, const std::string &dir, bool doloop)
   _song.intro = Mix_LoadMUS(filename.c_str());
   if (!_song.intro)
   {
-    staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
+    LOG_ERROR("Mix_LoadMUS(): {}", Mix_GetError());
     return false;
   }
 
@@ -57,7 +57,7 @@ bool Ogg::load(const std::string &fname, const std::string &dir, bool doloop)
   _song.loop = Mix_LoadMUS(filename.c_str());
   if (!_song.loop)
   {
-    staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
+    LOG_ERROR("Mix_LoadMUS(): {}", Mix_GetError());
     return false;
   }
 

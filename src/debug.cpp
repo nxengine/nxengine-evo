@@ -6,7 +6,7 @@
 #include "input.h"
 #include "nx.h"
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "console.h"
 #include "map.h"
 #include "object.h"
@@ -282,7 +282,7 @@ int ObjectNameToType(const char *name_in)
     }
   }
 
-  stat("ObjectNameToType: couldn't find object 'OBJ_%s'", searchstring);
+  LOG_DEBUG("ObjectNameToType: couldn't find object 'OBJ_{}'", searchstring);
   free(name);
   return -1;
 }

@@ -3,7 +3,7 @@
 
 #include "../ObjManager.h"
 #include "../autogen/sprites.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
 #include "../nx.h"
@@ -18,7 +18,7 @@ bool IrregularBBox::init(Object *associatedObject, int max_rectangles)
   if (num_bboxes >= IB_MAX_BBOXES)
   {
     num_bboxes = IB_MAX_BBOXES;
-    staterr("IrregularBBox::Init(): too many rectangles (%d given): max is %d", max_rectangles, IB_MAX_BBOXES);
+    LOG_ERROR("IrregularBBox::Init(): too many rectangles ({} given): max is {}", max_rectangles, IB_MAX_BBOXES);
     return 1;
   }
 
@@ -93,7 +93,7 @@ void IrregularBBox::set_bbox(int index, int x, int y, int w, int h, uint32_t fla
 {
   if (index < 0 || index >= num_bboxes)
   {
-    staterr("IrregularBBox::set_bbox: index out of range: %d", index);
+    LOG_ERROR("IrregularBBox::set_bbox: index out of range: {}", index);
     return;
   }
 

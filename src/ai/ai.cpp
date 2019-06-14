@@ -5,7 +5,7 @@
 #include "../ResourceManager.h"
 #include "../caret.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
 #include "../player.h"
@@ -37,7 +37,7 @@ bool ai_init(void)
   // of every AI-related module which assign AI logic to objects.
   if (AIRoutines.CallFunctions())
   {
-    staterr("ai_init: failed to initialize AIRoutines function pointers");
+    LOG_ERROR("ai_init: failed to initialize AIRoutines function pointers");
     return 1;
   }
 
@@ -52,11 +52,11 @@ bool load_npc_tbl(void)
   FILE *fp = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("npc.tbl")).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    staterr("load_npc_tbl: data/npc.tbl is missing");
+    LOG_ERROR("load_npc_tbl: data/npc.tbl is missing");
     return 1;
   }
 
-  stat("Reading npc.tbl...");
+  LOG_INFO("Reading npc.tbl...");
 
   for (i = 0; i < nEntries; i++)
     objprop[i].defaultflags = fgeti(fp);

@@ -8,7 +8,7 @@
 #include "../ResourceManager.h"
 #include "../common/glob.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../settings.h"
 #include "Pixtone.h"
 #include "SoundManager.h"
@@ -37,10 +37,10 @@ static std::vector<int16_t> DrumSamples[12];
 
 Organya::Organya()
 {
-  stat("Organya init...");
+  LOG_INFO("Organya init...");
   _loadWavetable();
   _loadDrums();
-  stat("Organya init done");
+  LOG_INFO("Organya init done");
 }
 
 Organya::~Organya() {}
@@ -62,7 +62,7 @@ bool Organya::_loadWavetable()
       = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("wavetable.dat")).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    stat("Unable to open wavetable.dat!!");
+    LOG_ERROR("Unable to open wavetable.dat");
     return false;
   }
 
@@ -87,7 +87,7 @@ bool Organya::_loadDrums()
 
     stPXSound snd;
 
-    stat("load_drum: loading %s into drum index %d", fname, drumno);
+    LOG_DEBUG("load_drum: loading {} into drum index {}", fname, drumno);
 
     if (!snd.load(fname))
       return false;
@@ -118,7 +118,7 @@ bool Song::Load(const std::string &fname)
   FILE *fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    stat("org_load: no such file: '%s'", fname.c_str());
+    LOG_WARN("Song::Load: no such file: '{}'", fname);
     return false;
   }
   for (int i = 0; i < 6; ++i)

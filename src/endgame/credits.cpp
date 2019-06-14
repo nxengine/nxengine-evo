@@ -4,7 +4,7 @@
 #include "../ResourceManager.h"
 #include "../autogen/sprites.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../console.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
@@ -92,7 +92,7 @@ void Credits::RunNextCommand()
 
   if (script.ReadCommand(&cmd))
   {
-    console.Print("script.ReadCommand failed: credits terminated");
+    LOG_DEBUG("script.ReadCommand failed: credits terminated");
     roll_running = false;
     return;
   }
@@ -154,7 +154,7 @@ void Credits::RunNextCommand()
       break;
 
     default:
-      console.Print("Unhandled command '%c'; credits terminated", cmd.type);
+      LOG_WARN("Unhandled command '%c'; credits terminated", cmd.type);
       roll_running = false;
       break;
   }
@@ -165,7 +165,7 @@ bool Credits::Jump(int label)
   CredCommand cmd;
   bool tried_rewind = false;
 
-  stat("- Jump to label %04d", label);
+  LOG_DEBUG("- Jump to label {:04d}", label);
 
   for (;;)
   {
@@ -179,7 +179,7 @@ bool Credits::Jump(int label)
       }
       else
       {
-        console.Print("Missing label %04d; credits terminated", label);
+        LOG_ERROR("Missing label {:04d}; credits terminated", label);
         roll_running = false;
         return 1;
       }
@@ -307,9 +307,9 @@ bool BigImage::Init()
     {
       images[i] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
       if (!images[i])
-        staterr("BigImage::Init: image '%s' exists but seems corrupt!", fname);
+        LOG_ERROR("BigImage::Init: image '{}' exists but seems corrupt!", fname);
       else
-        stat("BigImage: loaded %s ok", fname);
+        LOG_DEBUG("BigImage: loaded {} ok", fname);
     }
   }
 
@@ -322,7 +322,7 @@ BigImage::~BigImage()
   {
     if (images[i])
     {
-      staterr("BigImage: freeing image %d", i);
+      LOG_DEBUG("BigImage: freeing image {}", i);
       delete images[i];
       images[i] = NULL;
     }
@@ -339,7 +339,7 @@ void BigImage::Set(int num)
   }
   else
   {
-    staterr("BigImage::Set: invalid image number %d", num);
+    LOG_ERROR("BigImage::Set: invalid image number {}", num);
     state = BI_CLEAR;
   }
 }
@@ -391,7 +391,7 @@ bool credit_init(int parameter)
   credits = new Credits;
   if (credits->Init())
   {
-    staterr("Credits initilization failed");
+    LOG_ERROR("Credits initilization failed");
     return 1;
   }
 

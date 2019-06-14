@@ -1,7 +1,7 @@
 
 #include "almond.h"
 
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
 #include "../../map.h"
 #include "../../sound/SoundManager.h"
@@ -34,7 +34,7 @@ void ai_waterlevel(Object *o)
 
   if (map.wlforcestate)
   {
-    stat("Forced WL state to %d", map.wlforcestate);
+    LOG_DEBUG("Forced WL state to {}", map.wlforcestate);
     o->state         = map.wlforcestate;
     map.wlforcestate = 0;
   }

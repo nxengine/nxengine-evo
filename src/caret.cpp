@@ -8,7 +8,7 @@
 #include "autogen/sprites.h"
 #include "common/llist.h"
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "graphics/Renderer.h"
 #include "map.h"
 #include "nx.h"
@@ -308,7 +308,7 @@ Caret *effect(int x, int y, int effectno)
     break;
 
     default:
-      staterr("effect: invalid effect type %d", effectno);
+      LOG_ERROR("effect: invalid effect type {}", effectno);
       return NULL;
   }
 

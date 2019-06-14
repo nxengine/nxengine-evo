@@ -4,7 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
 #include "../../map.h"
@@ -59,7 +59,7 @@ INITFUNC(AIRoutines)
 
 void XBoss::OnMapEntry(void)
 {
-  stat("XBoss::OnMapEntry()");
+  LOG_DEBUG("XBoss::OnMapEntry()");
 
   memset(&X, 0, sizeof(X));
   memset(&body, 0, sizeof(body));

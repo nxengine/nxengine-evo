@@ -8,7 +8,7 @@
 // all the function pointers etc for the various creatures.
 #include "InitList.h"
 
-#include "stat.h"
+#include "../Utils/Logger.h"
 
 void InitList::AddFunction(void (*func)(void))
 {
@@ -39,11 +39,11 @@ bool InitList::CallFunctions()
 
   if (fCount >= MAX_INIT_RECORDS)
   {
-    stat("InitList::CallFunctions(%08x): too many initializers", this);
+    LOG_DEBUG("InitList::CallFunctions({:#08x}): too many initializers", (intptr_t)this);
     return 1;
   }
 
-  stat("InitList::CallFunctions(%08x): executing %d functions...", this, fCount);
+  LOG_DEBUG("InitList::CallFunctions({:#08x}): executing {} functions...", (intptr_t)this, fCount);
 
   for (i = 0; i < fCount; i++)
   {

@@ -85,7 +85,7 @@ bool Glob::Next()
       && strcmp(dir_entry_->d_name, "..") !=0
     )
     {
-      printf("%s\n", dir_entry_->d_name);
+//      printf("%s\n", dir_entry_->d_name);
       return true;
     }
   }

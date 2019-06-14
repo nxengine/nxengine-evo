@@ -2,7 +2,7 @@
 #include "niku.h"
 
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "ResourceManager.h"
 
 #include <SDL.h>
@@ -28,7 +28,7 @@ bool niku_load(uint32_t *value_out)
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    stat("niku_load: couldn't open file '%s'", fname.c_str());
+    LOG_DEBUG("niku_load: couldn't open file '{}'", fname);
     if (value_out)
       *value_out = 0;
     return 1;
@@ -50,13 +50,13 @@ bool niku_load(uint32_t *value_out)
 
   if ((result[0] != result[1]) || (result[0] != result[2]) || (result[0] != result[3]))
   {
-    stat("niku_load: value mismatch; '%s' corrupt", fname.c_str());
+    LOG_ERROR("niku_load: value mismatch; '{}' corrupt", fname);
     if (value_out)
       *value_out = 0;
   }
   else
   {
-    stat("niku_load: loaded value 0x%x from %s", *result, fname.c_str());
+    LOG_DEBUG("niku_load: loaded value {:#08x} from {}", *result, fname);
     if (value_out)
       *value_out = *result;
   }
@@ -99,13 +99,13 @@ bool niku_save(uint32_t value)
   FILE *fp = myfopen(widen(fname).c_str(), widen("wb").c_str());
   if (!fp)
   {
-    staterr("niku_save: failed to open '%s'", fname.c_str());
+    LOG_ERROR("niku_save: failed to open '{}'", fname);
     return 1;
   }
 
   fwrite(buf_byte, 20, 1, fp);
   fclose(fp);
 
-  stat("niku_save: wrote value 0x%08x", value);
+  LOG_DEBUG("niku_save: wrote value {:#08x}", value);
   return 0;
 }

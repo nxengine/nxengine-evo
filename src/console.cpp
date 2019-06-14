@@ -12,7 +12,7 @@
 using namespace NXE::Graphics;
 
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "debug.h"
 #include "map.h"
 #include "p_arms.h"
@@ -65,7 +65,7 @@ static void __warp(std::vector<std::string> *args, int num)
       stagename += (args->at(i));
     }
 
-    stat("Looking for '%s'", stagename.c_str());
+    LOG_DEBUG("Looking for '%s'", stagename.c_str());
     for (num = 0;; num++)
     {
       if (num >= num_stages)
@@ -609,7 +609,7 @@ void c------------------------------() {}
 
 void DebugConsole::SetVisible(bool newstate)
 {
-  // stat("DebugConsole::SetVisible(%s)", newstate?"true":"false");
+  LOG_DEBUG("DebugConsole::SetVisible({})", newstate ? "true" : "false");
 
   if (fVisible != newstate)
   {
@@ -785,7 +785,7 @@ void DebugConsole::Print(const char *fmt, ...)
   vsnprintf(fResponse, sizeof(fResponse), fmt, ar);
   va_end(ar);
 
-  stat("%s", fResponse);
+  LOG_DEBUG("{}", fResponse);
   fResponseTimer = 60;
 }
 
@@ -795,7 +795,7 @@ void c------------------------------() {}
 
 bool DebugConsole::Execute(const char *line)
 {
-  stat("DebugConsole::Execute('%s')", line);
+  LOG_DEBUG("DebugConsole::Execute('{}')", line);
 
   // record command in backbuffer
   if (!fBackBuffer.empty())

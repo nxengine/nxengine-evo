@@ -3,7 +3,7 @@
 #include "../../ObjManager.h"
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
 #include "../../map.h"
@@ -376,7 +376,7 @@ void ai_npc_sue(Object *o)
       // find Igor
       o->sue.carried_by = FindObjectByID2(501);
       if (!o->sue.carried_by)
-        staterr("-- Could not find entity carrying Sue (ID 501)");
+        LOG_ERROR("-- Could not find entity carrying Sue (ID 501)");
     case 14: // being carried--see aftermove routine
       o->frame = 9;
       break;
@@ -449,7 +449,7 @@ void ai_npc_sue(Object *o)
     break;
 
       /*default:
-              staterr("-- Sue entered unhandled state %d (0x%02x)", o->state, o->state);
+              LOG_ERROR("-- Sue entered unhandled state {} ({:#02x})", o->state, o->state);
               exit(1);*/
   }
 

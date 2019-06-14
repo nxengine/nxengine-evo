@@ -2,7 +2,7 @@
 
 #include "../../ObjManager.h"
 #include "../../caret.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
 #include "../../map.h"
@@ -280,6 +280,6 @@ bool IsBlockedInShotDir(Object *o)
       return o->blockd;
   }
 
-  staterr("IsBlockedInShotDir(%x): invalid direction %d", o, o->shot.dir);
+  LOG_ERROR("IsBlockedInShotDir({:#x}): invalid direction {}", (intptr_t)o, o->shot.dir);
   return 0;
 }

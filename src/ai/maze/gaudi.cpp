@@ -11,6 +11,7 @@
 #include "../../trig.h"
 #include "../ai.h"
 #include "../stdai.h"
+#include "../../Utils/Logger.h"
 
 using namespace NXE::Graphics;
 

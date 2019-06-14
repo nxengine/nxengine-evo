@@ -2,7 +2,7 @@
 
 #include "../ResourceManager.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
 #include "../settings.h"
 #include "Ogg.h"
@@ -32,22 +32,23 @@ SoundManager *SoundManager::getInstance()
 
 bool SoundManager::init()
 {
+  LOG_INFO("Sound system init");
   if (Mix_Init(MIX_INIT_OGG) == -1)
   {
-    staterr("Unable to init mixer.");
+    LOG_ERROR("Unable to init mixer.");
     return false;
   }
 
 #if SDL_MIXER_PATCHLEVEL >= 2
   if (Mix_OpenAudioDevice(SAMPLE_RATE, AUDIO_S16, 2, 2048, NULL, 0) == -1)
   {
-    staterr("Unable to init mixer.");
+    LOG_ERROR("Unable to open audio device.");
     return false;
   }
 #else
   if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16, 2, 2048) == -1)
   {
-    staterr("Unable to init mixer.");
+    LOG_ERROR("Unable to open audio device.");
     return false;
   }
 #endif
@@ -93,14 +94,14 @@ bool SoundManager::init()
       }
       else
       {
-        staterr("Music dir %s doesn't exist", dir.c_str());
+        LOG_WARN("Music dir {} doesn't exist", dir.c_str());
       }
     }
     fl.close();
   }
   else
   {
-    staterr("Failed to load music_dirs.json");
+    LOG_ERROR("Failed to load music_dirs.json");
   }
 
   _reloadTrackList();
@@ -117,6 +118,7 @@ void SoundManager::shutdown()
 
   Mix_CloseAudio();
   Mix_Quit();
+  LOG_INFO("Sound system shutdown");
 }
 
 void SoundManager::playSfx(NXE::Sound::SFX snd, int32_t loop)
@@ -167,11 +169,11 @@ void SoundManager::music(uint32_t songno, bool resume)
   _lastSong    = _currentSong;
   _currentSong = songno;
 
-  stat(" >> music(%d)", songno);
+  LOG_DEBUG(" >> music({})", songno);
 
   if (songno != 0 && !_shouldMusicPlay(songno, settings->music_enabled))
   {
-    stat("Not playing track %d because music_enabled is %d", songno, settings->music_enabled);
+    LOG_INFO("Not playing track {} because music_enabled is {}", songno, settings->music_enabled);
     switch (settings->new_music)
     {
       case 0:
@@ -201,7 +203,7 @@ void SoundManager::enableMusic(int newstate)
 {
   if (newstate != settings->music_enabled)
   {
-    stat("music_set_enabled(%d)", newstate);
+    LOG_DEBUG("enableMusic({})", newstate);
 
     settings->music_enabled = newstate;
     bool play               = _shouldMusicPlay(_currentSong, newstate);
@@ -234,7 +236,7 @@ void SoundManager::setNewmusic(int newstate)
 {
   if (newstate != settings->new_music)
   {
-    stat("music_set_newmusic(%d)", newstate);
+    LOG_DEBUG("setNewMusic({})", newstate);
 
     settings->new_music = newstate;
 
@@ -427,7 +429,7 @@ void SoundManager::_reloadTrackList()
   }
   else
   {
-    staterr("Failed to load music.json");
+    LOG_ERROR("Failed to load music.json");
   }
 }
 

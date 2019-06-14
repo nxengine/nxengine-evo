@@ -9,6 +9,7 @@
 #include "../siflib/sifloader.h"
 #include "Renderer.h"
 #include "Surface.h"
+#include "../Utils/Logger.h"
 
 #include <cstring>
 
@@ -110,13 +111,13 @@ bool Sprites::_load_sif(const std::string &fname)
 
   if (!(sheetdata = sif.FindSection(SIF_SECTION_SHEETS, &sheetdatalength)))
   {
-    staterr("load_sif: file '%s' missing SIF_SECTION_SHEETS", fname.c_str());
+    LOG_ERROR("load_sif: file '{}' missing SIF_SECTION_SHEETS", fname.c_str());
     return false;
   }
 
   if (!(spritesdata = sif.FindSection(SIF_SECTION_SPRITES, &spritesdatalength)))
   {
-    staterr("load_sif: file '%s' missing SIF_SECTION_SPRITES", fname.c_str());
+    LOG_ERROR("load_sif: file '{}' missing SIF_SECTION_SPRITES", fname.c_str());
     return false;
   }
 
@@ -128,7 +129,7 @@ bool Sprites::_load_sif(const std::string &fname)
   // decode sprites
   if (SIFSpritesSect::Decode(spritesdata, spritesdatalength, &sprites[0], &_num_sprites, MAX_SPRITES))
   {
-    staterr("load_sif: SIFSpritesSect decoder failed");
+    LOG_ERROR("load_sif: SIFSpritesSect decoder failed");
     return false;
   }
 

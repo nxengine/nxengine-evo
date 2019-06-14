@@ -2,7 +2,7 @@
 #include "sifloader.h"
 
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -68,19 +68,19 @@ bool SIFLoader::LoadHeader(const std::string &filename)
 
   if (!fp)
   {
-    staterr("SIFLoader::LoadHeader: failed to open file '%s'", filename.c_str());
+    LOG_ERROR("SIFLoader::LoadHeader: failed to open file '{}'", filename);
     return 1;
   }
 
   if ((magick = fgetl(fp)) != SIF_MAGICK)
   {
-    staterr("SIFLoader::LoadHeader: magick check failed--this isn't a SIF file or is wrong version?");
-    staterr(" (expected %08x, got %08x)", SIF_MAGICK, magick);
+    LOG_ERROR("SIFLoader::LoadHeader: magick check failed--this isn't a SIF file or is wrong version?");
+    LOG_ERROR(" (expected {:#08x}, got {:#08x})", SIF_MAGICK, magick);
     return 1;
   }
 
   int nsections = fgetc(fp);
-  stat("SIFLoader::LoadHeader: read index of %d sections", nsections);
+  LOG_DEBUG("SIFLoader::LoadHeader: read index of {} sections", nsections);
 
   for (int i = 0; i < nsections; i++)
   {
@@ -117,13 +117,13 @@ uint8_t *SIFLoader::FindSection(int type, int *length_out)
       {
         if (!fFP)
         {
-          staterr("SIFLoader::FindSection: entry found and need to load it, but file handle closed");
+          LOG_ERROR("SIFLoader::FindSection: entry found and need to load it, but file handle closed");
           if (length_out)
             *length_out = 0;
           return NULL;
         }
 
-        stat("Loading SIF section %d from address %04x", type, entry->foffset);
+        LOG_DEBUG("Loading SIF section {} from address {:#04x}", type, entry->foffset);
 
         entry->data = (uint8_t *)malloc(entry->length);
         fseek(fFP, entry->foffset, SEEK_SET);

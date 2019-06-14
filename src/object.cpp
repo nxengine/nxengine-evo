@@ -15,6 +15,7 @@ using namespace NXE::Graphics;
 #include "slope.h"
 #include "sound/SoundManager.h"
 #include "tsc.h"
+#include "Utils/Logger.h"
 
 //#define CSF 9
 
@@ -315,7 +316,7 @@ void Object::PushBehind(int objtype)
   if (target)
     PushBehind(target);
   else
-    staterr("PushBehind: could not find any objects of type %s", DescribeObjectType(objtype));
+    LOG_ERROR("PushBehind: could not find any objects of type {}", DescribeObjectType(objtype));
 }
 
 /*
@@ -984,7 +985,7 @@ void Object::RunAI()
         if (game.tsc->GetCurrentScript() == -1 && // no override other scripts
             game.switchstage.mapno == -1)         // no repeat exec after <TRA
         {
-          stat("On-touch script %d triggered", o->id2);
+          LOG_DEBUG("On-touch script {} triggered", o->id2);
           game.tsc->StartScript(o->id2);
         }
       }

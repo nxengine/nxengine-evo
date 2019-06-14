@@ -4,7 +4,7 @@
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../debug.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
@@ -237,7 +237,7 @@ void ai_hvtrigger(Object *o)
       game.switchstage.mapno == -1)         // no repeat exec after <TRA
   {
 #ifdef TRACE_SCRIPT
-    stat("HVTrigger %04d (%08x) activated", o->id2, o);
+    LOG_TRACE("HVTrigger {:04d} ({#08x}) activated", o->id2, (intptr_t)o);
 #endif
     game.tsc->StartScript(o->id2);
   }
@@ -1174,7 +1174,7 @@ void ai_scroll_controller(Object *o)
 
         if (!o->linkedobject)
         {
-          staterr("sctrl: no stageboss object!");
+          LOG_ERROR("sctrl: no stageboss object!");
           o->Delete();
         }
       }
@@ -1184,11 +1184,11 @@ void ai_scroll_controller(Object *o)
 
         if (o->linkedobject)
         {
-          staterr("sctrl: successfully linked to object %08x", o->linkedobject);
+          LOG_DEBUG("sctrl: successfully linked to object {:#08x}", (intptr_t)o->linkedobject);
         }
         else
         {
-          staterr("sctrl: failed to link to id2 %d: object not found", o->id2);
+          LOG_ERROR("sctrl: failed to link to id2 {}: object not found", o->id2);
           o->Delete();
         }
       }
@@ -1276,7 +1276,7 @@ void onspawn_spike_small(Object *o)
   int tile = map.tiles[(o->CenterX() / CSFI) / TILE_W][(o->CenterY() / CSFI) / TILE_H];
   if (tileattr[tile] & TA_SOLID)
   {
-    stat("onspawn_spike_small: spike %08x embedded in wall, deleting", o);
+    LOG_DEBUG("onspawn_spike_small: spike {:#08x} embedded in wall, deleting", (intptr_t)o);
     o->Delete();
   }
 }

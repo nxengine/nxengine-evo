@@ -4,7 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
 #include "../../map.h"
@@ -92,7 +92,7 @@ static Object *CreateMinicore(Object *core)
 // initilize all the pieces of the Core boss.
 void CoreBoss::OnMapEntry(void)
 {
-  stat("CoreBoss::OnMapEntry");
+  LOG_DEBUG("CoreBoss::OnMapEntry");
 
   o                     = CreateObject(0, 0, OBJ_CORE_CONTROLLER);
   game.stageboss.object = o;
@@ -169,7 +169,8 @@ void CoreBoss::Run()
 
   if (!o)
     return;
-  // stat("state = %d", o->state);
+
+  LOG_DEBUG("state = {}", o->state);
 
   switch (o->state)
   {

@@ -1,7 +1,7 @@
 
 #include "slope.h"
 
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "game.h"
 #include "graphics/Renderer.h"
 #include "map.h"
@@ -20,7 +20,7 @@ bool initslopetable(void)
   int inverttable, invertfliptable;
   int flipmx, flipy;
 
-  stat("initslopetable: generating slopetables.");
+  LOG_DEBUG("initslopetable: generating slopetables.");
   memset(slopetable, 0, sizeof(slopetable));
 
   ya = TILE_H - 1;
@@ -377,7 +377,7 @@ void dumpslopetable(int t)
   int x, y;
   char buffer[80];
 
-  stat("\nDumping slope table %d:", t);
+  LOG_TRACE("\nDumping slope table {}:", t);
   for (y = 0; y < TILE_H; y++)
   {
     for (x = 0; x < TILE_W; x++)
@@ -385,7 +385,7 @@ void dumpslopetable(int t)
       buffer[x] = slopetable[t].table[x][y] + '0';
     }
     buffer[x] = 0;
-    stat("%s", buffer);
+    LOG_TRACE("{}", buffer);
   }
 }
 #endif

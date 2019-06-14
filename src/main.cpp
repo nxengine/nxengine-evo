@@ -24,10 +24,11 @@ using namespace NXE::Graphics;
 #include "ResourceManager.h"
 #include "caret.h"
 #include "common/misc.h"
-#include "common/stat.h"
 #include "console.h"
 #include "screeneffect.h"
 #include "sound/SoundManager.h"
+#include "Utils/Logger.h"
+using namespace NXE::Utils;
 
 #if defined(__SWITCH__)
 #include <switch.h>
@@ -46,7 +47,7 @@ int flipacceltime = 0;
 
 static void fatal(const char *str)
 {
-  staterr("fatal: '%s'", str);
+  LOG_CRITICAL("fatal: '%s'", str);
 
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", str, NULL);
 }
@@ -84,8 +85,10 @@ void update_fps()
 static inline void run_tick()
 {
   static bool can_tick       = true;
+#if defined(DEBUG)
   static bool last_freezekey = false;
   static bool last_framekey  = false;
+#endif
   static int frameskip       = 0;
 
   input_poll();
@@ -174,7 +177,7 @@ static inline void run_tick()
 
 void AppMinimized(void)
 {
-  stat("Game minimized or lost focus--pausing...");
+  LOG_DEBUG("Game minimized or lost focus--pausing...");
   NXE::Sound::SoundManager::getInstance()->pause();
   for (;;)
   {
@@ -187,7 +190,7 @@ void AppMinimized(void)
     SDL_Delay(20);
   }
   NXE::Sound::SoundManager::getInstance()->resume();
-  stat("Focus regained, resuming play...");
+  LOG_DEBUG("Focus regained, resuming play...");
 }
 
 void gameloop(void)
@@ -234,7 +237,7 @@ void gameloop(void)
 
 void InitNewGame(bool with_intro)
 {
-  stat("= Beginning new game =");
+  LOG_DEBUG("= Beginning new game =");
 
   memset(game.flags, 0, sizeof(game.flags));
   memset(game.skipflags, 0, sizeof(game.skipflags));
@@ -279,18 +282,18 @@ int main(int argc, char *argv[])
 #if defined(__SWITCH__)
   if (int res = romfsInit() != 0)
   {
-    staterr("romfsInit() failed: 0x%x", res);
+    std::cerr << "romfsInit() failed" << std::endl;
     return 1;
   }
 #endif
 
   (void)ResourceManager::getInstance();
 
-  SetLogFilename(ResourceManager::getInstance()->getPrefPath("debug.log").c_str());
+  Logger::init(ResourceManager::getInstance()->getPrefPath("debug.log"));
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
   {
-    staterr("ack, sdl_init failed: %s.", SDL_GetError());
+    LOG_CRITICAL("ack, sdl_init failed: {}.", SDL_GetError());
     return 1;
   }
 
@@ -367,7 +370,7 @@ int main(int argc, char *argv[])
   game.running = true;
   freshstart   = true;
 
-  stat("Entering main loop...");
+  LOG_INFO("Entering main loop...");
 
   while (game.running)
   {
@@ -386,7 +389,7 @@ int main(int argc, char *argv[])
       if (game.switchstage.mapno == LOAD_GAME_FROM_MENU)
         freshstart = true;
 
-      stat("= Loading game =");
+      LOG_DEBUG("= Loading game =");
       if (game_load(settings->last_save_slot))
       {
         fatal("savefile error");
@@ -396,7 +399,7 @@ int main(int argc, char *argv[])
     }
     else if (game.switchstage.mapno == TITLE_SCREEN)
     {
-      stat("= Title screen =");
+      LOG_DEBUG("= Title screen =");
       game.curmap = TITLE_SCREEN;
     }
     else
@@ -449,10 +452,10 @@ shutdown:;
   return error;
 
 ingame_error:;
-  stat("");
-  stat(" ************************************************");
-  stat(" * An in-game error occurred. Game shutting down.");
-  stat(" ************************************************");
+  LOG_CRITICAL("");
+  LOG_CRITICAL(" ************************************************");
+  LOG_CRITICAL(" * An in-game error occurred. Game shutting down.");
+  LOG_CRITICAL(" ************************************************");
   error = true;
   goto shutdown;
 }

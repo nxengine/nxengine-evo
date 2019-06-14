@@ -285,7 +285,7 @@ void ResourceManager::findMods()
   std::vector<std::string> mods=glob(getPathForDir("mods/")+"*");
   for (auto &l: mods)
   {
-    std::cout << l << std::endl;
+//    std::cout << l << std::endl;
     std::ifstream ifs(widen(l+"/mod.json"), std::ifstream::in | std::ifstream::binary);
     if (ifs.is_open())
     {

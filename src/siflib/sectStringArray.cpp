@@ -1,7 +1,7 @@
 #include "sectStringArray.h"
 
 #include "../common/bufio.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 
 // decode the raw section data into the given tringList object
 bool SIFStringArraySect::Decode(const uint8_t *data, int datalen, std::vector<std::string> *out)
@@ -14,7 +14,7 @@ bool SIFStringArraySect::Decode(const uint8_t *data, int datalen, std::vector<st
   {
     if (data > data_end)
     {
-      staterr("SIFStringArraySect::Decode: section corrupt: overran end of data");
+      LOG_ERROR("SIFStringArraySect::Decode: section corrupt: overran end of data");
       return 1;
     }
 

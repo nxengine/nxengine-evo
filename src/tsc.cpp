@@ -7,7 +7,7 @@
 #include "ResourceManager.h"
 #include "ai/sym/smoke.h"
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "console.h"
 #include "debug.h"
 #include "endgame/credits.h"
@@ -100,7 +100,7 @@ static int MnemonicToOpcode(char *str)
       return index;
   }
 
-  staterr("MnemonicToOpcode: No such command '%s'", str);
+  LOG_ERROR("MnemonicToOpcode: No such command '{}'", str);
   return -1;
 }
 
@@ -114,6 +114,7 @@ TSC::~TSC() {}
 
 bool TSC::Init(void)
 {
+  LOG_INFO("Script engine init.");
   GenLTC();
   _curscript.running = false;
 
@@ -134,6 +135,7 @@ bool TSC::Init(void)
 
 void TSC::Close(void)
 {
+  LOG_INFO("Script engine shutdown.");
   // free all loaded scripts
   for (int i = 0; i < NUM_SCRIPT_PAGES; i++)
     _script_pages[i].Clear();
@@ -147,9 +149,8 @@ bool TSC::Load(const std::string &fname, ScriptPages pageno)
   std::string buf;
   bool result;
 
-#ifdef TRACE_SCRIPT
-  stat("tsc_load: loading '%s' to page %d", fname.c_str(), pageno);
-#endif
+  LOG_DEBUG("TSC::load: loading '{}' to page {}", fname, (int)pageno);
+
   if (_curscript.running && _curscript.pageno == (int)pageno)
     StopScript(&_curscript);
 
@@ -159,7 +160,7 @@ bool TSC::Load(const std::string &fname, ScriptPages pageno)
   buf = Decrypt(fname, &fsize);
   if (buf.empty())
   {
-    staterr("tsc_load: failed to load file: '%s'", fname.c_str());
+    LOG_ERROR("tsc_load: failed to load file: '{}'", fname);
     return false;
   }
 
@@ -179,7 +180,7 @@ std::string TSC::Decrypt(const std::string &fname, int *fsize_out)
 
   if (!ifs)
   {
-    staterr("tsc_decrypt: no such file: '%s'!", fname.c_str());
+    LOG_ERROR("tsc_decrypt: no such file: '{}'!", fname);
     return "";
   }
 
@@ -274,9 +275,7 @@ bool TSC::Compile(const char *buf, int bufsize, ScriptPages pageno)
   std::vector<uint8_t> *script = NULL;
   char cmdbuf[4]               = {0};
 
-#ifdef TRACE_SCRIPT
-  stat("<> tsc_compile bufsize = %d pageno = %d", bufsize, pageno);
-#endif
+  LOG_TRACE("tsc_compile bufsize = {} pageno = {}", bufsize, (int)pageno);
 
   while (buf <= buf_end)
   {
@@ -293,7 +292,7 @@ bool TSC::Compile(const char *buf, int bufsize, ScriptPages pageno)
       int scriptno = ReadNumber(&buf, buf_end);
       if (scriptno >= 10000 || scriptno < 0)
       {
-        staterr("tsc_compile: invalid script number: %d", scriptno);
+        LOG_ERROR("tsc_compile: invalid script number: {}", scriptno);
         return false;
       }
 
@@ -308,7 +307,7 @@ bool TSC::Compile(const char *buf, int bufsize, ScriptPages pageno)
       // stat("Parsing script #%04d", scriptno);
       if (page->scripts.find(scriptno) != page->scripts.end())
       {
-        staterr("tsc_compile WARNING: duplicate script #%04d; ignoring", scriptno);
+        LOG_WARN("tsc_compile: duplicate script #{:#04d}; ignoring", scriptno);
         // because script is left null, we'll ignore everything until we see another #
       }
       else
@@ -401,16 +400,12 @@ const uint8_t *TSC::FindScriptData(int scriptno, ScriptPages pageno, ScriptPages
 {
   ScriptPage *page = &_script_pages[(int)pageno];
 
-#ifdef TRACE_SCRIPT
-  stat("Looking for script #%04d in %d (%d)", scriptno, (int)pageno, page->scripts.size());
-#endif
+  LOG_TRACE("Looking for script #{:#04d} in {} ({})", scriptno, (int)pageno, page->scripts.size());
   if (page->scripts.find(scriptno) == page->scripts.end())
   {
     if (pageno != ScriptPages::SP_HEAD)
     { // try to find the script in head.tsc
-#ifdef TRACE_SCRIPT
-      stat("Looking for script #%04d in head", scriptno);
-#endif
+      LOG_TRACE("Looking for script #{:#04d} in head", scriptno);
       return FindScriptData(scriptno, ScriptPages::SP_HEAD, page_out);
     }
     else
@@ -432,14 +427,14 @@ bool TSC::StartScript(int scriptno, ScriptPages pageno)
   program = FindScriptData(scriptno, pageno, &found_pageno);
   if (!program)
   {
-    staterr("StartScript: no script at position #%04d page %d!", scriptno, pageno);
+    LOG_ERROR("StartScript: no script at position #{:#04d} page {}!", scriptno, (int)pageno);
     return false;
   }
 
   // don't start regular map scripts (e.g. hvtrigger) if player is dead
   if (player->dead && found_pageno != ScriptPages::SP_HEAD)
   {
-    stat("Not starting script %d; player is dead", scriptno);
+    LOG_DEBUG("Not starting script {}; player is dead", scriptno);
     return false;
   }
 
@@ -457,9 +452,7 @@ bool TSC::StartScript(int scriptno, ScriptPages pageno)
   player->hurt_time = 0;
   player->hurt_flash_state = 0;
 
-#ifdef TRACE_SCRIPT
-  stat("  - Started script %04d", scriptno);
-#endif
+  LOG_DEBUG("Started script #{:#04d}", scriptno);
 
   RunScripts();
   return true;
@@ -471,9 +464,7 @@ void TSC::StopScript(ScriptInstance *s)
     return;
 
   s->running = false;
-#ifdef TRACE_SCRIPT
-  stat("  - Stopped script %04d", s->scriptno);
-#endif
+  LOG_DEBUG("Stopped script #{:#04d}", s->scriptno);
 
   // TRA is really supposed to be a jump, not a script restart--
   // in that in maintains KEY/PRI across the stage transition.
@@ -497,9 +488,7 @@ bool TSC::JumpScript(int newscriptno, ScriptPages pageno)
   if (pageno == ScriptPages::SP_NULL)
     pageno = (ScriptPages)s->pageno;
 
-#ifdef TRACE_SCRIPT
-  stat("JumpScript: moving to script #%04d page %d", newscriptno, pageno);
-#endif
+  LOG_DEBUG("JumpScript: moving to script #{:#04d} page {}", newscriptno, (int)pageno);
 
   s->program  = FindScriptData(newscriptno, pageno, &pageno);
   s->pageno   = (int)pageno;
@@ -508,7 +497,7 @@ bool TSC::JumpScript(int newscriptno, ScriptPages pageno)
 
   if (!s->program)
   {
-    staterr("JumpScript: missing script #%04d! Script terminated.", newscriptno);
+    LOG_ERROR("JumpScript: missing script #{:#04d}! Script terminated.", newscriptno);
     StopScript(s);
     return 1;
   }
@@ -662,7 +651,6 @@ void TSC::ExecScript(ScriptInstance *s)
         snprintf(debugbuffer, sizeof(debugbuffer), "%s %04d", debugbuffer2, val);
       }
     }
-#ifdef TRACE_SCRIPT
     else
     {
       crtoslashn((char *)&s->program[s->ip], debugbuffer2);
@@ -674,9 +662,8 @@ void TSC::ExecScript(ScriptInstance *s)
     }
     else
     {
-      stat("%04d:%d  %s", s->scriptno, cmdip, debugbuffer);
+      LOG_TRACE("{:#04d}:{}  {}", s->scriptno, cmdip, debugbuffer);
     }
-#endif
 
     switch (cmd)
     {
@@ -774,7 +761,7 @@ void TSC::ExecScript(ScriptInstance *s)
       {
         bool waslocked = (player->inputs_locked || game.frozen);
 
-        stat("******* Executing <TRA to stage %d", parm[0]);
+        LOG_DEBUG("Executing <TRA to stage {}", parm[0]);
         game.switchstage.mapno        = parm[0];
         game.switchstage.eventonentry = parm[1];
         game.switchstage.playerx      = parm[2];
@@ -898,7 +885,7 @@ void TSC::ExecScript(ScriptInstance *s)
         if (game.stageboss.object)
           map_focus(game.stageboss.object, parm[1]);
         else
-          staterr("tsc: <FOB without stage boss");
+          LOG_ERROR("tsc: <FOB without stage boss");
       }
       break;
       case OP_FOM: // focus back to player (mychar)
@@ -950,7 +937,7 @@ void TSC::ExecScript(ScriptInstance *s)
         { // <BSL0000 means the stage boss
           target = game.stageboss.object;
           if (!game.stageboss.object)
-            staterr("<BSL0000 but no stage boss present");
+            LOG_ERROR("<BSL0000 but no stage boss present");
         }
         else
         {
@@ -966,7 +953,7 @@ void TSC::ExecScript(ScriptInstance *s)
         }
         else
         {
-          staterr("Target of <BSL not found");
+          LOG_ERROR("Target of <BSL not found");
         }
       }
       break;
@@ -1304,9 +1291,9 @@ void TSC::ExecScript(ScriptInstance *s)
       default:
       {
         if (cmd < OP_COUNT)
-          console.Print("- unimplemented opcode %s; script %04d halted.", cmd_table[cmd].mnemonic, s->scriptno);
+          LOG_WARN("- unimplemented opcode %s; script #{:#04d} halted.", cmd_table[cmd].mnemonic, s->scriptno);
         else
-          console.Print("- unimplemented opcode %02x; script %04d halted.", cmd, s->scriptno);
+          LOG_WARN("- unimplemented opcode {:02x}; script #{:#04d} halted.", cmd, s->scriptno);
 
         StopScript(s);
         return;
@@ -1354,7 +1341,7 @@ void _SetCSDir(Object *o, int csdir)
   }
   else
   {
-    staterr("SetCSDir: warning: invalid direction %04d passed as dirparam only", csdir);
+    LOG_ERROR("SetCSDir: warning: invalid direction {:#04d} passed as dirparam only", csdir);
   }
 
   // a few late-game objects, such as statues in the statue room,
@@ -1426,10 +1413,8 @@ void TSC::_NPCDo(int id2, int p1, int p2, void (*action_function)(Object *o, int
 
 void TSC::_DoANP(Object *o, int p1, int p2) // ANIMATE (set) object's state to p1 and set dir to p2
 {
-#ifdef TRACE_SCRIPT
-  stat("ANP: Obj %08x (%s): setting state: %d and dir: %s", o, DescribeObjectType(o->type), p1,
+  LOG_TRACE("ANP: Obj {:#08x} ({}): setting state: {} and dir: {}", (uint64_t)o, DescribeObjectType(o->type), p1,
        _DescribeCSDir(p2).c_str());
-#endif
 
   o->state = p1;
   _SetCSDir(o, p2);
@@ -1437,10 +1422,8 @@ void TSC::_DoANP(Object *o, int p1, int p2) // ANIMATE (set) object's state to p
 
 void TSC::_DoCNP(Object *o, int p1, int p2) // CHANGE object to p1 and set dir to p2
 {
-#ifdef TRACE_SCRIPT
-  stat("CNP: Obj %08x changing from %s to %s, new dir = %s", o, DescribeObjectType(o->type), DescribeObjectType(p1),
+  LOG_TRACE("CNP: Obj {:#08x} changing from {} to {}, new dir = {}", (uint64_t)o, DescribeObjectType(o->type), DescribeObjectType(p1),
        _DescribeCSDir(p2).c_str());
-#endif
 
   // Must set direction BEFORE changing type, so that the Carried Puppy object
   // gets priority over the direction to use while the game is <PRI'd.
@@ -1450,9 +1433,7 @@ void TSC::_DoCNP(Object *o, int p1, int p2) // CHANGE object to p1 and set dir t
 
 void TSC::_DoDNP(Object *o, int p1, int p2) // DELETE object
 {
-#ifdef TRACE_SCRIPT
-  stat("DNP: %08x (%s) deleted", o, DescribeObjectType(o->type));
-#endif
+  LOG_TRACE("DNP: {:#08x} ({}) deleted", (uint64_t)o, DescribeObjectType(o->type));
 
   o->Delete();
 }

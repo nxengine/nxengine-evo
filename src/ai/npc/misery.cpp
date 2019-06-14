@@ -2,7 +2,7 @@
 
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
 #include "../../map.h"
 #include "../../screeneffect.h"
@@ -162,8 +162,8 @@ void ai_miserys_bubble(Object *o)
       o->state = 1;
 
       // correct values: 0x3F0, 0xAE
-      stat("Computed toss values xi: 0x%x, 0x%x", o->xinertia, o->yinertia);
-      stat("Target x/y: 0x%x, 0x%x", target->x, target->y);
+      LOG_DEBUG("Computed toss values xi: {:#x}, {:#x}", o->xinertia, o->yinertia);
+      LOG_DEBUG("Target x/y: {:#x}, {:#x}", target->x, target->y);
     }
     case 1:
       ANIMATE(1, 0, 1);
@@ -203,7 +203,7 @@ static Object *mbubble_find_target(void)
   Object *target = FindObjectByID2(1000);
   if (!target)
   {
-    staterr("ai_miserys_bubble: failed to find a target object with ID2=1000");
+    LOG_ERROR("ai_miserys_bubble: failed to find a target object with ID2=1000");
     return NULL;
   }
 

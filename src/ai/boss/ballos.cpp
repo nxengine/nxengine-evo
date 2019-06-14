@@ -4,7 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
 #include "../../graphics/Renderer.h"
 #include "../../map.h"
@@ -119,7 +119,7 @@ void BallosBoss::OnMapEntry(void)
   objprop[OBJ_BALLOS_EYE].shaketime  = 0;
 
   // initilize parameters
-  stat("BallosBoss::OnMapEntry()");
+  LOG_DEBUG("BallosBoss::OnMapEntry()");
 }
 
 /*

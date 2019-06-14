@@ -1,7 +1,7 @@
 
 #include "input.h"
 
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "console.h"
 #include "game.h"
 #include "nx.h"
@@ -114,25 +114,25 @@ bool input_init(void)
 
     if (joy)
     {
-      stat("Opened Joystick 0");
-      stat("Name: %s", SDL_JoystickNameForIndex(0));
-      stat("Number of Axes: %d", SDL_JoystickNumAxes(joy));
-      stat("Number of Buttons: %d", SDL_JoystickNumButtons(joy));
-      stat("Number of Balls: %d", SDL_JoystickNumBalls(joy));
+      LOG_INFO("Opened Joystick 0");
+      LOG_INFO("Name: {}", SDL_JoystickNameForIndex(0));
+      LOG_INFO("Number of Axes: {}", SDL_JoystickNumAxes(joy));
+      LOG_INFO("Number of Buttons: {}", SDL_JoystickNumButtons(joy));
+      LOG_INFO("Number of Balls: {}", SDL_JoystickNumBalls(joy));
       haptic = SDL_HapticOpenFromJoystick(joy);
       if (haptic == NULL)
       {
-        stat("No force feedback support");
+        LOG_INFO("No force feedback support");
       }
       else
       {
         if (SDL_HapticRumbleInit(haptic) != 0)
-          stat("Coiuldn't init simple rumble");
+          LOG_WARN("Coiuldn't init simple rumble");
       }
     }
     else
     {
-      stat("Couldn't open Joystick 0");
+      LOG_WARN("Couldn't open Joystick 0");
     }
   }
   return 0;
@@ -147,7 +147,7 @@ void rumble(float str, uint32_t len)
 // set the SDL key that triggers an input
 void input_remap(int keyindex, in_action sdl_key)
 {
-  stat("input_remap(%d => %d)", keyindex, sdl_key.key);
+  LOG_DEBUG("input_remap(%d => %d)", keyindex, sdl_key.key);
   //	in_action old_mapping = input_get_mapping(keyindex);
   //	if (old_mapping != -1)
   //		mappings[old_mapping] = 0xff;

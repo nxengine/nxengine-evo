@@ -11,6 +11,7 @@
 #include "Renderer.h"
 #include "nx_icon.h"
 #include "pngfuncs.h"
+#include "../Utils/Logger.h"
 
 #include <SDL.h>
 #include <cstdlib>
@@ -50,7 +51,7 @@ bool Renderer::init(int resolution)
 
 void Renderer::close()
 {
-  stat("Renderer::Close()");
+  LOG_INFO("Renderer::Close()");
   font.cleanup();
   sprites.close();
   SDL_ShowCursor(true);
@@ -81,16 +82,16 @@ bool Renderer::initVideo()
 
   if (_window)
   {
-    staterr("second call to Renderer::InitVideo()");
+    LOG_WARN("second call to Renderer::InitVideo()");
     return false;
   }
 
-  stat("SDL_CreateWindow: %dx%d", width, height);
+  LOG_DEBUG("SDL_CreateWindow: %dx%d", width, height);
   _window = SDL_CreateWindow(NXVERSION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 
   if (!_window)
   {
-    staterr("Renderer::initVideo: error setting video mode (SDL_CreateWindow: %s)", SDL_GetError());
+    LOG_ERROR("Renderer::initVideo: error setting video mode (SDL_CreateWindow: {})", SDL_GetError());
     return false;
   }
 
@@ -124,24 +125,24 @@ bool Renderer::initVideo()
   }
   if (!_renderer)
   {
-    staterr("Renderer::initVideo: error setting video mode (SDL_CreateRenderer: %s)", SDL_GetError());
+    LOG_ERROR("Renderer::initVideo: error setting video mode (SDL_CreateRenderer: {})", SDL_GetError());
     return false;
   }
 
   SDL_RendererInfo info;
   if (SDL_GetRendererInfo(_renderer, &info))
   {
-    staterr("Renderer::initVideo: SDL_GetRendererInfo failed: %s", SDL_GetError());
+    LOG_ERROR("Renderer::initVideo: SDL_GetRendererInfo failed: {}", SDL_GetError());
     return false;
   }
 
-  stat("Renderer::initVideo: using: %s renderer", info.name);
+  LOG_INFO("Renderer::initVideo: using: {} renderer", info.name);
   return true;
 }
 
 bool Renderer::flushAll()
 {
-  stat("Renderer::flushAll()");
+  LOG_DEBUG("Renderer::flushAll()");
   SDL_RenderPresent(_renderer);
   sprites.flushSheets();
   tileset.reload();
@@ -163,7 +164,7 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
   r = 1; // one fixed resolution
 #endif
 
-  stat("Renderer::setResolution(%d)", r);
+  LOG_INFO("Renderer::setResolution(%d)", r);
   if (r == _current_res)
     return 0;
 
@@ -186,7 +187,7 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
     height       = res[r].height;
   }
 
-  stat("Setting scaling %d", scale);
+  LOG_INFO("Setting scaling %d", scale);
 
   SDL_SetWindowSize(_window, width, height);
 
@@ -224,7 +225,7 @@ const Graphics::gres_t *Renderer::getResolutions()
          {(char *)"1360x768", 1360, 768, 454, 256, 3, true, true},
          {(char *)"1366x768", 1366, 768, 455, 256, 3, true, true},
          {(char *)"1440x900", 1440, 900, 480, 300, 3, true, true},
-	 {(char *)"1600x900", 1600, 900, 533, 300, 3, true, true},
+         {(char *)"1600x900", 1600, 900, 533, 300, 3, true, true},
          {(char *)"1920x1080", 1920, 1080, 480, 270, 4, true, true},
 #endif
          {NULL, 0, 0, 0, 0, 0, false, false}};
@@ -232,12 +233,12 @@ const Graphics::gres_t *Renderer::getResolutions()
   SDL_DisplayMode dm;
   SDL_GetDesktopDisplayMode(0, &dm);
 
-  stat("DW: %d, DH: %d", dm.w, dm.h);
+  LOG_DEBUG("DW: {}, DH: {}", dm.w, dm.h);
   for (int i = 0; res[i].name; i++)
   {
     if (res[i].width > (uint32_t)dm.w || res[i].height > (uint32_t)dm.h)
     {
-      stat("Disabling %s", res[i].name);
+      LOG_INFO("Disabling {}", res[i].name);
 
       res[i].enabled = false;
     }
@@ -310,7 +311,7 @@ void Renderer::drawSurface(Surface *src, int dstx, int dsty, int srcx, int srcy,
   SDL_SetTextureAlphaMod(src->texture(), src->alpha);
   if (SDL_RenderCopy(_renderer, src->texture(), &srcrect, &dstrect))
   {
-    staterr("Renderer::drawSurface: SDL_RenderCopy failed: %s", SDL_GetError());
+    LOG_ERROR("Renderer::drawSurface: SDL_RenderCopy failed: {}", SDL_GetError());
   }
 }
 
@@ -503,7 +504,7 @@ void Renderer::saveScreenshot()
 
   if (filename.empty())
   {
-    staterr("Can not get screenshot name. Too many screenshots in folder");
+    LOG_ERROR("Can not get screenshot name. Too many screenshots in folder");
     return;
   }
 
@@ -519,24 +520,24 @@ void Renderer::saveScreenshot()
 
   if (!surface)
   {
-    staterr("Couldn't create surface: %s", SDL_GetError());
+    LOG_ERROR("Couldn't create surface: {}", SDL_GetError());
     return;
   }
 
   if (SDL_RenderReadPixels(_renderer, NULL, surface->format->format, surface->pixels, surface->pitch) < 0)
   {
-    staterr("Couldn't read screen: %s", SDL_GetError());
+    LOG_ERROR("Couldn't read screen: {}", SDL_GetError());
     return;
   }
 
   if (png_save_surface(filename, surface) < 0)
   {
     SDL_FreeSurface(surface);
-    staterr("Couldn't save screen");
+    LOG_ERROR("Couldn't save screen");
     return;
   }
   SDL_FreeSurface(surface);
-  stat("Saved %s", filename.c_str());
+  LOG_INFO("Saved {}", filename);
   return;
 }
 

@@ -13,7 +13,7 @@ using namespace NXE::Graphics;
 
 #include "ResourceManager.h"
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "game.h"
 #include "player.h"
 #include "settings.h"
@@ -45,7 +45,7 @@ bool load_stage(int stage_no)
 {
   char fname[MAXPATHLEN];
 
-  stat(" >> Entering stage %d: '%s'.", stage_no, stages[stage_no].stagename);
+  LOG_INFO(" >> Entering stage {}: '{}'.", stage_no, stages[stage_no].stagename);
   game.curmap = stage_no; // do it now so onspawn events will have it
 
   Renderer::getInstance()->sprites.flushSheets();
@@ -98,13 +98,13 @@ bool load_map(const std::string &fname)
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    staterr("load_map: no such file: '%s'", fname.c_str());
+    LOG_ERROR("load_map: no such file: '{}'", fname);
     return 1;
   }
 
   if (!fverifystring(fp, "PXM"))
   {
-    staterr("load_map: invalid map format: '%s'", fname.c_str());
+    LOG_ERROR("load_map: invalid map format: '{}'", fname);
     return 1;
   }
 
@@ -116,14 +116,14 @@ bool load_map(const std::string &fname)
 
   if (map.xsize > MAP_MAXSIZEX || map.ysize > MAP_MAXSIZEY)
   {
-    staterr("load_map: map is too large -- size %dx%d but max is %dx%d", map.xsize, map.ysize, MAP_MAXSIZEX,
+    LOG_ERROR("load_map: map is too large -- size {}x{} but max is {}x{}", map.xsize, map.ysize, MAP_MAXSIZEX,
             MAP_MAXSIZEY);
     fclose(fp);
     return 1;
   }
   else
   {
-    stat("load_map: level size %dx%d", map.xsize, map.ysize);
+    LOG_DEBUG("load_map: level size {}x{}", map.xsize, map.ysize);
   }
 
   for (y = 0; y < map.ysize; y++)
@@ -175,7 +175,7 @@ bool load_map(const std::string &fname)
     map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
   }
 
-  stat("load_map: '%s' loaded OK! - %dx%d", fname.c_str(), map.xsize, map.ysize);
+  LOG_DEBUG("load_map: '{}' loaded OK! - {}x{}", fname, map.xsize, map.ysize);
   return 0;
 }
 
@@ -230,18 +230,18 @@ bool load_entities(const std::string &fname)
   Objects::DestroyAll(false);
   FloatText::ResetAll();
 
-  stat("load_entities: reading in %s", fname.c_str());
+  LOG_DEBUG("load_entities: reading in {}", fname);
   // now we can load in the new objects
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    staterr("load_entities: no such file: '%s'", fname.c_str());
+    LOG_ERROR("load_entities: no such file: '{}'", fname);
     return 1;
   }
 
   if (!fverifystring(fp, "PXE"))
   {
-    staterr("load_entities: not a PXE: '%s'", fname.c_str());
+    LOG_ERROR("load_entities: not a PXE: '{}'", fname);
     return 1;
   }
 
@@ -273,7 +273,7 @@ bool load_entities(const std::string &fname)
         if (game.flags[id1])
         {
           addobject = true;
-          stat(" -- Appearing object %02d (%s) because flag %d is set", id2, DescribeObjectType(type), id1);
+          LOG_DEBUG("Appearing object {:%02d} ({}) because flag {} is set", id2, DescribeObjectType(type), id1);
         }
       }
       else if (flags & FLAG_DISAPPEAR_ON_FLAGID)
@@ -284,7 +284,7 @@ bool load_entities(const std::string &fname)
         }
         else
         {
-          stat(" -- Disappearing object %02d (%s) because flag %d is set", id2, DescribeObjectType(type), id1);
+          LOG_DEBUG("Disappearing object {:02d} ({}) because flag {} is set", id2, DescribeObjectType(type), id1);
         }
       }
       else
@@ -318,7 +318,7 @@ bool load_entities(const std::string &fname)
         o->OnSpawn();
         if (type == OBJ_MOTION_WALL)
         {
-          stat("spawning extra motion wall");
+          LOG_DEBUG("spawning extra motion wall");
           o = CreateObject(((x + 22) * TILE_W) * CSFI, (y * TILE_H) * CSFI, type, 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
           o->id1 = id1;
           o->id2 = id2;
@@ -330,7 +330,7 @@ bool load_entities(const std::string &fname)
           // since we didn't do it in CreateObject.
           o->OnSpawn();
 
-          stat("spawning extra motion wall");
+          LOG_DEBUG("spawning extra motion wall");
           o      = CreateObject(((x)*TILE_W) * CSFI, ((y - TILE_H) * TILE_H) * CSFI, type, 0, 0, dir, NULL,
                            CF_NO_SPAWN_EVENT);
           o->id1 = id1;
@@ -343,7 +343,7 @@ bool load_entities(const std::string &fname)
           // since we didn't do it in CreateObject.
           o->OnSpawn();
 
-          stat("spawning extra motion wall");
+          LOG_DEBUG("spawning extra motion wall");
           o      = CreateObject(((x + 22) * TILE_W) * CSFI, ((y - TILE_H) * TILE_H) * CSFI, type, 0, 0, dir, NULL,
                            CF_NO_SPAWN_EVENT);
           o->id1 = id1;
@@ -356,7 +356,7 @@ bool load_entities(const std::string &fname)
           // since we didn't do it in CreateObject.
           o->OnSpawn();
 
-          stat("spawning extra motion wall");
+          LOG_DEBUG("spawning extra motion wall");
           o      = CreateObject(((x)*TILE_W) * CSFI, ((y + TILE_H) * TILE_H) * CSFI, type, 0, 0, dir, NULL,
                            CF_NO_SPAWN_EVENT);
           o->id1 = id1;
@@ -369,7 +369,7 @@ bool load_entities(const std::string &fname)
           // since we didn't do it in CreateObject.
           o->OnSpawn();
 
-          stat("spawning extra motion wall");
+          LOG_DEBUG("spawning extra motion wall");
           o      = CreateObject(((x + 22) * TILE_W) * CSFI, ((y + TILE_H) * TILE_H) * CSFI, type, 0, 0, dir, NULL,
                            CF_NO_SPAWN_EVENT);
           o->id1 = id1;
@@ -386,7 +386,7 @@ bool load_entities(const std::string &fname)
     }
   }
 
-  // stat("load_entities: loaded %d objects", nEntities);
+  LOG_DEBUG("load_entities: loaded {} objects", nEntities);
   fclose(fp);
   return 0;
 }
@@ -413,11 +413,11 @@ bool load_tileattr(const std::string &fname)
   int i;
   unsigned char tc;
 
-  stat("load_pxa: reading in %s", fname.c_str());
+  LOG_DEBUG("load_pxa: reading in {}", fname);
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    staterr("load_pxa: no such file: '%s'", fname.c_str());
+    LOG_ERROR("load_pxa: no such file: '{}'", fname);
     return 1;
   }
 
@@ -426,7 +426,7 @@ bool load_tileattr(const std::string &fname)
     tc          = fgetc(fp);
     tilecode[i] = tc;
     tileattr[i] = tilekey[tc];
-    // stat("Tile %02x   TC %02x    Attr %08x   tilekey[%02x] = %08x", i, tc, tileattr[i], tc, tilekey[tc]);
+    LOG_TRACE("Tile {:#02x}   TC {:#02x}    Attr {:#08x}   tilekey[{:#02x}] = {:#08x}", i, tc, tileattr[i], tc, tilekey[tc]);
 
     if (game.curmap == 31 && tc == 0x46)
       tileattr[i] = 0; // remove left/right blockers in Mai Artery
@@ -460,7 +460,7 @@ void load_meta(const std::string &fname)
           oob_tile_count = oob.size();
           if (oob_tile_count == 1 || oob_tile_count == 4)
           {
-            stat("load_meta: reading %d out-of-bounds tiles", oob_tile_count);
+            LOG_DEBUG("load_meta: reading {} out-of-bounds tiles", oob_tile_count);
             int i = 0;
             for (auto it = oob.begin(); it != oob.end(); ++it, i++)
             {
@@ -469,22 +469,21 @@ void load_meta(const std::string &fname)
           }
           else
           {
-            staterr("load_meta: 'out-of-bounds' tile count can only be 1 or 4, found %d", oob_tile_count);
+            LOG_ERROR("load_meta: 'out-of-bounds' tile count can only be 1 or 4, found {}", oob_tile_count);
             oob_tile_count = 0;
           }
         }
         else
         {
-          staterr("load_meta: metadata field 'out-of-bounds' must be an array containing one or more tile IDs",
-                  fname.c_str());
+          LOG_ERROR("load_meta: metadata field 'out-of-bounds' must be an array containing one or more tile IDs");
         }
       }
 
-      stat("load_meta: '%s' finished parsing", fname.c_str());
+      LOG_DEBUG("load_meta: '{}' finished parsing", fname);
     }
     catch (nlohmann::json::exception &e)
     {
-      staterr("load_meta: JSON parsing error in file '%s': %s", fname.c_str(), e.what());
+      LOG_ERROR("load_meta: JSON parsing error in file '{}': {}", fname, e.what());
     }
   }
 }
@@ -496,7 +495,7 @@ bool load_stages(void)
   fp = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("stage.dat")).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    staterr("%s(%d): failed to open data/stage.dat", __FILE__, __LINE__);
+    LOG_ERROR("failed to open data/stage.dat");
     num_stages = 0;
     return 1;
   }
@@ -520,11 +519,11 @@ bool initmapfirsttime(void)
   FILE *fp;
   int i;
 
-  stat("initmapfirsttime: loading data/tilekey.dat.");
+  LOG_INFO("Loading tilekey.dat.");
   if (!(fp
         = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("tilekey.dat")).c_str(), widen("rb").c_str())))
   {
-    staterr("data/tilekey.dat is missing!");
+    LOG_ERROR("tilekey.dat is missing!");
     return 1;
   }
 
@@ -568,7 +567,7 @@ static bool LoadBackdropIfNeeded(int backdrop_no)
     backdrop[backdrop_no] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), use_chromakey);
     if (!backdrop[backdrop_no])
     {
-      staterr("Failed to load backdrop '%s'", fname.c_str());
+      LOG_ERROR("Failed to load backdrop '{}'", fname.c_str());
       return 1;
     }
   }
@@ -643,7 +642,7 @@ void map_draw_backdrop(void)
 
     default:
       map.parscroll_x = map.parscroll_y = 0;
-      staterr("map_draw_backdrop: unhandled map scrolling type %d", map.scrolltype);
+      LOG_ERROR("map_draw_backdrop: unhandled map scrolling type {}", map.scrolltype);
       break;
   }
   int w = backdrop[map.backdrop]->width();
@@ -1248,10 +1247,10 @@ Object *FindObjectByID2(int id2)
   Object *result = ID2Lookup[id2];
 
   if (result)
-    stat("FindObjectByID2: ID2 %04d found: type %s; coords: (%d, %d)", id2, DescribeObjectType(ID2Lookup[id2]->type),
+    LOG_DEBUG("FindObjectByID2: ID2 {:#04d} found: type {}; coords: ({}, {})", id2, DescribeObjectType(ID2Lookup[id2]->type),
          ID2Lookup[id2]->x / CSFI, ID2Lookup[id2]->y / CSFI);
   else
-    staterr("FindObjectByID2: no such object %04d", id2);
+    LOG_WARN("FindObjectByID2: no such object {:#04d}", id2);
 
   return result;
 }

@@ -7,6 +7,7 @@
 #include "../nx.h"
 #include "../settings.h"
 #include "../sound/SoundManager.h"
+#include "../Utils/Logger.h"
 
 #include <utf8.h>
 #include <iostream>
@@ -46,7 +47,7 @@ void c------------------------------() {}
 // invisible.
 void TextBox::ResetState(void)
 {
-  // stat("TextBox::ResetState()");
+  LOG_DEBUG("TextBox::ResetState()");
 
   fVisible = false;
   fFlags   = TB_DEFAULTS;
@@ -73,7 +74,7 @@ void TextBox::ResetState(void)
 // of the flags TB_DRAW_AT_TOP and TB_NO_BORDER.
 void TextBox::SetVisible(bool enable, uint8_t flags)
 {
-  // stat("TextBox::SetVisible(%s)", enable?"true":"false");
+  LOG_DEBUG("TextBox::SetVisible({})", enable ? "true" : "false");
 
   fCoords.w = MSG_W;
   fCoords.h = MSG_H;
@@ -103,7 +104,7 @@ void TextBox::SetFlags(uint8_t flags)
 
 void TextBox::SetFlags(uint8_t flags, bool enable)
 {
-  // stat("TextBox::SetFlags(0x%x, %s)", flags, enable?"true":"false");
+  LOG_DEBUG("TextBox::SetFlags({:#x}, {})", flags, enable ? "true" : "false");
 
   if (enable)
     SetFlags(fFlags | flags);
@@ -157,7 +158,7 @@ void c------------------------------() {}
 
 void TextBox::SetFace(int newface)
 {
-  // stat("TextBox::SetFace(%d)", newface);
+  LOG_DEBUG("TextBox::SetFace({})", newface);
   fFace        = newface;
   fFaceXOffset = -FACE_W;
   faceFrame = 0;
@@ -166,7 +167,7 @@ void TextBox::SetFace(int newface)
 
 void TextBox::ShowCursor(bool enable)
 {
-  // stat("TextBox::ShowCursor(%s)", enable?"true":"false");
+  LOG_DEBUG("TextBox::ShowCursor({})", enable ? "true" : "false");
   fCursorVisible = enable;
   fCursorTimer   = 8;
 }

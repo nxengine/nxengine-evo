@@ -1,7 +1,7 @@
 #include "sectSprites.h"
 
 #include "../common/bufio.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -23,16 +23,16 @@ bool SIFSpritesSect::Decode(const uint8_t *data, int datalen, SIFSprite *sprites
 
   if (nsprites >= maxsprites)
   {
-    staterr("SIFSpritesSect::Decode: too many sprites in file (nsprites=%d, maxsprites=%d)", nsprites, maxsprites);
+    LOG_ERROR("SIFSpritesSect::Decode: too many sprites in file (nsprites={}, maxsprites={})", nsprites, maxsprites);
     return 1;
   }
 
-  stat("SIFSpritesSect: loading %d sprites", nsprites);
+  LOG_DEBUG("SIFSpritesSect: loading {} sprites", nsprites);
   for (i = 0; i < nsprites; i++)
   {
     if (data > data_end)
     {
-      staterr("SIFSpritesSect::Decode: section corrupt: overran end of data");
+      LOG_ERROR("SIFSpritesSect::Decode: section corrupt: overran end of data");
       return 1;
     }
 
@@ -46,7 +46,7 @@ bool SIFSpritesSect::Decode(const uint8_t *data, int datalen, SIFSprite *sprites
 
     if (sprites[i].ndirs > SIF_MAX_DIRS)
     {
-      staterr("SIFSpritesSect::Decode: SIF_MAX_DIRS exceeded on sprite %d (ndirs=%d)", i, sprites[i].ndirs);
+      LOG_ERROR("SIFSpritesSect::Decode: SIF_MAX_DIRS exceeded on sprite {} (ndirs={})", i, sprites[i].ndirs);
       return 1;
     }
 
@@ -111,7 +111,7 @@ bool SIFSpritesSect::LoadFrame(SIFFrame *frame, int ndirs, const uint8_t **data,
           break;
 
         default:
-          stat("SIFSpriteSect::LoadFrame: encountered unknown optional field type %d", t);
+          LOG_WARN("SIFSpriteSect::LoadFrame: encountered unknown optional field type {}", t);
           return 1;
       }
     }
@@ -143,7 +143,7 @@ void SIFSpritesSect::LoadPointList(SIFPointList *lst, const uint8_t **data, cons
   lst->count = read_U8(data, data_end);
   if (lst->count > SIF_MAX_BLOCK_POINTS)
   {
-    staterr("SIFSpritesSect::LoadPointList: too many block points (%d, max=%d)", lst->count, SIF_MAX_BLOCK_POINTS);
+    LOG_ERROR("SIFSpritesSect::LoadPointList: too many block points ({}, max={})", lst->count, SIF_MAX_BLOCK_POINTS);
     return;
   }
 

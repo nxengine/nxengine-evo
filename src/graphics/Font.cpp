@@ -2,7 +2,7 @@
 
 #include "../ResourceManager.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "Renderer.h"
 #include "pngfuncs.h"
 #include "../autogen/sprites.h"
@@ -31,13 +31,13 @@ Font::Font()
 bool Font::load(const std::string &font)
 {
   cleanup();
-  stat("Loading font file %s", font.c_str());
+  LOG_DEBUG("Loading font file {}", font.c_str());
 
   // special empty glyph
   _glyphs[0] = Font::Glyph{0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   std::string path = ResourceManager::getInstance()->getLocalizedPath(font);
-  stat("Loading font file %s", path.c_str());
+  LOG_DEBUG("Loading font file {}", path.c_str());
   std::ifstream fl;
   fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
   if (fl.is_open())
@@ -65,7 +65,7 @@ bool Font::load(const std::string &font)
   }
   else
   {
-    staterr("Error opening font file %s", path.c_str());
+    LOG_ERROR("Error opening font file {}", path.c_str());
     return false;
   }
 
@@ -107,7 +107,7 @@ const Font::Glyph &Font::glyph(uint32_t codepoint)
   }
   else
   {
-    staterr("No glyph for codepoint %d", codepoint);
+    LOG_WARN("No glyph for codepoint {}", codepoint);
     return _glyphs.at(0);
   }
 }

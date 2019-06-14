@@ -6,7 +6,7 @@
 
 #include "StageSelect.h"
 
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
 #include "../graphics/Renderer.h"
 #include "../input.h"
@@ -138,7 +138,7 @@ void TB_StageSelect::HandleInput()
     int scriptno;
     if (!GetSlotByIndex(fSelectionIndex, NULL, &scriptno))
     {
-      stat("StageSelect: starting activation script %d", scriptno);
+      LOG_DEBUG("StageSelect: starting activation script %d", scriptno);
       game.tsc->JumpScript(scriptno, TSC::ScriptPages::SP_MAP);
     }
     else
@@ -207,7 +207,7 @@ void TB_StageSelect::SetSlot(int slotno, int scriptno)
   }
   else
   {
-    stat("StageSelect::SetSlot: invalid slotno %d", slotno);
+    LOG_WARN("StageSelect::SetSlot: invalid slotno %d", slotno);
   }
 }
 

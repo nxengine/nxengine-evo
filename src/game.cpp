@@ -3,7 +3,7 @@
 
 #include "ObjManager.h"
 #include "ai/ai.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "console.h"
 #include "debug.h"
 #include "endgame/credits.h"
@@ -126,7 +126,7 @@ bool Game::initlevel()
     PHandleAttributes();
     PSelectFrame();
 
-    stat("-- Starting on-entry script %d", game.switchstage.eventonentry);
+    LOG_DEBUG("-- Starting on-entry script {}", game.switchstage.eventonentry);
     tsc->StartScript(game.switchstage.eventonentry);
     game.switchstage.eventonentry = 0;
   }
@@ -138,7 +138,7 @@ bool Game::createplayer()
 {
   if (player)
   {
-    staterr("game.createplayer: player already exists!");
+    LOG_WARN("game.createplayer: player already exists!");
     return 1;
   }
 
@@ -169,7 +169,7 @@ bool Game::setmode(int newmode, int param, bool force)
   if (game.mode == newmode && !force)
     return 0;
 
-  stat("Setting tick function to type %d param %d", newmode, param);
+  LOG_DEBUG("Setting tick function to type {} param {}", newmode, param);
 
   if (tickfunctions[game.mode].OnExit)
     tickfunctions[game.mode].OnExit();
@@ -180,7 +180,7 @@ bool Game::setmode(int newmode, int param, bool force)
   {
     if (tickfunctions[game.mode].OnEnter(param))
     {
-      staterr("game.setmode: initilization failed for mode %d", newmode);
+      LOG_ERROR("game.setmode: initilization failed for mode {}", newmode);
       game.mode = GM_NONE;
       return 1;
     }
@@ -194,7 +194,7 @@ bool Game::pause(int pausemode, int param)
   if (game.paused == pausemode)
     return 0;
 
-  stat("Setting pause: type %d param %d", pausemode, param);
+  LOG_DEBUG("Setting pause: type {} param {}", pausemode, param);
 
   if (tickfunctions[game.paused].OnExit)
     tickfunctions[game.paused].OnExit();
@@ -205,7 +205,7 @@ bool Game::pause(int pausemode, int param)
   {
     if (tickfunctions[game.paused].OnEnter(param))
     {
-      staterr("game.pause: initilization failed for mode %d", pausemode);
+      LOG_ERROR("game.pause: initilization failed for mode {}", pausemode);
       game.paused = 0;
       return 1;
     }
@@ -406,7 +406,7 @@ void DrawScene(void)
       }
       else
       {
-        staterr("%s:%d: Max Objects Overflow", __FILE__, __LINE__);
+        LOG_ERROR("{}:{}: Max Objects Overflow", __FILE__, __LINE__);
         return;
       }
 
@@ -462,7 +462,7 @@ bool game_load(int num)
 {
   Profile p;
 
-  stat("game_load: loading savefile %d", num);
+  LOG_DEBUG("game_load: loading savefile {}", num);
   char *profile_name = GetProfileName(num);
   if (profile_load(profile_name, &p))
   {
@@ -514,7 +514,7 @@ bool game_load(Profile *p)
     int scriptno = p->teleslots[i].scriptno;
 
     textbox.StageSelect.SetSlot(slotno, scriptno);
-    stat(" - Read Teleporter Slot %d: slotno=%d scriptno=%d", i, slotno, scriptno);
+    LOG_DEBUG(" - Read Teleporter Slot {}: slotno={} scriptno={}", i, slotno, scriptno);
   }
 
   // have to load the stage last AFTER the flags are loaded because
@@ -536,7 +536,7 @@ bool game_save(int num)
 {
   Profile p;
 
-  stat("game_save: writing savefile %d", num);
+  LOG_DEBUG("game_save: writing savefile {}", num);
 
   if (game_save(&p))
     return 1;
