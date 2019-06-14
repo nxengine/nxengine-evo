@@ -6,8 +6,8 @@ matrix:
       sudo: required
       dist: xenial
       compiler: gcc
-      env:
-         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+#      env:
+#         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 #         - INSTALLGCC=1
 
     - os: linux
