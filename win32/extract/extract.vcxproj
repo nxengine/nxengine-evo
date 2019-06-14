@@ -161,7 +161,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\common\misc.cpp" />
-    <ClCompile Include="..\..\src\common\stat.cpp" />
     <ClCompile Include="..\..\src\extract\crc.cpp" />
     <ClCompile Include="..\..\src\extract\extractfiles.cpp" />
     <ClCompile Include="..\..\src\extract\extractpxt.cpp" />
@@ -171,7 +170,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\common\misc.h" />
-    <ClInclude Include="..\..\src\common\stat.h" />
     <ClInclude Include="..\..\src\extract\crc.h" />
     <ClInclude Include="..\..\src\extract\extractfiles.h" />
     <ClInclude Include="..\..\src\extract\extractpxt.h" />
