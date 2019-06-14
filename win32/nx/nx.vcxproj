@@ -299,6 +299,7 @@
     <ClCompile Include="..\..\src\TextBox\YesNoPrompt.cpp" />
     <ClCompile Include="..\..\src\trig.cpp" />
     <ClCompile Include="..\..\src\tsc.cpp" />
+    <ClCompile Include="..\..\src\Utils\Logger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\ai\ai.h" />
@@ -442,6 +443,7 @@
     <ClInclude Include="..\..\src\trig.h" />
     <ClInclude Include="..\..\src\tsc.h" />
     <ClInclude Include="..\..\src\version.h" />
+    <ClCompile Include="..\..\src\Utils\Logger.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
