@@ -238,7 +238,6 @@
     <ClCompile Include="..\..\src\common\glob.cpp" />
     <ClCompile Include="..\..\src\common\InitList.cpp" />
     <ClCompile Include="..\..\src\common\misc.cpp" />
-    <ClCompile Include="..\..\src\common\stat.cpp" />
     <ClCompile Include="..\..\src\console.cpp" />
     <ClCompile Include="..\..\src\debug.cpp" />
     <ClCompile Include="..\..\src\endgame\credits.cpp" />
@@ -378,7 +377,6 @@
     <ClInclude Include="..\..\src\common\InitList.h" />
     <ClInclude Include="..\..\src\common\llist.h" />
     <ClInclude Include="..\..\src\common\misc.h" />
-    <ClInclude Include="..\..\src\common\stat.h" />
     <ClInclude Include="..\..\src\config.h" />
     <ClInclude Include="..\..\src\console.h" />
     <ClInclude Include="..\..\src\debug.h" />
