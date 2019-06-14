@@ -31,28 +31,28 @@ enum EYE_STATES
   EYE_EXPLODING = 40
 };
 
-enum BS_STATES
+enum BALLOS_STATES
 {
   // Form 1 states
-  AS_COME_DOWN    = 100, // scripted
-  AS_BEGIN_FIGHT  = 200, // scripted
-  AS_PREPARE_JUMP = 210,
-  AS_JUMPING      = 215,
-  AS_DEFEATED     = 220, // scripted
+  BALLOSA_COME_DOWN    = 100, // scripted
+  BALLOSA_BEGIN_FIGHT  = 200, // scripted
+  BALLOSA_PREPARE_JUMP = 210,
+  BALLOSA_JUMPING      = 215,
+  BALLOSA_DEFEATED     = 220, // scripted
 
   // Form 2 states.
-  BS_ENTER_FORM  = 300, // scripted
-  BS_FIGHT_BEGIN = 311, // scripted
-  BS_LEFT        = 320,
-  BS_UP          = 330,
-  BS_RIGHT       = 340,
-  BS_DOWN        = 350,
+  BALLOSB_ENTER_FORM  = 300, // scripted
+  BALLOSB_FIGHT_BEGIN = 311, // scripted
+  BALLOSB_LEFT        = 320,
+  BALLOSB_UP          = 330,
+  BALLOSB_RIGHT       = 340,
+  BALLOSB_DOWN        = 350,
 
   // Form 3 states
-  CS_ENTER_FORM     = 400,
-  CS_SPAWN_SPIKES   = 410,
-  CS_EXPLODE_BLOODY = 420,
-  CS_SPIN_PLATFORMS = 430
+  BALLOSC_ENTER_FORM     = 400,
+  BALLOSC_SPAWN_SPIKES   = 410,
+  BALLOSC_EXPLODE_BLOODY = 420,
+  BALLOSC_SPIN_PLATFORMS = 430
 };
 
 INITFUNC(AIRoutines)
@@ -194,7 +194,7 @@ void BallosBoss::RunComeDown(Object *o)
 {
   switch (o->state)
   {
-    case AS_COME_DOWN:
+    case BALLOSA_COME_DOWN:
     {
       o->savedhp = o->hp;
 
@@ -214,7 +214,7 @@ void BallosBoss::RunComeDown(Object *o)
 
       o->state++;
     }
-    case AS_COME_DOWN + 1:
+    case BALLOSA_COME_DOWN + 1:
     {
       if (++o->timer > 30)
         o->state++;
@@ -222,7 +222,7 @@ void BallosBoss::RunComeDown(Object *o)
     break;
 
     // falling
-    case AS_COME_DOWN + 2:
+    case BALLOSA_COME_DOWN + 2:
     {
       o->yinertia += 0x40;
       LIMITY(0xC00);
@@ -248,7 +248,7 @@ void BallosBoss::RunComeDown(Object *o)
     }
     break;
 
-    case AS_COME_DOWN + 3:
+    case BALLOSA_COME_DOWN + 3:
     {
       if (++o->timer > 31)
       {
@@ -268,14 +268,14 @@ void BallosBoss::RunForm1(Object *o)
 
   switch (o->state)
   {
-    case AS_BEGIN_FIGHT:
+    case BALLOSA_BEGIN_FIGHT:
     {
       // can be damaged between eyes opening and boss bar appearing,
       // but it is not counted.
       o->hp    = o->savedhp;
-      o->state = AS_PREPARE_JUMP;
+      o->state = BALLOSA_PREPARE_JUMP;
     }
-    case AS_PREPARE_JUMP: // delay, then jump at player
+    case BALLOSA_PREPARE_JUMP: // delay, then jump at player
     {
       o->xinertia = 0;
       o->damage   = 0;
@@ -289,18 +289,18 @@ void BallosBoss::RunForm1(Object *o)
       else
         o->timer = 50;
     }
-    case AS_PREPARE_JUMP + 1:
+    case BALLOSA_PREPARE_JUMP + 1:
     {
       if (--o->timer <= 0)
       {
         o->yinertia = -0xC00;
         o->xinertia = (o->x < player->x) ? 0x200 : -0x200;
-        o->state    = AS_JUMPING;
+        o->state    = BALLOSA_JUMPING;
       }
     }
     break;
 
-    case AS_JUMPING:
+    case BALLOSA_JUMPING:
     {
       o->yinertia += 0x55;
       LIMITY(0xC00);
@@ -328,13 +328,13 @@ void BallosBoss::RunForm1(Object *o)
         SmokeXY(o->x, o->y + (40 * CSFI), 16, 40, 0);
 
         o->yinertia = 0;
-        o->state    = AS_PREPARE_JUMP;
+        o->state    = BALLOSA_PREPARE_JUMP;
       }
     }
     break;
 
     // 1st form defeated
-    case AS_DEFEATED:
+    case BALLOSA_DEFEATED:
     {
       SetEyeStates(EYE_CLOSING);
       game.bossbar.defeated = true;
@@ -345,7 +345,7 @@ void BallosBoss::RunForm1(Object *o)
       o->xinertia  = 0;
       o->shaketime = 0;
     }
-    case AS_DEFEATED + 1:
+    case BALLOSA_DEFEATED + 1:
     {
       o->yinertia += 0x40;
       LIMITY(0xC00);
@@ -382,7 +382,7 @@ static void SetRotatorStates(int newstate)
 // the one where he spawns spiky rotators and circles around the room.
 void BallosBoss::RunForm2(Object *o)
 {
-  static const int BS_SPEED     = 0x3AA;
+  static const int BALLOSB_SPEED     = 0x3AA;
   static const int ARENA_LEFT   = (119 * CSFI);
   static const int ARENA_TOP    = (119 * CSFI);
   static const int ARENA_RIGHT  = (521 * CSFI);
@@ -391,7 +391,7 @@ void BallosBoss::RunForm2(Object *o)
   switch (o->state)
   {
     // enter 2nd form (script-triggered)
-    case BS_ENTER_FORM:
+    case BALLOSB_ENTER_FORM:
     {
       o->timer = 0;
       o->state++;
@@ -406,7 +406,7 @@ void BallosBoss::RunForm2(Object *o)
         rotators_left++;
       }
     }
-    case BS_ENTER_FORM + 1:
+    case BALLOSB_ENTER_FORM + 1:
     {
       o->y += (ARENA_BOTTOM - o->y) / 8;
 
@@ -418,39 +418,39 @@ void BallosBoss::RunForm2(Object *o)
     }
     break;
 
-    case BS_FIGHT_BEGIN: // script-triggered
+    case BALLOSB_FIGHT_BEGIN: // script-triggered
     {
       SetRotatorStates(10); // spin CCW, work as treads
-      o->state = BS_LEFT;
+      o->state = BALLOSB_LEFT;
       o->timer = 0;
     }
-    case BS_LEFT: // left on floor
+    case BALLOSB_LEFT: // left on floor
     {
-      o->xinertia = -BS_SPEED;
+      o->xinertia = -BALLOSB_SPEED;
       o->yinertia = 0;
       o->dirparam = LEFT;
 
       if (passed_xcoord(LESS_THAN, ARENA_LEFT))
-        o->state = BS_UP;
+        o->state = BALLOSB_UP;
     }
     break;
 
     // up on wall
-    case BS_UP:
+    case BALLOSB_UP:
     {
       o->xinertia = 0;
-      o->yinertia = -BS_SPEED;
+      o->yinertia = -BALLOSB_SPEED;
       o->dirparam = UP;
 
       if (passed_ycoord(LESS_THAN, ARENA_TOP))
-        o->state = BS_RIGHT;
+        o->state = BALLOSB_RIGHT;
     }
     break;
 
     // right on ceiling
-    case BS_RIGHT:
+    case BALLOSB_RIGHT:
     {
-      o->xinertia = BS_SPEED;
+      o->xinertia = BALLOSB_SPEED;
       o->yinertia = 0;
       o->dirparam = RIGHT;
 
@@ -460,25 +460,25 @@ void BallosBoss::RunForm2(Object *o)
         // center of room
         if (o->x >= (312 * CSFI) && o->x <= (344 * CSFI))
         {
-          o->state = CS_ENTER_FORM;
+          o->state = BALLOSC_ENTER_FORM;
         }
       }
 
       if (passed_xcoord(GREATER_THAN, ARENA_RIGHT))
-        o->state = BS_DOWN;
+        o->state = BALLOSB_DOWN;
     }
     break;
 
     // down on wall
-    case BS_DOWN:
+    case BALLOSB_DOWN:
     {
       o->xinertia = 0;
-      o->yinertia = BS_SPEED;
+      o->yinertia = BALLOSB_SPEED;
       o->dirparam = DOWN;
 
       if (passed_ycoord(GREATER_THAN, ARENA_BOTTOM))
       {
-        o->state = BS_LEFT;
+        o->state = BALLOSB_LEFT;
       }
     }
     break;
@@ -505,7 +505,7 @@ void BallosBoss::RunForm3(Object *o)
   switch (o->state)
   {
     // enter form 3
-    case CS_ENTER_FORM:
+    case BALLOSC_ENTER_FORM:
     {
       o->timer    = 0;
       o->xinertia = 0;
@@ -515,7 +515,7 @@ void BallosBoss::RunForm3(Object *o)
       DeleteObjectsOfType(OBJ_GREEN_DEVIL_SPAWNER);
       SetRotatorStates(20); // fast spin CCW
     }
-    case CS_ENTER_FORM + 1:
+    case BALLOSC_ENTER_FORM + 1:
     {
       // come down into center of room
       o->y += (YPOSITION - o->y) / 8;
@@ -537,19 +537,19 @@ void BallosBoss::RunForm3(Object *o)
       {
         platform_speed = -1;
 
-        o->state = CS_SPAWN_SPIKES;
+        o->state = BALLOSC_SPAWN_SPIKES;
         o->timer = 0;
       }
     }
     break;
 
-    case CS_SPAWN_SPIKES:
+    case BALLOSC_SPAWN_SPIKES:
     {
       o->timer = 0;
       o->xmark = 0;
       o->state++;
     }
-    case CS_SPAWN_SPIKES + 1:
+    case BALLOSC_SPAWN_SPIKES + 1:
     {
       o->timer++;
 
@@ -562,13 +562,13 @@ void BallosBoss::RunForm3(Object *o)
         CreateObject((o->xmark * TILE_W) * CSFI, FLOOR_Y + (48 * CSFI), OBJ_BALLOS_SPIKES);
 
         if (o->xmark == 38)
-          o->state = CS_EXPLODE_BLOODY;
+          o->state = BALLOSC_EXPLODE_BLOODY;
       }
     }
     break;
 
     // explode into all bloody
-    case CS_EXPLODE_BLOODY:
+    case BALLOSC_EXPLODE_BLOODY:
     {
       SetEyeStates(EYE_INVISIBLE);
       SetRotatorStates(30); // slow spin CW, alternate open/closed
@@ -581,10 +581,10 @@ void BallosBoss::RunForm3(Object *o)
       body->flags &= ~FLAG_INVULNERABLE;
       shield->flags &= ~FLAG_INVULNERABLE;
 
-      o->state = CS_SPIN_PLATFORMS;
+      o->state = BALLOSC_SPIN_PLATFORMS;
     }
     // fall-through
-    case CS_SPIN_PLATFORMS:
+    case BALLOSC_SPIN_PLATFORMS:
     {
       o->state++;
       o->timer  = 0;
@@ -593,7 +593,7 @@ void BallosBoss::RunForm3(Object *o)
 
       platform_speed = platform_pattern[o->timer2].speed;
     }
-    case CS_SPIN_PLATFORMS + 1:
+    case BALLOSC_SPIN_PLATFORMS + 1:
     {
       // spin platforms
       if (++o->timer3 > platform_pattern[o->timer2].length)
