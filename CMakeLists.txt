@@ -53,6 +53,7 @@ file(GLOB TB_SOURCES "src/TextBox/[a-zA-Z]*.cpp")
 file(GLOB_RECURSE AI_SOURCES "src/ai/[a-zA-Z]*.cpp")
 file(GLOB AG_SOURCES "src/autogen/[a-zA-Z]*.cpp")
 file(GLOB CM_SOURCES "src/common/[a-zA-Z]*.cpp")
+file(GLOB UT_SOURCES "src/Utils/[a-zA-Z]*.cpp")
 file(GLOB EG_SOURCES "src/endgame/[a-zA-Z]*.cpp")
 file(GLOB GR_SOURCES "src/graphics/[a-zA-Z]*.cpp")
 file(GLOB IN_SOURCES "src/intro/[a-zA-Z]*.cpp")
@@ -64,7 +65,6 @@ file(GLOB EXTR_SOURCES "src/extract/[a-zA-Z]*.cpp")
 set(EXTR_SOURCES
     ${EXTR_SOURCES}
     "src/common/misc.cpp"
-    "src/common/stat.cpp"
     "src/stagedata.cpp"
 )
 
@@ -83,6 +83,7 @@ set(SOURCES
     ${SL_SOURCES}
     ${SN_SOURCES}
     ${I18N_SOURCES}
+    ${UT_SOURCES}
 )
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
