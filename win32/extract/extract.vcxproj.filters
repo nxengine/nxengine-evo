@@ -33,34 +33,34 @@
     <ClCompile Include="..\..\src\common\misc.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\stat.cpp">
+    <ClCompile Include="..\..\src\stagedata.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\stagedata.cpp">
+    <ClCompile Include="..\..\src\Utils\Logger.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\extract\crc.h">
-      <Filter>Sources</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\extract\extractfiles.h">
-      <Filter>Sources</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\extract\extractpxt.h">
-      <Filter>Sources</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\extract\extractstages.h">
-      <Filter>Sources</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\misc.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\stat.h">
-      <Filter>Sources</Filter>
+      <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\stagedata.h">
-      <Filter>Sources</Filter>
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Utils\Logger.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

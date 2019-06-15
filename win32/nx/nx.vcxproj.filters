@@ -408,6 +408,9 @@
     <ClCompile Include="..\..\src\common\glob.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Utils\Logger.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -638,9 +641,6 @@
     <ClInclude Include="..\..\src\common\misc.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\common\stat.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\config.h">
       <Filter>Headers</Filter>
     </ClInclude>
@@ -836,10 +836,10 @@
     <ClInclude Include="..\..\src\i18n\translate.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\common\utf8.h">
+    <ClInclude Include="..\..\src\common\glob.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\common\glob.h">
+    <ClInclude Include="..\..\src\Utils\Logger.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
