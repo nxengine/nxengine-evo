@@ -32,6 +32,25 @@ using namespace NXE::Utils;
 
 #if defined(__SWITCH__)
 #include <switch.h>
+#include <iostream>
+#endif
+
+#if defined(__VITA__)
+#include <psp2/kernel/threadmgr.h>
+extern "C"
+{
+    unsigned int sleep(unsigned int seconds)
+    {
+        sceKernelDelayThread(seconds*1000*1000);
+        return 0;
+    }
+
+    int usleep(useconds_t usec)
+    {
+        sceKernelDelayThread(usec);
+        return 0;
+    }
+}
 #endif
 
 using namespace NXE::Sound;
