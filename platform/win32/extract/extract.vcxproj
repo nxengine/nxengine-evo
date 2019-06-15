@@ -71,22 +71,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -96,7 +96,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\deps;..\..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,7 +111,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\deps;..\..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,7 +128,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\deps;..\..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,7 +148,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\deps;..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\deps;..\..\..\src;..\ext\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,23 +160,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\common\misc.cpp" />
-    <ClCompile Include="..\..\src\extract\crc.cpp" />
-    <ClCompile Include="..\..\src\extract\extractfiles.cpp" />
-    <ClCompile Include="..\..\src\extract\extractpxt.cpp" />
-    <ClCompile Include="..\..\src\extract\extractstages.cpp" />
-    <ClCompile Include="..\..\src\extract\main.cpp" />
-    <ClCompile Include="..\..\src\stagedata.cpp" />
-    <ClCompile Include="..\..\src\Utils\Logger.cpp" />
+    <ClCompile Include="..\..\..\src\common\misc.cpp" />
+    <ClCompile Include="..\..\..\src\extract\crc.cpp" />
+    <ClCompile Include="..\..\..\src\extract\extractfiles.cpp" />
+    <ClCompile Include="..\..\..\src\extract\extractpxt.cpp" />
+    <ClCompile Include="..\..\..\src\extract\extractstages.cpp" />
+    <ClCompile Include="..\..\..\src\extract\main.cpp" />
+    <ClCompile Include="..\..\..\src\stagedata.cpp" />
+    <ClCompile Include="..\..\..\src\Utils\Logger.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\common\misc.h" />
-    <ClInclude Include="..\..\src\extract\crc.h" />
-    <ClInclude Include="..\..\src\extract\extractfiles.h" />
-    <ClInclude Include="..\..\src\extract\extractpxt.h" />
-    <ClInclude Include="..\..\src\extract\extractstages.h" />
-    <ClInclude Include="..\..\src\stagedata.h" />
-    <ClInclude Include="..\..\src\Utils\Logger.h" />
+    <ClInclude Include="..\..\..\src\common\misc.h" />
+    <ClInclude Include="..\..\..\src\extract\crc.h" />
+    <ClInclude Include="..\..\..\src\extract\extractfiles.h" />
+    <ClInclude Include="..\..\..\src\extract\extractpxt.h" />
+    <ClInclude Include="..\..\..\src\extract\extractstages.h" />
+    <ClInclude Include="..\..\..\src\stagedata.h" />
+    <ClInclude Include="..\..\..\src\Utils\Logger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

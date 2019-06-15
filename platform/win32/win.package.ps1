@@ -29,7 +29,7 @@ cp -r -force ..\data\ .\NXEngine\
 
 if ($env:PLATFORM -eq "x86") {
   #bundle libs
-  cp ..\win32\ext\runtime\x86\* .\NXEngine\
+  cp ..\platform\win32\ext\runtime\x86\* .\NXEngine\
 
   #create zip
   $name = "NXEngine-$env:APPVEYOR_REPO_TAG_NAME-Win32.zip"
@@ -41,7 +41,7 @@ if ($env:PLATFORM -eq "x86") {
   #invoke-webrequest -UseBasicParsing -method put -infile ".\$name" https://transfer.sh/$name
 } else {
   #bundle libs
-  cp ..\win32\ext\runtime\x64\* .\NXEngine\
+  cp ..\platform\\win32\ext\runtime\x64\* .\NXEngine\
 
   #create zip
   $name = "NXEngine-$env:APPVEYOR_REPO_TAG_NAME-Win64.zip"

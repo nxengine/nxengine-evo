@@ -10,11 +10,11 @@ platform:
 - x64
 
 build:
-  project: win32/nx.sln
+  project: nx.sln
   verbosity: minimal
 
 before_deploy:
- - ps: .\win32\win.package.ps1
+ - ps: .\platform\win32\win.package.ps1
 
 deploy:
   - provider: GitHub
