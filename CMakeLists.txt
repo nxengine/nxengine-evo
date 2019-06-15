@@ -97,14 +97,16 @@ IF(LOW_END_HARDWARE)
     add_definitions(-D_LOW_END_HARDWARE)
 ENDIF()
 
-add_definitions("-Wall -std=c++11")
+add_definitions("-Wall")
 
 add_executable(nx ${SOURCES})
 
 IF(PLATFORM STREQUAL "pc")
+    add_definitions("-std=c++11")
     target_link_libraries(nx ${SDL2_LIBRARY} ${SDL_MIXER_LIBRARY} ${PNG_LIBRARY})
 
 ELSEIF(PLATFORM STREQUAL "vita")
+    add_definitions("-std=gnu++11")
     add_definitions("-D__VITA__")
     target_link_libraries(nx ${SDL_MIXER_LIBRARY} ${SDL2_LIBRARY} ${PNG_LIBRARY}
       vita2d
@@ -141,6 +143,7 @@ ELSEIF(PLATFORM STREQUAL "vita")
   add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk)
 
 ELSEIF(PLATFORM STREQUAL "switch")
+    add_definitions("-std=gnu++11")
     add_definitions("-D__SWITCH__")
     target_link_libraries(nx SDL2_mixer SDL2 png
       m
