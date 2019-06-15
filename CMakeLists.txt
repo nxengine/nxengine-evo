@@ -160,7 +160,7 @@ ELSEIF(PLATFORM STREQUAL "switch")
       -lnx
     )
 
-    add_nro_target(nx "NXEngine-evo" "NXEngine team" "${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}" "${CMAKE_SOURCE_DIR}/switch/icon.jpg" "${CMAKE_SOURCE_DIR}/release")
+    add_nro_target(nx "NXEngine-evo" "NXEngine team" "${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}" "${CMAKE_SOURCE_DIR}/platform/switch/icon.jpg" "${CMAKE_SOURCE_DIR}/release")
     add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
       COMMAND cp nx.nro ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
       DEPENDS nx.nro
