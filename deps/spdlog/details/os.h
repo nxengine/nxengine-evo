@@ -227,7 +227,7 @@ inline size_t filesize(FILE *f)
 #else // unix
     int fd = fileno(f);
 // 64 bits(but not in osx or cygwin, where fstat64 is deprecated)
-#if !defined(__FreeBSD__) && !defined(__APPLE__) && (defined(__x86_64__) || defined(__ppc64__)) && !defined(__CYGWIN__)
+#if !defined(__FreeBSD__) && !defined(__APPLE__) && (defined(__x86_64__) || defined(__ppc64__)) && !defined(__CYGWIN__) && !defined(__HAIKU__)
     struct stat64 st;
     if (fstat64(fd, &st) == 0)
     {
@@ -272,7 +272,7 @@ inline int utc_minutes_offset(const std::tm &tm = details::os::localtime())
     return offset;
 #else
 
-#if defined(sun) || defined(__sun) || defined(_AIX)
+#if defined(sun) || defined(__sun) || defined(_AIX) || defined(__VITA__) || defined(__SWITCH__)
     // 'tm_gmtoff' field is BSD extension and it's missing on SunOS/Solaris
     struct helper
     {
