@@ -23,8 +23,8 @@ cd CaveStory
 cd ..
 cp -r CaveStory/data NXEngine.app/Contents/Resources
 cp -r ../data NXEngine.app/Contents/Resources
-cp ../osx/icons.icns NXEngine.app/Contents/Resources
-cp ../osx/Info.plist NXEngine.app/Contents/
+cp ../platform/osx/icons.icns NXEngine.app/Contents/Resources
+cp ../platform/osx/Info.plist NXEngine.app/Contents/
 rm -rf CaveStory
 
 #bundle libs
@@ -35,7 +35,7 @@ cd ..
 #git clone https://github.com/andreyvit/create-dmg
 git clone https://github.com/isage/create-dmg
 cd create-dmg
-./create-dmg --volname "NXEngine" --window-size 640 480 --app-drop-link 380 205 --background ../osx/bg.png --icon-size 96 --icon "NXEngine.app" 110 205 "../NXEngine-$TRAVIS_TAG.dmg" ../release/
+./create-dmg --volname "NXEngine" --window-size 640 480 --app-drop-link 380 205 --background ../platform/osx/bg.png --icon-size 96 --icon "NXEngine.app" 110 205 "../NXEngine-$TRAVIS_TAG.dmg" ../release/
 #curl --upload-file "../NXEngine-$TRAVIS_TAG.dmg" https://transfer.sh/NXEngine.dmg
 
 #upload
