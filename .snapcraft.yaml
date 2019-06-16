@@ -15,7 +15,7 @@ confinement: strict
 apps:
   nxengine-evo:
     command: bash -c "cd $SNAP/bin && $SNAP/bin/desktop-launch $SNAP/bin/nx"
-    desktop: usr/share/applications/cavestory.desktop
+    desktop: usr/share/applications/nxengine-evo.desktop
     plugs:
     - opengl
     - unity7
@@ -32,11 +32,11 @@ parts:
     source: .
     plugin: dump
     organize:
-      platform/snap/gui/nxengine-evo.desktop: usr/share/applications/cavestory.desktop
-      platform/snap/gui/icon_x256.png: usr/share/icons/cavestory.png
+      platform/snap/gui/nxengine-evo.desktop: usr/share/applications/nxengine-evo.desktop
+      platform/snap/gui/icon_x256.png: usr/share/icons/nxengine-evo.png
     prime:
-      - usr/share/applications/cavestory.desktop
-      - usr/share/icons/cavestory.png
+      - usr/share/applications/nxengine-evo.desktop
+      - usr/share/icons/nxengine-evo.png
   nxengine-evo:
     plugin: cmake
     source: .
