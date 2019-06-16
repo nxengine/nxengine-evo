@@ -1,4 +1,4 @@
-name: cavestory
+name: nxengine-evo
 version: git
 summary: Doukutsu Monogatari - Jump-and-run platformer
 description: |
@@ -13,8 +13,9 @@ grade: stable
 confinement: strict
 
 apps:
-  cavestory:
+  nxengine-evo:
     command: bash -c "cd $SNAP/bin && $SNAP/bin/desktop-launch $SNAP/bin/nx"
+    desktop: usr/share/applications/cavestory.desktop
     plugs:
     - opengl
     - unity7
@@ -23,11 +24,19 @@ apps:
     - desktop
     - pulseaudio
     - joystick
-
 parts:
   cavestory:
     plugin: nil
     source: https://www.cavestory.org/downloads/cavestoryen.zip
+  desktop-file:
+    source: .
+    plugin: dump
+    organize:
+      platform/snap/gui/nxengine-evo.desktop: usr/share/applications/cavestory.desktop
+      platform/snap/gui/icon_x256.png: usr/share/icons/cavestory.png
+    prime:
+      - usr/share/applications/cavestory.desktop
+      - usr/share/icons/cavestory.png
   nxengine-evo:
     plugin: cmake
     source: .
