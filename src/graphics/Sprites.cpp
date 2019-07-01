@@ -63,6 +63,17 @@ void Sprites::_expand_single_dir_sprites()
         sprites[s].frame[f].dir[1] = sprites[s].frame[f].dir[0];
       sprites[s].bbox[1] = sprites[s].bbox[0];
     }
+    if (sprites[s].ndirs == 2)
+    {
+      sprites[s].ndirs = 4;
+      for (int f = 0; f < sprites[s].nframes; f++)
+      {
+        sprites[s].frame[f].dir[2] = sprites[s].frame[f].dir[0];
+        sprites[s].frame[f].dir[3] = sprites[s].frame[f].dir[0];
+      }
+      sprites[s].bbox[2] = sprites[s].bbox[0];
+      sprites[s].bbox[3] = sprites[s].bbox[0];
+    }
   }
 }
 
