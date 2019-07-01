@@ -302,7 +302,7 @@ bool load_entities(const std::string &fname)
           y++;
 
         // hack for Curly in Almond
-        if (game.curmap == 47 && id2 == 301)
+        if (game.curmap == 47 && id2 == 301 && !game.flags[822])
           y++;
 
         Object *o = CreateObject((x * TILE_W) * CSFI, (y * TILE_H) * CSFI, type, 0, 0, dir, NULL, CF_NO_SPAWN_EVENT);
