@@ -86,7 +86,7 @@ bool Renderer::initVideo()
     return false;
   }
 
-  LOG_DEBUG("SDL_CreateWindow: %dx%d", width, height);
+  LOG_DEBUG("SDL_CreateWindow: {}x{}", width, height);
   _window = SDL_CreateWindow(NXVERSION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
 
   if (!_window)
@@ -164,7 +164,7 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
   r = 1; // one fixed resolution
 #endif
 
-  LOG_INFO("Renderer::setResolution(%d)", r);
+  LOG_INFO("Renderer::setResolution({})", r);
   if (r == _current_res)
     return 0;
 
@@ -187,7 +187,7 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
     height       = res[r].height;
   }
 
-  LOG_INFO("Setting scaling %d", scale);
+  LOG_INFO("Setting scaling {}", scale);
 
   SDL_SetWindowSize(_window, width, height);
 
