@@ -14,6 +14,8 @@
 
 void ai_waterlevel(Object *o);
 void ai_shutter(Object *o);
+void ai_shutter_big(Object *o);
+void ai_almond_lift(Object *o);
 void ai_shutter_stuck(Object *o);
 void ai_almond_robot(Object *o);
 

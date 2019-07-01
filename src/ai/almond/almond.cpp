@@ -14,8 +14,8 @@ INITFUNC(AIRoutines)
   ONTICK(OBJ_WATERLEVEL, ai_waterlevel);
 
   ONTICK(OBJ_SHUTTER, ai_shutter);
-  ONTICK(OBJ_SHUTTER_BIG, ai_shutter);
-  ONTICK(OBJ_ALMOND_LIFT, ai_shutter);
+  ONTICK(OBJ_SHUTTER_BIG, ai_shutter_big);
+  ONTICK(OBJ_ALMOND_LIFT, ai_almond_lift);
 
   ONTICK(OBJ_SHUTTER_STUCK, ai_shutter_stuck);
   ONTICK(OBJ_ALMOND_ROBOT, ai_almond_robot);
@@ -86,13 +86,12 @@ void ai_waterlevel(Object *o)
   map.wlstate = o->state;
 }
 
-/// common code to both Shutter AND Lift
 void ai_shutter(Object *o)
 {
+  // allow hitting the stuck shutter no. 4
+  o->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
   if (o->state == 10)
   {
-    // allow hitting the stuck shutter no. 4
-    o->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
 
     switch (o->dir)
     {
@@ -109,24 +108,43 @@ void ai_shutter(Object *o)
         o->y += 0x80;
         break;
     }
+  }
+  else if (o->state == 20) // tripped by script when Shutter_Big closes fully
+  {
+    o->y -= 0x3000;
+    o->state = 21;
+  }
 
-    // animate Almond_Lift
-    if (o->type == OBJ_ALMOND_LIFT)
-    {
-      ai_animate3(o);
-    }
-    else if (o->type == OBJ_SHUTTER_BIG)
-    {
-      if (!o->timer)
-      {
-        game.quaketime = 20;
-        NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
+}
 
-        o->timer = 6;
-      }
-      else
-        o->timer--;
+void ai_shutter_big(Object *o)
+{
+  if (o->state == 10)
+  {
+    switch (o->dir)
+    {
+      case LEFT:
+        o->x -= 0x80;
+        break;
+      case RIGHT:
+        o->x += 0x80;
+        break;
+      case UP:
+        o->y -= 0x80;
+        break;
+      case DOWN:
+        o->y += 0x80;
+        break;
     }
+
+    if (!o->timer)
+    {
+      game.quaketime = 20;
+      NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_QUAKE);
+      o->timer = 6;
+    }
+    else
+      o->timer--;
   }
   else if (o->state == 20) // tripped by script when Shutter_Big closes fully
   {
@@ -134,9 +152,35 @@ void ai_shutter(Object *o)
     o->state = 21;
   }
 
-  if (o->type == OBJ_SHUTTER_BIG)
+  ANIMATE(10, 0, 3);
+}
+
+void ai_almond_lift(Object *o)
+{
+  if (o->state == 10)
   {
-    ANIMATE(10, 0, 3);
+    switch (o->dir)
+    {
+      case LEFT:
+        o->x -= 0x80;
+        break;
+      case RIGHT:
+        o->x += 0x80;
+        break;
+      case UP:
+        o->y -= 0x80;
+        break;
+      case DOWN:
+        o->y += 0x80;
+        break;
+    }
+
+    ai_animate3(o);
+  }
+  else if (o->state == 20)
+  {
+    SmokeSide(o, 4, DOWN);
+    o->state = 21;
   }
 }
 
