@@ -1,43 +1,28 @@
 # NXEngine-evo
+A somewhat upgraded/refactored version of [NXEngine](http://nxengine.sourceforge.net/) by Caitlin Shaw.
 
-This is a somewhat upgraded/refactored version of [nxengine](http://nxengine.sourceforge.net/)
-
-## Support development https://www.patreon.com/sarcasticat
+### [Support this project on Patreon!](https://www.patreon.com/sarcasticat)
 
 [![Build Status](https://travis-ci.org/nxengine/nxengine-evo.svg?branch=master)](https://travis-ci.org/nxengine/nxengine-evo) [![Build status](https://ci.appveyor.com/api/projects/status/85orsvsorwbvct25?svg=true)](https://ci.appveyor.com/project/nxengine/nxengine-evo/branch/master)
 
 ![Screenshot](https://raw.githubusercontent.com/nxengine/nxengine-evo/master/screenshot.png)
 
-* [Differences](#differences-from-original-nxengine)
-* [Building](#building)
-* [Running](#running)
+## Running the game
+ * Check the wiki for [Linux](https://github.com/nxengine/nxengine-evo/wiki/Building-on-Linux), [macOS](https://github.com/nxengine/nxengine-evo/wiki/Building-on-macOS), and [Windows](https://github.com/nxengine/nxengine-evo/wiki/Building-on-Windows)-specific instructions if you'd like to build from source.
+ * Check the [Releases](https://github.com/nxengine/nxengine-evo/releases) page and download the latest version if you'd rather not build it yourself.
 
-## Differences from original nxengine:
-
-* Port to SDL2 ( thanks to https://github.com/PIlin/NXEngine-iOS )
-* More resolutions and proper widescreen support up to FullHD (thanks to https://github.com/EXL/NXEngine )
-* Fixed tons of gameplay bugs.
-* Gamepad with force-feedback support.
-* Localization support.
-* Mimiga mask ending pictures.
-* Animated facepics.
-* Modern main menu.
-* Support for custom soundtracks.
-* Initial mod support.
-* Vita/Switch ports.
-* Cleaner and partly refactored code.
-* Removed built-in data extractor.
-* Removed replays, as they were buggy/not implemented anyway.
-
-## Building
-* [Linux](https://github.com/nxengine/nxengine-evo/wiki/Building-linux-version)
-* [Windows](https://github.com/nxengine/nxengine-evo/wiki/Building-windows-version)
-* [OSX](https://github.com/nxengine/nxengine-evo/wiki/Building-OSX-version)
-
-
-## Running
- * For source builds see [Running](https://github.com/nxengine/nxengine-evo/wiki/Running) on wiki.
- * or just use prepackaged [releases](https://github.com/nxengine/nxengine-evo/releases)
-   (OSX builds are done on 10.13, so that's a minimum requirement, windows builds require [MSVC2015 runtime](https://www.microsoft.com/en-us/download/details.aspx?id=53587)
-
-May (and most definitely) contain bugs.
+## Differences from the original version of NXEngine:
+* Port to SDL2 (thanks to [PIlin](https://github.com/PIlin/NXEngine-iOS))
+* More resolutions and proper widescreen support up to Full HD (thanks to [EXL](https://github.com/EXL/NXEngine))
+* Animated character portraits
+* Modern main menu
+* Credits graphics specific to the Mimiga Mask ending
+* Localization support
+* Force feedback support
+* Custom soundtrack support
+* Initial mod support
+* Vita/Switch versions
+* Cleaner and partly-refactored code
+* Tons of gameplay-related bugfixes
+* Removed built-in data extractor
+* Removed replays, as they were buggy/not implemented anyway
