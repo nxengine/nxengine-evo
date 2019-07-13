@@ -45,6 +45,7 @@ find_package(SDL2_mixer REQUIRED)
 find_package(PNG REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL_MIXER_INCLUDE_DIR})
 include_directories(${PNG_PNG_INCLUDE_DIR})
 include_directories("${nx_SOURCE_DIR}/deps")
 
