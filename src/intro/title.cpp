@@ -265,8 +265,7 @@ bool title_init(int param)
   game.showmapnametime          = 0;
   textbox.SetVisible(false);
 
-  if (niku_load(&title.besttime))
-    title.besttime = 0xffffffff;
+  title.besttime = niku_load();
 
   // select a title screen based on Nikumaru time
   int t;

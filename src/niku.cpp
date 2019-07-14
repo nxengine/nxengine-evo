@@ -16,7 +16,7 @@
 
 // load the contents of 290.rec and store in value_out. Returns 0 on success.
 // If there is no such file or an error occurs, writes 0 to value_out.
-bool niku_load(uint32_t *value_out)
+uint32_t niku_load()
 {
   FILE *fp;
   uint8_t buffer[20];
@@ -29,9 +29,7 @@ bool niku_load(uint32_t *value_out)
   if (!fp)
   {
     LOG_DEBUG("niku_load: couldn't open file '{}'", fname);
-    if (value_out)
-      *value_out = 0;
-    return 1;
+    return 0xFFFFFFFF;
   }
 
   fread(buffer, 20, 1, fp);
@@ -51,22 +49,25 @@ bool niku_load(uint32_t *value_out)
   if ((result[0] != result[1]) || (result[0] != result[2]) || (result[0] != result[3]))
   {
     LOG_ERROR("niku_load: value mismatch; '{}' corrupt", fname);
-    if (value_out)
-      *value_out = 0;
+    return 0xFFFFFFFF;
   }
   else
   {
     LOG_DEBUG("niku_load: loaded value {:#08x} from {}", *result, fname);
-    if (value_out)
-      *value_out = *result;
+    return *result;
   }
-
-  return 0;
+  return 0xFFFFFFFF;
 }
 
 // save the timestamp in value to 290.rec.
 bool niku_save(uint32_t value)
 {
+  uint32_t old_time = niku_load();
+  if (old_time < value)
+  {
+    return false;
+  }
+
   uint8_t buf_byte[20];
   uint32_t *buf_dword = (uint32_t *)buf_byte;
 
@@ -100,12 +101,12 @@ bool niku_save(uint32_t value)
   if (!fp)
   {
     LOG_ERROR("niku_save: failed to open '{}'", fname);
-    return 1;
+    return false;
   }
 
   fwrite(buf_byte, 20, 1, fp);
   fclose(fp);
 
   LOG_DEBUG("niku_save: wrote value {:#08x}", value);
-  return 0;
+  return true;
 }
