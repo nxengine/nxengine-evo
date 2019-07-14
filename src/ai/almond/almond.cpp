@@ -88,10 +88,10 @@ void ai_waterlevel(Object *o)
 
 void ai_shutter(Object *o)
 {
-  // allow hitting the stuck shutter no. 4
-  o->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
   if (o->state == 10)
   {
+    // allow hitting the stuck shutter no. 4
+    o->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
 
     switch (o->dir)
     {
@@ -109,8 +109,11 @@ void ai_shutter(Object *o)
         break;
     }
   }
-  else if (o->state == 20) // tripped by script when Shutter_Big closes fully
+  else if (o->state == 20)
   {
+    // allow hitting the stuck shutter no. 4
+    o->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
+
     o->y -= 0x3000;
     o->state = 21;
   }
