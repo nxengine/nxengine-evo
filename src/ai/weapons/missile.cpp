@@ -201,17 +201,19 @@ void ai_missile_shot(Object *o)
       {
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MISSILE_HIT);
 
-        // create the boom-spawner object for the flashes, smoke, and AoE damage
-        int y = o->CenterY();
-        if (o->shot.dir == LEFT || o->shot.dir == RIGHT)
-          y -= 3 * CSFI;
-        Object *sp = CreateBullet(o->CenterX(), y, OBJ_MISSILE_BOOM_SPAWNER);
+        if (!shot_destroy_blocks(o))
+        {
+          // create the boom-spawner object for the flashes, smoke, and AoE damage
+          int y = o->CenterY();
+          if (o->shot.dir == LEFT || o->shot.dir == RIGHT)
+            y -= 3 * CSFI;
+          Object *sp = CreateBullet(o->CenterX(), y, OBJ_MISSILE_BOOM_SPAWNER);
 
-        sp->shot.boomspawner.range      = settings->hitrange;
-        sp->shot.boomspawner.booms_left = settings->lifetime;
-        sp->shot.damage                 = settings->boomdamage;
-        sp->shot.level                  = settings->boomdamage;
-
+          sp->shot.boomspawner.range      = settings->hitrange;
+          sp->shot.boomspawner.booms_left = settings->lifetime;
+          sp->shot.damage                 = settings->boomdamage;
+          sp->shot.level                  = settings->boomdamage;
+        }
         o->Delete();
         return;
       }
