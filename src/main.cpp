@@ -299,7 +299,7 @@ int main(int argc, char *argv[])
 #endif
 
 #if defined(__SWITCH__)
-  if (int res = romfsInit() != 0)
+  if (romfsInit() != 0)
   {
     std::cerr << "romfsInit() failed" << std::endl;
     return 1;

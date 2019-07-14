@@ -307,9 +307,13 @@ bool BigImage::Init()
     {
       images[i] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
       if (!images[i])
+      {
         LOG_ERROR("BigImage::Init: image '{}' exists but seems corrupt!", fname);
+      }
       else
+      {
         LOG_DEBUG("BigImage: loaded {} ok", fname);
+      }
     }
   }
 

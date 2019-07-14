@@ -175,6 +175,8 @@ std::string TSC::Decrypt(const std::string &fname, int *fsize_out)
 {
   int fsize, i;
   std::ifstream ifs;
+  if (fsize_out)
+    *fsize_out = 0;
 
   ifs.open(widen(fname), std::ifstream::binary);
 
@@ -1291,9 +1293,13 @@ void TSC::ExecScript(ScriptInstance *s)
       default:
       {
         if (cmd < OP_COUNT)
+        {
           LOG_WARN("- unimplemented opcode %s; script #{:#04d} halted.", cmd_table[cmd].mnemonic, s->scriptno);
+        }
         else
+        {
           LOG_WARN("- unimplemented opcode {:02x}; script #{:#04d} halted.", cmd, s->scriptno);
+        }
 
         StopScript(s);
         return;

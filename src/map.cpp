@@ -1247,10 +1247,14 @@ Object *FindObjectByID2(int id2)
   Object *result = ID2Lookup[id2];
 
   if (result)
+  {
     LOG_DEBUG("FindObjectByID2: ID2 {:#04d} found: type {}; coords: ({}, {})", id2, DescribeObjectType(ID2Lookup[id2]->type),
          ID2Lookup[id2]->x / CSFI, ID2Lookup[id2]->y / CSFI);
+  }
   else
+  {
     LOG_WARN("FindObjectByID2: no such object {:#04d}", id2);
+  }
 
   return result;
 }
