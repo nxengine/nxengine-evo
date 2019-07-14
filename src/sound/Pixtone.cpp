@@ -274,7 +274,7 @@ bool Pixtone::init()
     wave[MOD_NOISE].table[i]   = (signed char)(seed >> 16) / 2;      // Pseudorandom
   }
 
-  char fname[80];
+  std::string fname;
   uint32_t slot;
 
   LOG_INFO("Loading Sound FX...");
@@ -282,10 +282,17 @@ bool Pixtone::init()
   std::string path = ResourceManager::getInstance()->getPathForDir("pxt/");
   for (slot = 1; slot <= NUM_SOUNDS; slot++)
   {
-    sprintf(fname, "%sfx%02x.pxt", path.c_str(), slot);
+    char hexid[3];
+
+    fname.clear();
+    fname += path;
+    fname += "fx";
+    sprintf(hexid, "%02x", slot);
+    fname += hexid;
+    fname += ".pxt";
     stPXSound snd;
 
-    if (!snd.load(fname))
+    if (!snd.load(fname.c_str()))
       continue;
     snd.render();
 
