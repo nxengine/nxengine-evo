@@ -8,6 +8,7 @@
 #include "../nx.h"
 #include "../screeneffect.h"
 #include "../endgame/credits.h"
+#include "../endgame/island.h"
 #include "../inventory.h"
 #include "../map_system.h"
 using namespace NXE::Graphics;
@@ -83,6 +84,11 @@ void pause_tick()
   if (game.mode == GM_CREDITS)
   {
     credit_draw();
+  }
+
+  if (game.mode == GM_ISLAND)
+  {
+    island_draw();
   }
 
   Renderer::getInstance()->tintScreen();

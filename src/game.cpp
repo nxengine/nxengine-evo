@@ -232,7 +232,7 @@ void Game::tick(void)
     tsc->RunScripts();
 
     if (justpushed(ESCKEY)
-        && (game.mode == GM_NORMAL || game.mode == GM_INVENTORY || game.mode == GM_MAP_SYSTEM
+        && (game.mode == GM_NORMAL || game.mode == GM_INVENTORY || game.mode == GM_MAP_SYSTEM || game.mode == GM_ISLAND
             || game.mode == GM_CREDITS))
     {
       game.pause(GP_PAUSED);
