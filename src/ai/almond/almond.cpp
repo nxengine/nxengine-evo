@@ -178,13 +178,13 @@ void ai_almond_lift(Object *o)
         break;
     }
 
-    ai_animate3(o);
   }
   else if (o->state == 20)
   {
     SmokeSide(o, 4, DOWN);
     o->state = 21;
   }
+  ai_animaten(o, 10);
 }
 
 void ai_shutter_stuck(Object *o)
