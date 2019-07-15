@@ -110,6 +110,7 @@ void ai_animate2(Object *o);
 void ai_animate3(Object *o);
 void ai_animate4(Object *o);
 void ai_animate5(Object *o);
+void ai_animaten(Object *o, int n);
 void aftermove_StickToLinkedActionPoint(Object *o);
 void onspawn_snap_to_ground(Object *o);
 void onspawn_set_frame_from_id2(Object *o);

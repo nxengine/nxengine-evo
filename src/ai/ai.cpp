@@ -315,6 +315,11 @@ void ai_animate5(Object *o)
   simpleanim(o, 5);
 }
 
+void ai_animaten(Object *o, int n)
+{
+  simpleanim(o, n);
+}
+
 /*
 void c------------------------------() {}
 */
