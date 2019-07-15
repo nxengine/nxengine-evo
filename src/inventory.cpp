@@ -316,7 +316,10 @@ static void RunSelector(stSelector *selector)
     }
 
     if (justpushed(INVENTORYKEY) || justpushed(DECLINE_BUTTON))
+    {
+      weapon_slide(LEFT, inv.armssel.items[inv.armssel.cursel]);
       ExitInventory();
+    }
   }
 }
 
@@ -328,6 +331,7 @@ static void RunSelector(stSelector *selector)
 // param is passed as 1 when returning from Map System.
 bool inventory_init(int param)
 {
+  int oldarms = inv.armssel.cursel;
   memset(&inv, 0, sizeof(inv));
 
   inv.curselector          = &inv.armssel;
@@ -338,6 +342,7 @@ bool inventory_init(int param)
   if (param == 1)
   {
     inv.curselector = &inv.itemsel;
+    inv.armssel.cursel = oldarms;
 
     // highlight Map System
     for (int i = 0; i < inv.itemsel.nitems; i++)
