@@ -16,6 +16,7 @@
 INITFUNC(AIRoutines)
 {
   ONTICK(OBJ_CURLY, ai_curly);
+  ONTICK(OBJ_CURLY_COLLAPSED, ai_curly_collapsed);
 
   AFTERMOVE(OBJ_CURLY_CARRIED, aftermove_curly_carried);
 
@@ -126,6 +127,26 @@ void ai_curly(Object *o)
 
   o->yinertia += 0x40;
   LIMITY(0x5ff);
+}
+
+// collapsed curly (on bed in camp)
+void ai_curly_collapsed(Object *o)
+{
+  switch (o->state)
+  {
+    case 0:
+      o->frame = 1;
+    case 1:
+      if ((o->dir == RIGHT) && pdistlx(32 * CSFI) && pdistly(16 * CSFI))
+      {
+        o->frame = 0;
+      }
+      else
+      {
+        o->frame = 1;
+      }
+      break;
+  }
 }
 
 // curly being carried by Tow Rope
