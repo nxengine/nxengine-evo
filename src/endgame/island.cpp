@@ -73,6 +73,11 @@ void island_tick()
 
   island.y += island.speed;
   island.timer++;
+  island_draw();
+}
+
+void island_draw()
+{
 
   // draw the scene
   Renderer::getInstance()->clearScreen(BLACK);
