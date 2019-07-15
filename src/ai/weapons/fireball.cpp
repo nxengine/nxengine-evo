@@ -72,49 +72,11 @@ void ai_fireball(Object *o)
   }
 
   Object *enemy;
-  if ((enemy = check_hit_enemy(o)))
+  if ((enemy = damage_enemies(o)))
   {
-    // bounce off of invulnerable non-enemy objects instead of dissipating
-    // (prevents incorrect dissipation if a fireball hits the Lift in Almond)
     if ((enemy->flags & FLAG_INVULNERABLE) && enemy->damage == 0)
     {
-      static const Point embedpt[] = {{8, 8}};
-      static const Point pcheckl[] = {{-1, 4}, {-1, 12}};
-      static const Point pcheckr[] = {{16, 4}, {16, 12}};
-      static const Point pchecku[] = {{4, -1}, {12, -1}};
-      static const Point pcheckd[] = {{4, 16}, {12, 16}};
-
-      // keeps us from bouncing around forever if something gets screwed up
-      if (!o->CheckSolidIntersect(enemy, embedpt, 1))
-      {
-        // figure out whether we're on top, to the left, or etc of whatever we hit
-        // so we know which way to bounce off
-        if (o->CheckSolidIntersect(enemy, pcheckl, 2))
-        {
-          o->xinertia = 0x400;
-          return;
-        }
-
-        if (o->CheckSolidIntersect(enemy, pcheckr, 2))
-        {
-          o->xinertia = -0x400;
-          return;
-        }
-
-        if (o->CheckSolidIntersect(enemy, pchecku, 2))
-        {
-          o->yinertia = 0x400;
-          return;
-        }
-
-        if (o->CheckSolidIntersect(enemy, pcheckd, 2))
-        {
-          o->yinertia = -0x400;
-          return;
-        }
-      }
-
-      shot_dissipate(o, EFFECT_STARPOOF);
+      o->Delete();
       return;
     }
 
@@ -122,7 +84,7 @@ void ai_fireball(Object *o)
     //  and continuing on if the enemy is killed by that much damage."
     // So, our damage is set to half of what it should be, and we'll let ourselves
     // deal it up to twice.
-    enemy->DealDelayedDamage(o->shot.damage);
+//    enemy->DealDelayedDamage(o->shot.damage);
 
     if (o->timer3 == 1)
       shot_dissipate(o, EFFECT_STARPOOF);
