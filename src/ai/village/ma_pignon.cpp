@@ -339,13 +339,17 @@ void ai_ma_pignon(Object *o)
       if (o->type != OBJ_MA_PIGNON_CLONE)
       {
         Object *c;
-        FOREACH_OBJECT(c)
+        for(int i =0; i < 64; i++)
         {
-          if (c->type == OBJ_MISSILE_SHOT || c->type == OBJ_SUPERMISSILE_SHOT || c->type == OBJ_MISSILE_BOOM_SPAWNER
-              || c->type == OBJ_BLADE12_SHOT || c->type == OBJ_BLADE3_SHOT || c->type == OBJ_BLADE_SLASH)
+          if (bullets[i] != NULL)
           {
-            found_weapons = true;
-            break;
+            c = bullets[i];
+            if (c->type == OBJ_MISSILE_SHOT || c->type == OBJ_SUPERMISSILE_SHOT || c->type == OBJ_MISSILE_BOOM_SPAWNER
+                || c->type == OBJ_BLADE12_SHOT || c->type == OBJ_BLADE3_SHOT || c->type == OBJ_BLADE_SLASH)
+            {
+              found_weapons = true;
+              break;
+            }
           }
         }
       }

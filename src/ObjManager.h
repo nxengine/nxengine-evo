@@ -80,6 +80,7 @@ struct ObjProp
 extern ObjProp objprop[OBJ_LAST];
 extern Object *firstobject, *lastobject;
 extern Object *lowestobject, *highestobject;
+extern Object *bullets[64];
 
 bool hitdetect(Object *o1, Object *o2);
 bool hitdetect_shot(Object *o1, Object *o2);
