@@ -10,7 +10,7 @@
 #include "statusbar.h"
 #include "tsc.h"
 
-#define GAME_FPS 50
+#define GAME_FPS 60
 
 // for UpdateBlockedStates
 #define RIGHTMASK 0x01
