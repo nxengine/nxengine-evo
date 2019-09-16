@@ -2,13 +2,9 @@
 #include "dialog.h"
 
 #include "../game.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../nx.h"
-using namespace Graphics;
-#include "../graphics/font.h"
-#include "../graphics/sprites.h"
-
-using namespace Sprites;
+using namespace NXE::Graphics;
 #include "../TextBox/TextBox.h"
 #include "../autogen/sprites.h"
 #include "../input.h"
@@ -22,17 +18,17 @@ extern std::vector<void *> optionstack;
 
 Dialog::Dialog()
 {
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 110);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 110);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 240;
     DLG_H = 200;
   }
   else
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 88);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 88);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 190;
     DLG_H = 200;
   }
@@ -69,17 +65,17 @@ Dialog::~Dialog()
 
 void Dialog::UpdateSizePos()
 {
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 110);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 110);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 240;
     DLG_H = 200;
   }
   else
   {
-    DLG_X = ((SCREEN_WIDTH / 2) - 88);
-    DLG_Y = ((SCREEN_HEIGHT / 2) - 100);
+    DLG_X = ((Renderer::getInstance()->screenWidth / 2) - 88);
+    DLG_Y = ((Renderer::getInstance()->screenHeight / 2) - 100);
     DLG_W = 190;
     DLG_H = 200;
   }
@@ -134,6 +130,11 @@ ODItem *Dialog::AddSeparator()
   return AddItem("", NULL, NULL, -1, OD_SEPARATOR);
 }
 
+ODItem *Dialog::AddDisabledItem(const char *text)
+{
+  return AddItem(text, NULL, NULL, -1, OD_DISABLED);
+}
+
 ODItem *Dialog::AddDismissalItem(const char *text)
 {
   if (!text)
@@ -147,10 +148,11 @@ void c------------------------------() {}
 
 void Dialog::Draw()
 {
+  UpdateSizePos();
   TextBox::DrawFrame(fCoords.x, fCoords.y, fCoords.w, fCoords.h);
 
   int x = fTextX;
-  int y = (fCoords.y + GetFontBase());
+  int y = (fCoords.y + Renderer::getInstance()->font.getBase());
   for (unsigned int i = 0; i < fItems.size(); i++)
   {
     ODItem *item = (ODItem *)fItems.at(i);
@@ -159,11 +161,11 @@ void Dialog::Draw()
       DrawItem(x, y, item);
 
     if (i == (unsigned int)fCurSel)
-      draw_sprite(x - 16, y + 1, SPR_WHIMSICAL_STAR, 1);
+      Renderer::getInstance()->sprites.drawSprite(x - 16, y + 1, SPR_WHIMSICAL_STAR, 1);
     if (item->type == OD_SEPARATOR)
       y += 5;
     else
-      y += GetFontHeight();
+      y += Renderer::getInstance()->font.getHeight();
   }
 
   if (fNumShown < 99)
@@ -181,33 +183,19 @@ void Dialog::DrawItem(int x, int y, ODItem *item)
   if (item->raligntext[0])
   {
     int rx = (fCoords.x + fCoords.w) - 10;
-    rx -= GetFontWidth(_(item->raligntext));
-    font_draw(rx, y, _(item->raligntext));
-    /*
-    // ... ellipses if too long
-    int maxx = (rx - 4);
-    //FillRect(maxx, 0, maxx, SCREEN_HEIGHT, 0,255,0);
-    for(;;)
-    {
-            int wd = GetFontWidth(text);
-            if (x+wd < maxx) break;
-
-            int len = strlen(text);
-            if (len <= 3) { *text = 0; break; }
-
-            text[len-1] = 0;
-            text[len-2] = '.';
-            text[len-3] = '.';
-            text[len-4] = '.';
-    }*/
+    rx -= Renderer::getInstance()->font.getWidth(_(item->raligntext));
+    Renderer::getInstance()->font.draw(rx, y, _(item->raligntext));
   }
 
-  font_draw(x, y, text);
+  if (item->type == OD_DISABLED)
+    Renderer::getInstance()->font.draw(x, y, text, 0x666666);
+  else
+    Renderer::getInstance()->font.draw(x, y, text);
 
   // for key remaps
   if (item->righttext[0])
   {
-    font_draw((fCoords.x + fCoords.w) - 62, y, item->righttext);
+    Renderer::getInstance()->font.draw((fCoords.x + fCoords.w) - 62, y, item->righttext);
   }
 }
 
@@ -238,7 +226,7 @@ void Dialog::RunInput()
         if (fCurSel >= 0 && fCurSel < (int)fItems.size())
         {
           ODItem *item = fItems.at(fCurSel);
-          if (item && item->type != OD_SEPARATOR)
+          if (item && item->type != OD_SEPARATOR && item->type != OD_DISABLED)
             break;
         }
       }
@@ -249,10 +237,10 @@ void Dialog::RunInput()
   else
     fRepeatTimer = 0;
 
-  if (justpushed(JUMPKEY) || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
+  if (justpushed(ACCEPT_BUTTON) || justpushed(RIGHTKEY) || justpushed(LEFTKEY) || justpushed(ENTERKEY))
   {
     int dir = (!inputs[LEFTKEY] || buttonjustpushed() || justpushed(RIGHTKEY) || justpushed(ENTERKEY)) ? 1 : -1;
-    if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
+    if (justpushed(ACCEPT_BUTTON) || justpushed(ENTERKEY))
       dir = 0;
 
     ODItem *item = NULL;
@@ -287,7 +275,7 @@ void Dialog::RunInput()
     }
   }
 
-  if (justpushed(ESCKEY) || justpushed(FIREKEY))
+  if (justpushed(ESCKEY) || justpushed(DECLINE_BUTTON))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
     if (ondismiss)

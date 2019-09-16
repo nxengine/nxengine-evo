@@ -2,10 +2,12 @@
 
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../object.h"
 #include "fireball.h"
 #include "weapons.h"
+
+using namespace NXE::Graphics;
 
 // settings for wavy and acceleration of levels 2 & 3
 #define SNAKE_VERT_SPEED 0x400
@@ -49,11 +51,11 @@ void ai_snake(Object *o)
   if (o->shot.dir == LEFT)
   {
     if (--o->frame < 0)
-      o->frame = sprites[o->sprite].nframes - 1;
+      o->frame = Renderer::getInstance()->sprites.sprites[o->sprite].nframes - 1;
   }
   else
   {
-    if (++o->frame >= sprites[o->sprite].nframes)
+    if (++o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
       o->frame = 0;
   }
 
@@ -139,7 +141,7 @@ void ai_snake_trail(Object *o)
     o->animtimer = 0;
     o->frame += 3;
 
-    if (o->frame >= sprites[o->sprite].nframes)
+    if (o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
       o->Delete();
   }
 }

@@ -33,7 +33,7 @@ public:
   void Print(const char *fmt, ...);
 
 private:
-  void DrawText(const char *text);
+  void DrawDebugText(const char *text);
   void MatchCommand(const char *cmd, std::vector<void *> *matches);
   char *SplitCommand(const char *line_in, std::vector<std::string> *args);
   void ExpandCommand();

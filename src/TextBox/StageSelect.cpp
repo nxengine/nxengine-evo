@@ -6,20 +6,18 @@
 
 #include "StageSelect.h"
 
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../nx.h"
 #include "../sound/SoundManager.h"
 #include "../tsc.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../autogen/sprites.h"
-#include "../graphics/sprites.h"
-using namespace Sprites;
 
-#define WARP_X (SCREEN_WIDTH / 2) - 32
-#define WARP_Y (SCREEN_HEIGHT / 2) - 74
+#define WARP_X (Renderer::getInstance()->screenWidth / 2) - 32
+#define WARP_Y (Renderer::getInstance()->screenHeight / 2) - 74
 
 #define WARP_Y_START (WARP_Y + 8)
 #define WARP_Y_SPEED 1
@@ -91,28 +89,28 @@ void TB_StageSelect::Draw(void)
   if (fWarpY < WARP_Y)
     fWarpY = WARP_Y;
 
-  draw_sprite(WARP_X, fWarpY, SPR_TEXT_WARP, 0);
+  Renderer::getInstance()->sprites.drawSprite(WARP_X, fWarpY, SPR_TEXT_WARP, 0);
 
   // draw teleporter locations
   int nslots        = CountActiveSlots();
   int total_spacing = ((nslots - 1) * LOCS_SPACING);
-  int total_width   = total_spacing + (nslots * sprites[SPR_STAGEIMAGE].w);
-  int x             = (SCREEN_WIDTH / 2) - (total_width / 2);
+  int total_width   = total_spacing + (nslots * Renderer::getInstance()->sprites.sprites[SPR_STAGEIMAGE].w);
+  int x             = (Renderer::getInstance()->screenWidth / 2) - (total_width / 2);
 
   for (int i = 0; i < nslots; i++)
   {
     int sprite;
     GetSlotByIndex(i, &sprite, NULL);
 
-    draw_sprite(x, LOCS_Y, SPR_STAGEIMAGE, sprite);
+    Renderer::getInstance()->sprites.drawSprite(x, LOCS_Y, SPR_STAGEIMAGE, sprite);
 
     if (i == fSelectionIndex)
     {
       fSelectionFrame ^= 1;
-      draw_sprite(x, LOCS_Y, SPR_SELECTOR_ITEMS, fSelectionFrame);
+      Renderer::getInstance()->sprites.drawSprite(x, LOCS_Y, SPR_SELECTOR_ITEMS, fSelectionFrame);
     }
 
-    x += (sprites[SPR_STAGEIMAGE].w + LOCS_SPACING);
+    x += (Renderer::getInstance()->sprites.sprites[SPR_STAGEIMAGE].w + LOCS_SPACING);
   }
 }
 
@@ -135,12 +133,12 @@ void TB_StageSelect::HandleInput()
   }
 
   // when user picks a location return the new script to execute
-  if (justpushed(JUMPKEY))
+  if (justpushed(ACCEPT_BUTTON))
   {
     int scriptno;
     if (!GetSlotByIndex(fSelectionIndex, NULL, &scriptno))
     {
-      stat("StageSelect: starting activation script %d", scriptno);
+      LOG_DEBUG("StageSelect: starting activation script %d", scriptno);
       game.tsc->JumpScript(scriptno, TSC::ScriptPages::SP_MAP);
     }
     else
@@ -150,7 +148,7 @@ void TB_StageSelect::HandleInput()
 
     fMadeSelection = true;
   }
-  else if (justpushed(FIREKEY))
+  else if (justpushed(DECLINE_BUTTON))
   {
     game.tsc->JumpScript(0);
   }
@@ -209,7 +207,7 @@ void TB_StageSelect::SetSlot(int slotno, int scriptno)
   }
   else
   {
-    stat("StageSelect::SetSlot: invalid slotno %d", slotno);
+    LOG_WARN("StageSelect::SetSlot: invalid slotno %d", slotno);
   }
 }
 

@@ -77,7 +77,8 @@ void randblink(Object *o, int blinkframe = 1, int blinktime = 8, int prob = 120)
 
 #define COPY_PFBOX                                                                                                     \
   {                                                                                                                    \
-    sprites[o->sprite].bbox = sprites[o->sprite].frame[o->frame].dir[o->dir].pf_bbox;                                  \
+    Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir] =                                                 \
+     Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].pf_bbox;                          \
   }
 
 #define AIDEBUG                                                                                                        \
@@ -86,6 +87,12 @@ void randblink(Object *o, int blinkframe = 1, int blinktime = 8, int prob = 120)
     debug("state: %d", o->state);                                                                                      \
     debug("timer: %d", o->timer);                                                                                      \
     debug("timer2: %d", o->timer2);                                                                                    \
+  }
+
+#define FACEPLAYERIFNEARBY                                                                                             \
+  {                                                                                                                    \
+    if (!player->hide && pdistlx(0x4000) && pdistly2(0x4000, 0x2000))                                                  \
+      o->dir = (o->CenterX() > player->CenterX()) ? LEFT : RIGHT;                                                      \
   }
 
 Object *SpawnObjectAtActionPoint(Object *o, int otype);
@@ -103,6 +110,7 @@ void ai_animate2(Object *o);
 void ai_animate3(Object *o);
 void ai_animate4(Object *o);
 void ai_animate5(Object *o);
+void ai_animaten(Object *o, int n);
 void aftermove_StickToLinkedActionPoint(Object *o);
 void onspawn_snap_to_ground(Object *o);
 void onspawn_set_frame_from_id2(Object *o);

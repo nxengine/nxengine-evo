@@ -1,7 +1,7 @@
 
 #ifndef _SLOPE_H
 #define _SLOPE_H
-#include "graphics/tileset.h"
+#include "graphics/Tileset.h"
 #include "object.h"
 #include "siflib/sif.h"
 

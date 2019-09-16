@@ -5,13 +5,15 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 #define BUTE_HP 4
 #define MESA_HP 64
@@ -774,10 +776,10 @@ void ai_deleet(Object *o)
           o->sprite    = SPR_BBOX_PUPPET_1;
           o->invisible = true;
 
-          sprites[o->sprite].bbox.x1 = -48;
-          sprites[o->sprite].bbox.x2 = 48;
-          sprites[o->sprite].bbox.y1 = -48;
-          sprites[o->sprite].bbox.y2 = 48;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].x1 = -48;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].x2 = 48;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].y1 = -48;
+          Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].y2 = 48;
           o->damage                  = 12;
 
           quake(10);

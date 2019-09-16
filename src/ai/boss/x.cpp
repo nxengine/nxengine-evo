@@ -4,11 +4,9 @@
 #include "../../autogen/sprites.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
@@ -18,6 +16,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 #define STATE_X_APPEAR 1       // script-triggered: must stay constant
 #define STATE_X_FIGHT_BEGIN 10 // script-triggered: must stay constant
@@ -59,7 +59,7 @@ INITFUNC(AIRoutines)
 
 void XBoss::OnMapEntry(void)
 {
-  stat("XBoss::OnMapEntry()");
+  LOG_DEBUG("XBoss::OnMapEntry()");
 
   memset(&X, 0, sizeof(X));
   memset(&body, 0, sizeof(body));
@@ -98,7 +98,7 @@ void XBoss::Run()
   if (o->state == 0 || (!X.initilized && o->state != STATE_X_APPEAR))
   {
     o->hp = 1;
-    o->x  = -(SCREEN_WIDTH * CSFI);
+    o->x  = -(Renderer::getInstance()->screenWidth * CSFI);
     return;
   }
 
@@ -505,8 +505,8 @@ void XBoss::run_body(int i)
   body[i]->y = (mainobject->y + treads[i]->y) / 2;
 
   // ...and place our center pixel at those coordinates.
-  int dx = (sprites[body[i]->sprite].w / 2) - 8;
-  int dy = (sprites[body[i]->sprite].h / 2) - 8;
+  int dx = (Renderer::getInstance()->sprites.sprites[body[i]->sprite].w / 2) - 8;
+  int dy = (Renderer::getInstance()->sprites.sprites[body[i]->sprite].h / 2) - 8;
   body[i]->x -= dx * CSFI;
   body[i]->y -= dy * CSFI;
 
@@ -783,10 +783,10 @@ void XBoss::Init()
     doors[i]->dir    = i;
   }
 
-  sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.x  = 40;
-  sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.y  = 16;
-  sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.x = -9;
-  sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.y = 16;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.x  = 40;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[LEFT].drawpoint.y  = 16;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.x = -9;
+  Renderer::getInstance()->sprites.sprites[SPR_X_DOOR].frame[0].dir[RIGHT].drawpoint.y = 16;
 }
 
 // create an object and record it as a piece of the monster

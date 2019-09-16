@@ -19,6 +19,8 @@ struct Settings
   bool skip_intro;
   bool rumble;
   bool strafing;
+  bool animated_facepics;
+  bool control_scheme;
   int16_t sfx_volume;
   int16_t music_volume;
 

@@ -23,7 +23,6 @@ private:
 
   void SetJumpingSprite(bool enable);
   void SpawnFrogs(int objtype, int count);
-  void SpawnSmoke(int count, int ytop);
 
   void set_bbox(int index, int x, int y, int w, int h, uint32_t flags);
   void transmit_bbox_hits(Object *box);

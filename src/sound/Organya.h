@@ -42,8 +42,8 @@ struct Song
   uint32_t ms_per_beat, samples_per_beat, loop_start, loop_end;
   uint32_t steps_per_bar, beats_per_step;
   Instrument ins[16];
-  bool loaded;
-  bool playing;
+  bool loaded = false;
+  bool playing = false;
   uint32_t cur_beat    = 0;
   uint32_t total_beats = 0;
   uint32_t last_pos    = 0;

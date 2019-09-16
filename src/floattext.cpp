@@ -1,12 +1,10 @@
 
 #include "floattext.h"
 
-#include "graphics/graphics.h"
-#include "graphics/sprites.h"
+#include "graphics/Renderer.h"
 #include "nx.h"
 #include "object.h"
-using namespace Graphics;
-using namespace Sprites;
+using namespace NXE::Graphics;
 #include "map.h"
 
 FloatText *FloatText::first = NULL;
@@ -96,11 +94,11 @@ void FloatText::AddQty(int amt)
 void FloatText::UpdatePos(Object *assoc_object)
 {
   // get the center pixel of the object we're associated with
-  this->objX = (assoc_object->x / CSFI) + (sprites[assoc_object->sprite].w / 2);
-  this->objY = (assoc_object->y / CSFI) + (sprites[assoc_object->sprite].h / 2);
+  this->objX = (assoc_object->x / CSFI) + (Renderer::getInstance()->sprites.sprites[assoc_object->sprite].w / 2);
+  this->objY = (assoc_object->y / CSFI) + (Renderer::getInstance()->sprites.sprites[assoc_object->sprite].h / 2);
 
   // adjust for possible draw point
-  SIFDir *dir = &sprites[assoc_object->sprite].frame[assoc_object->frame].dir[assoc_object->dir];
+  SIFDir *dir = &Renderer::getInstance()->sprites.sprites[assoc_object->sprite].frame[assoc_object->frame].dir[assoc_object->dir];
   this->objX -= dir->drawpoint.x;
   this->objY -= dir->drawpoint.y;
 }
@@ -117,9 +115,9 @@ void FloatText::Draw()
   {
     // this formula is confusing until you realize that FT_Y_HOLD is a negative number
     int y = ((ft->objY - (map.displayed_yscroll / CSFI)) + FT_Y_HOLD);
-    int h = (SCREEN_HEIGHT - y);
+    int h = (Renderer::getInstance()->screenHeight - y);
 
-    set_clip_rect(0, y, SCREEN_WIDTH, h);
+    Renderer::getInstance()->setClip(0, y, Renderer::getInstance()->screenWidth, h);
   }
 
   // render the damage amount into a string
@@ -138,12 +136,12 @@ void FloatText::Draw()
   // draw the text char by char
   for (i = 0; i < textlen; i++)
   {
-    draw_sprite(x, y, ft->sprite, text[i], 0);
+    Renderer::getInstance()->sprites.drawSprite(x, y, ft->sprite, text[i], 0);
     x += 8;
   }
 
   if (ft->state == FT_SCROLL_AWAY)
-    clear_clip_rect();
+    Renderer::getInstance()->clearClip();
 }
 
 void FloatText::Update()

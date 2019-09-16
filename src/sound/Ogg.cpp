@@ -3,7 +3,7 @@
 #include "../ResourceManager.h"
 #include "../common/basics.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../settings.h"
 #include "SoundManager.h" // SAMPLE_RATE
 
@@ -15,6 +15,11 @@
 #include <functional>
 #include <string>
 
+namespace NXE
+{
+namespace Sound
+{
+
 Ogg *Ogg::getInstance()
 {
   return Singleton<Ogg>::get();
@@ -23,7 +28,7 @@ Ogg *Ogg::getInstance()
 Ogg::Ogg() {}
 Ogg::~Ogg() {}
 
-bool Ogg::load(const std::string &fname, const std::string &dir)
+bool Ogg::load(const std::string &fname, const std::string &dir, bool doloop)
 {
   std::string filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + "_intro.ogg");
   if (!ResourceManager::fileExists(filename))
@@ -38,7 +43,7 @@ bool Ogg::load(const std::string &fname, const std::string &dir)
   _song.intro = Mix_LoadMUS(filename.c_str());
   if (!_song.intro)
   {
-    staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
+    LOG_ERROR("Mix_LoadMUS(): {}", Mix_GetError());
     return false;
   }
 
@@ -52,18 +57,11 @@ bool Ogg::load(const std::string &fname, const std::string &dir)
   _song.loop = Mix_LoadMUS(filename.c_str());
   if (!_song.loop)
   {
-    staterr("Mix_LoadMUS(): %s\n", Mix_GetError());
+    LOG_ERROR("Mix_LoadMUS(): {}", Mix_GetError());
     return false;
   }
 
-  if (fname.compare("gameover") == 0 || fname.compare("fanfale1") == 0 || fname.compare("fanfale2") == 0 || fname.compare("fanfale3") == 0)
-  {
-    _song.doloop = false;
-  }
-  else
-  {
-    _song.doloop = true;
-  }
+  _song.doloop = doloop;
 
   return true;
 }
@@ -90,11 +88,11 @@ void Ogg::musicFinished()
 }
 
 // start the currently-loaded track playing at beat startbeat.
-bool Ogg::start(const std::string &fname, const std::string &dir, int startbeat, bool loop)
+bool Ogg::start(const std::string &fname, const std::string &dir, int startbeat, bool loop, bool doloop)
 {
   stop(); // stop any old music
 
-  if (!load(fname, dir))
+  if (!load(fname, dir, doloop))
   {
     return false;
     _song.playing = false;
@@ -213,3 +211,6 @@ bool Ogg::looped()
 {
   return _looped;
 }
+
+}; // namespace Sound
+}; // namespace NXE

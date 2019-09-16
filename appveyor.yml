@@ -1,4 +1,4 @@
-version: 2.6.3.{build}
+version: 2.6.4.{build}
 
 pull_requests:
   do_not_increment_build_number: true
@@ -10,11 +10,11 @@ platform:
 - x64
 
 build:
-  project: win32/nx.sln
+  project: nx.sln
   verbosity: minimal
 
 before_deploy:
- - ps: .\win32\win.package.ps1
+ - ps: .\platform\win32\win.package.ps1
 
 deploy:
   - provider: GitHub

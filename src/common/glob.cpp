@@ -1,5 +1,6 @@
 #ifndef _WIN32
 #include "myfnmatch.h"
+#include <cstring>
 #endif
 #include "glob.h"
 
@@ -77,8 +78,14 @@ bool Glob::Next()
 {
   while ((dir_entry_ = readdir(dir_)) != 0)
   {
-    if (!myfnmatch(pattern_.c_str(), dir_entry_->d_name))
+    if
+    (
+      !myfnmatch(pattern_.c_str(), dir_entry_->d_name)
+      && strcmp(dir_entry_->d_name, ".") != 0
+      && strcmp(dir_entry_->d_name, "..") !=0
+    )
     {
+//      printf("%s\n", dir_entry_->d_name);
       return true;
     }
   }

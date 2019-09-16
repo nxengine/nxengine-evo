@@ -1,12 +1,10 @@
 
 #include "screeneffect.h"
 
-#include "graphics/graphics.h"
-#include "graphics/sprites.h"
+#include "graphics/Renderer.h"
 #include "nx.h"
 #include "sound/SoundManager.h"
-using namespace Graphics;
-using namespace Sprites;
+using namespace NXE::Graphics;
 #include "map.h"
 
 SE_FlashScreen flashscreen;
@@ -43,7 +41,7 @@ void SE_FlashScreen::Draw(void)
   }
 
   if (flashstate)
-    ClearScreen(0xff, 0xff, 0xff);
+    Renderer::getInstance()->clearScreen(0xff, 0xff, 0xff);
 }
 
 /*
@@ -92,19 +90,19 @@ void SE_Starflash::Draw(void)
   // draw a horizontal bar
   scr_y1 = (rel_y - star->size) / CSFI;
   scr_y2 = (rel_y + star->size) / CSFI;
-  FillRect(0, scr_y1, SCREEN_WIDTH, scr_y2, 255, 255, 255);
+  Renderer::getInstance()->fillRect(0, scr_y1, Renderer::getInstance()->screenWidth, scr_y2, 255, 255, 255);
 
   if (star->state == 0)
   {
     // draw a vertical bar
     scr_x1 = (rel_x - starflash.size) / CSFI;
     scr_x2 = (rel_x + starflash.size) / CSFI;
-    FillRect(scr_x1, 0, scr_x2, SCREEN_HEIGHT, 255, 255, 255);
+    Renderer::getInstance()->fillRect(scr_x1, 0, scr_x2, Renderer::getInstance()->screenHeight, 255, 255, 255);
 
     // once it's big enough, switch to making it smaller
     if (star->size > (1280 * CSFI))
     {
-      star->size  = (SCREEN_HEIGHT * CSFI);
+      star->size  = (Renderer::getInstance()->screenHeight * CSFI);
       star->state = 1;
     }
   }
@@ -172,7 +170,7 @@ void SE_Fade::Draw(void)
   }
   else if (state == FS_FADED_OUT)
   {
-    ClearScreen(DK_BLUE);
+    Renderer::getInstance()->clearScreen(DK_BLUE);
     return;
   }
 
@@ -180,60 +178,60 @@ void SE_Fade::Draw(void)
   switch (fade.sweepdir)
   {
     case FADE_RIGHT:
-      for (x = 0; x < SCREEN_WIDTH; x += 16)
+      for (x = 0; x < Renderer::getInstance()->screenWidth; x += 16)
       {
         if (frame >= 0)
         {
           if (frame > FADE_LAST_FRAME)
             frame = FADE_LAST_FRAME;
 
-          for (y = 0; y < SCREEN_HEIGHT; y += 16)
-            draw_sprite(x, y, fade.sprite, frame);
+          for (y = 0; y < Renderer::getInstance()->screenHeight; y += 16)
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
       break;
 
     case FADE_LEFT:
-      for (x = SCREEN_WIDTH - 1; x >= -16; x -= 16)
+      for (x = Renderer::getInstance()->screenWidth - 1; x >= -16; x -= 16)
       {
         if (frame >= 0)
         {
           if (frame > FADE_LAST_FRAME)
             frame = FADE_LAST_FRAME;
 
-          for (y = 0; y < SCREEN_HEIGHT; y += 16)
-            draw_sprite(x, y, fade.sprite, frame);
+          for (y = 0; y < Renderer::getInstance()->screenHeight; y += 16)
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
       break;
 
     case FADE_DOWN:
-      for (y = 0; y < SCREEN_HEIGHT; y += 16)
+      for (y = 0; y < Renderer::getInstance()->screenHeight; y += 16)
       {
         if (frame >= 0)
         {
           if (frame > FADE_LAST_FRAME)
             frame = FADE_LAST_FRAME;
 
-          for (x = 0; x < SCREEN_WIDTH; x += 16)
-            draw_sprite(x, y, fade.sprite, frame);
+          for (x = 0; x < Renderer::getInstance()->screenWidth; x += 16)
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
       break;
 
     case FADE_UP:
-      for (y = SCREEN_HEIGHT - 1; y >= -16; y -= 16)
+      for (y = Renderer::getInstance()->screenHeight - 1; y >= -16; y -= 16)
       {
         if (frame >= 0)
         {
           if (frame > FADE_LAST_FRAME)
             frame = FADE_LAST_FRAME;
 
-          for (x = 0; x < SCREEN_WIDTH; x += 16)
-            draw_sprite(x, y, fade.sprite, frame);
+          for (x = 0; x < Renderer::getInstance()->screenWidth; x += 16)
+            Renderer::getInstance()->sprites.drawSprite(x, y, fade.sprite, frame);
         }
         frame++;
       }
@@ -242,8 +240,8 @@ void SE_Fade::Draw(void)
     case FADE_CENTER:
     {
       int startframe = fade.curframe;
-      int centerx    = (SCREEN_WIDTH / 2) - 8;
-      int centery    = (SCREEN_HEIGHT / 2) - 8;
+      int centerx    = (Renderer::getInstance()->screenWidth / 2) - 8;
+      int centery    = (Renderer::getInstance()->screenHeight / 2) - 8;
 
       for (x = 0; x < centerx + 16; x += 16)
       {
@@ -256,10 +254,10 @@ void SE_Fade::Draw(void)
             if (frame > FADE_LAST_FRAME)
               frame = FADE_LAST_FRAME;
 
-            draw_sprite(centerx + x, centery + y, fade.sprite, frame);
-            draw_sprite(centerx - x, centery + y, fade.sprite, frame);
-            draw_sprite(centerx + x, centery - y, fade.sprite, frame);
-            draw_sprite(centerx - x, centery - y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx + x, centery + y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx - x, centery + y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx + x, centery - y, fade.sprite, frame);
+            Renderer::getInstance()->sprites.drawSprite(centerx - x, centery - y, fade.sprite, frame);
           }
 
           frame++;

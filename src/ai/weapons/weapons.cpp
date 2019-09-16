@@ -2,17 +2,15 @@
 
 #include "../../ObjManager.h"
 #include "../../caret.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../sym/smoke.h"
 
-/*
-void c------------------------------() {}
-*/
+using namespace NXE::Graphics;
 
 // a convenience function which does some stuff common to a basic weapon--
 // damage enemies, hit walls, and ttl dispersion.
@@ -33,6 +31,10 @@ uint8_t run_shot(Object *o, bool destroys_blocks)
     {
       if (!shot_destroy_blocks(o))
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
+    }
+    else
+    {
+      NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
     }
 
     o->Delete();
@@ -65,7 +67,7 @@ Object *check_hit_enemy(Object *shot, uint32_t flags_to_exclude)
     {
       if ((enemy->flags & flags_to_exclude) == 0)
       {
-        if (hitdetect(enemy, shot))
+        if (hitdetect_shot(enemy, shot))
         {
           // can't hit an enemy by shooting up when standing on it
           // (added for omega battle but good probably in other times too)
@@ -230,16 +232,16 @@ bool shot_destroy_blocks(Object *o)
   switch (o->shot.dir)
   {
     case LEFT:
-      plist = &sprites[o->sprite].block_l;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_l;
       break;
     case RIGHT:
-      plist = &sprites[o->sprite].block_r;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_r;
       break;
     case UP:
-      plist = &sprites[o->sprite].block_u;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_u;
       break;
     case DOWN:
-      plist = &sprites[o->sprite].block_d;
+      plist = &Renderer::getInstance()->sprites.sprites[o->sprite].block_d;
       break;
     default:
       return 0;
@@ -278,6 +280,6 @@ bool IsBlockedInShotDir(Object *o)
       return o->blockd;
   }
 
-  staterr("IsBlockedInShotDir(%x): invalid direction %d", o, o->shot.dir);
+  LOG_ERROR("IsBlockedInShotDir({:#x}): invalid direction {}", (intptr_t)o, o->shot.dir);
   return 0;
 }

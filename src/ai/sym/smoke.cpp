@@ -4,9 +4,11 @@
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../trig.h"
 #include "../stdai.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -135,11 +137,11 @@ void SmokeCloudsSlow(int x, int y, int nclouds)
   }
 }
 
-void SmokeBoomUp(Object *o)
+void SmokeBoomUp(Object *o, int count)
 {
-  for (int i = 0; i < 8; i++)
+  for (int i = 0; i < count; i++)
   {
-    CreateObject(o->CenterX() + random(-16 * CSFI, 16 * CSFI), o->CenterY() + random(-16 * CSFI, 16 * CSFI),
+    CreateObject(o->CenterX() + random(-16, 16) * CSFI, o->CenterY() + random(-16, 16) * CSFI,
                  OBJ_SMOKE_CLOUD, random(-0x155, 0x155), random(-0x600, 0));
   }
 }
@@ -160,7 +162,7 @@ void ai_smokecloud(Object *o)
   if (++o->animtimer >= 5)
   {
     o->animtimer = 0;
-    if (++o->frame >= sprites[o->sprite].nframes)
+    if (++o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
       o->Delete();
   }
 

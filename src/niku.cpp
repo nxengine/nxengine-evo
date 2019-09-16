@@ -2,7 +2,7 @@
 #include "niku.h"
 
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "ResourceManager.h"
 
 #include <SDL.h>
@@ -16,7 +16,7 @@
 
 // load the contents of 290.rec and store in value_out. Returns 0 on success.
 // If there is no such file or an error occurs, writes 0 to value_out.
-bool niku_load(uint32_t *value_out)
+uint32_t niku_load()
 {
   FILE *fp;
   uint8_t buffer[20];
@@ -28,10 +28,8 @@ bool niku_load(uint32_t *value_out)
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    stat("niku_load: couldn't open file '%s'", fname.c_str());
-    if (value_out)
-      *value_out = 0;
-    return 1;
+    LOG_DEBUG("niku_load: couldn't open file '{}'", fname);
+    return 0xFFFFFFFF;
   }
 
   fread(buffer, 20, 1, fp);
@@ -50,23 +48,26 @@ bool niku_load(uint32_t *value_out)
 
   if ((result[0] != result[1]) || (result[0] != result[2]) || (result[0] != result[3]))
   {
-    stat("niku_load: value mismatch; '%s' corrupt", fname.c_str());
-    if (value_out)
-      *value_out = 0;
+    LOG_ERROR("niku_load: value mismatch; '{}' corrupt", fname);
+    return 0xFFFFFFFF;
   }
   else
   {
-    stat("niku_load: loaded value 0x%x from %s", *result, fname.c_str());
-    if (value_out)
-      *value_out = *result;
+    LOG_DEBUG("niku_load: loaded value {:#08x} from {}", *result, fname);
+    return *result;
   }
-
-  return 0;
+  return 0xFFFFFFFF;
 }
 
 // save the timestamp in value to 290.rec.
 bool niku_save(uint32_t value)
 {
+  uint32_t old_time = niku_load();
+  if (old_time < value)
+  {
+    return false;
+  }
+
   uint8_t buf_byte[20];
   uint32_t *buf_dword = (uint32_t *)buf_byte;
 
@@ -99,13 +100,13 @@ bool niku_save(uint32_t value)
   FILE *fp = myfopen(widen(fname).c_str(), widen("wb").c_str());
   if (!fp)
   {
-    staterr("niku_save: failed to open '%s'", fname.c_str());
-    return 1;
+    LOG_ERROR("niku_save: failed to open '{}'", fname);
+    return false;
   }
 
   fwrite(buf_byte, 20, 1, fp);
   fclose(fp);
 
-  stat("niku_save: wrote value 0x%08x", value);
-  return 0;
+  LOG_DEBUG("niku_save: wrote value {:#08x}", value);
+  return true;
 }

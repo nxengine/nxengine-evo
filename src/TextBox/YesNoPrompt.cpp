@@ -2,13 +2,12 @@
 #include "YesNoPrompt.h"
 
 #include "../autogen/sprites.h"
-#include "../graphics/graphics.h"
-#include "../graphics/sprites.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../nx.h"
 #include "../player.h"
 #include "../sound/SoundManager.h"
-using namespace Sprites;
+using namespace NXE::Graphics;;
 
 enum
 {
@@ -18,8 +17,8 @@ enum
   STATE_NO_SELECTED
 };
 
-#define YESNO_X (Graphics::SCREEN_WIDTH / 2) + 56
-#define YESNO_Y (Graphics::SCREEN_HEIGHT / 2) + 22
+#define YESNO_X (Renderer::getInstance()->screenWidth / 2) + 56
+#define YESNO_Y (Renderer::getInstance()->screenHeight / 2) + 22
 #define YESNO_POP_SPEED 4
 
 /*
@@ -91,16 +90,16 @@ void TB_YNJPrompt::Tick()
         fState = (fState == STATE_YES_SELECTED) ? STATE_NO_SELECTED : STATE_YES_SELECTED;
       }
 
-      if (justpushed(JUMPKEY))
+      if (justpushed(ACCEPT_BUTTON))
       {
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
-        lastinputs[JUMPKEY]  = true;
-        lastpinputs[JUMPKEY] = true;
+        lastinputs[ACCEPT_BUTTON]  = true;
+        lastpinputs[ACCEPT_BUTTON] = true;
 
         fAnswer = (fState == STATE_YES_SELECTED) ? YES : NO;
         SetVisible(false);
       }
-      if (justpushed(FIREKEY))
+      if (justpushed(DECLINE_BUTTON))
       {
         fState = STATE_NO_SELECTED;
       }
@@ -115,13 +114,13 @@ void TB_YNJPrompt::Draw()
   if (!fVisible)
     return;
 
-  draw_sprite(YESNO_X, fCoords.y, SPR_YESNO, 0, 0);
+  Renderer::getInstance()->sprites.drawSprite(YESNO_X, fCoords.y, SPR_YESNO, 0, 0);
 
   // draw hand selector
   if (fState == STATE_YES_SELECTED || fState == STATE_NO_SELECTED)
   {
     int xoff = (fState == STATE_YES_SELECTED) ? -4 : 37;
-    draw_sprite(YESNO_X + xoff, fCoords.y + 12, SPR_YESNOHAND, 0, 0);
+    Renderer::getInstance()->sprites.drawSprite(YESNO_X + xoff, fCoords.y + 12, SPR_YESNOHAND, 0, 0);
   }
 }
 

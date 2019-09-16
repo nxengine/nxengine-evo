@@ -4,8 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -13,6 +12,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "doctor_common.h"
+
+using namespace NXE::Graphics;
 
 /*
         From King's Table, here's the Doctor's first form.

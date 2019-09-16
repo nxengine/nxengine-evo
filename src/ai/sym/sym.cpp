@@ -1,25 +1,25 @@
 #include "sym.h"
 
+#include "../../autogen/sprites.h"
 #include "../../ObjManager.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../debug.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../playerstats.h"
 #include "../../sound/SoundManager.h"
 #include "../../tsc.h"
 #include "../ai.h"
-#include "../stdai.h"
-#include "../sym/smoke.h"
-using namespace Graphics;
-#include "../../autogen/sprites.h"
-#include "../../graphics/sprites.h"
 #include "../../screeneffect.h"
 #include "../../settings.h"
+#include "../stdai.h"
+#include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -237,7 +237,7 @@ void ai_hvtrigger(Object *o)
       game.switchstage.mapno == -1)         // no repeat exec after <TRA
   {
 #ifdef TRACE_SCRIPT
-    stat("HVTrigger %04d (%08x) activated", o->id2, o);
+    LOG_TRACE("HVTrigger {:04d} ({#08x}) activated", o->id2, (intptr_t)o);
 #endif
     game.tsc->StartScript(o->id2);
   }
@@ -251,13 +251,16 @@ void ai_xp(Object *o)
 {
   if (o->state == 0)
   {
-    o->yinertia = random(-1024, 0);
-    o->xinertia = random(-512, 512);
-    o->frame    = random(0, 4);
-    if (random(0, 1))
-      o->dir = CVTDir(0);
-    else
-      o->dir = CVTDir(2);
+    o->yinertia = random(-0x7f, 0x100);
+    o->xinertia = random(-0x80, 0x80);
+    if (map.scrolltype != BK_FASTLEFT && map.scrolltype != BK_FASTLEFT_LAYERS)
+    {
+      o->frame = random(0, 4);
+      if (random(0, 1))
+        o->dir = CVTDir(0);
+      else
+        o->dir = CVTDir(2);
+    }
     o->state = 1;
   }
 
@@ -267,12 +270,8 @@ void ai_xp(Object *o)
     {
       if (o->blockl)
       {
-        if (o->onscreen || pdistly((SCREEN_HEIGHT - (SCREEN_HEIGHT / 3)) * CSFI))
+        if (o->onscreen || pdistly((Renderer::getInstance()->screenHeight - (Renderer::getInstance()->screenHeight / 3)) * CSFI))
           NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_XP_BOUNCE);
-
-        o->xinertia = 0x100;
-        o->yinertia *= 2;
-        o->yinertia /= 3;
       }
 
       if (o->blocku || o->blockd)
@@ -283,7 +282,11 @@ void ai_xp(Object *o)
   }
   else
   { // normal bouncing
-    o->yinertia += 42;
+    if (o->GetAttributes(&Renderer::getInstance()->sprites.sprites[o->sprite].block_u) & TA_WATER)
+      o->yinertia += 21;
+    else
+      o->yinertia += 42;
+
     if (o->blockd)
     {
       // disappear if we were spawned embedded in ground
@@ -294,7 +297,7 @@ void ai_xp(Object *o)
         return;
       }
 
-      if (o->onscreen || pdistlx((SCREEN_WIDTH - (SCREEN_WIDTH / 3)) * CSFI))
+      if (o->onscreen || pdistlx((Renderer::getInstance()->screenWidth - (Renderer::getInstance()->screenWidth / 3)) * CSFI))
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_XP_BOUNCE);
 
       o->yinertia = -0x280;
@@ -325,18 +328,18 @@ void ai_xp(Object *o)
       o->frame = 0;
   }
 
-  if (++o->timer > 0x1f4)
+  if (++o->timer > 500)
   {
     o->Delete();
     return;
   }
-  else if (o->timer > 0x1f2)
+  else if (o->timer > 498)
   { // twinkle before disappearing
     o->frame     = 0;
     o->invisible = 0;
     return;
   }
-  else if (o->timer > 0x190)
+  else if (o->timer > 400)
   {
     o->invisible = (o->timer & 2);
   }
@@ -364,7 +367,25 @@ void ai_xp(Object *o)
 // Hearts and Missiles
 void ai_powerup(Object *o)
 {
-  // if o->state == 0, then was present in map; not dropped by an enemy...lasts forever
+  if (o->state == -1)
+  {
+    if (map.scrolltype == BK_FASTLEFT || map.scrolltype == BK_FASTLEFT_LAYERS)
+    {
+        o->yinertia = random(-0x7f, 0x100);
+        o->xinertia = random(-0x20, 0x20);
+    }
+    o->state = 1;
+  }
+  else if (o->state == 0)
+  { // adjust position of map-spawned missiles
+    if (o->type == OBJ_MISSILE)
+    {
+      o->x += (3 * CSFI);
+      o->y += (4 * CSFI);
+    }
+    o->state = -2;
+  }
+
   if (o->state > 0)
   {
     Handle_Falling_Left(o);
@@ -372,7 +393,6 @@ void ai_powerup(Object *o)
     switch (o->state)
     {
       case 1:   // animating
-      case 101: // animating (in left-fall mode)
         if (++o->timer >= 256)
         {
           o->timer = 0;
@@ -381,7 +401,6 @@ void ai_powerup(Object *o)
         else
           break;
       case 2:   // start blinking--we're about to go away!!
-      case 102: // blinking (in left-fall mode)
         if (++o->timer > 48)
         {
           effect(o->CenterX() - (1 * CSFI), o->CenterY() - (1 * CSFI), EFFECT_BONUSFLASH);
@@ -400,15 +419,6 @@ void ai_powerup(Object *o)
       o->animtimer = 0;
       o->frame ^= 1;
     }
-  }
-  else if (!o->state)
-  { // adjust position of map-spawned missiles
-    if (o->type == OBJ_MISSILE)
-    {
-      o->x += (3 * CSFI);
-      o->y += (4 * CSFI);
-    }
-    o->state = -1;
   }
 
   // hand over the powerup if player touches it
@@ -445,26 +455,20 @@ bool Handle_Falling_Left(Object *o)
 {
   if (map.scrolltype == BK_FASTLEFT || map.scrolltype == BK_FASTLEFT_LAYERS)
   {
-    if (o->state < 100) // initilize
-    {
-      o->state += 100;
-      o->yinertia = random(-0x20, 0x20);
-      o->xinertia = random(127, 256);
-      // o->nxflags |= NXFLAG_FOLLOW_SLOPE;
-    }
-
     o->xinertia -= 0x08;
     if (o->xinertia < -0x600)
       o->xinertia = -0x600;
 
     if (map.scrolltype == BK_FASTLEFT)
     {
-      if (o->x < ((5 * TILE_W) * CSFI))
+      if (o->x < ((3 * TILE_W) * CSFI))
         o->Delete(); // went off screen in IronH
     }
-
-    if (o->blockl && o->xinertia <= 0)
-      o->xinertia = 0x40;
+    else
+    {
+      if (o->blockl && o->xinertia <= 0)
+        o->xinertia = 0x100;
+    }
     if (o->blocku && o->yinertia <= 0)
       o->yinertia = 0x40;
     if (o->blockd && o->yinertia >= 0)
@@ -835,7 +839,7 @@ void ai_fan_vert(Object *o)
   ANIMATE(0, 0, 2);
 
   // spawn droplet effects
-  if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
+  if (pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
     if (!random(0, 5))
     {
@@ -870,7 +874,7 @@ void ai_fan_hoz(Object *o)
   ANIMATE(0, 0, 2);
 
   // spawn droplet effects
-  if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
+  if (pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
     if (!random(0, 5))
     {
@@ -922,8 +926,8 @@ void ai_fan_droplet(Object *o)
 
       o->dir = RIGHT; // so frame is correct
 
-      o->xinertia *= random((2 * CSFI), (4 * CSFI));
-      o->yinertia *= random((2 * CSFI), (4 * CSFI));
+      o->xinertia *= random(2, 4) * CSFI;
+      o->yinertia *= random(2, 4) * CSFI;
     case 1:
       ANIMATE_FWD(6);
       if (o->frame > 4)
@@ -952,19 +956,19 @@ void ai_sprinkler(Object *o)
 
     drop = CreateObject(o->CenterX() + (1 * CSFI), o->CenterY() + (1 * CSFI), OBJ_WATER_DROPLET);
 
-    drop->xinertia = random(-(2 * CSFI), (2 * CSFI));
-    drop->yinertia = random(-(3 * CSFI), 384);
+    drop->xinertia = 2 * random(-CSFI, CSFI);
+    drop->yinertia = 3 * random(-CSFI, 0x80);
   }
 }
 
 // generates small splash water droplets
 void ai_droplet_spawner(Object *o)
 {
-  if (pdistlx(SCREEN_WIDTH * CSFI) && pdistly(SCREEN_HEIGHT * CSFI))
+  if (pdistlx(Renderer::getInstance()->screenWidth * CSFI) && pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
-    if (!random(0, 80))
+    if (random(0, 100) == 2)
     {
-      CreateObject(o->x + (random(2, (TILE_W - 2)) * CSFI), o->y, OBJ_WATER_DROPLET);
+      CreateObject(o->CenterX() + (random(-6, 6) * CSFI), o->y, OBJ_WATER_DROPLET);
     }
   }
 }
@@ -1170,7 +1174,7 @@ void ai_scroll_controller(Object *o)
 
         if (!o->linkedobject)
         {
-          staterr("sctrl: no stageboss object!");
+          LOG_ERROR("sctrl: no stageboss object!");
           o->Delete();
         }
       }
@@ -1180,11 +1184,11 @@ void ai_scroll_controller(Object *o)
 
         if (o->linkedobject)
         {
-          staterr("sctrl: successfully linked to object %08x", o->linkedobject);
+          LOG_DEBUG("sctrl: successfully linked to object {:#08x}", (intptr_t)o->linkedobject);
         }
         else
         {
-          staterr("sctrl: failed to link to id2 %d: object not found", o->id2);
+          LOG_ERROR("sctrl: failed to link to id2 {}: object not found", o->id2);
           o->Delete();
         }
       }
@@ -1232,11 +1236,11 @@ void ai_generic_angled_shot(Object *o)
 
   if (o->sprite == SPR_GAUDI_FLYING_SHOT)
   {
-    ANIMATE(0, 0, sprites[o->sprite].nframes - 1);
+    ANIMATE(0, 0, Renderer::getInstance()->sprites.sprites[o->sprite].nframes - 1);
   }
   else
   {
-    ANIMATE(2, 0, sprites[o->sprite].nframes - 1);
+    ANIMATE(2, 0, Renderer::getInstance()->sprites.sprites[o->sprite].nframes - 1);
   }
 
   if (o->blockl && o->xinertia < 0)
@@ -1272,7 +1276,7 @@ void onspawn_spike_small(Object *o)
   int tile = map.tiles[(o->CenterX() / CSFI) / TILE_W][(o->CenterY() / CSFI) / TILE_H];
   if (tileattr[tile] & TA_SOLID)
   {
-    stat("onspawn_spike_small: spike %08x embedded in wall, deleting", o);
+    LOG_DEBUG("onspawn_spike_small: spike {:#08x} embedded in wall, deleting", (intptr_t)o);
     o->Delete();
   }
 }

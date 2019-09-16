@@ -2,7 +2,7 @@
 #define __NIKU_H_
 #include <cstdint>
 
-bool niku_load(uint32_t *value_out);
+uint32_t niku_load();
 bool niku_save(uint32_t value);
 
 #endif

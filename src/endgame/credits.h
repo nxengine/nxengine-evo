@@ -4,7 +4,7 @@
 
 #define MAX_BIGIMAGES 20
 #define CRED_MAX_TEXT 80
-#include "../graphics/nxsurface.h"
+#include "../graphics/Surface.h"
 #include "CredReader.h"
 
 // a currently displayed line of text
@@ -30,7 +30,7 @@ public:
 private:
   int imagex, state;
   int imgno;
-  NXSurface *images[MAX_BIGIMAGES];
+  NXE::Graphics::Surface *images[MAX_BIGIMAGES];
 };
 
 class Credits

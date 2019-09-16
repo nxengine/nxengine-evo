@@ -17,8 +17,39 @@ void c------------------------------() {}
 
 void ai_nemesis_shot(Object *o)
 {
-  if (run_shot(o, (o->shot.level != 2)))
+//  if (run_shot(o, (o->shot.level != 2)))
+//    return;
+
+  Object *enemy;
+  if ((enemy = damage_enemies(o)))
+  {
+    if ((++o->timer2 > 4 / pow(2, o->shot.level)) || (enemy->flags & FLAG_INVULNERABLE))
+    {
+      o->Delete();
+      return;
+    }
+  }
+  else if (IsBlockedInShotDir(o))
+  {
+    if (o->shot.level != 2)
+    {
+        if (!shot_destroy_blocks(o))
+          NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
+    }
+    else
+    {
+      NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SHOT_HIT);
+    }
+    shot_dissipate(o, EFFECT_STARSOLID);
     return;
+  }
+
+  if (--o->shot.ttl < 0)
+  {
+    shot_dissipate(o, EFFECT_STARPOOF);
+    o->Delete();
+    return;
+  }
 
   // smoke trails on level 1
   if (o->shot.level == 0)

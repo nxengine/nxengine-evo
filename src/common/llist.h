@@ -2,6 +2,8 @@
 #ifndef _LLIST_H
 #define _LLIST_H
 
+#include "../Utils/Logger.h"
+
 // this file provides macros which implement common operations on linked lists.
 // this saves a little bit of thinking and helps prevent bugs caused by
 // forgetting one of the steps.
@@ -77,13 +79,13 @@
 // debug function
 #define LL_DUMP_LIST(START, PREV, NEXT, NODETYPE)                                                                      \
   {                                                                                                                    \
-    stat("LL_DUMP_LIST from %s using %s", #START, #NEXT);                                                              \
+    LOG_DEBUG("LL_DUMP_LIST from {} using {}", #START, #NEXT);                                                         \
                                                                                                                        \
     NODETYPE *n = START;                                                                                               \
     int iter    = 0;                                                                                                   \
     while (n)                                                                                                          \
     {                                                                                                                  \
-      stat("%d: %08x   P:%08x  N:%08x", iter++, n, n->PREV, n->NEXT);                                                  \
+      LOG_DEBUG("{}: {:#08x}   P:{:#08x}  N:{:#08x}", iter++, n, n->PREV, n->NEXT);                                    \
       n = n->NEXT;                                                                                                     \
     }                                                                                                                  \
   }

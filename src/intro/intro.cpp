@@ -6,15 +6,16 @@
 #include "../caret.h"
 #include "../common/misc.h"
 #include "../game.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../map.h"
 #include "../nx.h"
 #include "../player.h"
 #include "../screeneffect.h"
 #include "../sound/SoundManager.h"
+#include "../ResourceManager.h"
 #include "../tsc.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 
 static int blanktimer;
 #define EXIT_DELAY 20 // delay between intro and title screen
@@ -35,9 +36,14 @@ bool intro_init(int param)
 
 void intro_tick()
 {
+  if (blanktimer == 0 &&ResourceManager::getInstance()->isMod() && ResourceManager::getInstance()->mod().skip_intro)
+  {
+    game.tsc->StopScripts();
+    blanktimer = EXIT_DELAY;
+  }
   if (blanktimer > 0)
   {
-    ClearScreen(BLACK);
+    Renderer::getInstance()->clearScreen(BLACK);
 
     if (--blanktimer == 0)
       game.setmode(GM_TITLE);
@@ -123,7 +129,7 @@ void ai_intro_crown(Object *o)
     {
       if ((++o->timer % 8) == 1)
       {
-        effect(o->x + random(-8 * CSFI, 8 * CSFI), o->y + (8 * CSFI), EFFECT_GHOST_SPARKLE);
+        effect(o->x + random(-8, 8) * CSFI, o->y + (8 * CSFI), EFFECT_GHOST_SPARKLE);
       }
     }
     break;

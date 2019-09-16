@@ -4,6 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
+#include "../../graphics/Tileset.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -64,7 +65,7 @@ void ai_ballos_skull(Object *o)
 
           for (int i = 0; i < 4; i++)
           {
-            Object *s = SmokePuff(o->x + random(-12 * CSFI, 12 * CSFI), o->y + 0x2000);
+            Object *s = SmokePuff(o->x + random(-12, 12) * CSFI, o->y + 0x2000);
 
             s->xinertia = random(-0x155, 0x155);
             s->yinertia = random(-0x600, 0);
@@ -127,7 +128,7 @@ void ai_green_devil_spawner(Object *o)
       if (--o->timer < 0)
       {
         Object *dv   = CreateObject(o->x, o->y, OBJ_GREEN_DEVIL, 0, 0, o->dir);
-        dv->xinertia = random(-16 * CSFI, 16 * CSFI);
+        dv->xinertia = random(-16, 16) * CSFI;
 
         o->state = 0;
       }
@@ -144,7 +145,7 @@ void ai_green_devil(Object *o)
     {
       o->flags |= FLAG_SHOOTABLE;
       o->ymark    = o->y;
-      o->yinertia = random(-5 * CSFI, 5 * CSFI);
+      o->yinertia = random(-5, 5) * CSFI;
       o->damage   = 3;
       o->state    = 1;
     }

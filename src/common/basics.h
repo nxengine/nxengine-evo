@@ -14,13 +14,13 @@
 #define PATH_MAX 259
 #endif
 
-void stat(const char *fmt, ...);
-void staterr(const char *fmt, ...);
+#include "../Utils/Logger.h"
+
 #define ASSERT(X)                                                                                                      \
   {                                                                                                                    \
     if (!(X))                                                                                                          \
     {                                                                                                                  \
-      staterr("** ASSERT FAILED: '%s' at %s(%d)", #X, __FILE__, __LINE__);                                             \
+      LOG_CRITICAL("** ASSERT FAILED: '%s' at %s(%d)", #X, __FILE__, __LINE__);                                             \
       exit(1);                                                                                                         \
     }                                                                                                                  \
   }

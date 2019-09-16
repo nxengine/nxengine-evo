@@ -2,7 +2,7 @@
 #include "CredReader.h"
 
 #include "../ResourceManager.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
 #include "../nx.h"
 #include "../tsc.h"
@@ -33,7 +33,7 @@ bool CredReader::ReadCommand(CredCommand *cmd)
 
   if (data.empty())
   {
-    staterr("CredReader: ReadNextCommand called but file is not loaded!");
+    LOG_ERROR("CredReader: ReadNextCommand called but file is not loaded!");
     return 1;
   }
 
@@ -74,7 +74,7 @@ bool CredReader::ReadCommand(CredCommand *cmd)
 
     default:
     {
-      staterr("CredReader: unknown command type '%c'", ch);
+      LOG_ERROR("CredReader: unknown command type '{}'", ch);
       cmd->type = -1;
       return 1;
     }
@@ -114,7 +114,7 @@ struct CredCommand
 
 void CredCommand::DumpContents()
 {
-  stat("CC '%c': [%s]:%04d:%04d", type, text, parm, parm2);
+  LOG_TRACE("CC '{:c}': [{}]:{:04d}:{:04d}", type, text, parm, parm2);
 }
 
 void CredReader::Rewind()
@@ -140,7 +140,7 @@ bool CredReader::OpenFile(void)
   data = game.tsc->Decrypt(ResourceManager::getInstance()->getLocalizedPath("Credit.tsc"), &datalen);
   if (data.empty())
   {
-    staterr("CredReader: couldn't open 'Credits.tsc'!");
+    LOG_ERROR("CredReader: couldn't open 'Credits.tsc'!");
     return 1;
   }
 

@@ -5,7 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
@@ -13,6 +13,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 enum STATES
 {
@@ -146,9 +148,6 @@ static void run_intro(Object *o)
       o->y -= (6 * CSFI);
       o->dir    = LEFT;
       o->damage = 0;
-
-      // ensure copy pfbox first time
-      o->dirparam = -1;
 
       // closed eyes/mouth
       o->linkedobject = CreateObject(o->x, o->y - (16 * CSFI), OBJ_BALLOS_SMILE);
@@ -592,13 +591,6 @@ void ai_ballos_priest(Object *o)
     }
     break;
   }
-
-  // his bounding box is in a slightly different place on L/R frames
-  if (o->dirparam != o->dir)
-  {
-    sprites[o->sprite].bbox = sprites[o->sprite].frame[0].dir[o->dir].pf_bbox;
-    o->dirparam             = o->dir;
-  }
 }
 
 // targeter for lightning strikes
@@ -609,7 +601,7 @@ void ai_ballos_target(Object *o)
     case 0:
     {
       // position to shoot lightning at passed as x,y
-      o->xmark = o->CenterX() - ((sprites[SPR_LIGHTNING].w / 2) * CSFI);
+      o->xmark = o->CenterX() - ((Renderer::getInstance()->sprites.sprites[SPR_LIGHTNING].w / 2) * CSFI);
       o->ymark = o->CenterY();
 
       // adjust our Y coordinate to match player's

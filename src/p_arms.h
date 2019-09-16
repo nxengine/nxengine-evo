@@ -117,6 +117,6 @@ void FireWeapon(void);
 void RunWeapon(bool firing);
 void SetupBullet(Object *shot, int x, int y, int btype, int dir);
 void FireLevel23MGun(int x, int y, int level, int dir);
-void PMgunFly(void);
+void PMgunFly(bool up);
 
 #endif

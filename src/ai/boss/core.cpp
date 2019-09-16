@@ -4,10 +4,9 @@
 #include "../../autogen/sprites.h"
 #include "../../caret.h"
 #include "../../common/misc.h"
-#include "../../common/stat.h"
+#include "../../Utils/Logger.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -16,6 +15,8 @@
 #include "../almond/almond.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 /* ------------------------------------------------------------------------------------------ */
 /*        CODE FOR THE CORE BOSS (ALMOND)
@@ -91,7 +92,7 @@ static Object *CreateMinicore(Object *core)
 // initilize all the pieces of the Core boss.
 void CoreBoss::OnMapEntry(void)
 {
-  stat("CoreBoss::OnMapEntry");
+  LOG_DEBUG("CoreBoss::OnMapEntry");
 
   o                     = CreateObject(0, 0, OBJ_CORE_CONTROLLER);
   game.stageboss.object = o;
@@ -168,7 +169,8 @@ void CoreBoss::Run()
 
   if (!o)
     return;
-  // stat("state = %d", o->state);
+
+  LOG_DEBUG("state = {}", o->state);
 
   switch (o->state)
   {
@@ -335,7 +337,7 @@ void CoreBoss::Run()
       // NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_TELEPORT);
 
       pieces[CFRONT]->clip_enable = pieces[CBACK]->clip_enable = 1;
-      o->timer                                                 = sprites[pieces[CFRONT]->sprite].h;
+      o->timer = Renderer::getInstance()->sprites.sprites[pieces[CFRONT]->sprite].h;
     }
     case 601:
     {

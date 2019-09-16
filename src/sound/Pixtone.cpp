@@ -7,7 +7,7 @@
 
 #include "../ResourceManager.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../config.h"
 
 #include <SDL.h>
@@ -17,6 +17,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <functional>
+#include <iomanip>
+#include <sstream>
 #include <vector>
 
 // using std::fgetc;
@@ -53,7 +55,7 @@ bool stPXSound::load(const std::string &fname)
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    staterr("pxt->load: file '%s' not found.", fname.c_str());
+    LOG_WARN("pxt->load: file '{}' not found.", fname);
     return false;
   }
 
@@ -112,7 +114,7 @@ int32_t stPXSound::allocBuf()
       this->channels[i].buffer = (signed char *)malloc(this->channels[i].nsamples);
       if (!this->channels[i].buffer)
       {
-        staterr("AllocBuffers (pxt): out of memory (1)!");
+        LOG_ERROR("AllocBuffers (pxt): out of memory (channels)!");
         return -1;
       }
 
@@ -125,7 +127,7 @@ int32_t stPXSound::allocBuf()
   this->final_buffer = (signed char *)malloc(topbufsize);
   if (!this->final_buffer)
   {
-    staterr("AllocBuffers (pxt): out of memory (2)!");
+    LOG_ERROR("AllocBuffers (pxt): out of memory (finalbuffer)!");
     return -1;
   }
 
@@ -253,7 +255,7 @@ bool Pixtone::init()
 {
   if (_inited)
   {
-    staterr("pxt_init: pxt module already initialized");
+    LOG_ERROR("pxt_init: pxt module already initialized");
     return false;
   }
   else
@@ -274,18 +276,18 @@ bool Pixtone::init()
     wave[MOD_NOISE].table[i]   = (signed char)(seed >> 16) / 2;      // Pseudorandom
   }
 
-  char fname[80];
   uint32_t slot;
 
-  stat("Loading Sound FX...");
+  LOG_INFO("Loading Sound FX...");
 
   std::string path = ResourceManager::getInstance()->getPathForDir("pxt/");
   for (slot = 1; slot <= NUM_SOUNDS; slot++)
   {
-    sprintf(fname, "%sfx%02x.pxt", path.c_str(), slot);
+    std::ostringstream filename;
+    filename << path << "fx" << std::hex << std::setw(2) << std::setfill('0') << slot << ".pxt";
     stPXSound snd;
 
-    if (!snd.load(fname))
+    if (!snd.load(filename.str()))
       continue;
     snd.render();
 
@@ -306,11 +308,13 @@ void Pixtone::shutdown()
   {
     if (_sound_fx[i].chunk)
     {
+      SDL_free(_sound_fx[i].chunk->abuf);
       Mix_FreeChunk(_sound_fx[i].chunk);
       _sound_fx[i].chunk = nullptr;
     }
     if (_sound_fx[i].resampled)
     {
+      SDL_free(_sound_fx[i].resampled->abuf);
       Mix_FreeChunk(_sound_fx[i].resampled);
       _sound_fx[i].resampled = nullptr;
     }
@@ -327,13 +331,13 @@ int Pixtone::play(int32_t chan, int32_t slot, int32_t loop)
 
     if (chan < 0)
     {
-      staterr("pxt_Play: SSPlayChunk returned error");
+      LOG_ERROR("Pixtone::play: Mix_PlayChannel returned error");
     }
     return chan;
   }
   else
   {
-    staterr("pxt_Play: sound slot 0x%02x not rendered", slot);
+    LOG_ERROR("Pixtone::play: sound slot {} not rendered", slot);
     return -1;
   }
 }
@@ -348,35 +352,26 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
     {
       SDL_AudioCVT cvt;
 
-      staterr("SDL_BuildAudioCVT");
-
       if (SDL_BuildAudioCVT(&cvt, AUDIO_S16, 2, SAMPLE_RATE, AUDIO_S16, 2, resampled_rate) == -1)
       {
-        staterr("SDL_BuildAudioCVT: %s\n", SDL_GetError());
+        LOG_ERROR("SDL_BuildAudioCVT: {}", SDL_GetError());
       }
       cvt.len = _sound_fx[slot].chunk->alen;
       cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
-      staterr("memcpy %d %d", cvt.len * cvt.len_mult, cvt.buf == NULL);
       memcpy(cvt.buf, _sound_fx[slot].chunk->abuf, _sound_fx[slot].chunk->alen);
-      staterr("SDL_ConvertAudio");
 
       if (SDL_ConvertAudio(&cvt) == -1)
       {
-        printf("SDL_ConvertAudio: %s\n", SDL_GetError());
+        LOG_ERROR("SDL_ConvertAudio: {}", SDL_GetError());
       }
-      staterr("SDL_ConvertAudio done");
-      if (_sound_fx[slot].resampled != nullptr)
+
+      if (_sound_fx[slot].resampled != NULL)
       {
-        delete _sound_fx[slot].resampled;
+        SDL_free(_sound_fx[slot].resampled);
+        _sound_fx[slot].resampled = NULL;
       }
       _sound_fx[slot].resampled = Mix_QuickLoad_RAW((Uint8 *)cvt.buf, cvt.len_cvt);
-/*      _sound_fx[slot].resampled            = new Mix_Chunk;
-      _sound_fx[slot].resampled->allocated = _sound_fx[slot].chunk->allocated;
-      _sound_fx[slot].resampled->abuf      = (Uint8 *)SDL_malloc(cvt.len_cvt);
-      _sound_fx[slot].resampled->alen      = cvt.len_cvt;
-      _sound_fx[slot].resampled->volume    = 128;
-      memcpy(_sound_fx[slot].resampled->abuf, cvt.buf, cvt.len_cvt);
-      SDL_free(cvt.buf);*/
+      _sound_fx[slot].resampled_rate = resampled_rate;
     }
 
     chan                    = Mix_PlayChannel(chan, _sound_fx[slot].resampled, loop);
@@ -385,13 +380,13 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
 
     if (chan < 0)
     {
-      staterr("pxt_Play: SSPlayChunk returned error");
+      LOG_ERROR("Pixtone::playResampled: Mix_PlayChannel returned error");
     }
     return chan;
   }
   else
   {
-    staterr("pxt_Play: sound slot 0x%02x not rendered", slot);
+    LOG_ERROR("Pixtone::playResampled: sound slot {} not rendered", slot);
     return -1;
   }
 }
@@ -423,7 +418,7 @@ void Pixtone::_prepareToPlay(stPXSound *snd, int32_t slot)
 
   if (SDL_BuildAudioCVT(&cvt, AUDIO_S8, 1, 22050, AUDIO_S16, 2, SAMPLE_RATE) == -1)
   {
-    staterr("SDL_BuildAudioCVT: %s\n", SDL_GetError());
+    LOG_ERROR("SDL_BuildAudioCVT: {}", SDL_GetError());
   }
 
   cvt.len = snd->final_size;
@@ -432,7 +427,7 @@ void Pixtone::_prepareToPlay(stPXSound *snd, int32_t slot)
 
   if (SDL_ConvertAudio(&cvt) == -1)
   {
-    printf("SDL_ConvertAudio: %s\n", SDL_GetError());
+    LOG_ERROR("SDL_ConvertAudio: {}", SDL_GetError());
   }
 
   _sound_fx[slot].chunk = Mix_QuickLoad_RAW((Uint8 *)cvt.buf, cvt.len_cvt);

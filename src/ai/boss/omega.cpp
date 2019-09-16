@@ -5,8 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
 #include "../../sound/SoundManager.h"
@@ -14,6 +13,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 #define OMEGA_RISE_HEIGHT 48
 #define OMEGA_SINK_DEPTH 60
@@ -346,10 +347,10 @@ void OmegaBoss::Run(void)
         // but bottom of player's bounding box is not...
         if (player->blockd)
         {
-          int omg_bottom = o->y + (sprites[o->sprite].solidbox.y2 * CSFI);
+          int omg_bottom = o->y + (Renderer::getInstance()->sprites.sprites[o->sprite].solidbox.y2 * CSFI);
           if (player->y <= omg_bottom)
           {
-            if (player->y + (sprites[player->sprite].solidbox.y2 * CSFI) >= omg_bottom)
+            if (player->y + (Renderer::getInstance()->sprites.sprites[player->sprite].solidbox.y2 * CSFI) >= omg_bottom)
             {
               if (hitdetect(o, player)) // easy way to verify the X's are lined up
               {                         // SQUISH!

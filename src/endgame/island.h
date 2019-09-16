@@ -4,5 +4,6 @@
 
 bool island_init(int survives);
 void island_tick();
+void island_draw();
 
 #endif

@@ -1,12 +1,11 @@
 
 #include "message.h"
 
-#include "../graphics/font.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../nx.h"
 
 #include <vector>
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../TextBox/TextBox.h"
 #include "../game.h"
 #include "../input.h"
@@ -19,8 +18,8 @@ extern std::vector<void *> optionstack;
 
 Message::Message(const std::string &msg, const std::string &msg2)
 {
-  MESSAGE_X = ((SCREEN_WIDTH / 2) - 112);
-  MESSAGE_Y = ((SCREEN_HEIGHT / 2) - 30);
+  MESSAGE_X = ((Renderer::getInstance()->screenWidth / 2) - 112);
+  MESSAGE_Y = ((Renderer::getInstance()->screenHeight / 2) - 30);
 
   rawKeyReturn          = NULL;
   on_dismiss            = NULL;
@@ -32,18 +31,18 @@ Message::Message(const std::string &msg, const std::string &msg2)
   fMsg  = msg;
   fMsg2 = msg2;
 
-  fMsgX = MESSAGE_X + ((MESSAGE_W / 2) - (GetFontWidth(fMsg) / 2));
+  fMsgX = MESSAGE_X + ((MESSAGE_W / 2) - (Renderer::getInstance()->font.getWidth(fMsg) / 2));
 
   if (fMsg2[0])
   {
     fMsgY      = MESSAGE_Y + 10;
-    fMsg2X     = MESSAGE_X + ((MESSAGE_W / 2) - (GetFontWidth(fMsg2) / 2));
-    fMsg2Y     = fMsgY + GetFontHeight() + 4;
+    fMsg2X     = MESSAGE_X + ((MESSAGE_W / 2) - (Renderer::getInstance()->font.getWidth(fMsg2) / 2));
+    fMsg2Y     = fMsgY + Renderer::getInstance()->font.getHeight() + 4;
     fShowDelay = 0;
   }
   else
   {
-    fMsgY      = (MESSAGE_Y + ((MESSAGE_H / 2) - (GetFontHeight() / 2))) - 1;
+    fMsgY      = (MESSAGE_Y + ((MESSAGE_H / 2) - (Renderer::getInstance()->font.getHeight() / 2))) - 1;
     fShowDelay = 4;
   }
   optionstack.push_back(this);
@@ -75,10 +74,10 @@ void Message::Draw()
     return;
   }
 
-  font_draw(fMsgX, fMsgY, _(fMsg));
+  Renderer::getInstance()->font.draw(fMsgX, fMsgY, _(fMsg));
 
   if (fMsg2[0])
-    font_draw(fMsg2X, fMsg2Y, _(fMsg2));
+    Renderer::getInstance()->font.draw(fMsg2X, fMsg2Y, _(fMsg2));
 }
 
 void Message::RunInput()

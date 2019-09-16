@@ -1,9 +1,10 @@
 #include "plantation.h"
 
+#include "../../autogen/sprites.h"
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../slope.h"
@@ -14,10 +15,8 @@
 #include "../sand/puppy.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
-using namespace Graphics;
-#include "../../autogen/sprites.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -73,6 +72,7 @@ void ai_stumpy(Object *o)
     {
       o->state = 1;
       o->flags |= NXFLAG_FOLLOW_SLOPE;
+      o->flags &= ~FLAG_SOLID_MUSHY;
     }
     case 1:
     {
@@ -94,7 +94,7 @@ void ai_stumpy(Object *o)
       if (++o->timer > 50)
         o->state = 4;
 
-      if (!pdistlx(SCREEN_WIDTH * CSFI) || !pdistly(SCREEN_HEIGHT * CSFI))
+      if (!pdistlx(Renderer::getInstance()->screenWidth * CSFI) || !pdistly(Renderer::getInstance()->screenHeight * CSFI))
         o->state = 0;
     }
     break;
@@ -110,7 +110,7 @@ void ai_stumpy(Object *o)
     }
     case 5:
     {
-      SIFSprite *sprite = &sprites[o->sprite];
+      SIFSprite *sprite = &Renderer::getInstance()->sprites.sprites[o->sprite];
 
       // don't bounce off slopes--some crap in here that should probably
       // be handled by the main engine somehow, maybe not setting blockl/r
@@ -273,7 +273,7 @@ void ai_orangebell_baby(Object *o)
       o->flags |= FLAG_IGNORE_SOLID;
 
       o->timer  = 0;                             // time until can dive-bomb
-      o->ymark2 = random(-32 * CSFI, 32 * CSFI); // unique target point on main bat
+      o->ymark2 = random(-32, 32) * CSFI; // unique target point on main bat
 
       o->state = 1;
     }
@@ -448,7 +448,7 @@ void ai_gunfish_shot(Object *o)
 
   if (++o->timer > 10)
   {
-    SIFSprite *sprite = &sprites[o->sprite];
+    SIFSprite *sprite = &Renderer::getInstance()->sprites.sprites[o->sprite];
     if (o->CheckAttribute(&sprite->block_u, TA_WATER))
     {
       hit_something = true;

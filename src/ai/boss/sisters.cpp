@@ -4,9 +4,7 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../screeneffect.h"
 #include "../../sound/SoundManager.h"
@@ -14,6 +12,9 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+#include "../../Utils/Logger.h"
+
+using namespace NXE::Graphics;
 
 // mainstates
 #define STATE_CIRCLE_RIGHT 100 // circling right
@@ -66,11 +67,11 @@ void SistersBoss::OnMapEntry()
 {
   int i;
 
-  /*stat("%d %d %d %d",
-          sprites[SPR_SISTERS_HEAD].bbox.x1,
-          sprites[SPR_SISTERS_HEAD].bbox.y1,
-          sprites[SPR_SISTERS_HEAD].bbox.x2,
-          sprites[SPR_SISTERS_HEAD].bbox.y2
+  /*LOG_TRACE("{} {} {} {}",
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.x1,
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.y1,
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.x2,
+          Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD].bbox.y2
           ); exit(1);*/
 
   main            = CreateObject(((10 * TILE_W)) * CSFI, ((8 * TILE_H) - 4) * CSFI, OBJ_SISTERS_MAIN);
@@ -98,7 +99,7 @@ void SistersBoss::OnMapEntry()
   objprop[OBJ_SISTERS_HEAD].hurt_sound = NXE::Sound::SFX::SND_ENEMY_HURT_COOL;
 
   mainangle = 0;
-  if (widescreen)
+  if (Renderer::getInstance()->widescreen)
   {
     main->xmark = 180 * 2;
     main->ymark = 61 * 2;
@@ -143,7 +144,7 @@ void SistersBoss::Run(void)
   {
     case 20: // fight begin (script-triggered)
     {
-      if (widescreen)
+      if (Renderer::getInstance()->widescreen)
       {
         main->xmark = 180;
         main->ymark = 61;
@@ -539,7 +540,7 @@ void SistersBoss::run_head(int index)
 // I did this because the heads move around quite a bit in the different frames.
 void SistersBoss::head_set_bbox(int index)
 {
-  SIFSprite *sprite = &sprites[SPR_SISTERS_HEAD_1 + index];
+  SIFSprite *sprite = &Renderer::getInstance()->sprites.sprites[SPR_SISTERS_HEAD_1 + index];
   Object *o         = head[index];
   int frame         = o->frame;
 
@@ -547,17 +548,17 @@ void SistersBoss::head_set_bbox(int index)
   { // use mirror image if dragon facing left
     int wd = (head_bboxes[frame].x2 - head_bboxes[frame].x1);
 
-    sprite->bbox.x1 = sprite->w - head_bboxes[frame].x1 - wd;
-    sprite->bbox.x2 = sprite->bbox.x1 + (wd - 1);
+    sprite->bbox[o->dir].x1 = sprite->w - head_bboxes[frame].x1 - wd;
+    sprite->bbox[o->dir].x2 = sprite->bbox[o->dir].x1 + (wd - 1);
   }
   else
   {
-    sprite->bbox.x1 = head_bboxes[frame].x1;
-    sprite->bbox.x2 = head_bboxes[frame].x2;
+    sprite->bbox[o->dir].x1 = head_bboxes[frame].x1;
+    sprite->bbox[o->dir].x2 = head_bboxes[frame].x2;
   }
 
-  sprite->bbox.y1 = head_bboxes[frame].y1;
-  sprite->bbox.y2 = head_bboxes[frame].y2;
+  sprite->bbox[o->dir].y1 = head_bboxes[frame].y1;
+  sprite->bbox[o->dir].y2 = head_bboxes[frame].y2;
 
   o->flags &= ~(FLAG_SHOOTABLE | FLAG_INVULNERABLE);
   o->flags |= head_bboxes[frame].flags;

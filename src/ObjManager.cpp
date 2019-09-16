@@ -4,11 +4,13 @@
 #include "autogen/sprites.h"
 #include "common/llist.h"
 #include "game.h"
-#include "graphics/sprites.h"
+#include "graphics/Renderer.h"
 #include "map.h"
 #include "nx.h"
 #include "object.h"
 #include "player.h"
+
+using namespace NXE::Graphics;
 
 static Object ZERO_OBJECT;
 static Player ZERO_PLAYER;
@@ -45,8 +47,8 @@ Object *CreateObject(int x, int y, int type, int xinertia, int yinertia, int dir
   o->flags      = objprop[type].defaultflags;
   o->DamageText = new FloatText(SPR_REDNUMBERS);
 
-  o->x            = x - (sprites[o->sprite].spawn_point.x * CSFI);
-  o->y            = y - (sprites[o->sprite].spawn_point.y * CSFI);
+  o->x            = x - (Renderer::getInstance()->sprites.sprites[o->sprite].spawn_point.x * CSFI);
+  o->y            = y - (Renderer::getInstance()->sprites.sprites[o->sprite].spawn_point.y * CSFI);
   o->dir          = dir;
   o->xinertia     = xinertia;
   o->yinertia     = yinertia;
@@ -152,16 +154,52 @@ bool hitdetect(Object *o1, Object *o2)
   s2 = o2->Sprite();
 
   // get the bounding rectangle of the first object
-  rect1x1 = o1->x + (s1->bbox.x1 * CSFI);
-  rect1x2 = o1->x + (s1->bbox.x2 * CSFI);
-  rect1y1 = o1->y + (s1->bbox.y1 * CSFI);
-  rect1y2 = o1->y + (s1->bbox.y2 * CSFI);
+  rect1x1 = o1->x + (s1->bbox[o1->dir].x1 * CSFI);
+  rect1x2 = o1->x + (s1->bbox[o1->dir].x2 * CSFI);
+  rect1y1 = o1->y + (s1->bbox[o1->dir].y1 * CSFI);
+  rect1y2 = o1->y + (s1->bbox[o1->dir].y2 * CSFI);
 
   // get the bounding rectangle of the second object
-  rect2x1 = o2->x + (s2->bbox.x1 * CSFI);
-  rect2x2 = o2->x + (s2->bbox.x2 * CSFI);
-  rect2y1 = o2->y + (s2->bbox.y1 * CSFI);
-  rect2y2 = o2->y + (s2->bbox.y2 * CSFI);
+  rect2x1 = o2->x + (s2->bbox[o2->dir].x1 * CSFI);
+  rect2x2 = o2->x + (s2->bbox[o2->dir].x2 * CSFI);
+  rect2y1 = o2->y + (s2->bbox[o2->dir].y1 * CSFI);
+  rect2y2 = o2->y + (s2->bbox[o2->dir].y2 * CSFI);
+
+  // find out if the rectangles overlap
+  if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1))
+    return false;
+  if ((rect1x1 > rect2x2) && (rect1x2 > rect2x2))
+    return false;
+  if ((rect1y1 < rect2y1) && (rect1y2 < rect2y1))
+    return false;
+  if ((rect1y1 > rect2y2) && (rect1y2 > rect2y2))
+    return false;
+
+  return true;
+}
+
+// returns true if the bounding boxes of the two given objects are touching
+bool hitdetect_shot(Object *o1, Object *o2)
+{
+  SIFSprite *s1, *s2;
+  int32_t rect1x1, rect1y1, rect1x2, rect1y2;
+  int32_t rect2x1, rect2y1, rect2x2, rect2y2;
+
+  // get the sprites used by the two objects
+  s1 = o1->Sprite();
+  s2 = o2->Sprite();
+
+  // get the bounding rectangle of the first object
+  rect1x1 = o1->x + (s1->bbox[o1->dir].x1 * CSFI);
+  rect1x2 = o1->x + (s1->bbox[o1->dir].x2 * CSFI);
+  rect1y1 = o1->y + (s1->bbox[o1->dir].y1 * CSFI);
+  rect1y2 = o1->y + (s1->bbox[o1->dir].y2 * CSFI);
+
+  // get the bounding rectangle of the second object
+  rect2x1 = o2->x + (s2->bbox[o2->dir].x1 * CSFI);
+  rect2x2 = o2->x + (s2->bbox[o2->dir].x2 * CSFI);
+  rect2y1 = o2->y + (s2->bbox[o2->dir].y1 * CSFI);
+  rect2y2 = o2->y + (s2->bbox[o2->dir].y2 * CSFI);
 
   // find out if the rectangles overlap
   if ((rect1x1 < rect2x1) && (rect1x2 < rect2x1))
@@ -186,11 +224,11 @@ bool hitdetect_area(Object *o1, int x, int y, int range)
   s1 = o1->Sprite();
 
   // get the bounding rectangle of the first object
-  rect1x1 = o1->x + (s1->bbox.x1 * CSFI);
-  rect1y1 = o1->y + (s1->bbox.y1 * CSFI);
+  rect1x1 = o1->x + (s1->bbox[o1->dir].x1 * CSFI);
+  rect1y1 = o1->y + (s1->bbox[o1->dir].y1 * CSFI);
 
-  rect1x2 = o1->x + (s1->bbox.x2 * CSFI);
-  rect1y2 = o1->y + (s1->bbox.y2 * CSFI);
+  rect1x2 = o1->x + (s1->bbox[o1->dir].x2 * CSFI);
+  rect1y2 = o1->y + (s1->bbox[o1->dir].y2 * CSFI);
 
   // get the bounding rectangle of the second object
   rect2x1 = x - (range * CSFI);
@@ -221,10 +259,10 @@ bool hitdetect_damage_player(Object *o1)
   s1 = o1->Sprite();
 
   // get the bounding rectangle of the first object
-  rect1x1 = o1->x + (s1->bbox.x1 * CSFI);
-  rect1x2 = o1->x + (s1->bbox.x2 * CSFI);
-  rect1y1 = o1->y + (s1->bbox.y1 * CSFI);
-  rect1y2 = o1->y + (s1->bbox.y2 * CSFI);
+  rect1x1 = o1->x + (s1->bbox[o1->dir].x1 * CSFI);
+  rect1x2 = o1->x + (s1->bbox[o1->dir].x2 * CSFI);
+  rect1y1 = o1->y + (s1->bbox[o1->dir].y1 * CSFI);
+  rect1y2 = o1->y + (s1->bbox[o1->dir].y2 * CSFI);
 
   // get the bounding rectangle of the second object
   rect2x1 = player->x + (4 * CSFI);

@@ -10,7 +10,7 @@
 #include "ai/boss/sisters.h"
 #include "ai/boss/undead_core.h"
 #include "ai/boss/x.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "game.h"
 #include "nx.h"
 
@@ -26,14 +26,14 @@ void c------------------------------() {}
 
 bool StageBossManager::SetType(int newtype)
 {
-  stat("StageBossManager::SetType(%d)", newtype);
+  LOG_DEBUG("StageBossManager::SetType({})", newtype);
 
   if (fBoss)
   {
     delete fBoss;
     if (game.stageboss.object)
     {
-      staterr(" ** warning: game.stageboss.object not properly cleaned up in OnMapExit");
+      LOG_WARN("game.stageboss.object not properly cleaned up in OnMapExit");
       game.stageboss.object->Delete();
       game.stageboss.object = NULL;
     }
@@ -76,7 +76,7 @@ bool StageBossManager::SetType(int newtype)
       break;
 
     default:
-      staterr("StageBossManager::SetType: unhandled boss type %d", newtype);
+      LOG_ERROR("StageBossManager::SetType: unhandled boss type {}", newtype);
       fBossType = BOSS_NONE;
       return 1;
   }
@@ -129,7 +129,7 @@ void StageBossManager::SetState(int newstate)
   }
   else
   {
-    staterr("StageBossManager::SetState(%d): no stageboss object in existance!", newstate);
+    LOG_ERROR("StageBossManager::SetState({}): no stageboss object in existance!", newstate);
   }
 }
 
@@ -147,6 +147,6 @@ void StageBoss::SetState(int newstate)
   }
   else
   {
-    staterr("StageBoss::SetState(%d): no stageboss object!", newstate);
+    LOG_ERROR("StageBoss::SetState({}): no stageboss object!", newstate);
   }
 }

@@ -1,41 +1,54 @@
 #include "object.h"
 
 #include "ai/sym/smoke.h"
-#include "common/llist.h"
-#include "graphics/graphics.h"
-#include "nx.h"
-using namespace Graphics;
-#include "ai/ai.h"
 #include "autogen/sprites.h"
+#include "common/llist.h"
+#include "graphics/Renderer.h"
+#include "nx.h"
+using namespace NXE::Graphics;
+#include "ai/ai.h"
 #include "caret.h"
 #include "debug.h"
 #include "game.h"
-#include "graphics/sprites.h"
-#include "graphics/tileset.h"
 #include "map.h"
 #include "player.h"
 #include "slope.h"
 #include "sound/SoundManager.h"
 #include "tsc.h"
+#include "Utils/Logger.h"
 
 //#define CSF 9
 
 int Object::Width()
 {
-  return (sprites[this->sprite].w * CSFI);
+  return (Renderer::getInstance()->sprites.sprites[this->sprite].w * CSFI);
 }
 int Object::Height()
 {
-  return (sprites[this->sprite].h * CSFI);
+  return (Renderer::getInstance()->sprites.sprites[this->sprite].h * CSFI);
 }
 
 int Object::BBoxWidth()
 {
-  return (((sprites[this->sprite].bbox.x2 - sprites[this->sprite].bbox.x1) + 1) * CSFI);
+  return (
+    (
+      (
+        Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].x2
+        - Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].x1
+      ) + 1
+    ) * CSFI
+  );
 }
 int Object::BBoxHeight()
 {
-  return (((sprites[this->sprite].bbox.y2 - sprites[this->sprite].bbox.y1) + 1) * CSFI);
+  return (
+    (
+      (
+        Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].y2
+        - Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].y1
+      ) + 1
+    ) * CSFI
+  );
 }
 
 int Object::CenterX()
@@ -58,67 +71,67 @@ void Object::SetCenterY(int y)
 
 int Object::Left()
 {
-  return (this->x + (sprites[this->sprite].bbox.x1 * CSFI));
+  return (this->x + (Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].x1 * CSFI));
 }
 int Object::Right()
 {
-  return (this->x + (sprites[this->sprite].bbox.x2 * CSFI));
+  return (this->x + (Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].x2 * CSFI));
 }
 int Object::Top()
 {
-  return (this->y + (sprites[this->sprite].bbox.y1 * CSFI));
+  return (this->y + (Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].y1 * CSFI));
 }
 int Object::Bottom()
 {
-  return (this->y + (sprites[this->sprite].bbox.y2 * CSFI));
+  return (this->y + (Renderer::getInstance()->sprites.sprites[this->sprite].bbox[this->dir].y2 * CSFI));
 }
 
 int Object::SolidLeft()
 {
-  return (this->x + (sprites[this->sprite].solidbox.x1 * CSFI));
+  return (this->x + (Renderer::getInstance()->sprites.sprites[this->sprite].solidbox.x1 * CSFI));
 }
 int Object::SolidRight()
 {
-  return (this->x + (sprites[this->sprite].solidbox.x2 * CSFI));
+  return (this->x + (Renderer::getInstance()->sprites.sprites[this->sprite].solidbox.x2 * CSFI));
 }
 int Object::SolidTop()
 {
-  return (this->y + (sprites[this->sprite].solidbox.y1 * CSFI));
+  return (this->y + (Renderer::getInstance()->sprites.sprites[this->sprite].solidbox.y1 * CSFI));
 }
 int Object::SolidBottom()
 {
-  return (this->y + (sprites[this->sprite].solidbox.y2 * CSFI));
+  return (this->y + (Renderer::getInstance()->sprites.sprites[this->sprite].solidbox.y2 * CSFI));
 }
 
 int Object::ActionPointX()
 {
-  return (this->x + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.x * CSFI));
+  return (this->x + (Renderer::getInstance()->sprites.sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.x * CSFI));
 }
 int Object::ActionPointY()
 {
-  return (this->y + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.y * CSFI));
+  return (this->y + (Renderer::getInstance()->sprites.sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint.y * CSFI));
 }
 int Object::ActionPoint2X()
 {
-  return (this->x + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.x * CSFI));
+  return (this->x + (Renderer::getInstance()->sprites.sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.x * CSFI));
 }
 int Object::ActionPoint2Y()
 {
-  return (this->y + (sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.y * CSFI));
+  return (this->y + (Renderer::getInstance()->sprites.sprites[this->sprite].frame[this->frame].dir[this->dir].actionpoint2.y * CSFI));
 }
 
 int Object::DrawPointX()
 {
-  return (sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.x * CSFI);
+  return (Renderer::getInstance()->sprites.sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.x * CSFI);
 }
 int Object::DrawPointY()
 {
-  return (sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.y * CSFI);
+  return (Renderer::getInstance()->sprites.sprites[this->sprite].frame[this->frame].dir[this->dir].drawpoint.y * CSFI);
 }
 
 SIFSprite *Object::Sprite()
 {
-  return &sprites[this->sprite];
+  return &Renderer::getInstance()->sprites.sprites[this->sprite];
 }
 
 // deletes the specified object, or well, marks it to be deleted.
@@ -253,10 +266,10 @@ void Object::ChangeType(int type)
   o->x *= CSFI;
   o->y /= CSFI;
   o->y *= CSFI;
-  o->x += (sprites[oldsprite].spawn_point.x * CSFI);
-  o->y += (sprites[oldsprite].spawn_point.y * CSFI);
-  o->x -= (sprites[this->sprite].spawn_point.x * CSFI);
-  o->y -= (sprites[this->sprite].spawn_point.y * CSFI);
+  o->x += (Renderer::getInstance()->sprites.sprites[oldsprite].spawn_point.x * CSFI);
+  o->y += (Renderer::getInstance()->sprites.sprites[oldsprite].spawn_point.y * CSFI);
+  o->x -= (Renderer::getInstance()->sprites.sprites[this->sprite].spawn_point.x * CSFI);
+  o->y -= (Renderer::getInstance()->sprites.sprites[this->sprite].spawn_point.y * CSFI);
 
   // added this for when you pick up the puppy in the Deserted House in SZ--
   // makes objects <CNPed during a <PRI initialize immediately instead of waiting
@@ -303,7 +316,7 @@ void Object::PushBehind(int objtype)
   if (target)
     PushBehind(target);
   else
-    staterr("PushBehind: could not find any objects of type %s", DescribeObjectType(objtype));
+    LOG_ERROR("PushBehind: could not find any objects of type {}", DescribeObjectType(objtype));
 }
 
 /*
@@ -689,7 +702,7 @@ void Object::PushPlayerOutOfWay(int xinertia, int yinertia)
         else
         {
           // align player's blockl grid with our right side
-          player->x = o->SolidRight() - (sprites[player->sprite].block_l[0].x * CSFI);
+          player->x = o->SolidRight() - (Renderer::getInstance()->sprites.sprites[player->sprite].block_l[0].x * CSFI);
 
           // get player a xinertia equal to our own. You can see this
           // with the moving blocks in Labyrinth H.
@@ -706,7 +719,7 @@ void Object::PushPlayerOutOfWay(int xinertia, int yinertia)
         else
         {
           // align player's blockr grid with our left side
-          player->x = o->SolidLeft() - (sprites[player->sprite].block_r[0].x * CSFI);
+          player->x = o->SolidLeft() - (Renderer::getInstance()->sprites.sprites[player->sprite].block_r[0].x * CSFI);
 
           // get player a xinertia equal to our own. You can see this
           // with the moving blocks in Labyrinth H.
@@ -731,7 +744,7 @@ void Object::PushPlayerOutOfWay(int xinertia, int yinertia)
       {
         // align player's blockd grid with our top side so player
         // doesn't perpetually fall.
-        player->y = o->SolidTop() - (sprites[player->sprite].block_d[0].y * CSFI);
+        player->y = o->SolidTop() - (Renderer::getInstance()->sprites.sprites[player->sprite].block_d[0].y * CSFI);
       }
     }
     else if (player->Top() >= o->CenterY() && solidhitdetect(o, player)) // underneath object
@@ -743,7 +756,7 @@ void Object::PushPlayerOutOfWay(int xinertia, int yinertia)
           hurtplayer(o->smushdamage);
 
         // align his blocku grid with our bottom side
-        player->y = o->SolidBottom() - (sprites[player->sprite].block_u[0].y * CSFI);
+        player->y = o->SolidBottom() - (Renderer::getInstance()->sprites.sprites[player->sprite].block_u[0].y * CSFI);
       }
     }
   }
@@ -759,7 +772,7 @@ void Object::SnapToGround()
   o->flags &= ~FLAG_IGNORE_SOLID;
 
   UpdateBlockStates(DOWNMASK);
-  apply_yinertia(SCREEN_HEIGHT * CSFI);
+  apply_yinertia(Renderer::getInstance()->screenHeight * CSFI);
 
   o->flags  = flags;
   o->blockd = true;
@@ -904,7 +917,7 @@ void Object::SpawnPowerups()
   powerup->x -= (powerup->Width() / 2);
   powerup->y -= (powerup->Height() / 2);
 
-  powerup->state = 1; // make it animate
+  powerup->state = -1; // make it animate
 }
 
 // spawn the given quantity of XP at the center of the object.
@@ -972,7 +985,7 @@ void Object::RunAI()
         if (game.tsc->GetCurrentScript() == -1 && // no override other scripts
             game.switchstage.mapno == -1)         // no repeat exec after <TRA
         {
-          stat("On-touch script %d triggered", o->id2);
+          LOG_DEBUG("On-touch script {} triggered", o->id2);
           game.tsc->StartScript(o->id2);
         }
       }
@@ -1119,8 +1132,8 @@ void Object::ResetClip()
   Object *const &o = this;
 
   o->clipx1 = o->clipy1 = 0;
-  o->clipx2             = sprites[o->sprite].w;
-  o->clipy2             = sprites[o->sprite].h;
+  o->clipx2             = Renderer::getInstance()->sprites.sprites[o->sprite].w;
+  o->clipy2             = Renderer::getInstance()->sprites.sprites[o->sprite].h;
 }
 /*
 void c------------------------------() {}

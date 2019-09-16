@@ -4,7 +4,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -13,6 +13,8 @@
 #include "../sand/puppy.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -268,8 +270,8 @@ void ai_sandcroc(Object *o)
       if (pdistlx(19 * CSFI))
       {
         // check if bottoms of player and croc are near
-        pbottom    = player->y + (sprites[player->sprite].bbox.y2 * CSFI);
-        crocbottom = o->y + (sprites[o->sprite].bbox.y2 * CSFI) + 0x600;
+        pbottom    = player->y + (Renderer::getInstance()->sprites.sprites[player->sprite].bbox[player->dir].y2 * CSFI);
+        crocbottom = o->y + (Renderer::getInstance()->sprites.sprites[o->sprite].bbox[o->dir].y2 * CSFI) + 0x600;
 
         if (pbottom <= crocbottom && crocbottom - pbottom < (12 * CSFI))
         { // attack!!
@@ -521,7 +523,7 @@ void ai_crowwithskull(Object *o)
   // switch over to the main crow AI, but only move up & down
   o->yinertia  = random(-0x200, -0x100);
   o->xmark     = o->x;
-  o->ymark     = o->y + random(-(28 * CSFI), (10 * CSFI));
+  o->ymark     = o->y + random(-28, 10) * CSFI;
   o->animframe = random(0, 1);
   o->animtimer = random(0, 4);
   o->state     = 101;
@@ -855,7 +857,7 @@ void skullstep_do_step(Object *o, Object *skull, int angle)
 
   // get the coordinates of the tile that's blocking us
   // we already KNOW we're blockd, so if it returns false, we're standing on a slope
-  if (o->CheckAttribute(&sprites[o->sprite].block_d, TA_SOLID_NPC, &x, &y))
+  if (o->CheckAttribute(&Renderer::getInstance()->sprites.sprites[o->sprite].block_d, TA_SOLID_NPC, &x, &y))
   {
     // if the tile above it is also solid, it can't be a floor, it's a wall!
     if (tileattr[map.tiles[x][y - 1]] & TA_SOLID_NPC)

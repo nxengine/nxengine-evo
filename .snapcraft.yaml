@@ -1,0 +1,88 @@
+name: nxengine-evo
+version: git
+summary: Doukutsu Monogatari - Jump-and-run platformer
+description: |
+  NXEngine Evo is a complete open-source clone/rewrite of the masterpiece
+  jump-and-run platformer Doukutsu Monogatari (also known as Cave Story).
+  NXEngine Evo [1] is an upgraded/refactored version of NXEngine by Caitlin Shaw [2].
+  [1] https://github.com/nxengine/nxengine-evo
+  [2] http://nxengine.sourceforge.net/
+base: core18
+
+grade: stable
+confinement: strict
+
+apps:
+  nxengine-evo:
+    command: bash -c "cd $SNAP/bin && $SNAP/bin/desktop-launch $SNAP/bin/nx"
+    desktop: usr/share/applications/nxengine-evo.desktop
+    plugs:
+    - opengl
+    - unity7
+    - wayland
+    - x11
+    - desktop
+    - pulseaudio
+    - joystick
+parts:
+  cavestory:
+    plugin: nil
+    source: https://www.cavestory.org/downloads/cavestoryen.zip
+  desktop-file:
+    source: .
+    plugin: dump
+    organize:
+      platform/snap/gui/nxengine-evo.desktop: usr/share/applications/nxengine-evo.desktop
+      platform/snap/gui/icon_x256.png: usr/share/icons/nxengine-evo.png
+    prime:
+      - usr/share/applications/nxengine-evo.desktop
+      - usr/share/icons/nxengine-evo.png
+  nxengine-evo:
+    plugin: cmake
+    source: .
+    build-packages:
+      - libsdl2-dev
+      - libsdl2-mixer-dev
+      - libsdl2-ttf-dev
+      - libpng-dev
+    stage-packages:
+      - libgl1-mesa-glx
+      - libglew2.0
+      - libglu1-mesa
+      - libsdl2-2.0-0
+      - libsdl2-mixer-2.0-0
+      - libsdl2-ttf-2.0-0
+      - libpulse0
+    override-build: |
+        cp -r ../src/* .
+        mkdir build && cd build
+        cmake -DCMAKE_BUILD_TYPE=Release ..
+        make
+        cd ../
+        cp -r bin/ $SNAPCRAFT_PART_INSTALL/
+        # Extract and install data
+        cp ../../cavestory/src/CaveStory/Doukutsu.exe .
+        ./bin/extract
+        cp -r ../../cavestory/src/CaveStory/data/* data
+        cp -r data/ $SNAPCRAFT_PART_INSTALL/bin
+    after:
+      - cavestory
+      - glib-only
+  translations:
+    plugin: dump
+    source: https://github.com/nxengine/translations/releases/download/v1.8/all.zip
+    organize:
+      data: bin/data
+    prime:
+      - bin/data
+    after:
+      - cavestory
+      - nxengine-evo
+  glib-only:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: glib-only
+    plugin: make
+    build-packages:
+      - libglib2.0-dev
+    stage-packages:
+      - libglib2.0-bin

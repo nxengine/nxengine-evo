@@ -10,7 +10,7 @@
 #endif
 //#include "main.h"
 #include "game.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "input.h"
 #include "map.h"
 #include "profile.h"
@@ -20,19 +20,37 @@
 #include "tsc.h"
 
 #include <SDL_mixer.h>
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "ResourceManager.h"
 #include "caret.h"
 #include "common/misc.h"
-#include "common/stat.h"
 #include "console.h"
-#include "graphics/font.h"
-#include "graphics/screenshot.h"
 #include "screeneffect.h"
 #include "sound/SoundManager.h"
+#include "Utils/Logger.h"
+using namespace NXE::Utils;
 
 #if defined(__SWITCH__)
 #include <switch.h>
+#include <iostream>
+#endif
+
+#if defined(__VITA__)
+#include <psp2/kernel/threadmgr.h>
+extern "C"
+{
+    unsigned int sleep(unsigned int seconds)
+    {
+        sceKernelDelayThread(seconds*1000*1000);
+        return 0;
+    }
+
+    int usleep(useconds_t usec)
+    {
+        sceKernelDelayThread(usec);
+        return 0;
+    }
+}
 #endif
 
 using namespace NXE::Sound;
@@ -48,7 +66,7 @@ int flipacceltime = 0;
 
 static void fatal(const char *str)
 {
-  staterr("fatal: '%s'", str);
+  LOG_CRITICAL("fatal: '%s'", str);
 
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", str, NULL);
 }
@@ -79,15 +97,17 @@ void update_fps()
   char fpstext[64];
   sprintf(fpstext, "%d fps", fps);
 
-  int x = (SCREEN_WIDTH - 4) - GetFontWidth(fpstext, true);
-  font_draw(x, 4, fpstext, 0x00FF00, true);
+  int x = (Renderer::getInstance()->screenWidth - 4) - Renderer::getInstance()->font.getWidth(fpstext);
+  Renderer::getInstance()->font.draw(x, 4, fpstext, 0x00FF00, true);
 }
 
 static inline void run_tick()
 {
   static bool can_tick       = true;
+#if defined(DEBUG)
   static bool last_freezekey = false;
   static bool last_framekey  = false;
+#endif
   static int frameskip       = 0;
 
   input_poll();
@@ -96,7 +116,7 @@ static inline void run_tick()
 
   if (justpushed(F9KEY))
   {
-    SaveScreenshot();
+    Renderer::getInstance()->saveScreenshot();
   }
 
   // freeze frame
@@ -138,10 +158,10 @@ static inline void run_tick()
     {
       char buf[1024];
       sprintf(buf, "[] Tick %d", framecount++);
-      font_draw(4, (SCREEN_HEIGHT - GetFontHeight() - 4), buf, 0x00FF00, true);
+      Renderer::getInstance()->font.draw(4, (Renderer::getInstance()->screenHeight - Renderer::getInstance()->font.getHeight() - 4), buf, 0x00FF00, true);
       sprintf(buf, "Left: %d, Right: %d, JMP: %d, FR: %d, ST: %d", inputs[LEFTKEY], inputs[RIGHTKEY], inputs[JUMPKEY],
               inputs[FIREKEY], inputs[STRAFEKEY]);
-      font_draw(80, (SCREEN_HEIGHT - GetFontHeight() - 4), buf, 0x00FF00, true);
+      Renderer::getInstance()->font.draw(80, (Renderer::getInstance()->screenHeight - Renderer::getInstance()->font.getHeight() - 4), buf, 0x00FF00, true);
       can_tick = false;
     }
 
@@ -152,14 +172,14 @@ static inline void run_tick()
 
     if (!flipacceltime)
     {
-      screen->Flip();
+      Renderer::getInstance()->flip();
     }
     else
     {
       flipacceltime--;
       if (--frameskip < 0)
       {
-        screen->Flip();
+        Renderer::getInstance()->flip();
         frameskip = 256;
       }
     }
@@ -176,11 +196,11 @@ static inline void run_tick()
 
 void AppMinimized(void)
 {
-  stat("Game minimized or lost focus--pausing...");
+  LOG_DEBUG("Game minimized or lost focus--pausing...");
   NXE::Sound::SoundManager::getInstance()->pause();
   for (;;)
   {
-    if (Graphics::WindowVisible())
+    if (Renderer::getInstance()->isWindowVisible())
     {
       break;
     }
@@ -189,7 +209,7 @@ void AppMinimized(void)
     SDL_Delay(20);
   }
   NXE::Sound::SoundManager::getInstance()->resume();
-  stat("Focus regained, resuming play...");
+  LOG_DEBUG("Focus regained, resuming play...");
 }
 
 void gameloop(void)
@@ -216,7 +236,7 @@ void gameloop(void)
       nexttick = curtime + GAME_WAIT;
 
       // pause game if window minimized
-      if (!Graphics::WindowVisible())
+      if (!Renderer::getInstance()->isWindowVisible())
       {
         AppMinimized();
         nexttick = 0;
@@ -236,7 +256,7 @@ void gameloop(void)
 
 void InitNewGame(bool with_intro)
 {
-  stat("= Beginning new game =");
+  LOG_DEBUG("= Beginning new game =");
 
   memset(game.flags, 0, sizeof(game.flags));
   memset(game.skipflags, 0, sizeof(game.skipflags));
@@ -279,20 +299,20 @@ int main(int argc, char *argv[])
 #endif
 
 #if defined(__SWITCH__)
-  if (int res = romfsInit() != 0)
+  if (romfsInit() != 0)
   {
-    staterr("romfsInit() failed: 0x%x", res);
+    std::cerr << "romfsInit() failed" << std::endl;
     return 1;
   }
 #endif
 
   (void)ResourceManager::getInstance();
 
-  SetLogFilename(ResourceManager::getInstance()->getPrefPath("debug.log").c_str());
+  Logger::init(ResourceManager::getInstance()->getPrefPath("debug.log"));
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
   {
-    staterr("ack, sdl_init failed: %s.", SDL_GetError());
+    LOG_CRITICAL("ack, sdl_init failed: {}.", SDL_GetError());
     return 1;
   }
 
@@ -303,26 +323,26 @@ int main(int argc, char *argv[])
   // so we know the initial screen resolution.
   settings_load();
 
-  if (Graphics::init(settings->resolution))
+  if (!Renderer::getInstance()->init(settings->resolution))
   {
     fatal("Failed to initialize graphics.");
     return 1;
   }
-  Graphics::SetFullscreen(settings->fullscreen);
-  if (font_init())
-  {
-    fatal("Failed to load font.");
-    return 1;
-  }
+  Renderer::getInstance()->setFullscreen(settings->fullscreen);
 
   //	if (check_data_exists())
   //	{
   //		return 1;
   //	}
 
-  Graphics::ShowLoadingScreen();
-  SoundManager::getInstance()->init();
-  //	if (sound_init()) { fatal("Failed to initialize sound."); return 1; }
+  Renderer::getInstance()->showLoadingScreen();
+
+  if (!SoundManager::getInstance()->init())
+  {
+    fatal("Failed to initialize sound.");
+    return 1;
+  }
+
   if (trig_init())
   {
     fatal("Failed trig module init.");
@@ -369,7 +389,7 @@ int main(int argc, char *argv[])
   game.running = true;
   freshstart   = true;
 
-  stat("Entering main loop...");
+  LOG_INFO("Entering main loop...");
 
   while (game.running)
   {
@@ -388,7 +408,7 @@ int main(int argc, char *argv[])
       if (game.switchstage.mapno == LOAD_GAME_FROM_MENU)
         freshstart = true;
 
-      stat("= Loading game =");
+      LOG_DEBUG("= Loading game =");
       if (game_load(settings->last_save_slot))
       {
         fatal("savefile error");
@@ -398,7 +418,7 @@ int main(int argc, char *argv[])
     }
     else if (game.switchstage.mapno == TITLE_SCREEN)
     {
-      stat("= Title screen =");
+      LOG_DEBUG("= Title screen =");
       game.curmap = TITLE_SCREEN;
     }
     else
@@ -441,10 +461,9 @@ shutdown:;
   Carets::close();
 
   input_close();
-  font_close();
   textbox.Deinit();
   NXE::Sound::SoundManager::getInstance()->shutdown();
-  Graphics::close();
+  Renderer::getInstance()->close();
 #if defined(__SWITCH__)
   romfsExit();
 #endif
@@ -452,10 +471,10 @@ shutdown:;
   return error;
 
 ingame_error:;
-  stat("");
-  stat(" ************************************************");
-  stat(" * An in-game error occurred. Game shutting down.");
-  stat(" ************************************************");
+  LOG_CRITICAL("");
+  LOG_CRITICAL(" ************************************************");
+  LOG_CRITICAL(" * An in-game error occurred. Game shutting down.");
+  LOG_CRITICAL(" ************************************************");
   error = true;
   goto shutdown;
 }

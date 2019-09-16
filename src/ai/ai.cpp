@@ -5,13 +5,15 @@
 #include "../ResourceManager.h"
 #include "../caret.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
-#include "../graphics/sprites.h"
+#include "../graphics/Renderer.h"
 #include "../player.h"
 #include "../sound/SoundManager.h"
 #include "stdai.h"
 #include "sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 InitList AIRoutines;
 
@@ -35,7 +37,7 @@ bool ai_init(void)
   // of every AI-related module which assign AI logic to objects.
   if (AIRoutines.CallFunctions())
   {
-    staterr("ai_init: failed to initialize AIRoutines function pointers");
+    LOG_ERROR("ai_init: failed to initialize AIRoutines function pointers");
     return 1;
   }
 
@@ -50,11 +52,11 @@ bool load_npc_tbl(void)
   FILE *fp = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("npc.tbl")).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    staterr("load_npc_tbl: data/npc.tbl is missing");
+    LOG_ERROR("load_npc_tbl: data/npc.tbl is missing");
     return 1;
   }
 
-  stat("Reading npc.tbl...");
+  LOG_INFO("Reading npc.tbl...");
 
   for (i = 0; i < nEntries; i++)
     objprop[i].defaultflags = fgeti(fp);
@@ -104,8 +106,8 @@ Object *SpawnObjectAtActionPoint(Object *o, int otype)
   int x, y;
   Object *newObject;
 
-  x              = o->x + (sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.x * CSFI);
-  y              = o->y + (sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.y * CSFI);
+  x              = o->x + (Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.x * CSFI);
+  y              = o->y + (Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].actionpoint.y * CSFI);
   newObject      = CreateObject(x, y, otype);
   newObject->dir = o->dir;
   return newObject;
@@ -184,8 +186,8 @@ void StickToPlayer(Object *o, int x_left, int x_right, int off_y)
   if (frame >= 3 && frame <= 5)
     frame -= 3;
 
-  x = (player->x / CSFI) + sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.x;
-  y = (player->y / CSFI) + sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.y;
+  x = (player->x / CSFI) + Renderer::getInstance()->sprites.sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.x;
+  y = (player->y / CSFI) + Renderer::getInstance()->sprites.sprites[player->sprite].frame[frame].dir[player->dir].actionpoint.y;
   y += off_y;
 
   if (player->dir == RIGHT)
@@ -236,7 +238,7 @@ static bool teleffect(Object *o, int slowness, bool teleporting_out)
     o->clipy1      = 0;
   }
 
-  if (++o->timer >= (sprites[o->sprite].h << slowness))
+  if (++o->timer >= (Renderer::getInstance()->sprites.sprites[o->sprite].h << slowness))
   {
     o->clip_enable  = false;
     o->display_xoff = 0;
@@ -247,7 +249,7 @@ static bool teleffect(Object *o, int slowness, bool teleporting_out)
     int amt = (o->timer >> slowness);
 
     if (teleporting_out)
-      o->clipy2 = sprites[o->sprite].h - amt;
+      o->clipy2 = Renderer::getInstance()->sprites.sprites[o->sprite].h - amt;
     else
       o->clipy2 = amt;
 
@@ -286,14 +288,14 @@ static void simpleanim(Object *o, int spd)
   if (++o->animtimer >= spd)
   {
     o->animtimer = 0;
-    if (++o->frame >= sprites[o->sprite].nframes)
+    if (++o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
       o->frame = 0;
   }
 }
 
 void ai_animate1(Object *o)
 {
-  if (++o->frame >= sprites[o->sprite].nframes)
+  if (++o->frame >= Renderer::getInstance()->sprites.sprites[o->sprite].nframes)
     o->frame = 0;
 }
 void ai_animate2(Object *o)
@@ -313,6 +315,11 @@ void ai_animate5(Object *o)
   simpleanim(o, 5);
 }
 
+void ai_animaten(Object *o, int n)
+{
+  simpleanim(o, n);
+}
+
 /*
 void c------------------------------() {}
 */
@@ -327,8 +334,8 @@ void aftermove_StickToLinkedActionPoint(Object *o)
   {
     dir = (link->dir ^ o->carry.flip);
 
-    o->x   = ((link->x / CSFI) + sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.x) * CSFI;
-    o->y   = ((link->y / CSFI) + sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.y) * CSFI;
+    o->x   = ((link->x / CSFI) + Renderer::getInstance()->sprites.sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.x) * CSFI;
+    o->y   = ((link->y / CSFI) + Renderer::getInstance()->sprites.sprites[link->sprite].frame[link->frame].dir[dir].actionpoint.y) * CSFI;
     o->dir = dir;
   }
   else

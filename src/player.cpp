@@ -8,7 +8,7 @@
 #include "caret.h"
 #include "common/misc.h"
 #include "game.h"
-#include "graphics/sprites.h"
+#include "graphics/Renderer.h"
 #include "input.h"
 #include "map.h"
 #include "nx.h"
@@ -16,7 +16,7 @@
 #include "playerstats.h"
 #include "sound/SoundManager.h"
 #include "tsc.h"
-using namespace Sprites;
+using namespace NXE::Graphics;
 #include "inventory.h"
 #include "screeneffect.h"
 #include "settings.h"
@@ -110,6 +110,8 @@ void InitPlayer(void)
   player->touchattr    = TA_WATER;
   player->airleft      = 1000;
   player->airshowtimer = 0;
+  player->fire_limit = 0;
+  player->auto_fire_limit = 0;
 }
 
 Player::~Player()
@@ -294,14 +296,14 @@ void c------------------------------() {}
 
 void PDoPhysics(void)
 {
-  if (player->xinertia > 0x5ff)
-    player->xinertia = 0x5ff;
-  if (player->xinertia < -0x5ff)
-    player->xinertia = -0x5ff;
-  if (player->yinertia > 0x5ff)
-    player->yinertia = 0x5ff;
-  if (player->yinertia < -0x5ff)
-    player->yinertia = -0x5ff;
+  if (player->xinertia > player->fallspeed)
+    player->xinertia = player->fallspeed;
+  if (player->xinertia < -player->fallspeed)
+    player->xinertia = -player->fallspeed;
+  if (player->yinertia > player->fallspeed)
+    player->yinertia = player->fallspeed;
+  if (player->yinertia < -player->fallspeed)
+    player->yinertia = -player->fallspeed;
 
   if (player->blockd && player->yinertia > 0)
     player->yinertia = 0;
@@ -525,6 +527,8 @@ void DoWaterCurrents(void)
       return;
   }
 
+  player->fallspeed = 0x5FF;
+
   // these constants are very critical for Waterway to work properly.
   // please be careful with them.
   if (currentmask & LEFTMASK)
@@ -534,7 +538,7 @@ void DoWaterCurrents(void)
   if (currentmask & UPMASK)
     player->yinertia -= 0x80;
   if (currentmask & DOWNMASK)
-    player->yinertia += 0x50;
+    player->yinertia += 0x55;
 }
 
 void PDoWalking(void)
@@ -875,17 +879,37 @@ void PDoBooster(void)
   /*static const char *statedesc[] = { "OFF", "UP", "DN", "HOZ", "0.8" };
   debug("fuel: %d", player->boosterfuel);
   debug("booststate: %s", statedesc[player->booststate]);
-  debug("xinertia: %d", player->xinertia);
+  debug("xinertia: %x", player->xinertia);
   debug("yinertia: %d", player->yinertia);*/
 
   if (!(player->equipmask & (EQUIP_BOOSTER08 | EQUIP_BOOSTER20)))
   {
+    switch (player->booststate)
+    {
+      case BOOST_HOZ:
+        player->xinertia >>= 1;
+        break;
+
+      case BOOST_UP:
+        player->yinertia >>= 1;
+        break;
+    }
     player->booststate = BOOST_OFF;
     return;
   }
 
   if (!pinputs[JUMPKEY])
   {
+    switch (player->booststate)
+    {
+      case BOOST_HOZ:
+        player->xinertia >>= 1;
+        break;
+
+      case BOOST_UP:
+        player->yinertia >>= 1;
+        break;
+    }
     player->booststate = BOOST_OFF;
 
     if (player->blockd)
@@ -900,6 +924,16 @@ void PDoBooster(void)
   // player seems to want it active...check the fuel
   if (player->boosterfuel <= 0)
   {
+    switch (player->booststate)
+    {
+      case BOOST_HOZ:
+        player->xinertia >>= 1;
+        break;
+
+      case BOOST_UP:
+        player->yinertia >>= 1;
+        break;
+    }
     player->booststate = BOOST_OFF;
     return;
   }
@@ -991,23 +1025,6 @@ void PDoBoosterEnd()
   // if (!player->booststate)
   // player->hitwhileboosting = false;
 
-  if (player->booststate != player->lastbooststate)
-  {
-    if (player->booststate == BOOST_OFF && (player->equipmask & EQUIP_BOOSTER20))
-    {
-      switch (player->lastbooststate)
-      {
-        case BOOST_HOZ:
-          player->xinertia >>= 1;
-          break;
-
-        case BOOST_UP:
-          player->yinertia >>= 1;
-          break;
-      }
-    }
-  }
-
   // in the original touching a slope while boosting horizontally
   // disables the booster. In that case, we don't want to half the xinertia,
   // which is why it's here.
@@ -1023,7 +1040,8 @@ void PBoosterSmokePuff()
   // these are the directions the SMOKE is traveling, not the player
   //                                 RT   LT    UP    DN
   static const int smoke_xoffs[] = {10, 4, 7, 7};
-  static const int smoke_yoffs[] = {10, 10, 0, 14};
+  static const int smoke_yoffs[] = {9, 9, 0, 14};
+
   int smokedir;
 
   switch (player->booststate)
@@ -1048,7 +1066,7 @@ void PBoosterSmokePuff()
   int y = player->y + (smoke_yoffs[smokedir] * CSFI);
 
   Caret *smoke = effect(x, y, EFFECT_SMOKETRAIL_SLOW);
-  smoke->MoveAtDir(smokedir, 0x200);
+  smoke->MoveAtDir(smokedir, 0x400);
 
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_BOOSTER);
 }
@@ -1127,7 +1145,7 @@ void PHandleSolidBrickObjects(void)
       else if (o->yinertia <= player->yinertia)
       {
         // snap his Y right on top if it
-        player->y = o->SolidTop() - (sprites[player->sprite].block_d[0].y * CSFI);
+        player->y = o->SolidTop() - (Renderer::getInstance()->sprites.sprites[player->sprite].block_d[0].y * CSFI);
       }
     }
   }
@@ -1245,9 +1263,12 @@ void hurtplayer(int damage)
   if (!player || !player->hp)
     return;
 #if defined(DEBUG)
-  if (game.debug.god || inputs[DEBUG_MOVE_KEY])
+  if (inputs[DEBUG_MOVE_KEY])
     return;
 #endif
+
+  if (game.debug.god)
+    return;
 
   if (player->hurt_time)
     return;
@@ -1387,7 +1408,7 @@ void PHandleZeroG(void)
 
   if (scr_x <= 10 && player->xinertia < 0)
     player->xinertia = 0;
-  if (scr_x >= Graphics::SCREEN_WIDTH - (24+5) && player->xinertia > 0)
+  if (scr_x >= Renderer::getInstance()->screenWidth - (24+5) && player->xinertia > 0)
     player->xinertia = 0;
 
   player->frame = (player->yinertia > 0) ? 1 : 2;
@@ -1402,33 +1423,33 @@ void PInitRepel(void)
   const int s = SPR_MYCHAR;
   int i;
 
-  player->nrepel_l = sprites[s].block_l.count;
-  player->nrepel_r = sprites[s].block_r.count;
-  player->nrepel_d = sprites[s].block_d.count;
-  player->nrepel_u = sprites[s].block_u.count;
+  player->nrepel_l = Renderer::getInstance()->sprites.sprites[s].block_l.count;
+  player->nrepel_r = Renderer::getInstance()->sprites.sprites[s].block_r.count;
+  player->nrepel_d = Renderer::getInstance()->sprites.sprites[s].block_d.count;
+  player->nrepel_u = Renderer::getInstance()->sprites.sprites[s].block_u.count;
 
   for (i = 0; i < player->nrepel_l; i++)
   {
-    player->repel_l[i].x = sprites[s].block_l[i].x + 1;
-    player->repel_l[i].y = sprites[s].block_l[i].y;
+    player->repel_l[i].x = Renderer::getInstance()->sprites.sprites[s].block_l[i].x + 1;
+    player->repel_l[i].y = Renderer::getInstance()->sprites.sprites[s].block_l[i].y;
   }
 
   for (i = 0; i < player->nrepel_r; i++)
   {
-    player->repel_r[i].x = sprites[s].block_r[i].x - 1;
-    player->repel_r[i].y = sprites[s].block_r[i].y;
+    player->repel_r[i].x = Renderer::getInstance()->sprites.sprites[s].block_r[i].x - 1;
+    player->repel_r[i].y = Renderer::getInstance()->sprites.sprites[s].block_r[i].y;
   }
 
   for (i = 0; i < player->nrepel_d; i++)
   {
-    player->repel_d[i].x = sprites[s].block_d[i].x;
-    player->repel_d[i].y = sprites[s].block_d[i].y - 1;
+    player->repel_d[i].x = Renderer::getInstance()->sprites.sprites[s].block_d[i].x;
+    player->repel_d[i].y = Renderer::getInstance()->sprites.sprites[s].block_d[i].y - 1;
   }
 
   for (i = 0; i < player->nrepel_u; i++)
   {
-    player->repel_u[i].x = sprites[s].block_u[i].x;
-    player->repel_u[i].y = sprites[s].block_u[i].y + 1;
+    player->repel_u[i].x = Renderer::getInstance()->sprites.sprites[s].block_u[i].x;
+    player->repel_u[i].y = Renderer::getInstance()->sprites.sprites[s].block_u[i].y + 1;
   }
 }
 
@@ -1455,7 +1476,7 @@ void PDoRepel(void)
   // embed the R or L points further into the block than they should be
   if (player->CheckAttribute(player->repel_r, player->nrepel_r, TA_SOLID_PLAYER))
   {
-    if (!player->CheckAttribute(&sprites[player->sprite].block_l, TA_SOLID_PLAYER))
+    if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_l, TA_SOLID_PLAYER))
     {
       player->x -= REPEL_SPEED;
       // debug("REPEL [to left]");
@@ -1464,7 +1485,7 @@ void PDoRepel(void)
 
   if (player->CheckAttribute(player->repel_l, player->nrepel_l, TA_SOLID_PLAYER))
   {
-    if (!player->CheckAttribute(&sprites[player->sprite].block_r, TA_SOLID_PLAYER))
+    if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_r, TA_SOLID_PLAYER))
     {
       player->x += REPEL_SPEED;
       // debug("REPEL [to right]");
@@ -1477,7 +1498,7 @@ void PDoRepel(void)
   // do repel down
   if (player->CheckAttribute(player->repel_u, player->nrepel_u, TA_SOLID_PLAYER))
   {
-          if (!player->CheckAttribute(&sprites[player->sprite].block_d, TA_SOLID_PLAYER))
+          if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_d, TA_SOLID_PLAYER))
           {
                   player->y += REPEL_SPEED;
                   //debug("REPEL [down]");
@@ -1487,7 +1508,7 @@ void PDoRepel(void)
   // do repel up
   if (player->CheckAttribute(player->repel_d, player->nrepel_d, TA_SOLID_PLAYER))
   {
-    if (!player->CheckAttribute(&sprites[player->sprite].block_u, TA_SOLID_PLAYER))
+    if (!player->CheckAttribute(&Renderer::getInstance()->sprites.sprites[player->sprite].block_u, TA_SOLID_PLAYER))
     {
       player->y -= REPEL_SPEED;
       // debug("REPEL [up]");
@@ -1566,13 +1587,14 @@ void c------------------------------() {}
 // does the invincibility flash when the player has recently been hurt
 void PDoHurtFlash(void)
 {
-  // note that hurt_flash_state is NOT cleared when timer reaches 0,
-  // but this is ok because the number of blinks are and always should be even.
-  // (if not it wouldn't look right when he unhurts).
   if (player->hurt_time)
   {
     player->hurt_time--;
     player->hurt_flash_state = (player->hurt_time & 2);
+  }
+  else
+  {
+    player->hurt_flash_state = 0;
   }
 }
 
@@ -1688,13 +1710,13 @@ void GetPlayerShootPoint(int *x_out, int *y_out)
   // we have to figure out where the gun is being carried, then figure out where the
   // gun's sprite is drawn relative to that, then finally we can offset in the
   // shoot point of the gun's sprite.
-  x = player->x + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x * CSFI);
-  x -= sprites[spr].frame[frame].dir[player->dir].drawpoint.x * CSFI;
-  x += sprites[spr].frame[frame].dir[player->dir].actionpoint.x * CSFI;
+  x = player->x + (Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x * CSFI);
+  x -= Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].drawpoint.x * CSFI;
+  x += Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].actionpoint.x * CSFI;
 
-  y = player->y + (sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y * CSFI);
-  y -= sprites[spr].frame[frame].dir[player->dir].drawpoint.y * CSFI;
-  y += sprites[spr].frame[frame].dir[player->dir].actionpoint.y * CSFI;
+  y = player->y + (Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y * CSFI);
+  y -= Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].drawpoint.y * CSFI;
+  y += Renderer::getInstance()->sprites.sprites[spr].frame[frame].dir[player->dir].actionpoint.y * CSFI;
 
   *x_out = x;
   *y_out = y;
@@ -1725,21 +1747,23 @@ void DrawPlayer(void)
 
     // draw the gun at the player's Action Point. Since guns have their Draw Point set
     // to point at their handle, this places the handle in the player's hand.
-    draw_sprite_at_dp(scr_x + sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x,
-                      scr_y + sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y, spr, frame,
-                      player->dir);
+    Renderer::getInstance()->sprites.drawSpriteAtDp(
+      scr_x + Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.x,
+      scr_y + Renderer::getInstance()->sprites.sprites[player->sprite].frame[player->frame].dir[player->dir].actionpoint.y,
+      spr, frame, player->dir
+    );
   }
 
   // draw the player sprite
   if (!player->hurt_flash_state)
   {
-    draw_sprite(scr_x, scr_y, player->sprite, player->frame, player->dir);
+    Renderer::getInstance()->sprites.drawSprite(scr_x, scr_y, player->sprite, player->frame, player->dir);
 
     // draw the air bubble shield if we have it on
     if (((player->touchattr & TA_WATER) && (player->equipmask & EQUIP_AIRTANK))
         || player->movementmode == MOVEMODE_ZEROG)
     {
-      draw_sprite_at_dp(scr_x, scr_y, SPR_WATER_SHIELD, player->water_shield_frame, player->dir);
+      Renderer::getInstance()->sprites.drawSpriteAtDp(scr_x, scr_y, SPR_WATER_SHIELD, player->water_shield_frame, player->dir);
 
       if (++player->water_shield_timer > 1)
       {

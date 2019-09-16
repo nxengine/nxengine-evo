@@ -1,11 +1,11 @@
 #include "npcguest.h"
 
 #include "../../game.h"
+#include "../../graphics/Tileset.h"
 #include "../../player.h"
 #include "../ai.h"
 #include "../stdai.h"
 //#include "../../map.h"
-#include "../../graphics/tileset.h"
 
 INITFUNC(AIRoutines)
 {

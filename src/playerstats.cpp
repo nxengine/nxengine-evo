@@ -2,7 +2,7 @@
 #include "playerstats.h"
 
 #include "caret.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "game.h"
 #include "inventory.h"
 #include "nx.h"
@@ -107,7 +107,7 @@ void AddInventory(int item)
 {
   if (player->ninventory + 1 >= MAX_INVENTORY)
   {
-    staterr("<<<AddInventory: inventory is full>>");
+    LOG_ERROR("<<<AddInventory: inventory is full>>");
     game.running = 0;
     return;
   }

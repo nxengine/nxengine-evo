@@ -5,14 +5,15 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../../trig.h"
 #include "../ai.h"
 #include "../stdai.h"
-using namespace Sprites;
+
+using namespace NXE::Graphics;
 
 #define SUE_BASE 20
 #define SUE_PREPARE_ATTACK 30

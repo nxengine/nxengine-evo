@@ -1,15 +1,15 @@
 #include "SoundManager.h"
 
 #include "../ResourceManager.h"
-#include "../common/json.hpp"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../game.h"
 #include "../settings.h"
 #include "Ogg.h"
 #include "Organya.h"
 #include "Pixtone.h"
 
+#include <json.hpp>
 #include <fstream>
 #include <iostream>
 
@@ -32,56 +32,38 @@ SoundManager *SoundManager::getInstance()
 
 bool SoundManager::init()
 {
+  LOG_INFO("Sound system init");
   if (Mix_Init(MIX_INIT_OGG) == -1)
   {
-    staterr("Unable to init mixer.");
+    LOG_ERROR("Unable to init mixer.");
     return false;
   }
 
 #if SDL_MIXER_PATCHLEVEL >= 2
   if (Mix_OpenAudioDevice(SAMPLE_RATE, AUDIO_S16, 2, 2048, NULL, 0) == -1)
   {
-    staterr("Unable to init mixer.");
+    LOG_ERROR("Unable to open audio device.");
     return false;
   }
 #else
   if (Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16, 2, 2048) == -1)
   {
-    staterr("Unable to init mixer.");
+    LOG_ERROR("Unable to open audio device.");
     return false;
   }
 #endif
   Mix_AllocateChannels(64);
 
-  std::string path = ResourceManager::getInstance()->getLocalizedPath("music.json");
-
-  std::ifstream fl;
-
-  _org_names.clear();
-
-  fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
-  if (fl.is_open())
-  {
-    nlohmann::json tracklist = nlohmann::json::parse(fl);
-
-    for (auto it = tracklist.begin(); it != tracklist.end(); ++it)
-    {
-      _org_names.push_back(it.value());
-    }
-  }
-  else
-  {
-    staterr("Failed to load tracklist");
-    return false;
-  }
-  fl.close();
-
-  path = ResourceManager::getInstance()->getLocalizedPath("music_dirs.json");
+  std::string path = ResourceManager::getInstance()->getLocalizedPath("music_dirs.json");
 
   _music_dirs.clear();
   _music_dir_names.clear();
+  _music_playlists.clear();
   _music_dirs.push_back("org/");
   _music_dir_names.push_back("Original");
+  _music_playlists.push_back("music.json");
+
+  std::ifstream fl;
 
   fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
   if (fl.is_open())
@@ -90,16 +72,39 @@ bool SoundManager::init()
 
     for (auto it = dirlist.begin(); it != dirlist.end(); ++it)
     {
-      _music_dirs.push_back(it.value().at("dir"));
-      _music_dir_names.push_back(it.value().at("name"));
+      std::string dir = it.value().at("dir");
+      if (
+        ResourceManager::getInstance()->fileExists(
+          ResourceManager::getInstance()->getPathForDir(dir)
+        )
+      )
+      {
+        auto it_playlist = it.value().find("playlist");
+        if (it_playlist != it.value().end())
+        {
+          _music_playlists.push_back(*it_playlist);
+        }
+        else
+        {
+          _music_playlists.push_back("music.json");
+        }
+
+        _music_dirs.push_back(dir);
+        _music_dir_names.push_back(it.value().at("name"));
+      }
+      else
+      {
+        LOG_WARN("Music dir {} doesn't exist", dir.c_str());
+      }
     }
+    fl.close();
   }
   else
   {
-    staterr("Failed to load tracklist");
-    return false;
+    LOG_ERROR("Failed to load music_dirs.json");
   }
-  fl.close();
+
+  _reloadTrackList();
 
   Pixtone::getInstance()->init();
   Organya::getInstance()->init();
@@ -113,6 +118,7 @@ void SoundManager::shutdown()
 
   Mix_CloseAudio();
   Mix_Quit();
+  LOG_INFO("Sound system shutdown");
 }
 
 void SoundManager::playSfx(NXE::Sound::SFX snd, int32_t loop)
@@ -163,11 +169,11 @@ void SoundManager::music(uint32_t songno, bool resume)
   _lastSong    = _currentSong;
   _currentSong = songno;
 
-  stat(" >> music(%d)", songno);
+  LOG_DEBUG(" >> music({})", songno);
 
   if (songno != 0 && !_shouldMusicPlay(songno, settings->music_enabled))
   {
-    stat("Not playing track %d because music_enabled is %d", songno, settings->music_enabled);
+    LOG_INFO("Not playing track {} because music_enabled is {}", songno, settings->music_enabled);
     switch (settings->new_music)
     {
       case 0:
@@ -197,7 +203,7 @@ void SoundManager::enableMusic(int newstate)
 {
   if (newstate != settings->music_enabled)
   {
-    stat("music_set_enabled(%d)", newstate);
+    LOG_DEBUG("enableMusic({})", newstate);
 
     settings->music_enabled = newstate;
     bool play               = _shouldMusicPlay(_currentSong, newstate);
@@ -230,12 +236,14 @@ void SoundManager::setNewmusic(int newstate)
 {
   if (newstate != settings->new_music)
   {
-    stat("music_set_newmusic(%d)", newstate);
+    LOG_DEBUG("setNewMusic({})", newstate);
 
     settings->new_music = newstate;
 
     Organya::getInstance()->stop();
     Ogg::getInstance()->stop();
+
+    _reloadTrackList();
 
     switch (newstate)
     {
@@ -355,6 +363,8 @@ bool SoundManager::_musicIsBoss(uint32_t songno)
 
 void SoundManager::_start_org_track(int songno, bool resume)
 {
+  if (_music_names.size() < 2) return;
+
   _lastSongPos = Organya::getInstance()->stop();
   if (songno == 0)
   {
@@ -362,7 +372,7 @@ void SoundManager::_start_org_track(int songno, bool resume)
   }
 
   if (Organya::getInstance()->load(
-          ResourceManager::getInstance()->getLocalizedPath(_music_dirs.at(0) + _org_names[songno] + ".org")))
+          ResourceManager::getInstance()->getLocalizedPath(_music_dirs.at(0) + _music_names[songno] + ".org")))
   {
     Organya::getInstance()->start(resume ? _lastSongPos : 0);
   }
@@ -370,13 +380,15 @@ void SoundManager::_start_org_track(int songno, bool resume)
 
 void SoundManager::_start_ogg_track(int songno, bool resume, std::string dir)
 {
+  if (_music_names.size() < 2) return;
+
   if (songno == 0)
   {
     _songlooped  = Ogg::getInstance()->looped();
     _lastSongPos = Ogg::getInstance()->stop();
     return;
   }
-  Ogg::getInstance()->start(_org_names[songno], dir, resume ? _lastSongPos : 0, resume ? _songlooped : false);
+  Ogg::getInstance()->start(_music_names[songno], dir, resume ? _lastSongPos : 0, resume ? _songlooped : false, _music_loop[songno]);
 }
 
 std::vector<std::string> &SoundManager::music_dir_names()
@@ -384,6 +396,42 @@ std::vector<std::string> &SoundManager::music_dir_names()
   return _music_dir_names;
 }
 
+void SoundManager::_reloadTrackList()
+{
+  std::string path = ResourceManager::getInstance()->getLocalizedPath(_music_playlists.at(settings->new_music));
+
+  std::ifstream fl;
+
+  _music_names.clear();
+  _music_names.push_back("");
+  _music_loop.clear();
+  _music_loop.push_back(false);
+
+  fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
+  if (fl.is_open())
+  {
+    nlohmann::json tracklist = nlohmann::json::parse(fl);
+
+    for (auto it = tracklist.begin(); it != tracklist.end(); ++it)
+    {
+      auto it_loop = it.value().find("loop");
+      if (it_loop != it.value().end())
+      {
+        _music_loop.push_back(*it_loop);
+      }
+      else
+      {
+        _music_loop.push_back(true);
+      }
+      _music_names.push_back(it.value().at("name"));
+    }
+    fl.close();
+  }
+  else
+  {
+    LOG_ERROR("Failed to load music.json");
+  }
+}
 
 } // namespace Sound
 } // namespace NXE

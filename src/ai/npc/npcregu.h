@@ -16,6 +16,10 @@ void ai_kanpachi_fishing(Object *o);
 void ai_professor_booster(Object *o);
 void ai_booster_falling(Object *o);
 void ai_npc_at_computer(Object *o);
+void ai_santa(Object *o);
+void ai_chaco(Object *o);
+void ai_jack(Object *o);
+
 void onspawn_generic_npc(Object *o);
 void ai_generic_npc(Object *o);
 void ai_generic_npc_nofaceplayer(Object *o);

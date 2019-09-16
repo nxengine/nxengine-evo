@@ -3,17 +3,15 @@
 
 #include "../autogen/sprites.h"
 #include "../game.h"
-#include "../graphics/font.h"
-#include "../graphics/graphics.h"
-#include "../graphics/sprites.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../nx.h"
 #include "../screeneffect.h"
 #include "../endgame/credits.h"
+#include "../endgame/island.h"
 #include "../inventory.h"
 #include "../map_system.h"
-using namespace Graphics;
-using namespace Sprites;
+using namespace NXE::Graphics;
 #include "dialog.h"
 using namespace Options;
 
@@ -24,6 +22,8 @@ void _resume(ODItem *item, int dir)
 {
   lastinputs[F1KEY] = true;
   game.pause(false);
+  delete dlg;
+  dlg = nullptr;
 }
 
 void _options(ODItem *item, int dir)
@@ -35,6 +35,8 @@ void _reset(ODItem *item, int dir)
 {
   lastinputs[F2KEY] = true;
   game.reset();
+  delete dlg;
+  dlg = nullptr;
 }
 
 void _exit(ODItem *item, int dir)
@@ -56,7 +58,7 @@ bool pause_init(int param)
   int maxsize = 0;
   for (auto &item : dlg->Items())
   {
-    int x = GetFontWidth(_(item->text));
+    int x = Renderer::getInstance()->font.getWidth(_(item->text));
     if (x > maxsize)
       maxsize = x;
   }
@@ -66,6 +68,7 @@ bool pause_init(int param)
 
 void pause_tick()
 {
+  if (dlg == nullptr) return;
   DrawScene();
   if (game.mode == GM_NORMAL)
     DrawStatusBar();
@@ -83,9 +86,15 @@ void pause_tick()
     credit_draw();
   }
 
-  Graphics::TintScreen();
+  if (game.mode == GM_ISLAND)
+  {
+    island_draw();
+  }
+
+  Renderer::getInstance()->tintScreen();
 
   dlg->RunInput();
+  if (dlg == nullptr) return;
   dlg->Draw();
 
   if (justpushed(ESCKEY))

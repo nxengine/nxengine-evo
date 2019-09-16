@@ -2,17 +2,16 @@
 #include "TextBox.h"
 
 #include "../autogen/sprites.h"
-#include "../common/utf8.h"
-#include "../graphics/font.h"
-#include "../graphics/graphics.h"
-#include "../graphics/sprites.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../nx.h"
+#include "../settings.h"
 #include "../sound/SoundManager.h"
+#include "../Utils/Logger.h"
 
+#include <utf8.h>
 #include <iostream>
-using namespace Graphics;
-using namespace Sprites;
+using namespace NXE::Graphics;
 
 #define MAXLINELEN_FACE 26
 #define MAXLINELEN_NO_FACE 35
@@ -24,7 +23,7 @@ bool TextBox::Init()
 {
   fCoords.w = MSG_W;
   fCoords.h = MSG_H;
-  fCoords.x = ((SCREEN_WIDTH / 2) - (MSG_W / 2));
+  fCoords.x = ((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2));
 
   SetFace(0);
   SetVisible(false);
@@ -48,7 +47,7 @@ void c------------------------------() {}
 // invisible.
 void TextBox::ResetState(void)
 {
-  // stat("TextBox::ResetState()");
+  LOG_DEBUG("TextBox::ResetState()");
 
   fVisible = false;
   fFlags   = TB_DEFAULTS;
@@ -75,11 +74,11 @@ void TextBox::ResetState(void)
 // of the flags TB_DRAW_AT_TOP and TB_NO_BORDER.
 void TextBox::SetVisible(bool enable, uint8_t flags)
 {
-  // stat("TextBox::SetVisible(%s)", enable?"true":"false");
+  LOG_DEBUG("TextBox::SetVisible({})", enable ? "true" : "false");
 
   fCoords.w = MSG_W;
   fCoords.h = MSG_H;
-  fCoords.x = ((SCREEN_WIDTH / 2) - (MSG_W / 2));
+  fCoords.x = ((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2));
 
   if (enable && fVisible)
     ClearText();
@@ -93,19 +92,19 @@ void TextBox::RecalculateOffsets()
 {
   fCoords.w = MSG_W;
   fCoords.h = MSG_H;
-  fCoords.x = ((SCREEN_WIDTH / 2) - (MSG_W / 2));
-  fCoords.y = (fFlags & TB_DRAW_AT_TOP) ? MSG_UPPER_Y : ((SCREEN_HEIGHT - MSG_H) - 2);
+  fCoords.x = ((Renderer::getInstance()->screenWidth / 2) - (MSG_W / 2));
+  fCoords.y = (fFlags & TB_DRAW_AT_TOP) ? MSG_UPPER_Y : ((Renderer::getInstance()->screenHeight - MSG_H) - 2);
 }
 
 void TextBox::SetFlags(uint8_t flags)
 {
   fFlags    = flags;
-  fCoords.y = (fFlags & TB_DRAW_AT_TOP) ? MSG_UPPER_Y : ((SCREEN_HEIGHT - MSG_H) - 2);
+  fCoords.y = (fFlags & TB_DRAW_AT_TOP) ? MSG_UPPER_Y : ((Renderer::getInstance()->screenHeight - MSG_H) - 2);
 }
 
 void TextBox::SetFlags(uint8_t flags, bool enable)
 {
-  // stat("TextBox::SetFlags(0x%x, %s)", flags, enable?"true":"false");
+  LOG_DEBUG("TextBox::SetFlags({:#x}, {})", flags, enable ? "true" : "false");
 
   if (enable)
     SetFlags(fFlags | flags);
@@ -124,6 +123,8 @@ void TextBox::AddText(const std::string &str)
   if (!fVisible)
     return;
   fCharsWaiting.append(str);
+  faceFrame = 0;
+  faceStep = 1;
 }
 
 // clear all text in the message box
@@ -157,14 +158,16 @@ void c------------------------------() {}
 
 void TextBox::SetFace(int newface)
 {
-  // stat("TextBox::SetFace(%d)", newface);
+  LOG_DEBUG("TextBox::SetFace({})", newface);
   fFace        = newface;
   fFaceXOffset = -FACE_W;
+  faceFrame = 0;
+  faceStep = 1;
 }
 
 void TextBox::ShowCursor(bool enable)
 {
-  // stat("TextBox::ShowCursor(%s)", enable?"true":"false");
+  LOG_DEBUG("TextBox::ShowCursor({})", enable ? "true" : "false");
   fCursorVisible = enable;
   fCursorTimer   = 8;
 }
@@ -261,6 +264,11 @@ void TextBox::TickTextBox()
         AddNextChar();
       }
     }
+    else
+    {
+      faceFrame = 0;
+      faceStep = 0;
+    }
   }
 
   // blink the cursor (it is visible when < 7)
@@ -289,18 +297,22 @@ void TextBox::DrawTextBox()
 
   // set clipping region to inside of frame, so that text cannot
   // overflow during scrolling, etc.
-  set_clip_rect((fCoords.x + 14), text_top, SCREEN_WIDTH, 48);
+  Renderer::getInstance()->setClip((fCoords.x + 14), text_top, Renderer::getInstance()->screenWidth, 48);
 
   // draw face
   if (fFace != 0)
   {
-    draw_sprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+    if (settings->animated_facepics)
+      Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES_0 + faceFrame, fFace);
+    else
+      Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+
     text_x += (FACE_W + 8); // move text over by width of face
 
     // face slide-in animation
     if (fFaceXOffset < 0)
     {
-      fFaceXOffset += (sprites[SPR_FACES].w / 6);
+      fFaceXOffset += (Renderer::getInstance()->sprites.sprites[SPR_FACES].w / 6);
       if (fFaceXOffset > 0)
         fFaceXOffset = 0;
     }
@@ -311,20 +323,20 @@ void TextBox::DrawTextBox()
 
   for (int i = 0; i < MSG_NLINES; i++)
   {
-    int lineWidth = font_draw(text_x, y, fLines[i]);
+    int lineWidth = Renderer::getInstance()->font.draw(text_x, y, fLines[i]);
 
     // draw the cursor
     if (i == fCurLine && fCursorTimer < 7)
     {
       int x = (text_x + lineWidth);
-      FillRect(x, y, x + 4, y + GetFontBase(), 255, 255, 255);
+      Renderer::getInstance()->fillRect(x, y, x + 4, y + Renderer::getInstance()->font.getBase(), 255, 255, 255);
     }
 
     y += MSG_LINE_SPACING;
   }
 
   // release the clipping region clipping our drawing to the text box
-  clear_clip_rect();
+  Renderer::getInstance()->clearClip();
 }
 
 // adds the next char to the box, or, in TB_LINE_AT_ONCE mode,
@@ -333,6 +345,26 @@ void TextBox::AddNextChar(void)
 {
   bool line_at_once = (fFlags & TB_LINE_AT_ONCE);
   int maxlinelen    = GetMaxLineLen();
+
+  if (settings->animated_facepics)
+  {
+    if (++faceTimer > 1)
+    {
+      faceTimer = 0;
+      faceFrame += faceStep;
+
+      if (faceFrame < 0)
+      {
+        faceStep = 1;
+        faceFrame = 0;
+      }
+      if (faceFrame >= 3)
+      {
+        faceStep = -1;
+        faceFrame = 2;
+      }
+    }
+  }
 
   while (!fCharsWaiting.empty())
   {
@@ -407,14 +439,14 @@ void c------------------------------() {}
 // the specified coordinates.
 void TextBox::DrawFrame(int x, int y, int w, int h)
 {
-  draw_sprite_chopped(x, y, SPR_TEXTBOX, 0, w, 8, 210); // draw top
+  Renderer::getInstance()->sprites.drawSpriteChopped(x, y, SPR_TEXTBOX, 0, w, 8, 210); // draw top
   y += 8;
 
   for (int draw = 0; draw < h - 16; draw += 8)
   {
-    draw_sprite_chopped(x, y, SPR_TEXTBOX, 1, w, 8, 210); // draw middle
+    Renderer::getInstance()->sprites.drawSpriteChopped(x, y, SPR_TEXTBOX, 1, w, 8, 210); // draw middle
     y += 8;
   }
 
-  draw_sprite_chopped(x, y, SPR_TEXTBOX, 2, w, 8, 210); // draw bottom
+  Renderer::getInstance()->sprites.drawSpriteChopped(x, y, SPR_TEXTBOX, 2, w, 8, 210); // draw bottom
 }

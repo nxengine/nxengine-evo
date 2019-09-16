@@ -3,20 +3,18 @@
 
 #include "../TextBox/TextBox.h"
 #include "../autogen/sprites.h"
-#include "../common/stat.h"
-#include "../graphics/font.h"
-#include "../graphics/graphics.h"
-#include "../graphics/sprites.h"
+#include "../Utils/Logger.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../map.h"
 #include "../niku.h"
 #include "../nx.h"
 #include "../profile.h"
+#include "../ResourceManager.h"
 #include "../settings.h"
 #include "../sound/SoundManager.h"
 #include "../statusbar.h"
-using namespace Graphics;
-using namespace Sprites;
+using namespace NXE::Graphics;
 
 // music and character selections for the different Counter times
 static struct
@@ -51,32 +49,41 @@ static struct
   uint32_t besttime; // Nikumaru display
 } title;
 
+typedef struct
+{
+  std::string text;
+  bool enabled;
+} menuitem;
+
+std::vector<menuitem> _menuitems;
+
 static void draw_title()
 {
   // background is dk grey, not pure black
-  ClearScreen(0x20, 0x20, 0x20);
+  Renderer::getInstance()->clearScreen(0x20, 0x20, 0x20);
   map_draw_backdrop();
   //	DrawFastLeftLayered();
 
   // top logo
-  int tx = (SCREEN_WIDTH / 2) - (sprites[SPR_TITLE].w / 2) - 2;
-  draw_sprite(tx, 40, SPR_TITLE);
+  int tx = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->sprites.sprites[SPR_TITLE].w / 2) - 2;
+  Renderer::getInstance()->sprites.drawSprite(tx, 40, SPR_TITLE);
 
   // draw menu
 
-  int cx = (SCREEN_WIDTH / 2) - 32;
-  int cy = (SCREEN_HEIGHT / 2) + 8;
+  int cx = (Renderer::getInstance()->screenWidth / 2) - 32;
+  int cy = (Renderer::getInstance()->screenHeight / 2) - 8;
 
-  const char *mymenus[] = {"New game", "Load game", "Options", "Quit"};
+  TextBox::DrawFrame(cx - 32, cy - 16 , 128, 96);
 
-  TextBox::DrawFrame(cx - 32, cy - 16, 128, 80);
-
-  for (int i = 0; i <= 3; i++)
+  for (size_t i = 0; i < _menuitems.size(); i++)
   {
-    font_draw(cx + 10, cy, _(mymenus[i]));
-    if (i == title.cursel)
+    if (_menuitems[i].enabled)
+      Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text));
+    else
+      Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text), 0x666666);
+    if (i == (size_t)title.cursel)
     {
-      draw_sprite(cx - 16, cy - 1, title.sprite, title.selframe);
+      Renderer::getInstance()->sprites.drawSprite(cx - 16, cy - 1, title.sprite, title.selframe);
     }
 
     cy += 12;
@@ -86,19 +93,19 @@ static void draw_title()
   if (++title.seltimer > 8)
   {
     title.seltimer = 0;
-    if (++title.selframe >= sprites[title.sprite].nframes)
+    if (++title.selframe >= Renderer::getInstance()->sprites.sprites[title.sprite].nframes)
       title.selframe = 0;
   }
 
   // accreditation
-  cx        = (SCREEN_WIDTH / 2) - (sprites[SPR_PIXEL_FOREVER].w / 2);
-  int acc_y = SCREEN_HEIGHT - 48;
-  draw_sprite(cx, acc_y, SPR_PIXEL_FOREVER);
+  cx        = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->sprites.sprites[SPR_PIXEL_FOREVER].w / 2);
+  int acc_y = Renderer::getInstance()->screenHeight - 48;
+  Renderer::getInstance()->sprites.drawSprite(cx, acc_y, SPR_PIXEL_FOREVER);
 
   // version
-  int wd = GetFontWidth(NXVERSION);
-  cx     = (SCREEN_WIDTH / 2) - (wd / 2);
-  font_draw(cx, acc_y + sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
+  int wd = Renderer::getInstance()->font.getWidth(NXVERSION);
+  cx     = (Renderer::getInstance()->screenWidth / 2) - (wd / 2);
+  Renderer::getInstance()->font.draw(cx, acc_y + Renderer::getInstance()->sprites.sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
 
   // draw Nikumaru display
   if (title.besttime != 0xffffffff)
@@ -117,6 +124,7 @@ void run_konami_code()
       if (kc_table[title.kc_pos] == -1)
       {
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
+        game.debug.god = 1;
         title.kc_pos = 0;
       }
     }
@@ -132,17 +140,23 @@ static void handle_input()
   if (justpushed(DOWNKEY))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
-    if (++title.cursel >= 4)
-      title.cursel = 0;
+    do
+    {
+      if (++title.cursel >= (int)_menuitems.size())
+        title.cursel = 0;
+    } while (!_menuitems.at(title.cursel).enabled);
   }
   else if (justpushed(UPKEY))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
-    if (--title.cursel < 0)
-      title.cursel = 3;
+    do
+    {
+      if (--title.cursel < 0)
+        title.cursel = _menuitems.size()-1;
+    } while (!_menuitems.at(title.cursel).enabled);
   }
 
-  if (justpushed(JUMPKEY) || justpushed(ENTERKEY))
+  if (justpushed(ACCEPT_BUTTON) || justpushed(ENTERKEY))
   {
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
     int choice = title.cursel;
@@ -158,7 +172,7 @@ static void handle_input()
         {
           if (ProfileExists(i))
           {
-            stat("Last save file %d missing. Defaulting to %d instead.", settings->last_save_slot, i);
+            LOG_WARN("Last save file %d missing. Defaulting to %d instead.", settings->last_save_slot, i);
             settings->last_save_slot = i;
             foundslot                = true;
           }
@@ -167,7 +181,7 @@ static void handle_input()
         // there are no save files. Start a new game instead.
         if (!foundslot)
         {
-          stat("No save files found. Starting new game instead.");
+          LOG_WARN("No save files found. Starting new game instead.");
           choice = 0;
         }
       }
@@ -220,7 +234,12 @@ static void selectoption(int index)
       game.pause(GP_OPTIONS);
     }
     break;
-    case 3: // Quit
+    case 3: // Mods
+    {
+      game.pause(GP_MODS);
+    }
+    break;
+    case 4: // Quit
     {
       NXE::Sound::SoundManager::getInstance()->music(0);
       game.running = false;
@@ -246,8 +265,7 @@ bool title_init(int param)
   game.showmapnametime          = 0;
   textbox.SetVisible(false);
 
-  if (niku_load(&title.besttime))
-    title.besttime = 0xffffffff;
+  title.besttime = niku_load();
 
   // select a title screen based on Nikumaru time
   int t;
@@ -270,6 +288,23 @@ bool title_init(int param)
   else
     title.cursel = 0; // New Game
 
+  _menuitems.clear();
+  _menuitems.push_back({"New game",true});
+
+  if (AnyProfileExists())
+    _menuitems.push_back({"Load game",true});
+  else
+    _menuitems.push_back({"Load game",false});
+
+  _menuitems.push_back({"Options",true});
+
+  if (ResourceManager::getInstance()->mods().size() > 0 )
+    _menuitems.push_back({"Mods",true});
+  else
+    _menuitems.push_back({"Mods",false});
+
+  _menuitems.push_back({"Quit",true});
+
   return 0;
 }
 
@@ -279,7 +314,7 @@ void title_tick()
   {
     if (title.seldelay > 0)
     {
-      ClearScreen(BLACK);
+      Renderer::getInstance()->clearScreen(BLACK);
 
       title.seldelay--;
       if (!title.seldelay)
@@ -293,7 +328,7 @@ void title_tick()
   }
   else
   {
-    ClearScreen(BLACK);
+    Renderer::getInstance()->clearScreen(BLACK);
 
     if (!textbox.SaveSelect.IsVisible())
     { // selection was made, and settings.last_save_slot is now set appropriately

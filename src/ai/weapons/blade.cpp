@@ -10,7 +10,7 @@
 
 // how far away the area-of-effect slashes are spawned when
 // the blade hits something and pauses for a moment dealing extra damage.
-#define BLADE_AOE (64 * CSFI)
+#define BLADE_AOE 64
 
 #define STATE_FLYING 0
 #define STATE_AOE 1
@@ -99,7 +99,7 @@ void ai_blade_l3_shot(Object *o)
       if (!random(0, 2))
       {
         Object *slash
-            = CreateObject(o->x + random(-BLADE_AOE, BLADE_AOE), o->y + random(-BLADE_AOE, BLADE_AOE), OBJ_BLADE_SLASH);
+            = CreateObject(o->x + random(-BLADE_AOE, BLADE_AOE) * CSFI, o->y + random(-BLADE_AOE, BLADE_AOE) * CSFI, OBJ_BLADE_SLASH);
 
         slash->dir = random(0, 1) ? LEFT : RIGHT;
         NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_SLASH);

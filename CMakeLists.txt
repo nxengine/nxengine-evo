@@ -16,7 +16,7 @@ ELSEIF(PLATFORM STREQUAL "vita")
         include("${VITASDK}/share/vita.cmake" REQUIRED)
         set(VITA_APP_NAME "NXENGINE-EVO")
         set(VITA_TITLEID  "NXEV00001")
-        set(VITA_VERSION  "01.00")
+        set(VITA_VERSION  "02.64")
         set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
     ELSE()
         message(FATAL_ERROR "Please define VITASDK to point to your SDK path!")
@@ -38,20 +38,23 @@ project(nx)
 
 set (nx_VERSION_MAJOR 2)
 set (nx_VERSION_MINOR 6)
-set (nx_VERSION_RELEASE 3)
+set (nx_VERSION_RELEASE 4)
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(PNG REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${SDL_MIXER_INCLUDE_DIR})
 include_directories(${PNG_PNG_INCLUDE_DIR})
+include_directories("${nx_SOURCE_DIR}/deps")
 
 file(GLOB APP_SOURCES "src/[a-zA-Z]*.cpp")
 file(GLOB TB_SOURCES "src/TextBox/[a-zA-Z]*.cpp")
 file(GLOB_RECURSE AI_SOURCES "src/ai/[a-zA-Z]*.cpp")
 file(GLOB AG_SOURCES "src/autogen/[a-zA-Z]*.cpp")
 file(GLOB CM_SOURCES "src/common/[a-zA-Z]*.cpp")
+file(GLOB UT_SOURCES "src/Utils/[a-zA-Z]*.cpp")
 file(GLOB EG_SOURCES "src/endgame/[a-zA-Z]*.cpp")
 file(GLOB GR_SOURCES "src/graphics/[a-zA-Z]*.cpp")
 file(GLOB IN_SOURCES "src/intro/[a-zA-Z]*.cpp")
@@ -63,7 +66,7 @@ file(GLOB EXTR_SOURCES "src/extract/[a-zA-Z]*.cpp")
 set(EXTR_SOURCES
     ${EXTR_SOURCES}
     "src/common/misc.cpp"
-    "src/common/stat.cpp"
+    "src/Utils/Logger.cpp"
     "src/stagedata.cpp"
 )
 
@@ -82,6 +85,7 @@ set(SOURCES
     ${SL_SOURCES}
     ${SN_SOURCES}
     ${I18N_SOURCES}
+    ${UT_SOURCES}
 )
 
 IF(CMAKE_BUILD_TYPE MATCHES Debug)
@@ -94,14 +98,16 @@ IF(LOW_END_HARDWARE)
     add_definitions(-D_LOW_END_HARDWARE)
 ENDIF()
 
-add_definitions("-Wall -std=c++11")
+add_definitions("-Wall")
 
 add_executable(nx ${SOURCES})
 
 IF(PLATFORM STREQUAL "pc")
+    add_definitions("-std=c++11")
     target_link_libraries(nx ${SDL2_LIBRARY} ${SDL_MIXER_LIBRARY} ${PNG_LIBRARY})
 
 ELSEIF(PLATFORM STREQUAL "vita")
+    add_definitions("-std=gnu++11")
     add_definitions("-D__VITA__")
     target_link_libraries(nx ${SDL_MIXER_LIBRARY} ${SDL2_LIBRARY} ${PNG_LIBRARY}
       vita2d
@@ -127,17 +133,18 @@ ELSEIF(PLATFORM STREQUAL "vita")
   vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
     VERSION ${VITA_VERSION}
     NAME ${VITA_APP_NAME}
-    FILE vita/sce_sys sce_sys
+    FILE platform/vita/sce_sys sce_sys
     FILE release/data data
   )
-  add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/nx.vpk
-    COMMAND cp nx.vpk ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release
+  add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
+    COMMAND cp nx.vpk ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
     DEPENDS nx.vpk
     COMMENT "Moving vpk to release"
   )
-  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/nx.vpk)
+  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk)
 
 ELSEIF(PLATFORM STREQUAL "switch")
+    add_definitions("-std=gnu++11")
     add_definitions("-D__SWITCH__")
     target_link_libraries(nx SDL2_mixer SDL2 png
       m
@@ -154,7 +161,7 @@ ELSEIF(PLATFORM STREQUAL "switch")
       -lnx
     )
 
-    add_nro_target(nx "NXEngine-evo" "NXEngine team" "${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}" "${CMAKE_SOURCE_DIR}/switch/icon.jpg" "${CMAKE_SOURCE_DIR}/release")
+    add_nro_target(nx "NXEngine-evo" "NXEngine team" "${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}" "${CMAKE_SOURCE_DIR}/platform/switch/icon.jpg" "${CMAKE_SOURCE_DIR}/release")
     add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
       COMMAND cp nx.nro ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
       DEPENDS nx.nro
@@ -165,6 +172,7 @@ ENDIF()
 
 IF(PLATFORM STREQUAL "pc")
     add_executable(extract ${EXTR_SOURCES})
+    target_link_libraries(extract ${SDL2_LIBRARY})
 ENDIF()
 
 

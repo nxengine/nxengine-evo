@@ -3,16 +3,16 @@
 #include "../nx.h"
 #include "dialog.h"
 #include "message.h"
-using namespace Options;
 #include "../ResourceManager.h"
 #include "../common/misc.h"
 #include "../game.h"
-#include "../graphics/font.h"
-#include "../graphics/graphics.h"
+#include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../map.h"
 #include "../settings.h"
 #include "../sound/SoundManager.h"
+using namespace Options;
+using namespace NXE::Graphics;
 
 std::vector<void *> optionstack;
 
@@ -28,6 +28,8 @@ void _res_get(ODItem *item);
 void _res_change(ODItem *item, int dir);
 void _fullscreen_get(ODItem *item);
 void _fullscreen_change(ODItem *item, int dir);
+void _facepics_get(ODItem *item);
+void _facepics_change(ODItem *item, int dir);
 
 void _lang_get(ODItem *item);
 void _lang_change(ODItem *item, int dir);
@@ -46,6 +48,9 @@ void _rumble_change(ODItem *item, int dir);
 void _rumble_get(ODItem *item);
 void _strafe_change(ODItem *item, int dir);
 void _strafe_get(ODItem *item);
+void _scheme_change(ODItem *item, int dir);
+void _scheme_get(ODItem *item);
+void _scheme_get2(ODItem *item);
 static void _upd_control(ODItem *item);
 static void _edit_control(ODItem *item, int dir);
 static void _finish_control_edit(Message *msg);
@@ -104,7 +109,7 @@ void options_tick()
   unsigned int i;
   FocusHolder *fh;
 
-  Graphics::ClearScreen(BLACK);
+  Renderer::getInstance()->clearScreen(BLACK);
   Options::run_and_draw_objects();
 
   fh = (FocusHolder *)optionstack.at(optionstack.size() - 1);
@@ -200,6 +205,10 @@ static void EnterControlsMenu(ODItem *item, int dir)
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
   dlg->AddItem("Force feedback: ", _rumble_change, _rumble_get, -1, OD_CHOICE);
   dlg->AddItem("Strafing: ", _strafe_change, _strafe_get, -1, OD_CHOICE);
+  dlg->AddSeparator();
+  dlg->AddItem("Ok: ", _scheme_change, _scheme_get, -1, OD_CHOICE);
+  dlg->AddItem("Cancel: ", _scheme_change, _scheme_get2, -1, OD_CHOICE);
+  dlg->AddSeparator();
   dlg->AddItem("Bind keys", EnterRebindMenu);
 
   dlg->AddSeparator();
@@ -239,6 +248,7 @@ static void EnterGraphicsMenu(ODItem *item, int dir)
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
   dlg->AddItem("Resolution: ", _res_change, _res_get, -1, OD_CHOICE);
   dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get, -1, OD_CHOICE);
+  dlg->AddItem("Animated facepics: ", _facepics_change, _facepics_get, -1, OD_CHOICE);
   dlg->AddSeparator();
   dlg->AddDismissalItem();
 }
@@ -262,9 +272,9 @@ static void EnterSoundMenu(ODItem *item, int dir)
 
 void _res_get(ODItem *item)
 {
-  const gres_t *reslist = Graphics::GetRes();
+  const gres_t *reslist = Renderer::getInstance()->getResolutions();
 
-  if (settings->resolution < 0 || settings->resolution >= Graphics::GetResCount())
+  if (settings->resolution < 0 || settings->resolution >= Renderer::getInstance()->getResolutionCount())
   {
     item->suffix[0] = 0;
   }
@@ -276,7 +286,7 @@ void _res_get(ODItem *item)
 
 void _res_change(ODItem *item, int dir)
 {
-  int numres = Graphics::GetResCount();
+  int numres = Renderer::getInstance()->getResolutionCount();
   int newres;
 
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
@@ -286,7 +296,7 @@ void _res_change(ODItem *item, int dir)
     newres = 1;
   if (newres < 1)
     newres = (numres - 1);
-  const gres_t *res = Graphics::GetRes();
+  const gres_t *res = Renderer::getInstance()->getResolutions();
   while (!res[newres].enabled)
   {
     newres += dir;
@@ -296,12 +306,9 @@ void _res_change(ODItem *item, int dir)
       newres = (numres - 1);
   }
 
-  if (!Graphics::SetResolution(newres, true))
+  if (Renderer::getInstance()->setResolution(newres, true))
   {
     settings->resolution = newres;
-    //		Graphics::SetFullscreen(false);
-    //		Graphics::SetFullscreen(settings->fullscreen);
-    //		opt.dlg->UpdateSizePos();
   }
   else
   {
@@ -344,9 +351,9 @@ void _lang_change(ODItem *item, int dir)
   memset(settings->language, 0, 256);
   strncpy(settings->language, langs[i].c_str(), 255);
   game.lang->load();
-  font_reload();
+//  font_reload();
   game.tsc->Init();
-  Graphics::FlushAll();
+  Renderer::getInstance()->flushAll();
 }
 
 void _fullscreen_get(ODItem *item)
@@ -359,7 +366,19 @@ void _fullscreen_change(ODItem *item, int dir)
 {
   settings->fullscreen ^= 1;
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
-  Graphics::SetFullscreen(settings->fullscreen);
+  Renderer::getInstance()->setFullscreen(settings->fullscreen);
+}
+
+void _facepics_get(ODItem *item)
+{
+  static const char *strs[] = {"Off", "On"};
+  strcpy(item->suffix, strs[settings->animated_facepics]);
+}
+
+void _facepics_change(ODItem *item, int dir)
+{
+  settings->animated_facepics ^= 1;
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
 }
 
 void _sound_change(ODItem *item, int dir)
@@ -410,7 +429,7 @@ void _tracks_change(ODItem *item, int dir)
 
   if (result < 0)
     result = names.size()-1;
-  if (result >= names.size())
+  if (result >= (int)names.size())
     result = 0;
   NXE::Sound::SoundManager::getInstance()->setNewmusic(result);
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
@@ -478,7 +497,34 @@ void _rumble_get(ODItem *item)
 }
 
 
+void _scheme_change(ODItem *item, int dir)
+{
+  settings->control_scheme ^= 1;
+  NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
+  opt.dlg->Refresh();
+  if (settings->control_scheme)
+  {
+    ACCEPT_BUTTON = FIREKEY;
+    DECLINE_BUTTON = JUMPKEY;
+  }
+  else
+  {
+    ACCEPT_BUTTON = JUMPKEY;
+    DECLINE_BUTTON = FIREKEY;
+  }
+}
 
+void _scheme_get(ODItem *item)
+{
+  static const char *strs[] = {"Jump", "Fire"};
+  strcpy(item->suffix, strs[settings->control_scheme]);
+}
+
+void _scheme_get2(ODItem *item)
+{
+  static const char *strs[] = {"Fire", "Jump"};
+  strcpy(item->suffix, strs[settings->control_scheme]);
+}
 
 static void _upd_control(ODItem *item)
 {

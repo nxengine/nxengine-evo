@@ -4,19 +4,16 @@
 #include "../ResourceManager.h"
 #include "../autogen/sprites.h"
 #include "../common/misc.h"
-#include "../common/stat.h"
+#include "../Utils/Logger.h"
 #include "../console.h"
 #include "../game.h"
-#include "../graphics/font.h"
-#include "../graphics/graphics.h"
-#include "../graphics/sprites.h"
+#include "../graphics/Renderer.h"
 #include "../map.h"
 #include "../nx.h"
 #include "../player.h"
 #include "../sound/SoundManager.h"
 #include "../tsc.h"
-using namespace Graphics;
-using namespace Sprites;
+using namespace NXE::Graphics;
 
 #define MARGIN 48
 #define SCREEN_Y(Y) ((Y) - (scroll_y / CSFI))
@@ -34,7 +31,7 @@ bool Credits::Init()
   if (bigimage.Init())
     return 1;
 
-  spawn_y  = (SCREEN_HEIGHT + 8);
+  spawn_y  = (Renderer::getInstance()->screenHeight + 8);
   scroll_y = 0 * CSFI;
 
   xoffset      = 0;
@@ -62,18 +59,18 @@ void Credits::Tick()
   /*debug("scroll_y: %d", scroll_y/CSFI);
   debug("spawn_y: %d", spawn_y);
   debug("scr_spawn_y: %d", SCREEN_Y(spawn_y));
-  debug("trigger: %d", SCREEN_HEIGHT+MARGIN);
+  debug("trigger: %d", Renderer::getInstance()->screenHeight+MARGIN);
   debug("");*/
   /*debug("imgno: %d", bigimage.imgno);
   debug("state: %d", bigimage.state);
   debug("imagex: %d", bigimage.imagex);*/
 
-  if (roll_running || SCREEN_Y(spawn_y) >= (SCREEN_HEIGHT + 8))
+  if (roll_running || SCREEN_Y(spawn_y) >= (Renderer::getInstance()->screenHeight + 8))
   {
     scroll_y += 0x100;
   }
 
-  while (roll_running && SCREEN_Y(spawn_y) < (SCREEN_HEIGHT + MARGIN))
+  while (roll_running && SCREEN_Y(spawn_y) < (Renderer::getInstance()->screenHeight + MARGIN))
   {
     RunNextCommand();
   }
@@ -95,7 +92,7 @@ void Credits::RunNextCommand()
 
   if (script.ReadCommand(&cmd))
   {
-    console.Print("script.ReadCommand failed: credits terminated");
+    LOG_DEBUG("script.ReadCommand failed: credits terminated");
     roll_running = false;
     return;
   }
@@ -117,7 +114,7 @@ void Credits::RunNextCommand()
       // varying font sizes can lead to it being a little bit off
       if (strstr(line->text, "The End"))
       {
-        line->x = (SCREEN_WIDTH / 2) - (GetFontWidth(line->text) / 2);
+        line->x = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->font.getWidth(line->text) / 2);
       }
 
       spawn_y += 1;
@@ -157,7 +154,7 @@ void Credits::RunNextCommand()
       break;
 
     default:
-      console.Print("Unhandled command '%c'; credits terminated", cmd.type);
+      LOG_WARN("Unhandled command '%c'; credits terminated", cmd.type);
       roll_running = false;
       break;
   }
@@ -168,7 +165,7 @@ bool Credits::Jump(int label)
   CredCommand cmd;
   bool tried_rewind = false;
 
-  stat("- Jump to label %04d", label);
+  LOG_DEBUG("- Jump to label {:04d}", label);
 
   for (;;)
   {
@@ -182,7 +179,7 @@ bool Credits::Jump(int label)
       }
       else
       {
-        console.Print("Missing label %04d; credits terminated", label);
+        LOG_ERROR("Missing label {:04d}; credits terminated", label);
         roll_running = false;
         return 1;
       }
@@ -208,12 +205,12 @@ bool Credits::DrawLine(CredLine *line)
 
   if (line->image)
   {
-    draw_sprite(x - 24, y - 8, SPR_CASTS, line->image);
-    // DrawBox(x, y, x+GetFontWidth(line->text), y+8,  56, 0, 0);
+    Renderer::getInstance()->sprites.drawSprite(x - 24, y - 8, SPR_CASTS, line->image);
+    // DrawBox(x, y, x+Renderer::getInstance()->font.getWidth(line->text), y+8,  56, 0, 0);
   }
 
   // DrawRect(x, y, x+63, y+8, 128, 0, 0);
-  font_draw(x, y, line->text);
+  Renderer::getInstance()->font.draw(x, y, line->text);
 
   return false;
 }
@@ -308,11 +305,15 @@ bool BigImage::Init()
       sprintf(fname, "endpic/credit%02d.bmp", i);
     if (ResourceManager::fileExists(ResourceManager::getInstance()->getLocalizedPath(fname)))
     {
-      images[i] = NXSurface::FromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
+      images[i] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
       if (!images[i])
-        staterr("BigImage::Init: image '%s' exists but seems corrupt!", fname);
+      {
+        LOG_ERROR("BigImage::Init: image '{}' exists but seems corrupt!", fname);
+      }
       else
-        stat("BigImage: loaded %s ok", fname);
+      {
+        LOG_DEBUG("BigImage: loaded {} ok", fname);
+      }
     }
   }
 
@@ -325,7 +326,7 @@ BigImage::~BigImage()
   {
     if (images[i])
     {
-      staterr("BigImage: freeing image %d", i);
+      LOG_DEBUG("BigImage: freeing image {}", i);
       delete images[i];
       images[i] = NULL;
     }
@@ -337,12 +338,12 @@ void BigImage::Set(int num)
   if (images[num])
   {
     imgno  = num;
-    imagex = -images[num]->Width();
+    imagex = -images[num]->width();
     state  = BI_SLIDE_IN;
   }
   else
   {
-    staterr("BigImage::Set: invalid image number %d", num);
+    LOG_ERROR("BigImage::Set: invalid image number {}", num);
     state = BI_CLEAR;
   }
 }
@@ -372,17 +373,17 @@ void BigImage::Draw()
     case BI_SLIDE_OUT:
     {
       imagex -= IMAGE_SPEED;
-      if (imagex < -images[imgno]->Width())
+      if (imagex < -images[imgno]->width())
         state = BI_CLEAR;
     }
   }
 
   // take up any unused space with blue
   if (state != BI_HOLD)
-    FillRect(0, 0, SCREEN_WIDTH / 2, SCREEN_HEIGHT, DK_BLUE);
+    Renderer::getInstance()->fillRect(0, 0, Renderer::getInstance()->screenWidth / 2, Renderer::getInstance()->screenHeight, DK_BLUE);
 
   if (state != BI_CLEAR)
-    DrawSurface(images[imgno], imagex, 0);
+    Renderer::getInstance()->drawSurface(images[imgno], imagex, 0);
 }
 
 /*
@@ -394,7 +395,7 @@ bool credit_init(int parameter)
   credits = new Credits;
   if (credits->Init())
   {
-    staterr("Credits initilization failed");
+    LOG_ERROR("Credits initilization failed");
     return 1;
   }
 

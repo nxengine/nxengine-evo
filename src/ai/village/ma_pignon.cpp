@@ -4,7 +4,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Tileset.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -58,7 +58,7 @@ void ai_ma_pignon(Object *o)
     }
     case 1:
     {
-      FACEPLAYER;
+      FACEPLAYERIFNEARBY;
       o->frame = 0;
       randblink(o);
     }
@@ -339,13 +339,17 @@ void ai_ma_pignon(Object *o)
       if (o->type != OBJ_MA_PIGNON_CLONE)
       {
         Object *c;
-        FOREACH_OBJECT(c)
+        for(int i =0; i < 64; i++)
         {
-          if (c->type == OBJ_MISSILE_SHOT || c->type == OBJ_SUPERMISSILE_SHOT || c->type == OBJ_MISSILE_BOOM_SPAWNER
-              || c->type == OBJ_BLADE12_SHOT || c->type == OBJ_BLADE3_SHOT || c->type == OBJ_BLADE_SLASH)
+          if (bullets[i] != NULL)
           {
-            found_weapons = true;
-            break;
+            c = bullets[i];
+            if (c->type == OBJ_MISSILE_SHOT || c->type == OBJ_SUPERMISSILE_SHOT || c->type == OBJ_MISSILE_BOOM_SPAWNER
+                || c->type == OBJ_BLADE12_SHOT || c->type == OBJ_BLADE3_SHOT || c->type == OBJ_BLADE_SLASH)
+            {
+              found_weapons = true;
+              break;
+            }
           }
         }
       }
@@ -407,7 +411,7 @@ void ai_ma_pignon_rock(Object *o)
           // these smoke clouds appear BEHIND the map tiles
           for (int i = 0; i < 2; i++)
           {
-            Object *smoke   = CreateObject(o->CenterX() + random(-12 * CSFI, 12 * CSFI), o->Bottom() + (16 * CSFI),
+            Object *smoke   = CreateObject(o->CenterX() + random(-12, 12) * CSFI, o->Bottom() + (16 * CSFI),
                                          OBJ_SMOKE_CLOUD);
             smoke->xinertia = random(-0x155, 0x155);
             smoke->yinertia = random(-0x600, 0);

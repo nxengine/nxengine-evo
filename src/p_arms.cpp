@@ -70,8 +70,8 @@ BulletInfo bullet_table[] = {
     {SPR_SHOT_FIREBALL23, 1, 0, 1, 23, 6, 0x200, 2, NXE::Sound::SFX::SND_SNAKE_FIRE}, // Snake L2
     {SPR_SHOT_FIREBALL23, 2, 0, 1, 30, 8, 0x200, 2, NXE::Sound::SFX::SND_SNAKE_FIRE}, // Snake L3
 
-    {SPR_SHOT_NEMESIS_L1, 0, 0, 2, 20, 12, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
-    {SPR_SHOT_NEMESIS_L2, 1, 0, 2, 20, 6, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L3},
+    {SPR_SHOT_NEMESIS_L1, 0, 0, 2, 20, 4, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
+    {SPR_SHOT_NEMESIS_L2, 1, 0, 2, 20, 4, 0x1000, 0, NXE::Sound::SFX::SND_POLAR_STAR_L3},
     {SPR_SHOT_NEMESIS_L3, 2, 0, 2, 20, 1, 0x555, 0, NXE::Sound::SFX::SND_SPUR_CHARGE_2}, // 1/3 speed
 
     {SPR_SHOT_BUBBLER_L1, 0, 0, 1, 40, 1, 0x600, 2, NXE::Sound::SFX::SND_BUBBLER_FIRE},
@@ -84,7 +84,7 @@ BulletInfo bullet_table[] = {
     {SPR_SHOT_POLARSTAR_L3, 2, 0, 0, 30, 12, 0x1000, 0, NXE::Sound::SFX::SND_SPUR_FIRE_3},
 
     // Curly's Nemesis from Hell (OBJ_CURLY_CARRIED_SHOOTING)
-    {SPR_SHOT_NEMESIS_L1, 0, 0, 1, 20, 12, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
+    {SPR_SHOT_NEMESIS_L1, 0, 0, 1, 20, 4, 0x1000, 0, NXE::Sound::SFX::SND_NEMESIS_FIRE},
 
     {0, 0, 0, 0, 0, 0, 0, 0, NXE::Sound::SFX::SND_NULL}};
 
@@ -296,6 +296,7 @@ void PDoWeapons(void)
   }
   else
   {
+    player->auto_fire_limit = 6;
     RunWeapon(false);
   }
 
@@ -563,9 +564,12 @@ static void PFireMachineGun(int level)
   }
 
   // do machine-gun flying
-  if (player->look == DOWN && level == 2)
+  if (level == 2)
   {
-    PMgunFly();
+    if (player->look == DOWN)
+      PMgunFly(true);
+    else if (player->look == UP)
+      PMgunFly(false);
   }
 }
 
@@ -573,20 +577,20 @@ static void PFireMachineGun(int level)
 // i.e. the fire button is down.
 void FireWeapon(void)
 {
+
   Weapon *curweapon = &player->weapons[player->curWeapon];
   int level         = curweapon->level;
 
   // check if we can fire
   if (curweapon->firerate[level] != 0)
   { // rapid/fully-auto fire
-    // decremented in RunWeapon()
-    if (curweapon->firetimer)
+    if (++player->auto_fire_limit > curweapon->firerate[level])
     {
-      return;
+      player->auto_fire_limit = 0;
     }
     else
     {
-      curweapon->firetimer = curweapon->firerate[level];
+      return;
     }
   }
   else
@@ -594,6 +598,11 @@ void FireWeapon(void)
     if (lastpinputs[FIREKEY])
       return;
   }
+
+  if (player->fire_limit)
+    return;
+
+  player->fire_limit = 4;
 
   // check if we have enough ammo
   if (curweapon->maxammo > 0 && curweapon->ammo <= 0)
@@ -668,6 +677,8 @@ void RunWeapon(bool firing)
 {
   Weapon *curweapon = &player->weapons[player->curWeapon];
   int level         = curweapon->level;
+
+  if (player->fire_limit) player->fire_limit--;
 
   // bubbler L1 has recharge but not rapid fire,
   // so it recharges even if the key is held down.
@@ -805,17 +816,24 @@ void FireLevel23MGun(int x, int y, int level, int dir)
 }
 
 // handles flying when shooting down using Machine Gun at Level 3
-void PMgunFly(void)
+void PMgunFly(bool up)
 {
-  if (player->yinertia > 0)
+  if (up)
   {
-    player->yinertia >>= 1;
-  }
+    if (player->yinertia > 0)
+    {
+      player->yinertia >>= 1;
+    }
 
-  if (player->yinertia > -0x400)
+    if (player->yinertia > -0x400)
+    {
+      player->yinertia -= 0x200;
+      if (player->yinertia < -0x400)
+        player->yinertia = -0x400;
+    }
+  }
+  else
   {
-    player->yinertia -= 0x200;
-    if (player->yinertia < -0x400)
-      player->yinertia = -0x400;
+    player->yinertia += 0x100;
   }
 }

@@ -3,15 +3,15 @@
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../ai.h"
 #include "../stdai.h"
 #include "doctor.h"
 #include "doctor_common.h"
+
+using namespace NXE::Graphics;
 
 enum STATES
 {
@@ -475,7 +475,7 @@ static void run_defeat(Object *o)
         o->timer2 = 0;
 
         o->clipy1++;
-        if (o->clipy1 >= sprites[o->sprite].h)
+        if (o->clipy1 >= Renderer::getInstance()->sprites.sprites[o->sprite].h)
           o->invisible = true;
       }
 

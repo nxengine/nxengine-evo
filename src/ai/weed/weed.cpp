@@ -4,13 +4,15 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../../trig.h"
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -193,7 +195,7 @@ void ai_critter(Object *o)
         o->damage = o->critter.falldmg; // increased damage if falls on player
         o->state  = 5;
         o->frame  = 2;
-        o->yinertia /= 2;
+        o->xinertia /= 2;
       }
       else
       {
@@ -252,7 +254,7 @@ void ai_critter(Object *o)
   }
   else
   {
-    o->yinertia += 0x40;
+    o->yinertia += 0x20;
   }
 
   LIMITY(0x5ff);
@@ -540,7 +542,7 @@ void ai_giant_jelly(Object *o)
 
     case 20: // shot/freeze over/go invulnerable
     {
-      o->frame = 4;
+//      o->frame = 4;
       o->xinertia >>= 1;
       o->yinertia += 0x20;
 
@@ -595,7 +597,7 @@ void ai_giant_jelly(Object *o)
 
     o->yinertia += 0x10;
     if (o->blockd)
-      o->yinertia = -0x300;
+      o->yinertia = -0x400;
   }
 
   LIMITX(0x100);
@@ -827,7 +829,7 @@ void ai_motorbike(Object *o)
       break;
 
     case 10: // kazuma and booster mounted
-      o->y -= (sprites[SPR_MOTORBIKE_MOUNTED].h - sprites[SPR_MOTORBIKE].h) * CSFI;
+      o->y -= (Renderer::getInstance()->sprites.sprites[SPR_MOTORBIKE_MOUNTED].h - Renderer::getInstance()->sprites.sprites[SPR_MOTORBIKE].h) * CSFI;
       o->sprite = SPR_MOTORBIKE_MOUNTED;
       o->state++;
       break;
@@ -1042,8 +1044,7 @@ void ai_malco_broken(Object *o)
       o->frame = 0;
       randblink(o, 1, 8, 50);
 
-      if (game.mode != GM_CREDITS)
-        FACEPLAYER;
+      FACEPLAYERIFNEARBY;
     }
     break;
   }

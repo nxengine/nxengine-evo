@@ -4,13 +4,14 @@
 #include "../../autogen/sprites.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
+
+using namespace NXE::Graphics;
 
 #define FRAME_STAND 0
 #define FRAME_DYING 1
@@ -95,8 +96,8 @@ void ai_pooh_black(Object *o)
       // spawn bubbles when hit
       if (o->shaketime && (o->shaketime & 1))
       {
-        int x = o->CenterX() + random(-12 * CSFI, 12 * CSFI);
-        int y = o->CenterY() + random(-12 * CSFI, 12 * CSFI);
+        int x = o->CenterX() + random(-12, 12) * CSFI;
+        int y = o->CenterY() + random(-12, 12) * CSFI;
 
         Object *bubble = CreateObject(x, y, OBJ_POOH_BLACK_BUBBLE);
 
@@ -170,8 +171,8 @@ void ai_pooh_black_bubble(Object *o)
 
   // adjust bubble target position so that they try to align
   // their centers with the mark instead of their upper-left corners.
-  int xmark = bubble_xmark - ((sprites[SPR_POOH_BLACK_BUBBLE].w / 2) * CSFI);
-  int ymark = bubble_ymark - ((sprites[SPR_POOH_BLACK_BUBBLE].h / 2) * CSFI);
+  int xmark = bubble_xmark - ((Renderer::getInstance()->sprites.sprites[SPR_POOH_BLACK_BUBBLE].w / 2) * CSFI);
+  int ymark = bubble_ymark - ((Renderer::getInstance()->sprites.sprites[SPR_POOH_BLACK_BUBBLE].h / 2) * CSFI);
 
   o->xinertia += (o->x > xmark) ? -0x40 : 0x40;
   o->yinertia += (o->y > ymark) ? -0x40 : 0x40;
@@ -228,13 +229,13 @@ void ai_pooh_black_dying(Object *o)
 
   if (o->timer & 1)
   {
-    int x = o->CenterX() + random(-12 * CSFI, 12 * CSFI);
+    int x = o->CenterX() + random(-12, 12) * CSFI;
     int y;
 
     if (o->state == 2)
-      y = o->y + (o->clipy1 * CSFI) + random(-4 * CSFI, 4 * CSFI);
+      y = o->y + (o->clipy1 * CSFI) + (random(-4, 4) * CSFI);
     else
-      y = o->CenterY() + random(-12 * CSFI, 12 * CSFI);
+      y = o->CenterY() + random(-12, 12) * CSFI;
 
     Object *bubble   = CreateObject(x, y, OBJ_POOH_BLACK_BUBBLE);
     bubble->xinertia = random(-0x200, 0x200);

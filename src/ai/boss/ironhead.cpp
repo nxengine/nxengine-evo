@@ -5,15 +5,15 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
-#include "../../graphics/sprites.h"
-#include "../../graphics/tileset.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
 #include "../../tsc.h"
 #include "../ai.h"
 #include "../stdai.h"
+
+using namespace NXE::Graphics;
 
 #define ARENA_TOP 2
 #define ARENA_BOTTOM 13
@@ -456,5 +456,5 @@ void ai_motion_wall(Object *o) // the walls at the top and bottom of the arena
   o->x -= (6 * CSFI);
 
   if (o->x < (((9 * TILE_W) - 8) * CSFI))
-    o->x += (SCREEN_WIDTH + 160 + 32) * CSFI;
+    o->x += (Renderer::getInstance()->screenWidth + 160 + 32) * CSFI;
 }

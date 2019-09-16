@@ -3,7 +3,7 @@
 #include "../../ObjManager.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -11,9 +11,8 @@
 #include "../ai.h"
 #include "../stdai.h"
 #include "../sym/smoke.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "../../autogen/sprites.h"
-#include "../../graphics/tileset.h"
 
 INITFUNC(AIRoutines)
 {
@@ -101,7 +100,7 @@ void c------------------------------() {}
 
 void ai_igor_balcony(Object *o)
 {
-  if (!pdistlx(SCREEN_WIDTH * CSFI) && !pdistly(SCREEN_HEIGHT * CSFI))
+  if (!pdistlx(Renderer::getInstance()->screenWidth * CSFI) && !pdistly(Renderer::getInstance()->screenHeight * CSFI))
   {
     o->state = 1;
   }

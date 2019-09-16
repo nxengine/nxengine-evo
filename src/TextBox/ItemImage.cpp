@@ -7,16 +7,15 @@
 
 #include "ItemImage.h"
 
-#include "../graphics/graphics.h"
-#include "../graphics/sprites.h"
-using namespace Sprites;
+#include "../graphics/Renderer.h"
+using namespace NXE::Graphics;
 #include "TextBox.h"
 
 #define ITEMBOX_W 76
 #define ITEMBOX_H 32
 
-#define ITEMBOX_X (Graphics::SCREEN_WIDTH / 2) - 32
-#define ITEMBOX_Y (Graphics::SCREEN_HEIGHT / 2)
+#define ITEMBOX_X (Renderer::getInstance()->screenWidth / 2) - 32
+#define ITEMBOX_Y (Renderer::getInstance()->screenHeight / 2)
 
 /*
 void c------------------------------() {}
@@ -53,7 +52,7 @@ void TB_ItemImage::Draw(void)
     return;
 
   // animate moving item downwards into box
-  int desty = (ITEMBOX_H / 2) - (sprites[fSprite].h / 2);
+  int desty = (ITEMBOX_H / 2) - (Renderer::getInstance()->sprites.sprites[fSprite].h / 2);
   if (++fYOffset > desty)
     fYOffset = desty;
 
@@ -61,9 +60,9 @@ void TB_ItemImage::Draw(void)
   TextBox::DrawFrame(ITEMBOX_X, ITEMBOX_Y, ITEMBOX_W, ITEMBOX_H);
 
   // draw the item
-  int x = ITEMBOX_X + ((ITEMBOX_W / 2) - (sprites[fSprite].w / 2));
-  if (sprites[fSprite].w == 14)
+  int x = ITEMBOX_X + ((ITEMBOX_W / 2) - (Renderer::getInstance()->sprites.sprites[fSprite].w / 2));
+  if (Renderer::getInstance()->sprites.sprites[fSprite].w == 14)
     x--; // hack for ArmsIcons
 
-  draw_sprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
+  Renderer::getInstance()->sprites.drawSprite(x, ITEMBOX_Y + fYOffset, fSprite, fFrame);
 }

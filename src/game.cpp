@@ -3,12 +3,12 @@
 
 #include "ObjManager.h"
 #include "ai/ai.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "console.h"
 #include "debug.h"
 #include "endgame/credits.h"
 #include "endgame/island.h"
-#include "graphics/graphics.h"
+#include "graphics/Renderer.h"
 #include "intro/intro.h"
 #include "intro/title.h"
 #include "inventory.h"
@@ -17,17 +17,16 @@
 #include "nx.h"
 #include "pause/options.h"
 #include "pause/pause.h"
+#include "pause/mods.h"
 #include "player.h"
 #include "profile.h"
 #include "slope.h"
 #include "sound/SoundManager.h"
 #include "statusbar.h"
 #include "tsc.h"
-using namespace Graphics;
+using namespace NXE::Graphics;
 #include "autogen/AssignSprites.h"
 #include "autogen/sprites.h"
-#include "graphics/sprites.h"
-using namespace Sprites;
 #include "caret.h"
 #include "screeneffect.h"
 
@@ -46,7 +45,8 @@ static struct TickFunctions
     {intro_tick, intro_init, NULL},             // GM_INTRO
     {title_tick, title_init, NULL},             // GM_TITLE
     {pause_tick, pause_init, NULL},             // GP_PAUSED
-    {options_tick, options_init, options_close} // GP_OPTIONS
+    {options_tick, options_init, options_close},// GP_OPTIONS
+    {mods_tick, mods_init, mods_close} // GP_MODS
                                                 //{old_options_tick,		old_options_init,	old_options_close}	// GP_OPTIONS
 };
 
@@ -126,7 +126,7 @@ bool Game::initlevel()
     PHandleAttributes();
     PSelectFrame();
 
-    stat("-- Starting on-entry script %d", game.switchstage.eventonentry);
+    LOG_DEBUG("-- Starting on-entry script {}", game.switchstage.eventonentry);
     tsc->StartScript(game.switchstage.eventonentry);
     game.switchstage.eventonentry = 0;
   }
@@ -138,7 +138,7 @@ bool Game::createplayer()
 {
   if (player)
   {
-    staterr("game.createplayer: player already exists!");
+    LOG_WARN("game.createplayer: player already exists!");
     return 1;
   }
 
@@ -169,7 +169,7 @@ bool Game::setmode(int newmode, int param, bool force)
   if (game.mode == newmode && !force)
     return 0;
 
-  stat("Setting tick function to type %d param %d", newmode, param);
+  LOG_DEBUG("Setting tick function to type {} param {}", newmode, param);
 
   if (tickfunctions[game.mode].OnExit)
     tickfunctions[game.mode].OnExit();
@@ -180,7 +180,7 @@ bool Game::setmode(int newmode, int param, bool force)
   {
     if (tickfunctions[game.mode].OnEnter(param))
     {
-      staterr("game.setmode: initilization failed for mode %d", newmode);
+      LOG_ERROR("game.setmode: initilization failed for mode {}", newmode);
       game.mode = GM_NONE;
       return 1;
     }
@@ -194,7 +194,7 @@ bool Game::pause(int pausemode, int param)
   if (game.paused == pausemode)
     return 0;
 
-  stat("Setting pause: type %d param %d", pausemode, param);
+  LOG_DEBUG("Setting pause: type {} param {}", pausemode, param);
 
   if (tickfunctions[game.paused].OnExit)
     tickfunctions[game.paused].OnExit();
@@ -205,7 +205,7 @@ bool Game::pause(int pausemode, int param)
   {
     if (tickfunctions[game.paused].OnEnter(param))
     {
-      staterr("game.pause: initilization failed for mode %d", pausemode);
+      LOG_ERROR("game.pause: initilization failed for mode {}", pausemode);
       game.paused = 0;
       return 1;
     }
@@ -219,7 +219,7 @@ bool Game::pause(int pausemode, int param)
 
 void Game::tick(void)
 {
-  ClearScreen(BLACK);
+  Renderer::getInstance()->clearScreen(BLACK);
   debug_clear();
 
   if (game.paused)
@@ -232,7 +232,7 @@ void Game::tick(void)
     tsc->RunScripts();
 
     if (justpushed(ESCKEY)
-        && (game.mode == GM_NORMAL || game.mode == GM_INVENTORY || game.mode == GM_MAP_SYSTEM
+        && (game.mode == GM_NORMAL || game.mode == GM_INVENTORY || game.mode == GM_MAP_SYSTEM || game.mode == GM_ISLAND
             || game.mode == GM_CREDITS))
     {
       game.pause(GP_PAUSED);
@@ -352,7 +352,7 @@ void DrawScene(void)
 {
   int scr_x, scr_y;
   extern int flipacceltime;
-  ClearScreen(BLACK);
+  Renderer::getInstance()->clearScreen(BLACK);
 
   // draw background map tiles
   if (!flipacceltime)
@@ -389,13 +389,15 @@ void DrawScene(void)
     // get object's onscreen position
     scr_x = (o->x / CSFI) - (map.displayed_xscroll / CSFI);
     scr_y = (o->y / CSFI) - (map.displayed_yscroll / CSFI);
-    scr_x -= sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.x;
-    scr_y -= sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.y;
+    scr_x -= Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.x;
+    scr_y -= Renderer::getInstance()->sprites.sprites[o->sprite].frame[o->frame].dir[o->dir].drawpoint.y;
 
     // don't draw objects that are completely offscreen
     // (+26 so floattext won't suddenly disappear on object near bottom of screen)
-    if (scr_x <= SCREEN_WIDTH && scr_y <= SCREEN_HEIGHT + 26 && scr_x >= -sprites[o->sprite].w
-        && scr_y >= -sprites[o->sprite].h)
+    if (scr_x <= Renderer::getInstance()->screenWidth
+        && scr_y <= Renderer::getInstance()->screenHeight + 26
+        && scr_x >= -Renderer::getInstance()->sprites.sprites[o->sprite].w
+        && scr_y >= -Renderer::getInstance()->sprites.sprites[o->sprite].h)
     {
       if (nOnscreenObjects < MAX_OBJECTS - 1)
       {
@@ -404,7 +406,7 @@ void DrawScene(void)
       }
       else
       {
-        staterr("%s:%d: Max Objects Overflow", __FILE__, __LINE__);
+        LOG_ERROR("{}:{}: Max Objects Overflow", __FILE__, __LINE__);
         return;
       }
 
@@ -414,11 +416,11 @@ void DrawScene(void)
 
         if (o->clip_enable)
         {
-          draw_sprite_clipped(scr_x, scr_y, o->sprite, o->frame, o->dir, o->clipx1, o->clipx2, o->clipy1, o->clipy2);
+          Renderer::getInstance()->sprites.drawSpriteClipped(scr_x, scr_y, o->sprite, o->frame, o->dir, o->clipx1, o->clipx2, o->clipy1, o->clipy2);
         }
         else
         {
-          draw_sprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
+          Renderer::getInstance()->sprites.drawSprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
         }
       }
     }
@@ -460,7 +462,7 @@ bool game_load(int num)
 {
   Profile p;
 
-  stat("game_load: loading savefile %d", num);
+  LOG_DEBUG("game_load: loading savefile {}", num);
   char *profile_name = GetProfileName(num);
   if (profile_load(profile_name, &p))
   {
@@ -512,7 +514,7 @@ bool game_load(Profile *p)
     int scriptno = p->teleslots[i].scriptno;
 
     textbox.StageSelect.SetSlot(slotno, scriptno);
-    stat(" - Read Teleporter Slot %d: slotno=%d scriptno=%d", i, slotno, scriptno);
+    LOG_DEBUG(" - Read Teleporter Slot {}: slotno={} scriptno={}", i, slotno, scriptno);
   }
 
   // have to load the stage last AFTER the flags are loaded because
@@ -534,7 +536,7 @@ bool game_save(int num)
 {
   Profile p;
 
-  stat("game_save: writing savefile %d", num);
+  LOG_DEBUG("game_save: writing savefile {}", num);
 
   if (game_save(&p))
     return 1;

@@ -6,18 +6,17 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctype.h>
+#include <SDL.h>
 #if defined(_WIN32)
 #include <windows.h>
 #endif
 
 #include "basics.h"
 #include "misc.h"
-#include "stat.h"
+#include "../Utils/Logger.h"
 //#include "../game.h"
 
-void stat(const char *fmt, ...);
-
-#if __BYTE_ORDER == __LITTLE_ENDIAN
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN
 uint16_t fgeti(FILE *fp)
 {
   uint16_t value;
@@ -142,13 +141,13 @@ void fputstringnonull(const char *buf, FILE *fp)
 bool fverifystring(FILE *fp, const char *str)
 {
   int i;
-  char result      = 1;
+  bool result      = true;
   int stringlength = strlen(str);
 
   for (i = 0; i < stringlength; i++)
   {
     if (fgetc(fp) != str[i])
-      result = 0;
+      result = false;
   }
 
   return result;
@@ -258,7 +257,7 @@ int random(int min, int max)
 
   if (max < min)
   {
-    staterr("random(): warning: max < min [%d, %d]", min, max);
+    LOG_WARN("random(): warning: max < min [{}, {}]", min, max);
     min ^= max;
     max ^= min;
     min ^= max;
@@ -268,7 +267,7 @@ int random(int min, int max)
 
   if (range >= RAND_MAX)
   {
-    staterr("random(): range > RAND_MAX", min, max);
+    LOG_WARN("random(): range > RAND_MAX");
     return 0;
   }
 
@@ -445,7 +444,7 @@ int CVTDir(int csdir)
   if (csdir >= 0 && csdir < 4)
     return cdir_to_nxdir[csdir];
 
-  staterr("CVTDir: invalid direction %d, returning LEFT", csdir);
+  LOG_WARN("CVTDir: invalid direction {}, returning LEFT", csdir);
   return LEFT;
 }
 

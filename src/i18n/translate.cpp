@@ -1,9 +1,9 @@
 #include "translate.h"
 
 #include "../ResourceManager.h"
-#include "../common/json.hpp"
 #include "../common/misc.h"
 
+#include <json.hpp>
 #include <fstream>
 
 I18N::I18N()

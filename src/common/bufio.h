@@ -1,6 +1,6 @@
 #ifndef _BUFIO_H
 #define _BUFIO_H
-#include "stat.h"
+#include "../Utils/Logger.h"
 
 #include <cstdint>
 
@@ -8,7 +8,7 @@ static uint8_t read_U8(const uint8_t **data, const uint8_t *data_end)
 {
   if (*data > data_end)
   {
-    staterr("read_U8: read past end of buffer: *data > data_end");
+    LOG_ERROR("read_U8: read past end of buffer: *data > data_end");
     return 0xfe;
   }
 
@@ -21,7 +21,7 @@ static uint16_t read_U16(const uint8_t **data, const uint8_t *data_end)
 
   if ((ptr + 1) > data_end)
   {
-    staterr("read_U16: read past end of buffer: *data + 1 > data_end");
+    LOG_ERROR("read_U16: read past end of buffer: *data + 1 > data_end");
     return 0xfefe;
   }
 

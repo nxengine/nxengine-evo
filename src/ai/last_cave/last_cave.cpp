@@ -5,8 +5,7 @@
 #include "../../caret.h"
 #include "../../common/misc.h"
 #include "../../game.h"
-#include "../../graphics/graphics.h"
-#include "../../graphics/sprites.h"
+#include "../../graphics/Renderer.h"
 #include "../../map.h"
 #include "../../player.h"
 #include "../../sound/SoundManager.h"
@@ -16,7 +15,8 @@
 #include "../stdai.h"
 #include "../sym/smoke.h"
 #include "../sym/sym.h" // ai_press
-using namespace Sprites;
+
+using namespace NXE::Graphics;
 
 INITFUNC(AIRoutines)
 {
@@ -111,7 +111,7 @@ void ai_critter_hopping_red(Object *o)
 
       if (o->shaketime)
       {
-        o->state = 2;
+        o->state = 1;
         o->timer = 0;
       }
       else if (++o->timer >= 8)
@@ -120,12 +120,19 @@ void ai_critter_hopping_red(Object *o)
         {
           if (pdistlx((6 * TILE_W) * CSFI))
           {
-            o->state = 1;
-            o->timer = 0;
           }
           else if (pdistlx((9 * TILE_W) * CSFI))
           {
             o->frame = 1;
+          }
+        }
+
+        if (pdistly2((5 * TILE_H) * CSFI, (6 * TILE_H) * CSFI))
+        {
+          if (pdistlx((6 * TILE_W) * CSFI))
+          {
+            o->state = 1;
+            o->timer = 0;
           }
         }
       }
@@ -218,7 +225,7 @@ void ai_lava_drip(Object *o)
   o->yinertia += 0x40;
   LIMITY(0x5ff);
 
-  if (o->blockd || (++o->timer > 10 && o->CheckAttribute(&sprites[o->sprite].block_u, TA_WATER)))
+  if (o->blockd || (++o->timer > 10 && o->CheckAttribute(&Renderer::getInstance()->sprites.sprites[o->sprite].block_u, TA_WATER)))
   {
     for (int i = 0; i < 3; i++)
     {
@@ -251,7 +258,7 @@ void ai_red_bat_spawner(Object *o)
     {
       if (--o->timer < 0)
       {
-        Object *bat = CreateObject(o->CenterX(), o->CenterY() + random(-32 * CSFI, 32 * CSFI), OBJ_RED_BAT);
+        Object *bat = CreateObject(o->CenterX(), o->CenterY() + random(-32, 32) * CSFI, OBJ_RED_BAT);
         bat->x -= (bat->Width() / 2);
         bat->y -= (bat->Height() / 2);
         bat->dir = o->dir;

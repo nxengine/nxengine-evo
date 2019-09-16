@@ -3,7 +3,7 @@
 
 #include "ResourceManager.h"
 #include "common/misc.h"
-#include "common/stat.h"
+#include "Utils/Logger.h"
 #include "input.h"
 
 #include <SDL.h>
@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-const uint32_t SETTINGS_VERSION = (('5' << 24) + ('S' << 16) + ('X' << 8) + 'N'); // serves as both a version and magic
+const uint32_t SETTINGS_VERSION = (('6' << 24) + ('S' << 16) + ('X' << 8) + 'N'); // serves as both a version and magic
 
 Settings normal_settings;
 Settings *settings = &normal_settings;
@@ -25,12 +25,12 @@ static bool tryload(Settings *setfile)
 
   std::string path = ResourceManager::getInstance()->getPrefPath("settings.dat");
 
-  stat("Loading settings...");
+  LOG_INFO("Loading settings...");
 
   fp = myfopen(widen(path).c_str(), widen("rb").c_str());
   if (!fp)
   {
-    stat("Couldn't open file %s.", path.c_str());
+    LOG_ERROR("Couldn't open file {}.", path);
     return 1;
   }
 
@@ -38,7 +38,7 @@ static bool tryload(Settings *setfile)
   fread(setfile, sizeof(Settings), 1, fp);
   if (setfile->version != SETTINGS_VERSION)
   {
-    stat("Wrong settings version %04x.", setfile->version);
+    LOG_ERROR("Wrong settings version {:#04x}.", setfile->version);
     fclose(fp);
     return 1;
   }
@@ -60,7 +60,7 @@ static bool tryload(Settings *setfile)
     strncpy(setfile->language, "english", 255);
   }
 
-#if defined(__VITA__)
+#if defined(__VITA__) || defined(__SWITCH__)
     setfile->resolution     = 1;
 #endif
 
@@ -74,10 +74,10 @@ bool settings_load(Settings *setfile)
 
   if (tryload(settings))
   {
-    stat("No saved settings; using defaults.");
+    LOG_INFO("No saved settings; using defaults.");
 
     memset(setfile, 0, sizeof(Settings));
-#if defined(__VITA__)
+#if defined(__VITA__) || defined(__SWITCH__)
     setfile->resolution     = 1;
 #else
     setfile->resolution     = 2; // 640x480 Windowed, should be safe value
@@ -91,6 +91,8 @@ bool settings_load(Settings *setfile)
     setfile->rumble        = false;
     setfile->sfx_volume = 100;
     setfile->music_volume = 100;
+    setfile->animated_facepics = true;
+    setfile->control_scheme = false;
     memset(setfile->language, 0, 256);
     strncpy(setfile->language, "english", 255);
 
@@ -99,6 +101,17 @@ bool settings_load(Settings *setfile)
   else
   {
     input_set_mappings(settings->input_mappings);
+  }
+
+  if (settings->control_scheme)
+  {
+    ACCEPT_BUTTON = FIREKEY;
+    DECLINE_BUTTON = JUMPKEY;
+  }
+  else
+  {
+    ACCEPT_BUTTON = JUMPKEY;
+    DECLINE_BUTTON = FIREKEY;
   }
 
   return 0;
@@ -117,11 +130,11 @@ bool settings_save(Settings *setfile)
   if (!setfile)
     setfile = &normal_settings;
 
-  stat("Writing settings...");
+  LOG_INFO("Writing settings...");
   fp = myfopen(widen(path).c_str(), widen("wb").c_str());
   if (!fp)
   {
-    stat("Couldn't open file %s.", path.c_str());
+    LOG_ERROR("Couldn't open file {}.", path);
     return 1;
   }
 

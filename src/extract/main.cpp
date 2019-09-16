@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
   fp = fopen(filename, "rb");
   if (!fp)
   {
+    printf("Can't open Doukutsu.exe!\n");
     return 1;
   }
 
