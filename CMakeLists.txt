@@ -159,6 +159,8 @@ ELSEIF(PLATFORM STREQUAL "switch")
       glapi
       drm_nouveau
       -lnx
+      -lopus
+      -lopusfile
     )
 
     add_nro_target(nx "NXEngine-evo" "NXEngine team" "${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}" "${CMAKE_SOURCE_DIR}/platform/switch/icon.jpg" "${CMAKE_SOURCE_DIR}/release")
