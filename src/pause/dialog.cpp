@@ -260,10 +260,10 @@ void Dialog::RunInput()
       }
       else if ((item->type == OD_ACTIVATED) && item->activate && (dir == 0))
       {
-        (*item->activate)(item, dir);
-
         if (item->update)
           (*item->update)(item);
+
+        (*item->activate)(item, dir);
       }
       else if ((item->type == OD_CHOICE) && item->activate && (dir != 0))
       {
