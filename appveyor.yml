@@ -1,6 +1,7 @@
 image:
   - Visual Studio 2017
   - Ubuntu
+  - macos
 
 version: 2.6.4.{build}
 
@@ -20,6 +21,28 @@ for:
 -
   matrix:
     only:
+      - image: Visual Studio 2017
+
+  before_deploy:
+   - ps: .\platform\win32\win.package.ps1
+
+  deploy:
+    - provider: GitHub
+      release: $(APPVEYOR_REPO_TAG_NAME)
+      tag: $(APPVEYOR_REPO_TAG_NAME)
+      description: ''
+      auth_token:
+        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
+      artifact: /NXEngine-.*\.zip/
+      draft: true
+      force_update: true
+      prerelease: false
+      on:
+        appveyor_repo_tag: true
+
+-
+  matrix:
+    only:
       - image: Ubuntu
 
   build_script:
@@ -27,19 +50,30 @@ for:
   - cmake -DCMAKE_BUILD_TYPE=Release .
   - make
 
-before_deploy:
- - ps: .\platform\win32\win.package.ps1
+-
+  matrix:
+    only:
+      - image: macos
 
-deploy:
-  - provider: GitHub
-    release: $(APPVEYOR_REPO_TAG_NAME)
-    tag: $(APPVEYOR_REPO_TAG_NAME)
-    description: ''
-    auth_token:
-      secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-    artifact: /NXEngine-.*\.zip/
-    draft: true
-    force_update: true
-    prerelease: false
-    on:
-      appveyor_repo_tag: true
+  build_script:
+  - travis/osx.install.sh
+  - cmake -DCMAKE_BUILD_TYPE=Release .
+  - make
+
+  before_deploy:
+   - travis/osx.package.sh
+
+  deploy:
+    - provider: GitHub
+      release: $(APPVEYOR_REPO_TAG_NAME)
+      tag: $(APPVEYOR_REPO_TAG_NAME)
+      description: ''
+      auth_token:
+        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
+      artifact: /NXEngine-.*\.dmg/
+      draft: true
+      force_update: true
+      prerelease: false
+      on:
+        appveyor_repo_tag: true
+
