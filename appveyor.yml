@@ -1,7 +1,7 @@
 image:
-#  - Visual Studio 2017
-#  - Ubuntu
   - macos
+  - Ubuntu
+  - Visual Studio 2017
 
 version: 2.6.4.{build}
 
