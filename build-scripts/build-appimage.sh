@@ -43,4 +43,5 @@ chmod +x linuxdeploy-x86_64.AppImage
 OUTPUT=-n VERSION=2.6.4 ./linuxdeploy-x86_64.AppImage --appdir AppDir -l/lib64/libvorbisfile.so.3 -i ../platform/appimage/nxengine-evo.png -d ../platform/appimage/nxengine-evo.desktop --output appimage
 rm -rf ./AppDir
 rm ./linuxdeploy-x86_64.AppImage
+mv *.AppImage ..
 cd ..

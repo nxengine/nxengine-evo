@@ -24,7 +24,7 @@ for:
       - image: Visual Studio 2017
 
   before_deploy:
-   - ps: .\platform\win32\win.package.ps1
+   - ps: .\build-scripts\win.package.ps1
 
   deploy:
     - provider: GitHub
@@ -46,9 +46,26 @@ for:
       - image: Ubuntu
 
   build_script:
-  - travis/linux.install.sh
+  - build-scripts/linux.install.sh
   - cmake -DCMAKE_BUILD_TYPE=Release .
   - make
+
+  before_deploy:
+   - build-scripts/build-appimage.sh
+
+  deploy:
+    - provider: GitHub
+      release: $(APPVEYOR_REPO_TAG_NAME)
+      tag: $(APPVEYOR_REPO_TAG_NAME)
+      description: ''
+      auth_token:
+        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
+      artifact: /NXEngine-.*\.AppImage/
+      draft: true
+      force_update: true
+      prerelease: false
+      on:
+        appveyor_repo_tag: true
 
 -
   matrix:
@@ -56,12 +73,12 @@ for:
       - image: macos
 
   build_script:
-  - travis/osx.install.sh
+  - build-scripts/osx.install.sh
   - cmake -DCMAKE_BUILD_TYPE=Release .
   - make
 
   before_deploy:
-   - travis/osx.package.sh
+   - build-scripts/osx.package.sh
 
   deploy:
     - provider: GitHub

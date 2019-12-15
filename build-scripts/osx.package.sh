@@ -35,7 +35,7 @@ cd ..
 #git clone https://github.com/andreyvit/create-dmg
 git clone https://github.com/isage/create-dmg
 cd create-dmg
-./create-dmg --volname "NXEngine" --window-size 640 480 --app-drop-link 380 205 --background ../platform/osx/bg.png --icon-size 96 --icon "NXEngine.app" 110 205 "../NXEngine-$APPVEYOR_REPO_TAG_NAME.dmg" ../release/
+./create-dmg --volname "NXEngine" --window-size 640 480 --app-drop-link 380 205 --background ../platform/osx/bg.png --icon-size 96 --icon "NXEngine.app" 110 205 "../NXEngine_Evo-$APPVEYOR_REPO_TAG_NAME-OSX.dmg" ../release/
 #curl --upload-file "../NXEngine-$TRAVIS_TAG.dmg" https://transfer.sh/NXEngine.dmg
 
 #upload
