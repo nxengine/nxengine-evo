@@ -1,3 +1,7 @@
+image:
+  - Visual Studio 2017
+  - Ubuntu
+
 version: 2.6.4.{build}
 
 pull_requests:
@@ -6,12 +10,22 @@ pull_requests:
 configuration: Release
 
 platform:
-- x86
 - x64
 
 build:
   project: nx.sln
   verbosity: minimal
+
+for:
+-
+  matrix:
+    only:
+      - image: Ubuntu
+
+  build_script:
+  - travis/linux.install.sh
+  - cmake -DCMAKE_BUILD_TYPE=Release .
+  - make
 
 before_deploy:
  - ps: .\platform\win32\win.package.ps1
