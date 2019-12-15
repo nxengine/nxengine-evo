@@ -20,7 +20,8 @@ INITFUNC(AIRoutines)
   AFTERMOVE(OBJ_BLADE12_SHOT, aftermove_blade_l12_shot);
   ONTICK(OBJ_BLADE3_SHOT, ai_blade_l3_shot);
 
-  AFTERMOVE(OBJ_BLADE_SLASH, aftermove_blade_slash);
+//  AFTERMOVE(OBJ_BLADE_SLASH, aftermove_blade_slash);
+  ONTICK(OBJ_BLADE_SLASH, ai_blade_slash);
 }
 
 /*
@@ -36,7 +37,7 @@ void ai_blade_l3_shot(Object *o)
     {
       if ((++o->timer % 4) == 1)
       {
-        Object *slash = CreateObject(o->x, o->y - (12 * CSFI), OBJ_BLADE_SLASH);
+        Object *slash = CreateObject(o->x, o->y, OBJ_BLADE_SLASH);
 
         if (++o->timer2 & 1)
         {
@@ -80,6 +81,7 @@ void ai_blade_l3_shot(Object *o)
             o->state = STATE_AOE;
             o->frame = 1;
             o->timer = 0;
+            o->shot.damage = 0;
           }
         }
         else if (IsBlockedInShotDir(o))
@@ -96,7 +98,7 @@ void ai_blade_l3_shot(Object *o)
 
     case STATE_AOE:
     {
-      if (!random(0, 2))
+      if (random(-1, 1) == 0)
       {
         Object *slash
             = CreateObject(o->x + random(-BLADE_AOE, BLADE_AOE) * CSFI, o->y + random(-BLADE_AOE, BLADE_AOE) * CSFI, OBJ_BLADE_SLASH);
@@ -117,7 +119,7 @@ void ai_blade_l3_shot(Object *o)
 void aftermove_blade_slash(Object *o)
 {
   ANIMATE_FWD(2);
-  if (o->frame >= 4)
+  if (o->frame > 4)
   {
     o->Delete();
     return;
@@ -126,13 +128,47 @@ void aftermove_blade_slash(Object *o)
   o->x += (o->dir == LEFT) ? -0x400 : 0x400;
   o->y += 0x400;
 
-  static const int damage_for_frames[] = {0, 1, 2, 2, 2};
-  o->shot.damage                       = damage_for_frames[o->frame];
+  if (o->frame == 1)
+    o->shot.damage = 2;
+  else
+    o->shot.damage = 1;
 
   // deal damage to anything we touch.
   Object *enemy = damage_enemies(o);
   if (enemy && (enemy->flags & FLAG_INVULNERABLE))
     o->Delete();
+}
+
+void ai_blade_slash(Object *o)
+{
+  switch (o->state)
+  {
+    case 0:
+      o->state = 1;
+      o->x += (o->dir == LEFT) ? -0x2000 : 0x2000;
+      o->y -= 0x1800;
+    case 1:
+      ANIMATE_FWD(2);
+      o->x += (o->dir == LEFT) ? -0x400 : 0x400;
+      o->y += 0x400;
+      if (o->frame == 1)
+        o->shot.damage = 2;
+      else
+        o->shot.damage = 1;
+
+      // deal damage to anything we touch.
+      Object *enemy = damage_enemies(o);
+      if (enemy && (enemy->flags & FLAG_INVULNERABLE))
+        o->Delete();
+
+      if (o->frame > 4)
+      {
+        o->Delete();
+        return;
+      }
+
+      break;
+  }
 }
 
 /*
