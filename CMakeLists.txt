@@ -136,12 +136,12 @@ ELSEIF(PLATFORM STREQUAL "vita")
     FILE platform/vita/sce_sys sce_sys
     FILE release/data data
   )
-  add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
-    COMMAND cp nx.vpk ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
+  add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
+    COMMAND cp nx.vpk ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
     DEPENDS nx.vpk
     COMMENT "Moving vpk to release"
   )
-  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk)
+  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk)
 
 ELSEIF(PLATFORM STREQUAL "switch")
     add_definitions("-std=gnu++11")
@@ -164,12 +164,12 @@ ELSEIF(PLATFORM STREQUAL "switch")
     )
 
     add_nro_target(nx "NXEngine-evo" "NXEngine team" "${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}" "${CMAKE_SOURCE_DIR}/platform/switch/icon.jpg" "${CMAKE_SOURCE_DIR}/release")
-    add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
-      COMMAND cp nx.nro ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
+    add_custom_command(OUTPUT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
+      COMMAND cp nx.nro ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
       DEPENDS nx.nro
       COMMENT "Moving nro to release"
     )
-    add_custom_target(nxbinnro_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine-evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro)
+    add_custom_target(nxbinnro_ ALL DEPENDS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro)
 ENDIF()
 
 IF(PLATFORM STREQUAL "pc")
