@@ -93,12 +93,18 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
 
     _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
     _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + filename);
+
+    _paths.push_back("../share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
+    _paths.push_back("../share/nxengine/data/mods/" + _mod + "/" + filename);
   }
   _paths.push_back("/usr/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
   _paths.push_back("/usr/share/nxengine/data/" + filename);
 
   _paths.push_back("/usr/local/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
   _paths.push_back("/usr/local/share/nxengine/data/" + filename);
+
+  _paths.push_back("../share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
+  _paths.push_back("../share/nxengine/data/" + filename);
 
 #elif defined(__APPLE__)
   char *home = SDL_GetPrefPath("nxengine", "nxengine-evo");
@@ -198,10 +204,12 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
   {
     _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/" + dir);
     _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + dir);
+    _paths.push_back("../share/nxengine/data/mods/" + _mod + "/" + dir);
   }
 
   _paths.push_back("/usr/share/nxengine/data/" + dir);
   _paths.push_back("/usr/local/share/nxengine/data/" + dir);
+  _paths.push_back("../share/nxengine/data/" + dir);
 
 #elif defined(__APPLE__)
   char *home = SDL_GetPrefPath("nxengine", "nxengine-evo");
