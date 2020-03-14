@@ -1,8 +1,6 @@
 # NXEngine-evo
 A somewhat upgraded/refactored version of [NXEngine](http://nxengine.sourceforge.net/) by Caitlin Shaw.
 
-### [Support this project on Patreon!](https://www.patreon.com/sarcasticat)
-
 [![Build Status](https://travis-ci.org/nxengine/nxengine-evo.svg?branch=master)](https://travis-ci.org/nxengine/nxengine-evo) [![Build status](https://ci.appveyor.com/api/projects/status/85orsvsorwbvct25?svg=true)](https://ci.appveyor.com/project/nxengine/nxengine-evo/branch/master)
 
 ![Screenshot](https://raw.githubusercontent.com/nxengine/nxengine-evo/master/screenshot.png)
