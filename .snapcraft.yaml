@@ -22,7 +22,7 @@ apps:
     - wayland
     - x11
     - desktop
-    - pulseaudio
+    - audio-playback
     - joystick
 parts:
   cavestory:
