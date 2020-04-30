@@ -1,5 +1,4 @@
 name: nxengine-evo
-version: git
 summary: Doukutsu Monogatari - Jump-and-run platformer
 description: |
   NXEngine Evo is a complete open-source clone/rewrite of the masterpiece
@@ -8,6 +7,7 @@ description: |
   [1] https://github.com/nxengine/nxengine-evo
   [2] http://nxengine.sourceforge.net/
 base: core18
+adopt-info: nxengine-evo
 
 grade: stable
 confinement: strict
@@ -53,6 +53,10 @@ parts:
       - libsdl2-mixer-2.0-0
       - libsdl2-ttf-2.0-0
       - libpulse0
+    override-pull: |
+        snapcraftctl pull
+        version="$(git describe --always | sed -e 's/-/+git/;y/-/./')"
+        snapcraftctl set-version "$version"
     override-build: |
         cp -r ../src/* .
         mkdir build && cd build
