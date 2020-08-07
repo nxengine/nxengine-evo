@@ -108,6 +108,9 @@ bool SoundManager::init()
 
   Pixtone::getInstance()->init();
   Organya::getInstance()->init();
+
+  updateSfxVolume();
+  updateMusicVolume();
   return true;
 }
 
