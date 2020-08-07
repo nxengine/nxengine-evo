@@ -405,6 +405,9 @@
     <ClCompile Include="..\..\..\src\i18n\translate.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\i18n\minibidi.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\common\glob.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -834,6 +837,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\i18n\translate.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\i18n\minibidi.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\common\glob.h">
