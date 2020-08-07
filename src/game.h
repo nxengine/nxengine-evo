@@ -164,6 +164,7 @@ struct Game
 
 extern Game game;
 #define _(x) game.lang->translate(x)
+#define rtl() game.lang->isRTL()
 extern TextBox textbox;
 
 extern Object *onscreen_objects[MAX_OBJECTS];
