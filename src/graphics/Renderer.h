@@ -58,6 +58,7 @@ class Renderer
 
     void drawSurface(Surface *src, int x, int y);
     void drawSurface(Surface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
+    void drawSurfaceMirrored(Surface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
 
     void blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, int height);
 

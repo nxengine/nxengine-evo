@@ -214,10 +214,31 @@ void Sprites::blitSprite(int x, int y, int s, int frame, uint8_t dir, int xoff, 
   _spritesheets[sprites[s].spritesheet]->alpha = 255;
 }
 
+// master sprite drawing function
+void Sprites::blitSpriteMirrored(int x, int y, int s, int frame, uint8_t dir, int xoff, int yoff, int wd, int ht, int alpha)
+{
+  _loadSheetIfNeeded(sprites[s].spritesheet);
+
+  dir %= sprites[s].ndirs;
+  SIFDir *sprdir = &sprites[s].frame[frame].dir[dir];
+
+  _spritesheets[sprites[s].spritesheet]->alpha = alpha;
+
+  Renderer::getInstance()->drawSurfaceMirrored(_spritesheets[sprites[s].spritesheet], x, y, (sprdir->sheet_offset.x + xoff),
+                (sprdir->sheet_offset.y + yoff), wd, ht);
+  _spritesheets[sprites[s].spritesheet]->alpha = 255;
+}
+
 // draw sprite "s" at [x,y]. drawing frame "frame" and dir "dir".
 void Sprites::drawSprite(int x, int y, int s, int frame, uint8_t dir)
 {
   blitSprite(x, y, s, frame, dir, 0, 0, sprites[s].w, sprites[s].h);
+}
+
+// draw sprite "s" at [x,y]. drawing frame "frame" and dir "dir".
+void Sprites::drawSpriteMirrored(int x, int y, int s, int frame, uint8_t dir)
+{
+  blitSpriteMirrored(x, y, s, frame, dir, 0, 0, sprites[s].w, sprites[s].h);
 }
 
 // draw sprite "s", place it's draw point at [x,y] instead of it's upper-left corner.

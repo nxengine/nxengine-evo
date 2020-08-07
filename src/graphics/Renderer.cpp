@@ -315,6 +315,34 @@ void Renderer::drawSurface(Surface *src, int dstx, int dsty, int srcx, int srcy,
   }
 }
 
+// blit the specified portion of the surface to the screen
+void Renderer::drawSurfaceMirrored(Surface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht)
+{
+  assert(_renderer);
+  assert(src->texture());
+
+  SDL_Rect srcrect, dstrect;
+
+  srcrect.x = srcx * scale;
+  srcrect.y = srcy * scale;
+  srcrect.w = wd * scale;
+  srcrect.h = ht * scale;
+
+  dstrect.x = dstx * scale;
+  dstrect.y = dsty * scale;
+  dstrect.w = srcrect.w;
+  dstrect.h = srcrect.h;
+
+  if (_need_clip)
+    clipScaled(srcrect, dstrect);
+
+  SDL_SetTextureAlphaMod(src->texture(), src->alpha);
+  if (SDL_RenderCopyEx(_renderer, src->texture(), &srcrect, &dstrect, 0, NULL, SDL_FLIP_HORIZONTAL))
+  {
+    LOG_ERROR("Renderer::drawSurface: SDL_RenderCopy failed: {}", SDL_GetError());
+  }
+}
+
 // blit the specified surface across the screen in a repeating pattern
 void Renderer::blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, int height)
 {

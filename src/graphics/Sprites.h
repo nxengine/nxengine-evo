@@ -28,8 +28,10 @@ public:
   void flushSheets();
 
   void blitSprite(int x, int y, int s, int frame, uint8_t dir, int xoff, int yoff, int wd, int ht, int alpha = 255);
+  void blitSpriteMirrored(int x, int y, int s, int frame, uint8_t dir, int xoff, int yoff, int wd, int ht, int alpha = 255);
 
   void drawSprite(int x, int y, int s, int frame = 0, uint8_t dir = 0);
+  void drawSpriteMirrored(int x, int y, int s, int frame = 0, uint8_t dir = 0);
   void drawSpriteAtDp(int x, int y, int s, int frame = 0, uint8_t dir = 0);
   void drawSpriteClipped(int x, int y, int s, int frame, uint8_t dir, int clipx1, int clipx2, int clipy1, int clipy2);
   void drawSpriteClipWidth(int x, int y, int s, int frame, int wd);
