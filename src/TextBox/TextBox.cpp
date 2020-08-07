@@ -5,9 +5,11 @@
 #include "../graphics/Renderer.h"
 #include "../input.h"
 #include "../nx.h"
+#include "../game.h"
 #include "../settings.h"
 #include "../sound/SoundManager.h"
 #include "../Utils/Logger.h"
+#include "../i18n/minibidi.h"
 
 #include <utf8.h>
 #include <iostream>
@@ -122,7 +124,15 @@ void TextBox::AddText(const std::string &str)
 {
   if (!fVisible)
     return;
-  fCharsWaiting.append(str);
+
+  std::string result = str;
+  std::vector<uint32_t> utf32result;
+  utf8::utf8to32(str.begin(), str.end(), std::back_inserter(utf32result));
+  doBidi(&utf32result[0], utf32result.size(), true, false, NULL, NULL);
+  result.clear();
+  utf8::utf32to8(utf32result.begin(), utf32result.end(), std::back_inserter(result));
+
+  fCharsWaiting.append(result);
   faceFrame = 0;
   faceStep = 1;
 }
@@ -160,7 +170,10 @@ void TextBox::SetFace(int newface)
 {
   LOG_DEBUG("TextBox::SetFace({})", newface);
   fFace        = newface;
-  fFaceXOffset = -FACE_W;
+  if (newface != 0)
+  {
+    fFaceXOffset = (rtl() ? FACE_W : -FACE_W);
+  }
   faceFrame = 0;
   faceStep = 1;
 }
@@ -288,6 +301,10 @@ void TextBox::DrawTextBox()
 {
   int text_top = (fCoords.y + 10);
   int text_x   = (fCoords.x + 14);
+  if (rtl())
+  {
+    text_x   = (fCoords.x + fCoords.w - 14);
+  }
 
   // draw the frame
   if (!(fFlags & TB_NO_BORDER))
@@ -297,24 +314,53 @@ void TextBox::DrawTextBox()
 
   // set clipping region to inside of frame, so that text cannot
   // overflow during scrolling, etc.
-  Renderer::getInstance()->setClip((fCoords.x + 14), text_top, Renderer::getInstance()->screenWidth, 48);
+  if (rtl())
+  {
+    Renderer::getInstance()->setClip(0, text_top, fCoords.x + fCoords.w, 48);
+  }
+  else
+  {
+    Renderer::getInstance()->setClip((fCoords.x + 14), text_top, Renderer::getInstance()->screenWidth, 48);
+  }
 
   // draw face
   if (fFace != 0)
   {
-    if (settings->animated_facepics)
-      Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES_0 + faceFrame, fFace);
+    if (rtl())
+    {
+      if (settings->animated_facepics)
+        Renderer::getInstance()->sprites.drawSpriteMirrored(fCoords.x + fCoords.w - FACE_W + fFaceXOffset - 14, fCoords.y + CONTENT_Y - 3, SPR_FACES_0 + faceFrame, fFace);
+      else
+        Renderer::getInstance()->sprites.drawSpriteMirrored(fCoords.x + fCoords.w - FACE_W + fFaceXOffset - 14, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+    }
     else
-      Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+    {
+      if (settings->animated_facepics)
+        Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES_0 + faceFrame, fFace);
+      else
+        Renderer::getInstance()->sprites.drawSprite((fCoords.x + 14) + fFaceXOffset, fCoords.y + CONTENT_Y - 3, SPR_FACES, fFace);
+    }
 
-    text_x += (FACE_W + 8); // move text over by width of face
+    text_x += rtl() ? -(FACE_W + 8) : (FACE_W + 8); // move text over by width of face
 
     // face slide-in animation
-    if (fFaceXOffset < 0)
+    if (rtl())
     {
-      fFaceXOffset += (Renderer::getInstance()->sprites.sprites[SPR_FACES].w / 6);
       if (fFaceXOffset > 0)
-        fFaceXOffset = 0;
+      {
+        fFaceXOffset -= (Renderer::getInstance()->sprites.sprites[SPR_FACES].w / 6);
+        if (fFaceXOffset < 0)
+          fFaceXOffset = 0;
+      }
+    }
+    else
+    {
+      if (fFaceXOffset < 0)
+      {
+        fFaceXOffset += (Renderer::getInstance()->sprites.sprites[SPR_FACES].w / 6);
+        if (fFaceXOffset > 0)
+          fFaceXOffset = 0;
+      }
     }
   }
 
@@ -328,7 +374,7 @@ void TextBox::DrawTextBox()
     // draw the cursor
     if (i == fCurLine && fCursorTimer < 7)
     {
-      int x = (text_x + lineWidth);
+      int x = (text_x + (rtl() ? -lineWidth : lineWidth));
       Renderer::getInstance()->fillRect(x, y, x + 4, y + Renderer::getInstance()->font.getBase(), 255, 255, 255);
     }
 
@@ -368,9 +414,20 @@ void TextBox::AddNextChar(void)
 
   while (!fCharsWaiting.empty())
   {
-    std::string::iterator it = fCharsWaiting.begin();
-    char32_t ch              = utf8::next(it, fCharsWaiting.end());
-    fCharsWaiting.erase(fCharsWaiting.begin(), it);
+    std::string::iterator it;
+    char32_t ch;
+    if (rtl())
+    {
+      it = fCharsWaiting.end();
+      ch              = utf8::prior(it, fCharsWaiting.begin());
+      fCharsWaiting.erase(it, fCharsWaiting.end());
+    }
+    else
+    {
+      it = fCharsWaiting.begin();
+      ch              = utf8::next(it, fCharsWaiting.end());
+      fCharsWaiting.erase(fCharsWaiting.begin(), it);
+    }
 
     if (ch == 10)
       continue; // ignore LF's, we look only for CR
@@ -397,7 +454,18 @@ void TextBox::AddNextChar(void)
       NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MSG);
 
     fCurLineLen++;
-    utf8::append(ch, std::back_inserter(fLines[fCurLine]));
+
+    if (rtl())
+    {
+      std::string line = fLines[fCurLine];
+      fLines[fCurLine].clear();
+      utf8::append(ch, std::back_inserter(fLines[fCurLine]));
+      fLines[fCurLine].append(line);
+    }
+    else
+    {
+      utf8::append(ch, std::back_inserter(fLines[fCurLine]));
+    }
 
     if (fCurLine >= MSG_NLINES - 1)
     { // went over bottom of box

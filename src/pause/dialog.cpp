@@ -40,7 +40,8 @@ Dialog::Dialog()
   fCoords.y = DLG_Y;
   fCoords.w = DLG_W;
   fCoords.h = DLG_H;
-  fTextX    = (fCoords.x + 48);
+
+  fTextX    = (fCoords.x + (rtl() ? (DLG_W-48) : 48));
 
   fCurSel      = 0;
   fNumShown    = 0;
@@ -82,7 +83,7 @@ void Dialog::UpdateSizePos()
 
   fCoords.x = ((DLG_W / 2) - (fCoords.w / 2)) + DLG_X;
   fCoords.y = ((DLG_H / 2) - (fCoords.h / 2)) + DLG_Y;
-  fTextX    = (fCoords.x + 34);
+  fTextX    = (fCoords.x + (rtl() ? (fCoords.w - 34) : 34));
 }
 
 void Dialog::SetSize(int w, int h)
@@ -91,14 +92,14 @@ void Dialog::SetSize(int w, int h)
   fCoords.h = h;
   fCoords.x = ((DLG_W / 2) - (w / 2)) + DLG_X;
   fCoords.y = ((DLG_H / 2) - (h / 2)) + DLG_Y;
-  fTextX    = (fCoords.x + 34);
+  fTextX    = (fCoords.x + (rtl() ? (w -34) : 34));
 }
 
 void Dialog::offset(int xd, int yd)
 {
   fCoords.x += xd;
   fCoords.y += yd;
-  fTextX += xd;
+  fTextX += (rtl() ? -xd : xd);
 }
 
 /*
@@ -161,7 +162,7 @@ void Dialog::Draw()
       DrawItem(x, y, item);
 
     if (i == (unsigned int)fCurSel)
-      Renderer::getInstance()->sprites.drawSprite(x - 16, y + 1, SPR_WHIMSICAL_STAR, 1);
+      Renderer::getInstance()->sprites.drawSprite(x + (rtl() ? 16 : -16), y + 1, SPR_WHIMSICAL_STAR, 1);
     if (item->type == OD_SEPARATOR)
       y += 5;
     else
@@ -176,8 +177,16 @@ void Dialog::DrawItem(int x, int y, ODItem *item)
 {
   char text[264];
 
-  strcpy(text, _(item->text).c_str());
-  strcat(text, _(item->suffix).c_str());
+  if (rtl())
+  {
+    strcpy(text, _(item->suffix).c_str());
+    strcat(text, _(item->text).c_str());
+  }
+  else
+  {
+    strcpy(text, _(item->text).c_str());
+    strcat(text, _(item->suffix).c_str());
+  }
 
   // comes first because it can trim the text on the left side if needed
   if (item->raligntext[0])
@@ -195,7 +204,14 @@ void Dialog::DrawItem(int x, int y, ODItem *item)
   // for key remaps
   if (item->righttext[0])
   {
-    Renderer::getInstance()->font.draw((fCoords.x + fCoords.w) - 62, y, item->righttext);
+    if (rtl())
+    {
+      Renderer::getInstance()->font.draw((fCoords.x) + 62, y, item->righttext);
+    }
+    else
+    {
+      Renderer::getInstance()->font.draw((fCoords.x + fCoords.w) - 62, y, item->righttext);
+    }
   }
 }
 

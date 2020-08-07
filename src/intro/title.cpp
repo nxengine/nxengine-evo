@@ -21,14 +21,15 @@ static struct
 {
   uint32_t timetobeat;
   int sprite;
+  uint8_t frames[4];
   int songtrack;
   int backdrop;
 } titlescreens[] = {
-    {(3 * 3000), SPR_CS_SUE, 2, 14},     // 3 mins	- Sue & Safety
-    {(4 * 3000), SPR_CS_KING, 41, 13},   // 4 mins	- King & White
-    {(5 * 3000), SPR_CS_TOROKO, 40, 12}, // 5 mins	- Toroko & Toroko's Theme
-    {(6 * 3000), SPR_CS_CURLY, 36, 10},  // 6 mins	- Curly & Running Hell
-    {0xFFFFFFFF, SPR_CS_MYCHAR, 24, 9}   // default
+    {(3 * 3000), SPR_SUE, {2,3,4,5}, 2, 14},     // 3 mins	- Sue & Safety
+    {(4 * 3000), SPR_KING, {4,5,6,7}, 41, 13},   // 4 mins	- King & White
+    {(5 * 3000), SPR_TOROKO, {1,2,3,4}, 40, 12}, // 5 mins	- Toroko & Toroko's Theme
+    {(6 * 3000), SPR_CURLY, {0,1,2,3}, 36, 10},  // 6 mins	- Curly & Running Hell
+    {0xFFFFFFFF, SPR_MYCHAR, {0,1,0,2}, 24, 9}   // default
 };
 
 // artifical fake "loading" delay between selecting an option and it being executed,
@@ -40,6 +41,7 @@ static struct
 static struct
 {
   int sprite;
+  uint8_t* frames;
   int cursel;
   int selframe, seltimer;
   int selchoice, seldelay;
@@ -70,20 +72,46 @@ static void draw_title()
 
   // draw menu
 
-  int cx = (Renderer::getInstance()->screenWidth / 2) - 32;
+  int cx = (Renderer::getInstance()->screenWidth / 2) + (rtl() ? 32 : -32);
   int cy = (Renderer::getInstance()->screenHeight / 2) - 8;
 
-  TextBox::DrawFrame(cx - 32, cy - 16 , 128, 96);
+  TextBox::DrawFrame((Renderer::getInstance()->screenWidth / 2) - 64, cy - 16 , 128, 96);
 
   for (size_t i = 0; i < _menuitems.size(); i++)
   {
     if (_menuitems[i].enabled)
-      Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text));
+    {
+      if (rtl())
+      {
+        Renderer::getInstance()->font.draw(cx - 10, cy, _(_menuitems[i].text));
+      }
+      else
+      {
+        Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text));
+      }
+    }
     else
-      Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text), 0x666666);
+    {
+      if (rtl())
+      {
+        Renderer::getInstance()->font.draw(cx - 10, cy, _(_menuitems[i].text), 0x666666);
+      }
+      else
+      {
+        Renderer::getInstance()->font.draw(cx + 10, cy, _(_menuitems[i].text), 0x666666);
+      }
+    }
+
     if (i == (size_t)title.cursel)
     {
-      Renderer::getInstance()->sprites.drawSprite(cx - 16, cy - 1, title.sprite, title.selframe);
+      if (rtl())
+      {
+        Renderer::getInstance()->sprites.drawSprite(cx, cy - 1, title.sprite, title.frames[title.selframe], LEFT);
+      }
+      else
+      {
+        Renderer::getInstance()->sprites.drawSprite(cx - 16, cy - 1, title.sprite, title.frames[title.selframe]);
+      }
     }
 
     cy += 12;
@@ -93,7 +121,7 @@ static void draw_title()
   if (++title.seltimer > 8)
   {
     title.seltimer = 0;
-    if (++title.selframe >= Renderer::getInstance()->sprites.sprites[title.sprite].nframes)
+    if (++title.selframe >= 4)
       title.selframe = 0;
   }
 
@@ -104,7 +132,7 @@ static void draw_title()
 
   // version
   int wd = Renderer::getInstance()->font.getWidth(NXVERSION);
-  cx     = (Renderer::getInstance()->screenWidth / 2) - (wd / 2);
+  cx     = (Renderer::getInstance()->screenWidth / 2) + (rtl() ? (wd / 2) : -(wd / 2));
   Renderer::getInstance()->font.draw(cx, acc_y + Renderer::getInstance()->sprites.sprites[SPR_PIXEL_FOREVER].h + 4, NXVERSION, 0xf3e298);
 
   // draw Nikumaru display
@@ -278,6 +306,7 @@ bool title_init(int param)
   }
 
   title.sprite = titlescreens[t].sprite;
+  title.frames = titlescreens[t].frames;
   NXE::Sound::SoundManager::getInstance()->music(titlescreens[t].songtrack);
   map_set_backdrop(titlescreens[t].backdrop);
   map.scrolltype = BK_FASTLEFT_LAYERS;

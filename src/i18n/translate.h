@@ -11,9 +11,11 @@ public:
   ~I18N();
   bool load();
   const std::string &translate(const std::string &key);
+  const bool isRTL();
 
 private:
   std::map<std::string, std::string> _strings;
+  bool _rtl = false;
 };
 
 #endif

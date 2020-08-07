@@ -209,7 +209,15 @@ void TB_SaveSelect::DrawProfile(int x, int y, int index)
   if (fHaveProfile[index])
   {
     const std::string &stage = map_get_stage_name(p->stage);
-    Renderer::getInstance()->font.draw(x + 8, y - 1, stage);
+
+    if (rtl())
+    {
+      Renderer::getInstance()->font.draw(w - 8, y - 1, stage);
+    }
+    else
+    {
+      Renderer::getInstance()->font.draw(x + 8, y - 1, stage);
+    }
 
     // draw health.
     DrawHealth(x + w, y, p);

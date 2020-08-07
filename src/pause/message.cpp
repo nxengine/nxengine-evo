@@ -31,12 +31,15 @@ Message::Message(const std::string &msg, const std::string &msg2)
   fMsg  = msg;
   fMsg2 = msg2;
 
-  fMsgX = MESSAGE_X + ((MESSAGE_W / 2) - (Renderer::getInstance()->font.getWidth(fMsg) / 2));
+  int msglen = Renderer::getInstance()->font.getWidth(fMsg) / 2;
+  fMsgX = MESSAGE_X + ((MESSAGE_W / 2) + (rtl() ? msglen : -msglen));
 
   if (fMsg2[0])
   {
     fMsgY      = MESSAGE_Y + 10;
-    fMsg2X     = MESSAGE_X + ((MESSAGE_W / 2) - (Renderer::getInstance()->font.getWidth(fMsg2) / 2));
+    int msglen2 = Renderer::getInstance()->font.getWidth(fMsg2) / 2;
+
+    fMsg2X     = MESSAGE_X + ((MESSAGE_W / 2) + (rtl() ? msglen2 : -msglen2));
     fMsg2Y     = fMsgY + Renderer::getInstance()->font.getHeight() + 4;
     fShowDelay = 0;
   }

@@ -1220,7 +1220,14 @@ const std::string &map_get_stage_name(int mapno)
 // show map name for "ticks" ticks
 void map_show_map_name()
 {
-  game.mapname_x       = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->font.getWidth(map_get_stage_name(game.curmap)) / 2);
+  if (rtl())
+  {
+    game.mapname_x       = (Renderer::getInstance()->screenWidth / 2) + (Renderer::getInstance()->font.getWidth(map_get_stage_name(game.curmap)) / 2);
+  }
+  else
+  {
+    game.mapname_x       = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->font.getWidth(map_get_stage_name(game.curmap)) / 2);
+  }
   game.showmapnametime = 120;
 }
 

@@ -560,7 +560,7 @@ static void _upd_control(ODItem *item)
       snprintf(keyname, 64, "JHat %d D", action.jhat);
   }
 
-  maxcpy(item->righttext, keyname, sizeof(item->righttext) - 1);
+  maxcpy(item->righttext, _(keyname).c_str(), sizeof(item->righttext) - 1);
 }
 
 static void _edit_control(ODItem *item, int dir)

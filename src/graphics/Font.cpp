@@ -134,10 +134,13 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
   g = ((color >> 8) & 0xFF);
   b = ((color)&0xFF);
 
-  std::string::const_iterator it = text.begin();
-  while (it != text.end())
+  std::string::const_iterator it = (rtl() ? text.end() : text.begin());
+  while (it != (rtl() ? text.begin() : text.end()) )
   {
-    char32_t ch = utf8::next(it, text.end());
+    char32_t ch;
+    if (rtl()) ch = utf8::prior(it, text.begin());
+    else ch = utf8::next(it, text.end());
+
     Glyph glyph = this->glyph(ch);
     SDL_Texture *atlas  = this->atlas(glyph.atlasid);
 
@@ -180,23 +183,34 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
 
     if (ch == ' ')
     { // 10.5 px for spaces - make smaller than they really are - the default
-      x += (Renderer::getInstance()->scale == 1) ? 5 : 10;
-      if (i & 1)
-        x++;
+      if (rtl())
+      {
+        x -= (Renderer::getInstance()->scale == 1) ? 5 : 10;
+        if (i & 1)
+          x--;
+      }
+      else
+      {
+        x += (Renderer::getInstance()->scale == 1) ? 5 : 10;
+        if (i & 1)
+          x++;
+      }
     }
     else if (ch == '=' && game.mode != GM_CREDITS)
     {
-      x += 7 * Renderer::getInstance()->scale;
+      if (rtl()) x -= 7 * Renderer::getInstance()->scale;
+      else x += 7 * Renderer::getInstance()->scale;
     }
     else
     {
-      x += glyph.xadvance;
+      if (rtl()) x -= glyph.xadvance;
+      else x += glyph.xadvance;
     }
     i++;
   }
 
   // return the final width of the text drawn
-  return (x - orgx) / Renderer::getInstance()->scale;
+  return abs((x - orgx) / Renderer::getInstance()->scale);
 }
 
 uint32_t Font::getWidth(const std::string &text)

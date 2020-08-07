@@ -2,8 +2,10 @@
 
 #include "../ResourceManager.h"
 #include "../common/misc.h"
+#include "minibidi.h"
 
 #include <json.hpp>
+#include <utf8.h>
 #include <fstream>
 
 I18N::I18N()
@@ -23,9 +25,23 @@ bool I18N::load()
   {
     nlohmann::json langfile = nlohmann::json::parse(fl);
 
+    _rtl = langfile.value("rtl", false);
+
     for (auto it = langfile.begin(); it != langfile.end(); ++it)
     {
-      _strings[it.key()] = it.value();
+      if (it.key() != "rtl")
+      {
+        std::string result = it.value();
+        std::vector<uint32_t> utf32result;
+        utf8::utf8to32(result.begin(), result.end(), std::back_inserter(utf32result));
+        doBidi(&utf32result[0], utf32result.size(), true, false, NULL, NULL);
+        result.clear();
+        utf8::utf32to8(utf32result.begin(), utf32result.end(), std::back_inserter(result));
+//        std::reverse(result.begin(), result.end());
+
+        _strings[ it.key() ] = std::move(result);
+//        _strings[it.key()] = it.value();
+      }
     }
     return true;
   }
@@ -42,4 +58,9 @@ const std::string &I18N::translate(const std::string &key)
   {
     return key;
   }
+}
+
+const bool I18N::isRTL()
+{
+  return _rtl;
 }
