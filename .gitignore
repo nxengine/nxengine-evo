@@ -1,4 +1,6 @@
 build/
 tools/
 bin/
+/.flatpak-builder
+*.flatpak
 *.snap
