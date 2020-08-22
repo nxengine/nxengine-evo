@@ -1,0 +1,59 @@
+{
+	"app-id": "org.nxengine.nxengine_evo",
+	"runtime": "org.freedesktop.Platform",
+	"runtime-version": "19.08",
+	"sdk": "org.freedesktop.Sdk",
+	"command": "nxengine-evo",
+	"finish-args": [
+		"--socket=fallback-x11",
+		"--share=ipc",
+		"--socket=wayland",
+		"--device=dri",
+		
+		"--socket=pulseaudio"
+	],
+	
+	"modules": [
+		{
+			"name": "nxengine-evo",
+			"buildsystem": "cmake-ninja",
+			"no-make-install": true,
+			"post-install": [
+				"cd extern/CaveStory && ../../bin/extract",
+
+				"install -vd \"${FLATPAK_DEST}/share/nxengine\"",
+				"cp -avr data                  \"${FLATPAK_DEST}/share/nxengine/\"",
+				"cp -avr extern/CaveStory/data \"${FLATPAK_DEST}/share/nxengine/\"",
+				"cp -avr extern/Translations   \"${FLATPAK_DEST}/share/nxengine/data/lang\"",
+
+				"install -vD bin/nx \"${FLATPAK_DEST}/bin/nxengine-evo\"",
+				"install -vDt\"${FLATPAK_DEST}/share/applications\"               platform/xdg/org.nxengine.nxengine_evo.desktop",
+				"install -vDt\"${FLATPAK_DEST}/share/icons/hicolor/256x256/apps\" platform/xdg/org.nxengine.nxengine_evo.png",
+				"install -vDt\"${FLATPAK_DEST}/share/metainfo\"                   platform/xdg/org.nxengine.nxengine_evo.appdata.xml"
+			],
+			
+			"sources": [
+				{
+					"type": "git",
+					"path": "."
+				},
+				{
+					"type": "archive",
+					"url": "https://github.com/nxengine/translations/releases/download/v1.9/all.zip",
+					"sha256": "9661ef3a8a051d0cc94f6846c8b746b9a42eb8e71fb8deedb1fe43bef5bde869",
+					"strip-components": 2,
+					"dest": "extern/Translations"
+				},
+				{
+					"type": "archive",
+					"url": "https://www.cavestory.org/downloads/cavestoryen.zip",
+					"sha256": "aa87fa30bee9b4980640c7e104791354e0f1f6411ee0d45a70af70046aa0685f",
+					"dest": "extern/CaveStory"
+				}
+			],
+			
+			"//": "No long list of build dependencies here as all requried dependencies are included in the FreeDesktop runtime already",
+			"modules": []
+		}
+	]
+}
