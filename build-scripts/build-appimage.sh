@@ -3,33 +3,42 @@ set -eu -o pipefail
 cd "$(dirname "$(readlink -f "$0")")/.."
 
 APP_ID="org.nxengine.nxengine_evo"
-EXT_TL_VERSION="1.9"
-EXT_TL_SHA256SUM="9661ef3a8a051d0cc94f6846c8b746b9a42eb8e71fb8deedb1fe43bef5bde869"
-EXT_CS_SHA256SUM="aa87fa30bee9b4980640c7e104791354e0f1f6411ee0d45a70af70046aa0685f"
 
 # Extract latest release from AppStream data
 VERSION="$(xmllint --xpath 'string(/component/releases/release/@version)' "platform/xdg/${APP_ID}.appdata.xml")"
 MACHINE="$(uname -m)"
 
-# Download, verify and extract external resources
+# Download, verify and extract external resources mentioned in the Flatpak builder manifest
 mkdir -p extern
-rm -rf extern/{CaveStory,Translations}
-test -e "extern/translations-${EXT_TL_VERSION}.zip" || wget "https://github.com/nxengine/translations/releases/download/v${EXT_TL_VERSION}/all.zip" -O "extern/translations-${EXT_TL_VERSION}.zip"
-test -e "extern/cavestory.zip"                      || wget "https://cavestory.org/downloads/cavestoryen.zip"                                       -O "extern/cavestory.zip"
-test -e "extern/linuxdeploy.AppImage"               || wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${MACHINE}.AppImage" -O "extern/linuxdeploy.AppImage"
+jq -r '.modules[0].sources[] | select(.type=="archive") | (.sha256 + " " + .url + " " + .dest)' "${APP_ID}.json" | while read sha256 url dest;
+do
+	origname="${url##*/}"
+	filepath="extern/${sha256}.${origname#*.}"
+	
+	# Download and verify archive file
+	test -e "${filepath}" || wget "${url}" -O "${filepath}"
+	echo "${sha256}  ${filepath}" | sha256sum -c
+	
+	# Extract archive and move it to the same location that it would end up in the Flatpak build
+	case "${dest}" in
+		extern/Translations)
+			rm -rf extern/Translations
+			
+			unzip -d extern/Translations "${filepath}"
+			mv extern/Translations/data/lang/* extern/Translations/
+			rmdir extern/Translations/data/lang extern/Translations/data
+		;;
+		
+		extern/CaveStory)
+			rm -rf extern/CaveStory
+			
+			unzip -d extern "${filepath}"
+		;;
+	esac
+done
 
-# (There is no checksum for LinuxDeploy here, as it does not publish stable releases.)
-sha256sum -c <<EOF
-${EXT_TL_SHA256SUM}  extern/translations-${EXT_TL_VERSION}.zip
-${EXT_CS_SHA256SUM}  extern/cavestory.zip
-EOF
-
-unzip -d extern/Translations "extern/translations-${EXT_TL_VERSION}.zip"
-mv extern/Translations/data/lang/* extern/Translations/
-rmdir extern/Translations/data/lang extern/Translations/data
-
-unzip -d extern "extern/cavestory.zip"
-
+# Additionally download recent version of the LinuxDeploy AppImage utility (no checksum verification since file regularily changes when updated to newer versions)
+test -e "extern/linuxdeploy.AppImage" || wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${MACHINE}.AppImage" -O "extern/linuxdeploy.AppImage"
 chmod +x extern/linuxdeploy.AppImage
 
 # Build NXEngine-Evo
