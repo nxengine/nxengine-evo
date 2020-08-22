@@ -19,17 +19,7 @@
 			"buildsystem": "cmake-ninja",
 			"no-make-install": true,
 			"post-install": [
-				"cd extern/CaveStory && ../../bin/extract",
-
-				"install -vd \"${FLATPAK_DEST}/share/nxengine\"",
-				"cp -avr data                  \"${FLATPAK_DEST}/share/nxengine/\"",
-				"cp -avr extern/CaveStory/data \"${FLATPAK_DEST}/share/nxengine/\"",
-				"cp -avr extern/Translations   \"${FLATPAK_DEST}/share/nxengine/data/lang\"",
-
-				"install -vD bin/nx \"${FLATPAK_DEST}/bin/nxengine-evo\"",
-				"install -vDt\"${FLATPAK_DEST}/share/applications\"               platform/xdg/org.nxengine.nxengine_evo.desktop",
-				"install -vDt\"${FLATPAK_DEST}/share/icons/hicolor/256x256/apps\" platform/xdg/org.nxengine.nxengine_evo.png",
-				"install -vDt\"${FLATPAK_DEST}/share/metainfo\"                   platform/xdg/org.nxengine.nxengine_evo.appdata.xml"
+				"build-scripts/unix.install-common.sh \"${FLATPAK_DEST}\""
 			],
 			
 			"sources": [
