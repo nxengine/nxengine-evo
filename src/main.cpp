@@ -2,6 +2,7 @@
 #include "nx.h"
 
 #include <cstdarg>
+#include <cstdlib>
 #if !defined(_WIN32)
 #include <unistd.h>
 #else
@@ -296,6 +297,16 @@ int main(int argc, char *argv[])
   char *basepath = SDL_GetBasePath();
   chdir(basepath);
   SDL_free(basepath);
+
+  // On platforms where SDL may use Wayland (Linux and BSD), setting the icon from a surface doesn't work and
+  // the request will be ignored. Instead apps submit their app ID using the xdg-shell Wayland protocol and
+  // then the desktop looks up the icon based on this.
+  // SDL (as of 2.0.14) only exposes setting the app ID through the (missleadingly named) environment variable
+  // used below, so we call `setenv` here and hope it picks up the value during initialization of the Wayland
+  // backend. As its name implies this will also set window class on X11, but this will not cause any issues,
+  // and its recomended that that matches the app ID anyways. On other platforms, the env will be silently
+  // ignored.
+  setenv("SDL_VIDEO_X11_WMCLASS", "org.nxengine.nxengine_evo", 0);
 #endif
 
 #if defined(__SWITCH__)
