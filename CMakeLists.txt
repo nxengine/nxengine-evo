@@ -5,6 +5,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 option(LOW_END_HARDWARE "Build for low-end hardware" ON)
+set(RESAMPLER "nearest" CACHE STRING "Which algorithm to use for audio resampling: 'nearest' for nearest-neighbour (extremely fast, low-quality), 'linear' for linear-interpolation (fast, mid-quality), 'lanczos' for Lanczos filtering (slow, high-quality)")
 set(PLATFORM "pc" CACHE STRING "Platform to build for")
 set_property(CACHE PLATFORM PROPERTY STRINGS pc vita switch)
 
@@ -96,6 +97,14 @@ ENDIF()
 
 IF(LOW_END_HARDWARE)
     add_definitions(-D_LOW_END_HARDWARE)
+ENDIF()
+
+IF(RESAMPLER MATCHES "nearest")
+    # Nothing
+ELSEIF(RESAMPLER MATCHES "linear")
+    add_definitions(-DRESAMPLER_LINEAR)
+ELSEIF(RESAMPLER MATCHES "lanczos")
+    add_definitions(-DRESAMPLER_LANCZOS)
 ENDIF()
 
 add_definitions("-Wall")
