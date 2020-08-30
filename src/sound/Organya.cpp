@@ -228,12 +228,8 @@ void Song::Synth()
     {
       double pos = i.phaseacc;
       // Take a sample from the wave data.
-      /* We could do simply this: */
-#if defined(_LOW_END_HARDWARE)
-      double sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
-#else
-      /* But since we have plenty of time, use neat Lanczos filtering. */
-      /* This improves especially the low rumble noises substantially. */
+#if defined(RESAMPLER_LANCZOS)
+      // Perform Lanczos resampling
       enum
       {
         radius = 2
@@ -257,6 +253,18 @@ void Song::Synth()
       }
       if (density > 0.)
         sample /= density; // Normalize*/
+#elif defined(RESAMPLER_LINEAR)
+      // Perform linear interpolation
+      unsigned int position_integral = unsigned(pos);
+      double position_fractional = pos - position_integral;
+
+      double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
+      double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
+
+      double sample = sample1 + (sample2 - sample1) * position_fractional;
+#else
+      // Perform nearest-neighbour interpolation
+      double sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
 #endif
       // Save audio in float32 format:
       samples[p * 2 + 0] += sample * left;
