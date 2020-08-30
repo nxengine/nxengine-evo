@@ -105,6 +105,8 @@ ELSEIF(RESAMPLER MATCHES "linear")
     add_definitions(-DRESAMPLER_LINEAR)
 ELSEIF(RESAMPLER MATCHES "lanczos")
     add_definitions(-DRESAMPLER_LANCZOS)
+ELSE()
+	message(FATAL_ERROR "Invalid RESAMPLER selected")
 ENDIF()
 
 add_definitions("-Wall")
