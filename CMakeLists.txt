@@ -100,7 +100,8 @@ IF(LOW_END_HARDWARE)
 ENDIF()
 
 IF(RESAMPLER MATCHES "nearest")
-    # Nothing
+    # This is used if neither RESAMPLER_LINEAR
+    # nor DRESAMPLER_LANCZOS are defined
 ELSEIF(RESAMPLER MATCHES "linear")
     add_definitions(-DRESAMPLER_LINEAR)
 ELSEIF(RESAMPLER MATCHES "lanczos")
