@@ -236,12 +236,14 @@ void gameloop(void)
 
       nexttick = curtime + GAME_WAIT;
 
+#if !defined(DEBUG)
       // pause game if window minimized
       if (!Renderer::getInstance()->isWindowVisible())
       {
         AppMinimized();
         nexttick = 0;
       }
+#endif
     }
     else
     {
