@@ -25,5 +25,6 @@
 #include <cstdint>
 
 #define BLOCKTYPE uint32_t*
+#define CHARTYPE uint32_t
 
-int doBidi(BLOCKTYPE line, int count, bool applyShape, bool reorderCombining, int * v2l, int * l2v);
+int doBidi(BLOCKTYPE line, int count, bool applyShape, bool reorderCombining);

@@ -128,7 +128,7 @@ void TextBox::AddText(const std::string &str)
   std::string result = str;
   std::vector<uint32_t> utf32result;
   utf8::utf8to32(str.begin(), str.end(), std::back_inserter(utf32result));
-  doBidi(&utf32result[0], utf32result.size(), true, false, NULL, NULL);
+  doBidi(&utf32result[0], utf32result.size(), true, false);
   result.clear();
   utf8::utf32to8(utf32result.begin(), utf32result.end(), std::back_inserter(result));
 
