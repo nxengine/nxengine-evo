@@ -22,7 +22,7 @@ enum CC
 // represents a command from the .tsc
 struct CredCommand
 {
-  int type;
+  char type;
   int parm, parm2;
   char text[80];
 

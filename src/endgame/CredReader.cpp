@@ -25,7 +25,7 @@ lX		Location X
 
 bool CredReader::ReadCommand(CredCommand *cmd)
 {
-  int ch;
+  char ch;
   unsigned int i;
 
   memset(cmd, 0, sizeof(CredCommand));
@@ -114,7 +114,7 @@ struct CredCommand
 
 void CredCommand::DumpContents()
 {
-  LOG_TRACE("CC '{:c}': [{}]:{:04d}:{:04d}", type, text, parm, parm2);
+  LOG_TRACE("CC '{:c}': [{:s}]:{:04d}:{:04d}", type, text, parm, parm2);
 }
 
 void CredReader::Rewind()
