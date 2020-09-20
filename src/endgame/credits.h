@@ -7,14 +7,15 @@
 #include "../graphics/Surface.h"
 #include "CredReader.h"
 
+#include <vector>
+
 // a currently displayed line of text
 struct CredLine
 {
-  char text[CRED_MAX_TEXT];
-  int image;
-  int x, y;
-
-  CredLine *next, *prev;
+  std::string text = "";
+  int image = 0;
+  int x, y = 0;
+  bool remove = false;
 };
 
 class BigImage
@@ -47,11 +48,7 @@ private:
   void RunNextCommand();
   bool Jump(int label);
 
-  CredLine *NewLine();
-  CredLine *AddLine(CredLine *line);
-  void RemoveLine(CredLine *line);
-
-  bool DrawLine(CredLine *line);
+  void DrawLine(CredLine& line);
 
   int spawn_y;  // position of next line relative to top of roll
   int scroll_y; // CSFd roll position
@@ -61,11 +58,8 @@ private:
   // turns off scrolling and further script execution when "/" command hit at end
   bool roll_running;
 
-  int lines_out; // debug...
-  int lines_vis; // ...counters
-
   CredReader script;
-  CredLine *firstline, *lastline;
+  std::vector<CredLine> lines;
 };
 
 bool credit_init(int parameter);

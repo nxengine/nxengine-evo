@@ -13,6 +13,10 @@
 #include "../player.h"
 #include "../sound/SoundManager.h"
 #include "../tsc.h"
+#include "../i18n/minibidi.h"
+
+#include <utf8.h>
+
 using namespace NXE::Graphics;
 
 #define MARGIN 48
@@ -36,11 +40,6 @@ bool Credits::Init()
 
   xoffset      = 0;
   roll_running = true;
-
-  lines_out = lines_vis = 0;
-
-  firstline = NULL;
-  lastline  = NULL;
 
   return 0;
 }
@@ -103,22 +102,32 @@ void Credits::RunNextCommand()
   {
     case CC_TEXT:
     {
-      CredLine *line = NewLine();
+      CredLine line;
 
-      maxcpy(line->text, cmd.text, sizeof(line->text));
-      line->image = cmd.parm;
-      line->x     = xoffset;
-      line->y     = spawn_y;
+      std::string result = cmd.text;
 
+      std::vector<uint32_t> utf32result;
+
+      utf8::utf8to32(result.begin(), result.end(), std::back_inserter(utf32result));
+      doBidi(&utf32result[0], utf32result.size(), true, false);
+      result.clear();
+      utf8::utf32to8(utf32result.begin(), utf32result.end(), std::back_inserter(result));
+
+      line.text = result;
+      line.image = cmd.parm;
+      line.x     = xoffset;
+      line.y     = spawn_y;
+
+      // TODO:
       // the last line is supposed to be centered--slightly
       // varying font sizes can lead to it being a little bit off
-      if (strstr(line->text, "The End"))
-      {
-        line->x = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->font.getWidth(line->text) / 2);
-      }
+//      if (strstr(cmd.text, "The End"))
+//      {
+//        line->x = (Renderer::getInstance()->screenWidth / 2) - (Renderer::getInstance()->font.getWidth(line->text) / 2);
+//      }
 
+      lines.push_back(line);
       spawn_y += 1;
-      lines_out++;
     }
     break;
 
@@ -127,7 +136,14 @@ void Credits::RunNextCommand()
       break;
 
     case CC_SET_XOFF:
-      xoffset = cmd.parm;
+      if (rtl())
+      {
+          xoffset = Renderer::getInstance()->screenWidth - cmd.parm;
+      }
+      else
+      {
+          xoffset = cmd.parm;
+      }
       break;
 
     case CC_FLAGJUMP:
@@ -196,88 +212,49 @@ bool Credits::Jump(int label)
 void c------------------------------() {}
 */
 
-bool Credits::DrawLine(CredLine *line)
+void Credits::DrawLine(CredLine& line)
 {
-  int x = line->x;
-  int y = SCREEN_Y(line->y);
+  int x = line.x;
+  int y = SCREEN_Y(line.y);
   if (y < -MARGIN)
-    return true; // line can be deleted now
-
-  if (line->image)
   {
-    Renderer::getInstance()->sprites.drawSprite(x - 24, y - 8, SPR_CASTS, line->image);
+    line.remove = true;
+    return;
+  }
+
+  if (line.image)
+  {
+    if (rtl())
+    {
+        Renderer::getInstance()->sprites.drawSpriteMirrored(x + 8, y - 8, SPR_CASTS, line.image);
+    }
+    else
+    {
+        Renderer::getInstance()->sprites.drawSprite(x - 24, y - 8, SPR_CASTS, line.image);
+    }
     // DrawBox(x, y, x+Renderer::getInstance()->font.getWidth(line->text), y+8,  56, 0, 0);
   }
 
   // DrawRect(x, y, x+63, y+8, 128, 0, 0);
-  Renderer::getInstance()->font.draw(x, y, line->text);
+  Renderer::getInstance()->font.draw(x, y, line.text);
 
-  return false;
+  return;
 }
 
 void Credits::Draw()
 {
-  CredLine *line, *next;
-
-  line = firstline;
-  while (line)
+  for(auto& line: lines)
   {
-    next = line->next;
+    if (!line.remove)
+      DrawLine(line);
+  }
 
-    if (DrawLine(line))
-    {
-      RemoveLine(line);
-      delete line;
-    }
-
-    line = next;
+  while (lines.size() > 0 && lines.front().remove)
+  {
+    lines.erase(lines.begin());
   }
 }
 
-/*
-void c------------------------------() {}
-*/
-
-CredLine *Credits::NewLine()
-{
-  return AddLine(new CredLine);
-}
-
-CredLine *Credits::AddLine(CredLine *line)
-{
-  line->prev = NULL;
-  line->next = firstline;
-
-  if (firstline)
-  {
-    firstline->prev = line;
-    firstline       = line;
-  }
-  else
-  {
-    firstline = lastline = line;
-  }
-
-  lines_vis++;
-  return line;
-}
-
-void Credits::RemoveLine(CredLine *line)
-{
-  if (line->next)
-    line->next->prev = line->prev;
-  if (line->prev)
-    line->prev->next = line->next;
-  if (line == firstline)
-    firstline = firstline->next;
-  if (line == lastline)
-    lastline = lastline->next;
-  lines_vis--;
-}
-
-/*
-void c------------------------------() {}
-*/
 
 enum BIStates
 {
@@ -338,7 +315,14 @@ void BigImage::Set(int num)
   if (images[num])
   {
     imgno  = num;
-    imagex = -images[num]->width();
+    if (rtl())
+    {
+      imagex = Renderer::getInstance()->screenWidth;
+    }
+    else
+    {
+      imagex = -images[num]->width();
+    }
     state  = BI_SLIDE_IN;
   }
   else
@@ -357,30 +341,65 @@ void BigImage::Draw()
 {
 #define IMAGE_SPEED 32
 
-  switch (state)
+  if (rtl())
   {
-    case BI_SLIDE_IN:
+    switch (state)
     {
-      imagex += IMAGE_SPEED;
-      if (imagex > 0)
+      case BI_SLIDE_IN:
       {
-        imagex = 0;
-        state  = BI_HOLD;
+        imagex -= IMAGE_SPEED;
+        if (imagex <= (Renderer::getInstance()->screenWidth - images[imgno]->width()))
+        {
+          imagex = (Renderer::getInstance()->screenWidth - images[imgno]->width());
+          state  = BI_HOLD;
+        }
+      }
+      break;
+
+      case BI_SLIDE_OUT:
+      {
+        imagex += IMAGE_SPEED;
+        if (imagex > Renderer::getInstance()->screenWidth)
+          state = BI_CLEAR;
       }
     }
-    break;
-
-    case BI_SLIDE_OUT:
+  }
+  else
+  {
+    switch (state)
     {
-      imagex -= IMAGE_SPEED;
-      if (imagex < -images[imgno]->width())
-        state = BI_CLEAR;
+      case BI_SLIDE_IN:
+      {
+        imagex += IMAGE_SPEED;
+        if (imagex > 0)
+        {
+          imagex = 0;
+          state  = BI_HOLD;
+        }
+      }
+      break;
+
+      case BI_SLIDE_OUT:
+      {
+        imagex -= IMAGE_SPEED;
+        if (imagex < -images[imgno]->width())
+          state = BI_CLEAR;
+      }
     }
   }
 
   // take up any unused space with blue
   if (state != BI_HOLD)
-    Renderer::getInstance()->fillRect(0, 0, Renderer::getInstance()->screenWidth / 2, Renderer::getInstance()->screenHeight, DK_BLUE);
+  {
+    if (rtl())
+    {
+      Renderer::getInstance()->fillRect(0, 0, Renderer::getInstance()->screenWidth / 2, Renderer::getInstance()->screenHeight, DK_BLUE);
+    }
+    else
+    {
+      Renderer::getInstance()->fillRect(Renderer::getInstance()->screenWidth / 2, 0, Renderer::getInstance()->screenWidth, Renderer::getInstance()->screenHeight, DK_BLUE);
+    }
+  }
 
   if (state != BI_CLEAR)
     Renderer::getInstance()->drawSurface(images[imgno], imagex, 0);

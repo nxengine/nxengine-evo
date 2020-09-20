@@ -26,9 +26,8 @@ lX		Location X
 bool CredReader::ReadCommand(CredCommand *cmd)
 {
   char ch;
-  unsigned int i;
 
-  memset(cmd, 0, sizeof(CredCommand));
+//  memset(cmd, 0, sizeof(CredCommand));
   cmd->type = -1;
 
   if (data.empty())
@@ -51,14 +50,12 @@ bool CredReader::ReadCommand(CredCommand *cmd)
   {
     case CC_TEXT:
     {
-      for (i = 0; i < sizeof(cmd->text) - 1; i++)
+      char c = get();
+      while(c != ']' && c != 0)
       {
-        cmd->text[i] = get();
-        if (cmd->text[i] == ']' || !cmd->text[i])
-          break;
+        cmd->text.push_back(c);
+        c = get();
       }
-
-      cmd->text[i] = 0;
     }
     break;
 

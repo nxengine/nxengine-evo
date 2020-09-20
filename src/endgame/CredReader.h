@@ -22,9 +22,9 @@ enum CC
 // represents a command from the .tsc
 struct CredCommand
 {
-  char type;
-  int parm, parm2;
-  char text[80];
+  char type = 0;
+  int parm, parm2 = 0;
+  std::string text = "";
 
   void DumpContents();
 };
