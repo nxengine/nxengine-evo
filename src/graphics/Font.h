@@ -36,6 +36,7 @@ public:
   const Font::Glyph &glyph(uint32_t codepoint);
   SDL_Texture *atlas(uint32_t idx);
   uint32_t draw(int x, int y, const std::string &text, uint32_t color = 0xFFFFFF, bool isShaded = false);
+  uint32_t drawLTR(int x, int y, const std::string &text, uint32_t color = 0xFFFFFF, bool isShaded = false);
   uint32_t getWidth(const std::string &text);
   uint32_t getHeight() const;
   uint32_t getBase() const;

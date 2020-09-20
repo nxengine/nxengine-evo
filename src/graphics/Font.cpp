@@ -213,6 +213,90 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
   return abs((x - orgx) / Renderer::getInstance()->scale);
 }
 
+uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bool isShaded)
+{
+  x *= Renderer::getInstance()->scale;
+  y *= Renderer::getInstance()->scale;
+
+  int orgx = x;
+  int i    = 0;
+  SDL_Rect dstrect;
+  SDL_Rect shdrect;
+  SDL_Rect srcrect;
+
+  int r, g, b;
+
+  r = ((color >> 16) & 0xFF);
+  g = ((color >> 8) & 0xFF);
+  b = ((color)&0xFF);
+
+  std::string::const_iterator it = text.begin();
+  while (it != text.end() )
+  {
+    char32_t ch;
+    ch = utf8::next(it, text.end());
+
+    Glyph glyph = this->glyph(ch);
+    SDL_Texture *atlas  = this->atlas(glyph.atlasid);
+
+    if (ch == '=' && game.mode != GM_CREDITS)
+    {
+      if (_rendering)
+      {
+        int offset = (int)round(((double)height() / (double)Renderer::getInstance()->scale - 6.) / 2.);
+        Renderer::getInstance()->sprites.drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
+      }
+    }
+    else if (_rendering && ch != ' ')
+    {
+      dstrect.x = x + glyph.xoffset;
+      dstrect.y = y + glyph.yoffset;
+      dstrect.w = glyph.w;
+      dstrect.h = glyph.h;
+
+      srcrect.x = glyph.x;
+      srcrect.y = glyph.y;
+      srcrect.w = dstrect.w;
+      srcrect.h = dstrect.h;
+
+      if (Renderer::getInstance()->isClipSet())
+        Renderer::getInstance()->clipScaled(srcrect, dstrect);
+      if (isShaded)
+      {
+        shdrect.x = x + glyph.xoffset;
+        shdrect.y = y + glyph.yoffset + _shadowOffset * Renderer::getInstance()->scale;
+        shdrect.w = glyph.w;
+        shdrect.h = glyph.h;
+        SDL_SetTextureColorMod(atlas, 0, 0, 0);
+        SDL_RenderCopy(Renderer::getInstance()->renderer(), atlas, &srcrect, &shdrect);
+        SDL_SetTextureColorMod(atlas, 255, 255, 255);
+      }
+      SDL_SetTextureColorMod(atlas, r, g, b);
+      SDL_RenderCopy(Renderer::getInstance()->renderer(), atlas, &srcrect, &dstrect);
+      SDL_SetTextureColorMod(atlas, 255, 255, 255);
+    }
+
+    if (ch == ' ')
+    { // 10.5 px for spaces - make smaller than they really are - the default
+      x += (Renderer::getInstance()->scale == 1) ? 5 : 10;
+      if (i & 1)
+        x++;
+    }
+    else if (ch == '=' && game.mode != GM_CREDITS)
+    {
+      x += 7 * Renderer::getInstance()->scale;
+    }
+    else
+    {
+      x += glyph.xadvance;
+    }
+    i++;
+  }
+
+  // return the final width of the text drawn
+  return abs((x - orgx) / Renderer::getInstance()->scale);
+}
+
 uint32_t Font::getWidth(const std::string &text)
 {
   _rendering = false;

@@ -770,7 +770,7 @@ void DebugConsole::Draw()
 
 void DebugConsole::DrawDebugText(const char *text)
 {
-  Renderer::getInstance()->font.draw(4, (Renderer::getInstance()->screenHeight - 16), text, 0xFFAAAA, true);
+  Renderer::getInstance()->font.drawLTR(4, (Renderer::getInstance()->screenHeight - 16), text, 0xFFAAAA, true);
 }
 
 /*
