@@ -261,7 +261,6 @@ bool Pixtone::init()
   else
     _inited = true;
 
-  memset(_sound_fx, 0, sizeof(_sound_fx));
   for (uint16_t i = 0; i < 256; i++)
     _sound_fx[i].channel = -1;
 
