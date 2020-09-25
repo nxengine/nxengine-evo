@@ -1,21 +1,15 @@
 name: nxengine-evo
-summary: Doukutsu Monogatari - Jump-and-run platformer
-description: |
-  NXEngine Evo is a complete open-source clone/rewrite of the masterpiece
-  jump-and-run platformer Doukutsu Monogatari (also known as Cave Story).
-  NXEngine Evo [1] is an upgraded/refactored version of NXEngine by Caitlin Shaw [2].
-  [1] https://github.com/nxengine/nxengine-evo
-  [2] http://nxengine.sourceforge.net/
-base: core18
-adopt-info: nxengine-evo
+base: core20
+adopt-info: metadata
 
 grade: stable
 confinement: strict
 
 apps:
   nxengine-evo:
-    command: bash -c "cd $SNAP/bin && $SNAP/bin/desktop-launch $SNAP/bin/nx"
+    command: bin/launcher
     desktop: usr/share/applications/nxengine-evo.desktop
+    common-id: org.nxengine.nxengine_evo
     plugs:
     - opengl
     - unity7
@@ -25,6 +19,26 @@ apps:
     - audio-playback
     - joystick
 parts:
+  metadata:
+    source: .
+    plugin: nil
+    override-pull: |
+      snapcraftctl pull
+      version="$(git describe --always | sed -e 's/-/+git/;y/-/./')"
+      xsltproc --stringparam "VERSION" "$version" \
+        --stringparam "DATE" "$(date +%Y-%m-%d)" \
+        platform/xdg/appdata-add-version.xslt \
+        platform/xdg/org.nxengine.nxengine_evo.appdata.xml \
+        > platform/xdg/org.nxengine.nxengine_evo-snap.appdata.xml
+    parse-info: [platform/xdg/org.nxengine.nxengine_evo-snap.appdata.xml]
+    build-packages: [xsltproc]
+  launcher:
+    source: .
+    plugin: dump
+    organize:
+      platform/snap/launcher.sh: bin/launcher
+    prime:
+      - bin/launcher
   cavestory:
     plugin: nil
     source: https://www.cavestory.org/downloads/cavestoryen.zip
@@ -33,7 +47,7 @@ parts:
     plugin: dump
     organize:
       platform/snap/gui/nxengine-evo.desktop: usr/share/applications/nxengine-evo.desktop
-      platform/snap/gui/icon_x256.png: usr/share/icons/nxengine-evo.png
+      platform/xdg/org.nxengine.nxengine_evo.png: usr/share/icons/nxengine-evo.png
     prime:
       - usr/share/applications/nxengine-evo.desktop
       - usr/share/icons/nxengine-evo.png
@@ -41,24 +55,22 @@ parts:
     plugin: cmake
     source: .
     build-packages:
+      - build-essential
       - libsdl2-dev
       - libsdl2-mixer-dev
       - libsdl2-ttf-dev
       - libpng-dev
     stage-packages:
       - libgl1-mesa-glx
-      - libglew2.0
+      - libglew2.1
       - libglu1-mesa
       - libsdl2-2.0-0
       - libsdl2-mixer-2.0-0
       - libsdl2-ttf-2.0-0
       - libpulse0
-    override-pull: |
-        snapcraftctl pull
-        version="$(git describe --always | sed -e 's/-/+git/;y/-/./')"
-        snapcraftctl set-version "$version"
     override-build: |
         cp -r ../src/* .
+        [ -d "build" ] && rm -r build
         mkdir build && cd build
         cmake -DCMAKE_BUILD_TYPE=Release ..
         make
