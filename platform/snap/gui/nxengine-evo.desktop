@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=NXEngine Evo
-GenericName=Jump-and-run platformer
-Comment=NXEngine Evo clone/rewrite of Doukutsu Monogatari
-Exec=nxengine-evo
-Categories=Game
-Icon=${SNAP}/usr/share/icons/nxengine-evo.png
-Type=Application
-Terminal=false
