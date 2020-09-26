@@ -7,7 +7,8 @@ confinement: strict
 
 apps:
   nxengine-evo:
-    command: bin/launcher
+    command: usr/bin/nxengine-evo
+    command-chain: [bin/desktop-launch]
     desktop: usr/share/applications/nxengine-evo.desktop
     common-id: org.nxengine.nxengine_evo
     plugs:
@@ -18,6 +19,11 @@ apps:
     - desktop
     - audio-playback
     - joystick
+
+layout:
+  /usr/share/nxengine:
+    bind: $SNAP/usr/share/nxengine
+
 parts:
   metadata:
     source: .
@@ -32,25 +38,6 @@ parts:
         > platform/xdg/org.nxengine.nxengine_evo-snap.appdata.xml
     parse-info: [platform/xdg/org.nxengine.nxengine_evo-snap.appdata.xml]
     build-packages: [xsltproc]
-  launcher:
-    source: .
-    plugin: dump
-    organize:
-      platform/snap/launcher.sh: bin/launcher
-    prime:
-      - bin/launcher
-  cavestory:
-    plugin: nil
-    source: https://www.cavestory.org/downloads/cavestoryen.zip
-  desktop-file:
-    source: .
-    plugin: dump
-    organize:
-      platform/snap/gui/nxengine-evo.desktop: usr/share/applications/nxengine-evo.desktop
-      platform/xdg/org.nxengine.nxengine_evo.png: usr/share/icons/nxengine-evo.png
-    prime:
-      - usr/share/applications/nxengine-evo.desktop
-      - usr/share/icons/nxengine-evo.png
   nxengine-evo:
     plugin: cmake
     source: .
@@ -69,21 +56,25 @@ parts:
       - libsdl2-ttf-2.0-0
       - libpulse0
     override-build: |
-        cp -r ../src/* .
-        [ -d "build" ] && rm -r build
-        mkdir build && cd build
-        cmake -DCMAKE_BUILD_TYPE=Release ..
-        make
-        cd ../
-        cp -r bin/ $SNAPCRAFT_PART_INSTALL/
+        # Build nxengine-evo
+        cmake -DCMAKE_BUILD_TYPE=Release -Bbuild
+        make -Cbuild/
+        # Patch icon name/icon path in desktop file
+        sed 's|Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/nxengine-evo.png|g' \
+          platform/xdg/org.nxengine.nxengine_evo.desktop \
+          > platform/xdg/org.nxengine.nxengine_evo.desktop
         # Extract and install data
-        cp ../../cavestory/src/CaveStory/Doukutsu.exe .
-        ./bin/extract
-        cp -r ../../cavestory/src/CaveStory/data/* data
-        cp -r data/ $SNAPCRAFT_PART_INSTALL/bin
+        mkdir -p extern
+        cp -r ../../cavestory/src/* extern
+        cp -r ../../translations/src/ extern/Translations
+        ./build-scripts/unix.install-common.sh "$SNAPCRAFT_PART_INSTALL/usr"
     after:
       - cavestory
+      - translations
       - glib-only
+  cavestory:
+    plugin: nil
+    source: https://www.cavestory.org/downloads/cavestoryen.zip
   translations:
     plugin: dump
     source: https://github.com/nxengine/translations/releases/download/v1.12/all.zip
