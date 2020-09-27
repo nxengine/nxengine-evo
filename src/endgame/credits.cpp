@@ -78,6 +78,7 @@ void Credits::Tick()
   {
     player->hide = true;
     player->dead = true; // should pretty much completely disable HandlePlayer()
+    player->inputs_locked = true;
   }
 
   game_tick_normal();
@@ -393,11 +394,11 @@ void BigImage::Draw()
   {
     if (rtl())
     {
-      Renderer::getInstance()->fillRect(0, 0, Renderer::getInstance()->screenWidth / 2, Renderer::getInstance()->screenHeight, DK_BLUE);
+      Renderer::getInstance()->fillRect(Renderer::getInstance()->screenWidth / 2, 0, Renderer::getInstance()->screenWidth, Renderer::getInstance()->screenHeight, DK_BLUE);
     }
     else
     {
-      Renderer::getInstance()->fillRect(Renderer::getInstance()->screenWidth / 2, 0, Renderer::getInstance()->screenWidth, Renderer::getInstance()->screenHeight, DK_BLUE);
+      Renderer::getInstance()->fillRect(0, 0, Renderer::getInstance()->screenWidth / 2, Renderer::getInstance()->screenHeight, DK_BLUE);
     }
   }
 
