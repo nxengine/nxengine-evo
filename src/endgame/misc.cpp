@@ -485,15 +485,15 @@ void ai_the_cast(Object *o)
     int fallframe, standframe;
     int dir;
     bool tall;
-  } cast_data[] = {{SPR_KING, 6, 0, RIGHT, false},         {SPR_TOROKO, 2, 0, RIGHT, false},
-                   {SPR_KAZUMA, 4, 0, RIGHT, true},        {SPR_SUE, 4, 0, RIGHT, false},
-                   {SPR_MOMORIN, 2, 0, LEFT, true},        {SPR_PROFESSOR_BOOSTER, 8, 0, LEFT, false},
-                   {SPR_JENKA, 0, 0, LEFT, false},
+  } cast_data[] = {{SPR_KING, 6, 0, rtl() ? LEFT : RIGHT, false},         {SPR_TOROKO, 2, 0, rtl() ? LEFT : RIGHT, false},
+                   {SPR_KAZUMA, 4, 0, rtl() ? LEFT : RIGHT, true},        {SPR_SUE, 4, 0, rtl() ? LEFT : RIGHT, false},
+                   {SPR_MOMORIN, 2, 0, rtl() ? RIGHT : LEFT, true},        {SPR_PROFESSOR_BOOSTER, 8, 0, rtl() ? RIGHT : LEFT, false},
+                   {SPR_JENKA, 0, 0, rtl() ? RIGHT : LEFT, false},
 
-                   {SPR_NURSE_HASUMI, 1, 0, RIGHT, false}, {SPR_DR_GERO, 1, 0, RIGHT, false},
-                   {SPR_BALROG_CAST, 1, 0, RIGHT, true},   {SPR_CURLY, 1, 0, RIGHT, false},
-                   {SPR_MISERY, 0, 2, LEFT, false},        {SPR_MALCO_BROKEN, 1, 0, LEFT, true},
-                   {SPR_HERMIT_GUNSMITH, 1, 0, LEFT, true}};
+                   {SPR_NURSE_HASUMI, 1, 0, rtl() ? LEFT : RIGHT, false}, {SPR_DR_GERO, 1, 0, rtl() ? LEFT : RIGHT, false},
+                   {SPR_BALROG_CAST, 1, 0, rtl() ? LEFT : RIGHT, true},   {SPR_CURLY, 1, 0, rtl() ? LEFT : RIGHT, false},
+                   {SPR_MISERY, 0, 2, rtl() ? RIGHT : LEFT, false},        {SPR_MALCO_BROKEN, 1, 0, rtl() ? RIGHT : LEFT, true},
+                   {SPR_HERMIT_GUNSMITH, 1, 0, rtl() ? RIGHT : LEFT, true}};
 
   switch (o->state)
   {
