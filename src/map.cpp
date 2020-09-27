@@ -998,8 +998,6 @@ void map_scroll_do(void)
       map.phase_adj = 0;
   }
 
-  map_sanitycheck();
-
   // custom xscroll on ending "maps"
   switch (game.curmap)
   {
@@ -1009,13 +1007,30 @@ void map_scroll_do(void)
     case 77:
     case 89:
     case 93:
-      map.displayed_xscroll = -(((Renderer::getInstance()->screenWidth - (map.xsize*TILE_W)) / 2) * CSFI);
+      if (rtl())
+      {
+        map.displayed_xscroll = ((Renderer::getInstance()->screenWidth / 2) * CSFI);
+      }
+      else
+      {
+        map.displayed_xscroll = -(((Renderer::getInstance()->screenWidth - (map.xsize*TILE_W)) / 2) * CSFI);
+      }
+      map.displayed_yscroll = 0;
       break;
     case 78:
       // carefully crafted magic number
-      map.displayed_xscroll = -((Renderer::getInstance()->screenWidth/2 - 208) * CSFI);
+      if (rtl())
+      {
+        map.displayed_xscroll = ((Renderer::getInstance()->screenWidth - 160) * CSFI);
+      }
+      else
+      {
+        map.displayed_xscroll = -((Renderer::getInstance()->screenWidth/2 - 208) * CSFI);
+      }
+      map.displayed_yscroll = 0;
       break;
     default:
+      map_sanitycheck();
       break;
   }
 
