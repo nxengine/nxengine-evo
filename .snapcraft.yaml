@@ -9,7 +9,7 @@ apps:
   nxengine-evo:
     command: usr/bin/nxengine-evo
     command-chain: [bin/desktop-launch]
-    desktop: usr/share/applications/nxengine-evo.desktop
+    desktop: usr/share/applications/org.nxengine.nxengine_evo.desktop
     common-id: org.nxengine.nxengine_evo
     plugs:
     - opengl
@@ -22,7 +22,7 @@ apps:
 
 layout:
   /usr/share/nxengine:
-    bind: $SNAP/usr/share/nxengine
+    symlink: $SNAP/usr/share/nxengine
 
 parts:
   metadata:
@@ -60,9 +60,8 @@ parts:
         cmake -DCMAKE_BUILD_TYPE=Release -Bbuild
         make -Cbuild/
         # Patch icon name/icon path in desktop file
-        sed 's|Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/nxengine-evo.png|g' \
-          platform/xdg/org.nxengine.nxengine_evo.desktop \
-          > platform/xdg/org.nxengine.nxengine_evo.desktop
+        sed -i.new 's|Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/org.nxengine.nxengine_evo.png|g' \
+          platform/xdg/org.nxengine.nxengine_evo.desktop
         # Extract and install data
         mkdir -p extern
         cp -r ../../cavestory/src/* extern
