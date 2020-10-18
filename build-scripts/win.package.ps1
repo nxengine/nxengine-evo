@@ -1,6 +1,6 @@
 #prepare
 
-Invoke-WebRequest "https://github.com/nxengine/translations/releases/download/v1.11/all.zip" -Out all.zip
+Invoke-WebRequest "https://github.com/nxengine/translations/releases/download/v1.12/all.zip" -Out all.zip
 7z x .\all.zip
 rm .\all.zip
 
