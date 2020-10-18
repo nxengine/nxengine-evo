@@ -1124,8 +1124,8 @@ int doBidi(BLOCKTYPE line, int count, bool applyShape, bool reorderCombining)
     return 0;
 
   /* Initialize types, levels */
-  types = (unsigned char*)malloc(sizeof(unsigned char) * count);
-  levels = (unsigned char*)malloc(sizeof(unsigned char) * count);
+  types = (unsigned char*)calloc(count, sizeof(unsigned char));
+  levels = (unsigned char*)calloc(count, sizeof(unsigned char));
   if (types == NULL || levels == NULL)
   {
     exit(-1);
