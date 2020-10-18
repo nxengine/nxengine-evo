@@ -74,7 +74,7 @@ parts:
       - glib-only
   translations:
     plugin: dump
-    source: https://github.com/nxengine/translations/releases/download/v1.9/all.zip
+    source: https://github.com/nxengine/translations/releases/download/v1.10/all.zip
     organize:
       data: bin/data
     prime:
