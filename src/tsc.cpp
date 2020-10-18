@@ -1040,7 +1040,7 @@ void TSC::ExecScript(ScriptInstance *s)
         break;
       case OP_SNP:
       {
-        o = CreateObject((parm[1] * TILE_W) * CSFI, (parm[2] * TILE_H) * CSFI, parm[0], 0, 0, CVTDir(parm[3]), NULL,
+        (void)CreateObject((parm[1] * TILE_W) * CSFI, (parm[2] * TILE_H) * CSFI, parm[0], 0, 0, CVTDir(parm[3]), NULL,
                          CF_NO_SPAWN_EVENT);
       }
       break;

@@ -722,7 +722,7 @@ void PDoJumping(void)
 
 void PDoLooking(void)
 {
-  int lookscroll_want;
+  int lookscroll_want = 0;
   int i, key;
 
   // looking/aiming up and down
