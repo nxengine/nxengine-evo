@@ -3,7 +3,7 @@ image:
   - Ubuntu
   - Visual Studio 2017
 
-version: 2.6.4.{build}
+version: 2.6.5.{build}
 
 pull_requests:
   do_not_increment_build_number: true
