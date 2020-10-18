@@ -187,6 +187,11 @@ ENDIF()
 IF(PLATFORM STREQUAL "pc")
     add_executable(extract ${EXTR_SOURCES})
     target_link_libraries(extract ${SDL2_LIBRARY})
+
+    install(TARGETS nx extract
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
 ENDIF()
 
 
