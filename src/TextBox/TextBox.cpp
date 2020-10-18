@@ -369,7 +369,11 @@ void TextBox::DrawTextBox()
 
   for (int i = 0; i < MSG_NLINES; i++)
   {
-    int lineWidth = Renderer::getInstance()->font.draw(text_x, y, fLines[i]);
+    int lineWidth = 0;
+    if (!(fFlags & TB_NO_BORDER))
+        lineWidth = Renderer::getInstance()->font.draw(text_x, y, fLines[i]);
+    else
+        lineWidth = Renderer::getInstance()->font.draw(text_x, y, fLines[i], 0xFFFFFF, true);
 
     // draw the cursor
     if (i == fCurLine && fCursorTimer < 7)
