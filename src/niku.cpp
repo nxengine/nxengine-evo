@@ -73,28 +73,19 @@ bool niku_save(uint32_t value)
 
   std::string fname = ResourceManager::getInstance()->getPrefPath("290.rec");
 
-  // place values
-  buf_dword[0] = value;
-  buf_dword[1] = value;
-  buf_dword[2] = value;
-  buf_dword[3] = value;
-
-  // generate keys
-  buf_byte[16] = random(0, 255);
-  buf_byte[17] = random(0, 255);
-  buf_byte[18] = random(0, 255);
-  buf_byte[19] = random(0, 255);
-
   // encode each copy
   for (int i = 0; i < 4; i++)
   {
-    uint8_t *ptr = (uint8_t *)&buf_dword[i];
-    uint8_t key  = buf_byte[i + 16];
+    buf_dword[i] = value;
+    buf_byte[i+16] = random(0, 250) + i;
+    uint8_t p[4];
 
-    ptr[0] += key;
-    ptr[1] += key;
-    ptr[2] += key;
-    ptr[3] += key / 2;
+    p[0] = (uint8_t)(buf_dword[i] + buf_byte[i+16]);
+    p[1] = (uint8_t)((buf_dword[i] >> 8) + buf_byte[i+16]);
+    p[2] = (uint8_t)((buf_dword[i] >> 16) + buf_byte[i+16]);
+    p[3] = (uint8_t)((buf_dword[i] >> 24) + buf_byte[i+16] / 2);
+
+    buf_dword[i] = p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24);
   }
 
   FILE *fp = myfopen(widen(fname).c_str(), widen("wb").c_str());
