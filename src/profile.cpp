@@ -243,6 +243,11 @@ char *GetProfileName(int num)
 {
   std::string prof = ResourceManager::getInstance()->getPrefPath("");
 
+  if (ResourceManager::getInstance()->isMod())
+  {
+    prof += ResourceManager::getInstance()->mod().dir + "_";
+  }
+
   std::string profile;
   if (num == 0)
   {

@@ -23,7 +23,16 @@ uint32_t niku_load()
   uint32_t *result = (uint32_t *)buffer;
   int i, j;
 
-  std::string fname = ResourceManager::getInstance()->getPrefPath("290.rec");
+  std::string fname;
+
+  if (ResourceManager::getInstance()->isMod())
+  {
+    fname = ResourceManager::getInstance()->getPrefPath(ResourceManager::getInstance()->mod().dir + "_290.rec");
+  }
+  else
+  {
+    fname = ResourceManager::getInstance()->getPrefPath("290.rec");
+  }
 
   fp = myfopen(widen(fname).c_str(), widen("rb").c_str());
   if (!fp)
@@ -71,7 +80,16 @@ bool niku_save(uint32_t value)
   uint8_t buf_byte[20];
   uint32_t *buf_dword = (uint32_t *)buf_byte;
 
-  std::string fname = ResourceManager::getInstance()->getPrefPath("290.rec");
+  std::string fname;
+
+  if (ResourceManager::getInstance()->isMod())
+  {
+    fname = ResourceManager::getInstance()->getPrefPath(ResourceManager::getInstance()->mod().dir + "_290.rec");
+  }
+  else
+  {
+    fname = ResourceManager::getInstance()->getPrefPath("290.rec");
+  }
 
   // encode each copy
   for (int i = 0; i < 4; i++)

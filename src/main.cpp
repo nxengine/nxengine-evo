@@ -438,7 +438,7 @@ int main(int argc, char *argv[])
     {
       if (game.switchstage.mapno == NEW_GAME || game.switchstage.mapno == NEW_GAME_FROM_MENU)
       {
-        bool show_intro = (game.switchstage.mapno == NEW_GAME_FROM_MENU);
+        bool show_intro = (game.switchstage.mapno == NEW_GAME_FROM_MENU || ResourceManager::getInstance()->isMod());
         InitNewGame(show_intro);
       }
 

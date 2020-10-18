@@ -36,7 +36,7 @@ bool intro_init(int param)
 
 void intro_tick()
 {
-  if (blanktimer == 0 &&ResourceManager::getInstance()->isMod() && ResourceManager::getInstance()->mod().skip_intro)
+  if (blanktimer == 0 && ResourceManager::getInstance()->isMod() && ResourceManager::getInstance()->mod().skip_intro)
   {
     game.tsc->StopScripts();
     blanktimer = EXIT_DELAY;
