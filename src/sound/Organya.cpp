@@ -228,32 +228,8 @@ void Song::Synth()
     {
       double pos = i.phaseacc;
       // Take a sample from the wave data.
-#if defined(RESAMPLER_LANCZOS)
-      // Perform Lanczos resampling
-      enum
-      {
-        radius = 2
-      };
-      auto lanczos = [](double d) -> double {
-        if (d == 0.)
-          return 1.;
-        if (std::fabs(d) > radius)
-          return 0.;
-        double dr = (d *= 3.14159265) / radius;
-        return std::sin(d) * std::sin(dr) / (d * dr);
-      };
-      double scale = 1 / i.phaseinc > 1 ? 1 : 1 / i.phaseinc, density = 0, sample = 0;
-      int min = -radius / scale + pos - 0.5;
-      int max = radius / scale + pos + 0.5;
-      for (int m = min; m < max; ++m) // Collect a weighted average.
-      {
-        double factor = lanczos((m - pos + 0.5) * scale);
-        density += factor;
-        sample += i.cur_wave[m < 0 ? 0 : m % i.cur_wavesize] * factor;
-      }
-      if (density > 0.)
-        sample /= density; // Normalize*/
-#elif defined(RESAMPLER_LINEAR)
+      double sample = 0;
+
       // Perform linear interpolation
       unsigned int position_integral = unsigned(pos);
       double position_fractional = pos - position_integral;
@@ -261,11 +237,11 @@ void Song::Synth()
       double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
       double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
 
-      double sample = sample1 + (sample2 - sample1) * position_fractional;
-#else
+      sample = sample1 + (sample2 - sample1) * position_fractional;
+
       // Perform nearest-neighbour interpolation
-      double sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
-#endif
+//      sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
+
       // Save audio in float32 format:
       samples[p * 2 + 0] += sample * left;
       samples[p * 2 + 1] += sample * right;
