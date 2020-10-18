@@ -11,7 +11,7 @@ cd ..
 rm -rf build
 
 cd release
-wget https://github.com/nxengine/translations/releases/download/v1.10/all.zip
+wget https://github.com/nxengine/translations/releases/download/v1.11/all.zip
 unzip all.zip
 rm all.zip
 wget http://www.cavestory.org/downloads/cavestoryen.zip
