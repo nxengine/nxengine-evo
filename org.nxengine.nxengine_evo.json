@@ -17,9 +17,8 @@
 		{
 			"name": "nxengine-evo",
 			"buildsystem": "cmake-ninja",
-			"no-make-install": true,
 			"post-install": [
-				"build-scripts/unix.install-common.sh \"${FLATPAK_DEST}\""
+				"build-scripts/unix.install-extras.sh \"${FLATPAK_DEST}\" \"${FLATPAK_DEST}/bin/nxextract\""
 			],
 			
 			"sources": [
@@ -30,7 +29,7 @@
 				{
 					"type": "archive",
 					"url": "https://github.com/nxengine/translations/releases/download/v1.12/all.zip",
-					"sha256": "9661ef3a8a051d0cc94f6846c8b746b9a42eb8e71fb8deedb1fe43bef5bde869",
+					"sha256": "37dcc941c47a091055b938c41d5600d4b2b41fae2e42695c2307fda19ff8760e",
 					"strip-components": 2,
 					"dest": "extern/Translations"
 				},

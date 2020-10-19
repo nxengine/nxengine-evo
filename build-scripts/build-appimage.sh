@@ -43,12 +43,12 @@ chmod +x extern/linuxdeploy.AppImage
 
 # Build NXEngine-Evo
 rm -rf build
-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -Bbuild -H.
+cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
 ninja -Cbuild
 
 # Generate AppImage filesystem image directory
-mkdir -p build/AppDir/usr
-build-scripts/unix.install-common.sh build/AppDir/usr
+ninja -Cbuild install
+build-scripts/unix.install-extras.sh build/AppDir/usr build/nxextract
 
 # Work around GH/AppImage/AppImageKit#856
 mkdir -p build/bin
