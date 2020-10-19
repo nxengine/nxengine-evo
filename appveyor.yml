@@ -38,7 +38,7 @@ for:
       force_update: true
       prerelease: false
       on:
-        appveyor_repo_tag: true
+        APPVEYOR_REPO_TAG: true
 
 -
   matrix:
@@ -65,7 +65,7 @@ for:
       force_update: true
       prerelease: false
       on:
-        appveyor_repo_tag: true
+        APPVEYOR_REPO_TAG: true
 
 -
   matrix:
@@ -92,5 +92,5 @@ for:
       force_update: true
       prerelease: false
       on:
-        appveyor_repo_tag: true
+        APPVEYOR_REPO_TAG: true
 

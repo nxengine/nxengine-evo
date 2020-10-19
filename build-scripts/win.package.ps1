@@ -32,7 +32,7 @@ if ($env:PLATFORM -eq "x86") {
   cp ..\platform\win32\ext\runtime\x86\* .\NXEngine\
 
   #create zip
-  $name = "NXEngine_Evo-$env:APPVEYOR_REPO_TAG_NAME-Win32.zip"
+  $name = "NXEngine-Evo-$env:APPVEYOR_REPO_TAG_NAME-Win32.zip"
   7z a $name .\NXEngine\
 
   Push-AppveyorArtifact $name
@@ -44,7 +44,7 @@ if ($env:PLATFORM -eq "x86") {
   cp ..\platform\\win32\ext\runtime\x64\* .\NXEngine\
 
   #create zip
-  $name = "NXEngine_Evo-$env:APPVEYOR_REPO_TAG_NAME-Win64.zip"
+  $name = "NXEngine-Evo-$env:APPVEYOR_REPO_TAG_NAME-Win64.zip"
   7z a $name .\NXEngine\
 
   Push-AppveyorArtifact $name
