@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
+
+project(nx CXX)
+
+set (nx_VERSION_MAJOR 2)
+set (nx_VERSION_MINOR 6)
+set (nx_VERSION_RELEASE 4)
+set (nx_APP_ID org.nxengine.nxengine_evo)
+
 include(CheckCXXCompilerFlag)
+include(GNUInstallDirs)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -32,12 +41,6 @@ ELSEIF(PLATFORM STREQUAL "switch")
 ELSE()
     message(FATAL_ERROR "Wrong platform")
 ENDIF()
-
-project(nx)
-
-set (nx_VERSION_MAJOR 2)
-set (nx_VERSION_MINOR 6)
-set (nx_VERSION_RELEASE 4)
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
@@ -100,6 +103,7 @@ ENDIF()
 add_definitions("-Wall")
 
 add_executable(nx ${SOURCES})
+set_property(TARGET nx PROPERTY OUTPUT_NAME nxengine-evo)
 
 IF(PLATFORM STREQUAL "pc")
     add_definitions("-std=c++11")
@@ -174,11 +178,17 @@ ENDIF()
 IF(PLATFORM STREQUAL "pc")
     add_executable(extract ${EXTR_SOURCES})
     target_link_libraries(extract ${SDL2_LIBRARY})
+    set_property(TARGET extract PROPERTY OUTPUT_NAME nxextract)
 
-    install(TARGETS nx extract
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib/static)
+    install(TARGETS nx extract)
+    install(DIRECTORY data DESTINATION ${CMAKE_INSTALL_DATADIR}/nxengine)
+
+    # Install XDG metadata on Desktop Linux like platforms
+    IF(UNIX AND NOT APPLE AND NOT ANDROID)
+        install(FILES platform/xdg/${nx_APP_ID}.desktop     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+        install(FILES platform/xdg/${nx_APP_ID}.png         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps)
+        install(FILES platform/xdg/${nx_APP_ID}.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+    ENDIF()
 ENDIF()
 
 
