@@ -16,10 +16,10 @@ mkdir NXEngine.app/Contents/MacOS
 mkdir NXEngine.app/Contents/Resources
 
 #prepare and copy data
-cp ../bin/extract CaveStory/
-cp ../bin/nx NXEngine.app/Contents/MacOS/NXEngine
+cp ../nxextract CaveStory/
+cp ../nxengine-evo NXEngine.app/Contents/MacOS/NXEngine
 cd CaveStory
-./extract
+./nxextract
 cd ..
 cp -r CaveStory/data NXEngine.app/Contents/Resources
 cp -r ../data NXEngine.app/Contents/Resources
