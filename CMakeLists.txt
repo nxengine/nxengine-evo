@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.6)
 include(CheckCXXCompilerFlag)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
 option(LOW_END_HARDWARE "Build for low-end hardware" ON)
 set(PLATFORM "pc" CACHE STRING "Platform to build for")
