@@ -7,9 +7,9 @@ confinement: strict
 
 apps:
   nxengine-evo:
-    command: usr/bin/nxengine-evo
+    command: usr/local/bin/nxengine-evo
     command-chain: [bin/desktop-launch]
-    desktop: usr/share/applications/org.nxengine.nxengine_evo.desktop
+    desktop: usr/local/share/applications/org.nxengine.nxengine_evo.desktop
     common-id: org.nxengine.nxengine_evo
     plugs:
     - opengl
@@ -20,14 +20,10 @@ apps:
     - audio-playback
     - joystick
 
-layout:
-  /usr/share/nxengine:
-    symlink: $SNAP/usr/share/nxengine
-
 parts:
   metadata:
-    source: .
     plugin: nil
+    source: .
     override-pull: |
       snapcraftctl pull
       version="$(git describe --always | sed -e 's/-/+git/;y/-/./')"
@@ -55,39 +51,46 @@ parts:
       - libsdl2-mixer-2.0-0
       - libsdl2-ttf-2.0-0
       - libpulse0
-    override-build: |
-        # Build nxengine-evo
-        cmake -DCMAKE_BUILD_TYPE=Release -Bbuild
-        make -Cbuild/
-        # Patch icon name/icon path in desktop file
-        sed -i.new 's|Icon=.*|Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/org.nxengine.nxengine_evo.png|g' \
-          platform/xdg/org.nxengine.nxengine_evo.desktop
-        # Extract and install data
-        mkdir -p extern
-        cp -r ../../cavestory/src/* extern
-        cp -r ../../translations/src/ extern/Translations
-        ./build-scripts/unix.install-common.sh "$SNAPCRAFT_PART_INSTALL/usr"
+    override-pull: |
+      snapcraftctl pull
+      # Patch icon name/icon path in desktop file
+      sed -i.new 's|Icon=.*|Icon=${SNAP}/usr/local/share/icons/hicolor/256x256/apps/org.nxengine.nxengine_evo.png|g' \
+        platform/xdg/org.nxengine.nxengine_evo.desktop
+    prime:
+      - "-usr/local/bin/nxextract"
     after:
+      - translations
+  cavestory-extract:
+    plugin: nil
+    source: .
+    override-build: |
+      # Extract and install data
+      ln -s $SNAPCRAFT_STAGE/extern extern
+      ./build-scripts/utils/unix.install-extern.sh \
+        "$SNAPCRAFT_PART_INSTALL/usr/local" \
+        "$SNAPCRAFT_STAGE/usr/local/bin/nxextract"
+    after:
+      - nxengine-evo
       - cavestory
       - translations
-      - glib-only
   cavestory:
-    plugin: nil
+    plugin: dump
     source: https://www.cavestory.org/downloads/cavestoryen.zip
+    organize:
+      "*": extern/CaveStory
+    prime:
+      - "-extern"
   translations:
     plugin: dump
     source: https://github.com/nxengine/translations/releases/download/v1.12/all.zip
     organize:
-      data: bin/data
+      "data/lang": extern/Translations
     prime:
-      - bin/data
-    after:
-      - cavestory
-      - nxengine-evo
+      - "-extern"
   glib-only:
+    plugin: make
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: glib-only
-    plugin: make
     build-packages:
       - libglib2.0-dev
     stage-packages:
