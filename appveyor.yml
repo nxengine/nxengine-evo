@@ -24,7 +24,7 @@ for:
       - image: Visual Studio 2017
 
   before_deploy:
-   - ps: .\build-scripts\win.package.ps1
+   - ps: .\build-scripts\ci\win.package.ps1
 
   deploy:
     - provider: GitHub
@@ -46,7 +46,7 @@ for:
       - image: Ubuntu
 
   build_script:
-  - build-scripts/linux.install.sh
+  - build-scripts/ci/linux.install.sh
   - cmake -DCMAKE_BUILD_TYPE=Release .
   - make
 
@@ -73,12 +73,12 @@ for:
       - image: macos
 
   build_script:
-  - build-scripts/osx.install.sh
+  - build-scripts/ci/osx.install.sh
   - cmake -DCMAKE_BUILD_TYPE=Release .
   - make
 
   before_deploy:
-   - build-scripts/osx.package.sh
+   - build-scripts/ci/osx.package.sh
 
   deploy:
     - provider: GitHub
