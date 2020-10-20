@@ -68,8 +68,8 @@ parts:
       # Extract and install data
       export APP_ID="org.nxengine.nxengine_evo"
       ./build-scripts/utils/common.download-extern.sh
-      ./build-scripts/utils/unix.install-extern.sh \
-        "$SNAPCRAFT_PART_INSTALL/usr/local" \
+      ./build-scripts/utils/common.install-extern.sh \
+        "$SNAPCRAFT_PART_INSTALL/usr/local/share/nxengine" \
         "$SNAPCRAFT_STAGE/usr/local/bin/nxextract"
     after:
       - nxengine-evo
