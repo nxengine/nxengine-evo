@@ -1,5 +1,5 @@
 image:
-  - macos
+  - macos-mojave
   - Ubuntu1604
   - Ubuntu2004
   - Visual Studio 2017
@@ -102,15 +102,19 @@ for:
 -
   matrix:
     only:
-      - image: macos
+      - image: macos-mojave
+
+  install:
+    - brew update
+    - brew install sdl2 sdl2_mixer libpng
 
   build_script:
-  - build-scripts/ci/osx.install.sh
-  - cmake -DCMAKE_BUILD_TYPE=Release .
-  - make
+    - cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -Bbuild -H.
+    - make -Cbuild
 
   before_deploy:
-   - build-scripts/ci/osx.package.sh
+    - brew install create-dmg dylibbundler jq
+    - build-scripts/build-macos.sh --no-build
 
   deploy:
     - provider: GitHub
