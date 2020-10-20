@@ -64,6 +64,7 @@ parts:
     build-packages:
       - jq
       - unzip
+      - wget
     override-build: |
       # Extract and install data
       export APP_ID="org.nxengine.nxengine_evo"
