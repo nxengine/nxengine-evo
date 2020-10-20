@@ -2,40 +2,14 @@
 set -eu -o pipefail
 cd "$(dirname "$(readlink -f "$0")")/.."
 
-APP_ID="org.nxengine.nxengine_evo"
+export APP_ID="org.nxengine.nxengine_evo"
 
 # Extract latest release from AppStream data
 VERSION="$(xmllint --xpath 'string(/component/releases/release/@version)' "platform/xdg/${APP_ID}.appdata.xml")"
 MACHINE="$(uname -m)"
 
-# Download, verify and extract external resources mentioned in the Flatpak builder manifest
-mkdir -p extern
-jq -r '.modules[0].sources[] | select(.type=="archive") | (.sha256 + " " + .url + " " + .dest)' "${APP_ID}.json" | while read sha256 url dest;
-do
-	origname="${url##*/}"
-	filepath="extern/${sha256}.${origname#*.}"
-	
-	# Download and verify archive file
-	test -e "${filepath}" || wget "${url}" -O "${filepath}"
-	echo "${sha256}  ${filepath}" | sha256sum -c
-	
-	# Extract archive and move it to the same location that it would end up in the Flatpak build
-	case "${dest}" in
-		extern/Translations)
-			rm -rf extern/Translations
-			
-			unzip -d extern/Translations "${filepath}"
-			mv extern/Translations/data/lang/* extern/Translations/
-			rmdir extern/Translations/data/lang extern/Translations/data
-		;;
-		
-		extern/CaveStory)
-			rm -rf extern/CaveStory
-			
-			unzip -d extern "${filepath}"
-		;;
-	esac
-done
+# Download required dependencies
+build-scripts/utils/common.download-extern.sh
 
 # Additionally download recent version of the LinuxDeploy AppImage utility (no checksum verification since file regularily changes when updated to newer versions)
 test -e "extern/linuxdeploy.AppImage" || wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${MACHINE}.AppImage" -O "extern/linuxdeploy.AppImage"
@@ -48,12 +22,13 @@ ninja -Cbuild
 
 # Generate AppImage filesystem image directory
 ninja -Cbuild install
-build-scripts/unix.install-extras.sh build/AppDir/usr build/nxextract
+build-scripts/utils/unix.install-extern.sh build/AppDir/usr build/nxextract
 
 # Work around GH/AppImage/AppImageKit#856
 mkdir -p build/bin
 for toolname in appstreamcli appstream-util;
 do
+	# START OF INLINE WORKAROUND SCRIPT #
 	cat >"build/bin/${toolname}" <<'EOF'
 #!/bin/bash
 set -eu -o pipefail
@@ -78,6 +53,7 @@ export PATH
 unset LD_LIBRARY_PATH
 exec "${0##*/}" "$@"
 EOF
+	# END OF INLINE WORKAROUND SCRIPT #
 	chmod +x "build/bin/${toolname}"
 done
 export PATH="${PWD}/build/bin${PATH+:}${PATH:-}"
