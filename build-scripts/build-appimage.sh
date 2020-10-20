@@ -40,7 +40,7 @@ fi
 
 # Generate AppImage filesystem image directory
 ninja -Cbuild install
-build-scripts/utils/unix.install-extern.sh build/AppDir/usr build/nxextract
+build-scripts/utils/common.install-extern.sh build/AppDir/usr/share/nxengine build/nxextract
 
 # Work around GH/AppImage/AppImageKit#856
 mkdir -p build/bin

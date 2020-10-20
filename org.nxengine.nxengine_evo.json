@@ -18,7 +18,7 @@
 			"name": "nxengine-evo",
 			"buildsystem": "cmake-ninja",
 			"post-install": [
-				"build-scripts/utils/unix.install-extern.sh \"${FLATPAK_DEST}\" \"${FLATPAK_DEST}/bin/nxextract\""
+				"build-scripts/utils/common.install-extern.sh \"${FLATPAK_DEST}/share/nxengine\" \"${FLATPAK_DEST}/bin/nxextract\""
 			],
 			
 			"sources": [

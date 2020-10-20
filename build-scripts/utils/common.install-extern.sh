@@ -5,9 +5,9 @@
 # Because of this, the following things are expected about the environment:
 #  * Current working directory must be at the GIT checkout of the project root directory
 #  * Directory `extern/Translations` must contain the preprocessed and extracted translations (one subdirectory for each language)
-#  * Directory `extern/CaveStory` must contain the extracted Windows game binary
+#  * Directory `extern/CaveStory` must contain the extracted Windows game ZIP
 #
-# Call as: build-scripts/unix.install-extras.sh [target-path:/usr] [/path/to/nxextract]
+# Call as: build-scripts/unix.install-extern.sh [target-path:/usr/share/nxengine] [/path/to/nxextract]
 set -eu
 TARGET="${1}"
 NXEXTRACT="$(readlink -f "${2}")"
@@ -16,6 +16,6 @@ NXEXTRACT="$(readlink -f "${2}")"
 ( cd extern/CaveStory && "${NXEXTRACT}"; )
 
 # Install NXEngine data files
-install -vd "${TARGET}/share/nxengine"
-cp -avr extern/CaveStory/data "${TARGET}/share/nxengine/"
-cp -avr extern/Translations   "${TARGET}/share/nxengine/data/lang"
+install -vd "${TARGET}"
+cp -avr extern/CaveStory/data "${TARGET}/"
+cp -avr extern/Translations   "${TARGET}/data/lang"
