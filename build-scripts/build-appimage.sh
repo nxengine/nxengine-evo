@@ -4,6 +4,21 @@ cd "$(dirname "$(readlink -f "$0")")/.."
 
 export APP_ID="org.nxengine.nxengine_evo"
 
+SKIP_BUILD=false
+if [[ $# -gt 0 ]];
+then
+	case "$1" in
+		"--no-build")
+			SKIP_BUILD=true
+		;;
+
+		*)
+			echo "Usage: ${0##*/} [--no-build]"
+			exit 1
+		;;
+	esac
+fi
+
 # Extract latest release from AppStream data
 VERSION="$(xmllint --xpath 'string(/component/releases/release/@version)' "platform/xdg/${APP_ID}.appdata.xml")"
 MACHINE="$(uname -m)"
@@ -16,9 +31,12 @@ test -e "extern/linuxdeploy.AppImage" || wget "https://github.com/linuxdeploy/li
 chmod +x extern/linuxdeploy.AppImage
 
 # Build NXEngine-Evo
-rm -rf build
-cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
-ninja -Cbuild
+if ! ${SKIP_BUILD};
+then
+	rm -rf build
+	cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
+	ninja -Cbuild
+fi
 
 # Generate AppImage filesystem image directory
 ninja -Cbuild install

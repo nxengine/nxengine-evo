@@ -1,6 +1,6 @@
 image:
   - macos
-  - Ubuntu
+  - Ubuntu1604
   - Visual Studio 2017
 
 version: 2.6.5.{build}
@@ -43,15 +43,18 @@ for:
 -
   matrix:
     only:
-      - image: Ubuntu
+      - image: Ubuntu1604
+
+  install:
+    - sudo apt update
+    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev
 
   build_script:
-  - build-scripts/ci/linux.install.sh
-  - cmake -DCMAKE_BUILD_TYPE=Release .
-  - make
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
+    - ninja -Cbuild
 
   before_deploy:
-   - build-scripts/build-appimage.sh
+    - build-scripts/build-appimage.sh --no-build
 
   deploy:
     - provider: GitHub
