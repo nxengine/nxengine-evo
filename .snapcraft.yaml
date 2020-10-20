@@ -58,35 +58,21 @@ parts:
         platform/xdg/org.nxengine.nxengine_evo.desktop
     prime:
       - "-usr/local/bin/nxextract"
-    after:
-      - translations
   cavestory-extract:
     plugin: nil
     source: .
+    build-packages:
+      - jq
+      - unzip
     override-build: |
       # Extract and install data
-      ln -s $SNAPCRAFT_STAGE/extern extern
+      export APP_ID="org.nxengine.nxengine_evo"
+      ./build-scripts/utils/common.download-extern.sh
       ./build-scripts/utils/unix.install-extern.sh \
         "$SNAPCRAFT_PART_INSTALL/usr/local" \
         "$SNAPCRAFT_STAGE/usr/local/bin/nxextract"
     after:
       - nxengine-evo
-      - cavestory
-      - translations
-  cavestory:
-    plugin: dump
-    source: https://www.cavestory.org/downloads/cavestoryen.zip
-    organize:
-      "*": extern/CaveStory
-    prime:
-      - "-extern"
-  translations:
-    plugin: dump
-    source: https://github.com/nxengine/translations/releases/download/v1.12/all.zip
-    organize:
-      "data/lang": extern/Translations
-    prime:
-      - "-extern"
   glib-only:
     plugin: make
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
