@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-cd "$(dirname "$(readlink -f "$0")")/.."
+cd "$(dirname "$(readlink -f "$0")")/.."  # GNU guard
 
 APP_ID="org.nxengine.nxengine_evo"
 VERSION="$(xmllint --xpath 'string(/component/releases/release/@version)' platform/xdg/org.nxengine.nxengine_evo.appdata.xml)"

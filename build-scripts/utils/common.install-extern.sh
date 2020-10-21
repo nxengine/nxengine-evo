@@ -10,12 +10,12 @@
 # Call as: build-scripts/unix.install-extern.sh [target-path:/usr/share/nxengine] [/path/to/nxextract]
 set -eu
 TARGET="${1}"
-NXEXTRACT="$(readlink -f "${2}")"
+NXEXTRACT="`case "$2" in /*) echo "$2";; *) echo "$(pwd)/$2";; esac`"
 
 # Extract resources from original CaveStory EXE
 ( cd extern/CaveStory && "${NXEXTRACT}"; )
 
 # Install NXEngine data files
 install -vd "${TARGET}"
-cp -avr extern/CaveStory/data "${TARGET}/"
-cp -avr extern/Translations   "${TARGET}/data/lang"
+cp -v -RpP extern/CaveStory/data "${TARGET}/"
+cp -v -RpP extern/Translations   "${TARGET}/data/lang"

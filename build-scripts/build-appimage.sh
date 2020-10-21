@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eu -o pipefail
-cd "$(dirname "$(readlink -f "$0")")/.."
+cd "$(dirname "$(readlink -f "$0")")/.."  # GNU guard
 
 export APP_ID="org.nxengine.nxengine_evo"
 
