@@ -24,7 +24,8 @@
 			"sources": [
 				{
 					"type": "git",
-					"path": "."
+					"path": ".",
+					"tag": "HEAD"
 				},
 				{
 					"type": "archive",
