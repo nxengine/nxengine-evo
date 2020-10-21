@@ -1,6 +1,23 @@
 #!/bin/bash
 set -eu -o pipefail
-cd "$(dirname "$(readlink -f "$0")")/.."
+if FILEPATH="$(readlink -f "$0" 2>/dev/null)";
+then
+	cd "${FILEPATH%/*}/"
+else
+	FILEPATH="$0"
+	for _ in 1 2 3 4 5 6 7 8;  # Maximum symlink recursion depth
+	do
+		cd -L "`case "${FILEPATH}" in */*) echo "${FILEPATH%/*}";; *) echo ".";; esac`/"  # cd $(dirname)
+		if ! FILEPATH="$(readlink "${FILEPATH##*/}" || ( echo "${FILEPATH##*/}" && false ) )";
+		then
+			break
+		fi
+	done
+	cd -P "."
+	FILEPATH="$(pwd)/${FILEPATH}"
+fi
+cd ..
+
 
 export APP_ID="org.nxengine.nxengine_evo"
 BUILD_DEST=build/NXEngine.app
@@ -35,13 +52,13 @@ then
 fi
 
 # Copy main binary
-install -vT build/nxengine-evo      "${BUILD_DEST}/Contents/MacOS/NXEngine"
-install -vT platform/osx/icons.icns "${BUILD_DEST}/Contents/Resources/icons.icns"
-install -vT platform/osx/Info.plist "${BUILD_DEST}/Contents/Info.plist"
+install -vd "${BUILD_DEST}"/Contents/{MacOS,Resources}
+install -v build/nxengine-evo      "${BUILD_DEST}/Contents/MacOS/NXEngine"
+install -v platform/osx/icons.icns "${BUILD_DEST}/Contents/Resources/icons.icns"
+install -v platform/osx/Info.plist "${BUILD_DEST}/Contents/Info.plist"
 
 # Copy game data
-install -vd "${BUILD_DEST}/Contents/Resources"
-cp -avr data "${BUILD_DEST}/Contents/Resources/"
+cp -v -RpP data "${BUILD_DEST}/Contents/Resources/"
 build-scripts/utils/common.install-extern.sh "${BUILD_DEST}/Contents/Resources" build/nxextract
 
 # Bundle dynamic libraries
