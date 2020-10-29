@@ -125,6 +125,11 @@ void TextBox::AddText(const std::string &str)
   if (!fVisible)
     return;
 
+  char buf[256];
+  crtoslashn((char*)str.c_str(), buf);
+
+  LOG_DEBUG("Str: {}", buf);
+
   std::string result = str;
   std::vector<uint32_t> utf32result;
   utf8::utf8to32(str.begin(), str.end(), std::back_inserter(utf32result));
@@ -132,7 +137,21 @@ void TextBox::AddText(const std::string &str)
   result.clear();
   utf8::utf32to8(utf32result.begin(), utf32result.end(), std::back_inserter(result));
 
-  fCharsWaiting.append(result);
+  if (rtl())
+  {
+    std::string tmp = fCharsWaiting;
+    fCharsWaiting = result;
+    fCharsWaiting.append(tmp);
+  }
+  else
+  {
+      fCharsWaiting.append(result);
+  }
+
+  crtoslashn((char*)fCharsWaiting.c_str(), buf);
+
+  LOG_DEBUG("fCharsWaiting: {}", buf);
+
   faceFrame = 0;
   faceStep = 1;
 }
@@ -435,6 +454,8 @@ void TextBox::AddNextChar(void)
 
     if (ch == 10)
       continue; // ignore LF's, we look only for CR
+
+    LOG_DEBUG("ch: {}", (uint32_t)ch);
 
     // go to next line on CR's, or wrap text if needed
     if ((fCurLineLen > maxlinelen) || ch == 13)
