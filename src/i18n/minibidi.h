@@ -26,5 +26,7 @@
 
 #define BLOCKTYPE uint32_t*
 #define CHARTYPE uint32_t
+#define bidi_char uint32_t
 
-int doBidi(BLOCKTYPE line, int count, bool applyShape, bool reorderCombining);
+//int doBidi(BLOCKTYPE line, int count, bool applyShape, bool reorderCombining);
+int doBidi(bidi_char* line, int count, bool applyShape, bool reorderCombining);

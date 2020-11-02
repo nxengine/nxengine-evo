@@ -2,6 +2,7 @@
 
 #include "../ResourceManager.h"
 #include "../common/misc.h"
+#include "../Utils/Logger.h"
 #include "minibidi.h"
 
 #include <json.hpp>
@@ -37,10 +38,9 @@ bool I18N::load()
         doBidi(&utf32result[0], utf32result.size(), true, false);
         result.clear();
         utf8::utf32to8(utf32result.begin(), utf32result.end(), std::back_inserter(result));
-//        std::reverse(result.begin(), result.end());
+        LOG_DEBUG("{}: {}", it.key(), result);
 
         _strings[ it.key() ] = std::move(result);
-//        _strings[it.key()] = it.value();
       }
     }
     return true;
