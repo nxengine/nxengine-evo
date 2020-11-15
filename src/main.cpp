@@ -67,7 +67,7 @@ int flipacceltime = 0;
 
 static void fatal(const char *str)
 {
-  LOG_CRITICAL("fatal: '%s'", str);
+  LOG_CRITICAL("fatal: '{}'", str);
 
   SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", str, NULL);
 }
@@ -322,7 +322,7 @@ int main(int argc, char *argv[])
   (void)ResourceManager::getInstance();
 
   Logger::init(ResourceManager::getInstance()->getPrefPath("debug.log"));
-
+//  SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
   {
     LOG_CRITICAL("ack, sdl_init failed: {}.", SDL_GetError());
