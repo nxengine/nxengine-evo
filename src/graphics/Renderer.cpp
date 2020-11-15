@@ -69,6 +69,7 @@ bool Renderer::isWindowVisible()
 
 bool Renderer::initVideo()
 {
+//  uint32_t window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
   uint32_t window_flags = SDL_WINDOW_SHOWN;
 
   const NXE::Graphics::gres_t *res = getResolutions();
@@ -119,7 +120,7 @@ bool Renderer::initVideo()
   if (!_renderer)
   {
 #if defined(__VITA__)
-    vita2d_init_advanced(2 * 1024 * 1024);
+//    vita2d_init_advanced(2 * 1024 * 1024);
 #endif
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
   }
@@ -284,7 +285,9 @@ SDL_Window* Renderer::window()
 
 void Renderer::flip()
 {
+//  LOG_INFO("===FLIPPING===\n");
   SDL_RenderPresent(_renderer);
+//  LOG_INFO("===FLIPPED===\n");
 }
 
 // blit the specified portion of the surface to the screen
