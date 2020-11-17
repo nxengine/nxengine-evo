@@ -227,6 +227,8 @@ const Graphics::gres_t *Renderer::getResolutions()
          {(char *)"1440x900", 1440, 900, 480, 300, 3, true, true},
          {(char *)"1600x900", 1600, 900, 533, 300, 3, true, true},
          {(char *)"1920x1080", 1920, 1080, 480, 270, 4, true, true},
+         {(char *)"2560x1440", 2560, 1440, 512, 288, 5, true, true},
+         {(char *)"3840x2160", 3840, 2160, 480, 270, 8, true, true},
 #endif
          {NULL, 0, 0, 0, 0, 0, false, false}};
 
