@@ -67,12 +67,12 @@ static void draw_banner(void)
 void c------------------------------() {}
 */
 
-static int get_color(int tilecode)
+static NXColor get_color(int tilecode)
 {
   switch (tilecode)
   {
     case 0:
-      return 0;
+      return GREEN4;
 
     case 0x01:
     case 0x02:
@@ -95,7 +95,7 @@ static int get_color(int tilecode)
     case 0xA1:
     case 0xA2:
     case 0xA3:
-      return 1;
+      return GREEN3;
 
     case 0x43:
     case 0x50:
@@ -107,10 +107,10 @@ static int get_color(int tilecode)
     case 0x73:
     case 0x74:
     case 0x77:
-      return 2;
+      return GREEN2;
 
     default:
-      return 3;
+      return GREEN1;
   }
 }
 
@@ -168,7 +168,8 @@ void ms_tick(void)
       ms.state = MS_CONTRACTING;
     }
   }
-  else if (ms.state == MS_CONTRACTING)
+
+  if (ms.state == MS_CONTRACTING)
   {
     ms.expandframe--;
 
@@ -193,21 +194,36 @@ void ms_draw(void)
   if (ms.state == MS_DISPLAYED)
   {
     // draw map
-    Renderer::getInstance()->drawRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
     Renderer::getInstance()->fillRect(ms.x - 1, ms.y - 1, ms.x + ms.w, ms.y + ms.h, DK_BLUE);
     for (int y = 0; y < ms.current_row; y++)
     {
+      NXColor last_color = BLACK;
+      SDL_Rect rect;
+      rect.x = ms.x;
+      rect.y = ms.y + y;
+      rect.w = ms.x + 1;
+      rect.h = ms.y + y + 1;
       for (int x = 0; x < map.xsize; x++)
       {
         int tc = tilecode[map.tiles[x][y]];
-
-        Renderer::getInstance()->sprites.drawSprite(ms.x + x, ms.y + y, SPR_MAP_PIXELS, get_color(tc));
+        NXColor color = get_color(tc);
+        rect.w = ms.x + x + 1;
+        if (color != last_color)
+        {
+            if (x > 0) {
+              Renderer::getInstance()->fillRect(rect.x, rect.y, rect.w,  rect.h, last_color);
+              rect.x = ms.x + x;
+            }
+            last_color = color;
+        }
+//        Renderer::getInstance()->fillRect(ms.x + x, ms.y + y, ms.x + x + 1, ms.y + y + 1, get_color(tc));
       }
+      Renderer::getInstance()->fillRect(rect.x, rect.y, rect.w,  rect.h, last_color);
     }
 
     // you-are-here dot
     if (ms.timer & 8)
-      Renderer::getInstance()->sprites.drawSprite(ms.px, ms.py, SPR_MAP_PIXELS, 4);
+      Renderer::getInstance()->fillRect(ms.px, ms.py, ms.px + 1, ms.py + 1, WHITE);
   }
   else if (ms.state == MS_CONTRACTING)
   {

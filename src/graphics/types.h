@@ -28,6 +28,16 @@ struct NXColor
     g = hexcolor >> 8;
     b = hexcolor;
   }
+
+  inline bool operator==(const NXColor& rhs) const
+  {
+    return (this->r == rhs.r && this->g == rhs.g && this->b == rhs.b);
+  }
+
+  inline bool operator!=(const NXColor& rhs) const
+  {
+    return (this->r != rhs.r || this->g != rhs.g || this->b != rhs.b);
+  }
 };
 
 typedef SDL_Rect NXRect;

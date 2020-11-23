@@ -135,6 +135,7 @@ ELSEIF(PLATFORM STREQUAL "vita")
       SceCommonDialog_stub
       SceTouch_stub
       SceHid_stub
+      SceMotion_stub
       m
       z
       FLAC
