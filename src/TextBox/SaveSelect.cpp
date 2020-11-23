@@ -212,7 +212,7 @@ void TB_SaveSelect::DrawProfile(int x, int y, int index)
 
     if (rtl())
     {
-      Renderer::getInstance()->font.draw(w - 8, y - 1, stage);
+      Renderer::getInstance()->font.draw(x+w - 60, y - 1, stage);
     }
     else
     {
