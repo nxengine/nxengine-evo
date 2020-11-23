@@ -16,6 +16,7 @@ using namespace Options;
 
 Dialog *moddlg;
 std::vector<std::string> _mods;
+extern std::vector<void *> optionstack;
 
 void _mod_run(ODItem *item, int dir)
 {
@@ -70,10 +71,16 @@ bool mods_init(int param)
 
 void mods_tick()
 {
-  Renderer::getInstance()->clearScreen(BLACK);
-  moddlg->RunInput();
-  moddlg->Draw();
+   if (moddlg != NULL) {
+       Renderer::getInstance()->clearScreen(BLACK);
+       moddlg->Draw();
+       moddlg->RunInput();
+   }
 }
 
 void mods_close()
-{}
+{
+  optionstack.clear();
+  delete moddlg;
+  moddlg = NULL;
+}
