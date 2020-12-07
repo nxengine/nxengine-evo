@@ -118,6 +118,7 @@ int png_save_surface(const std::string& filename, SDL_Surface *surf)
   /* Cleaning out... */
   free(row_pointers);
   png_destroy_write_struct(&png_ptr, &info_ptr);
+  fclose(fp);
 
   return 0;
 }
