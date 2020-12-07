@@ -18,10 +18,6 @@
 #include <sstream>
 #include <iomanip>
 
-#if defined(__VITA__)
-#include <vita2d.h>
-#endif
-
 namespace NXE
 {
 namespace Graphics
@@ -69,7 +65,6 @@ bool Renderer::isWindowVisible()
 
 bool Renderer::initVideo()
 {
-//  uint32_t window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
   uint32_t window_flags = SDL_WINDOW_SHOWN;
 
   const NXE::Graphics::gres_t *res = getResolutions();
@@ -119,9 +114,6 @@ bool Renderer::initVideo()
 
   if (!_renderer)
   {
-#if defined(__VITA__)
-//    vita2d_init_advanced(2 * 1024 * 1024);
-#endif
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
   }
   if (!_renderer)
