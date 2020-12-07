@@ -4,7 +4,7 @@ export APP_ID="org.nxengine.nxengine_evo"
 build-scripts/utils/common.download-extern.sh
 
 rm -rf build
-#rm -rf release
+rm -rf release
 mkdir -p release
 mkdir -p build
 cd build
@@ -22,4 +22,4 @@ cd build
 cmake -DPLATFORM=vita -DCMAKE_BUILD_TYPE=Release ..
 make
 cd ..
-#rm -rf release/data
+rm -rf release/data
