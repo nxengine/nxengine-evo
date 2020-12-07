@@ -24,3 +24,5 @@ A somewhat upgraded/refactored version of [NXEngine](http://nxengine.sourceforge
 * Tons of gameplay-related bugfixes
 * Removed built-in data extractor
 * Removed replays, as they were buggy/not implemented anyway
+
+### Vita icon based on art by [ClockWorkInc](https://www.deviantart.com/clockworkinc)
