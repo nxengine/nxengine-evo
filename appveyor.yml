@@ -1,5 +1,5 @@
 image:
-  - macos
+  - macos-mojave
   - Ubuntu1804
   - Visual Studio 2017
 
@@ -64,13 +64,13 @@ for:
     - ninja -Cbuild
 
   before_deploy:
-    - sudo apt install -yqq libxml2-utils jq appstream
+    - sudo apt install -yqq libxml2-utils jq appstream appstream-util
     - build-scripts/build-appimage.sh --no-build
 
 -
   matrix:
     only:
-      - image: macos
+      - image: macos-mojave
 
   install:
     - brew update
