@@ -18,6 +18,34 @@ build:
   project: nx.sln
   verbosity: minimal
 
+artifacts:
+  - path: 'NXEngine-*.zip'
+    name: winbuild
+
+  - path: 'NXEngine-*.dmg'
+    name: osxbuild
+
+  - path: 'NXEngine-*.flatpak'
+    name: flatpakbuild
+
+  - path: 'NXEngine-*.AppImage'
+    name: appimagebuild
+
+
+deploy:
+  - provider: GitHub
+    release: $(APPVEYOR_REPO_TAG_NAME)
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    description: ''
+    auth_token:
+      secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
+    draft: true
+    force_update: true
+    prerelease: false
+    on:
+      APPVEYOR_REPO_TAG: true
+
+
 for:
 -
   matrix:
@@ -27,19 +55,6 @@ for:
   before_deploy:
    - ps: .\build-scripts\ci\win.package.ps1
 
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.zip/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
 
 -
   matrix:
@@ -48,7 +63,7 @@ for:
 
   install:
     - sudo apt update
-    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev libxml2-utils jq
+    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev libxml2-utils jq appstream
 
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
@@ -56,20 +71,6 @@ for:
 
   before_deploy:
     - build-scripts/build-appimage.sh --no-build
-
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.AppImage/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
 
 -
   matrix:
@@ -84,20 +85,6 @@ for:
 
   build_script:
     - build-scripts/build-flatpak.sh
-
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.flatpak/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
 
 -
   matrix:
@@ -115,18 +102,4 @@ for:
   before_deploy:
     - brew install create-dmg dylibbundler jq
     - build-scripts/build-macos.sh --no-build
-
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /.*\.dmg/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
 
