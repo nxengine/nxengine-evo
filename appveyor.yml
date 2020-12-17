@@ -1,7 +1,6 @@
 image:
   - macos-mojave
-  - Ubuntu1604
-  - Ubuntu2004
+  - Ubuntu1804
   - Visual Studio 2017
 
 version: 2.6.5.{build}
@@ -25,9 +24,6 @@ artifacts:
   - path: 'NXEngine-*.dmg'
     name: osxbuild
 
-  - path: 'NXEngine-*.flatpak'
-    name: flatpakbuild
-
   - path: 'NXEngine-*.AppImage'
     name: appimagebuild
 
@@ -35,112 +31,42 @@ for:
 -
   matrix:
     only:
-      - image: Visual Studio 2017
+      - image: Visual Studio 2019
 
   before_deploy:
    - ps: .\build-scripts\ci\win.package.ps1
 
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.zip/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
-
 -
   matrix:
     only:
-      - image: Ubuntu1604
+      - image: Ubuntu1804
 
   install:
     - sudo apt update
-    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev libxml2-utils jq appstream
+    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev ninja-build
 
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
     - ninja -Cbuild
 
   before_deploy:
+    - sudo apt install -yqq libxml2-utils jq appstream
     - build-scripts/build-appimage.sh --no-build
 
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.AppImage/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
-
-
 -
   matrix:
     only:
-      - image: Ubuntu2004
-
-  install:
-    - sudo apt update
-    - sudo apt install -yqq flatpak flatpak-builder libxml2-utils
-    - flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak-builder --user --install-deps-only --install-deps-from=flathub . org.nxengine.nxengine_evo.json
-
-  build_script:
-    - build-scripts/build-flatpak.sh
-
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.flatpak/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
-
--
-  matrix:
-    only:
-      - image: macos-mojave
+      - image: macos
 
   install:
     - brew update
-    - brew install sdl2 sdl2_mixer libpng
+    - brew install sdl2 sdl2_mixer libpng ninja
 
   build_script:
-    - cmake -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -Bbuild -H.
-    - make -Cbuild
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -Bbuild -H.
+    - ninja -Cbuild
 
   before_deploy:
     - brew install create-dmg dylibbundler jq
     - build-scripts/build-macos.sh --no-build
-
-  deploy:
-    - provider: GitHub
-      release: $(APPVEYOR_REPO_TAG_NAME)
-      tag: $(APPVEYOR_REPO_TAG_NAME)
-      description: ''
-      auth_token:
-        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.dmg/
-      draft: true
-      force_update: true
-      prerelease: false
-      on:
-        APPVEYOR_REPO_TAG: true
-
+    - appveyor PushArtifact NXEngine-Evo-${APPVEYOR_REPO_TAG_NAME}-OSX.dmg
