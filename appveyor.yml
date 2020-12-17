@@ -48,7 +48,7 @@ for:
 
   install:
     - sudo apt update
-    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev libxml2-utils
+    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev libxml2-utils jq
 
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
@@ -123,7 +123,7 @@ for:
       description: ''
       auth_token:
         secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
-      artifact: /NXEngine-.*\.dmg/
+      artifact: /.*\.dmg/
       draft: true
       force_update: true
       prerelease: false
