@@ -1,7 +1,7 @@
 image:
-  - macos-mojave
+  - macos
   - Ubuntu1804
-  - Visual Studio 2017
+  - Visual Studio 2019
 
 version: 2.6.5.{build}
 
