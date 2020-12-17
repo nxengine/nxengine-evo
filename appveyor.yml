@@ -1,7 +1,7 @@
 image:
   - macos
   - Ubuntu1804
-  - Visual Studio 2019
+  - Visual Studio 2017
 
 version: 2.6.5.{build}
 
@@ -27,11 +27,25 @@ artifacts:
   - path: 'NXEngine-*.AppImage'
     name: appimagebuild
 
+deploy:
+  - provider: GitHub
+    release: $(APPVEYOR_REPO_TAG_NAME)
+    tag: $(APPVEYOR_REPO_TAG_NAME)
+    description: ''
+    auth_token:
+      secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
+    draft: true
+    force_update: true
+    prerelease: false
+    on:
+      APPVEYOR_REPO_TAG: true
+
+
 for:
 -
   matrix:
     only:
-      - image: Visual Studio 2019
+      - image: Visual Studio 2017
 
   before_deploy:
    - ps: .\build-scripts\ci\win.package.ps1
