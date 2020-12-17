@@ -72,6 +72,6 @@ extern/create-dmg/create-dmg \
 	--background platform/osx/bg.png \
 	--icon-size 96 \
 	--icon "NXEngine.app" 110 205 \
-	"NXEngine_Evo-${APPVEYOR_REPO_TAG_NAME}-OSX.dmg" "${BUILD_DEST}"
+	"NXEngine-Evo-${APPVEYOR_REPO_TAG_NAME}-OSX.dmg" "${BUILD_DEST}"
 
 ls

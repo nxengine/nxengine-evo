@@ -48,7 +48,7 @@ for:
 
   install:
     - sudo apt update
-    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev
+    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev libxml2-utils
 
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
