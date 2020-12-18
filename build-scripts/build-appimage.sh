@@ -98,6 +98,6 @@ extern/linuxdeploy.AppImage \
 	--icon-file="platform/xdg/${APP_ID}.png" \
 	--output=appimage
 
-if ! [ -x "$(command -v appveyor)" ]; then
+if [ -x "$(command -v appveyor)" ]; then
 	appveyor PushArtifact ${OUTPUT}
 fi

@@ -84,3 +84,17 @@ for:
     - brew install create-dmg dylibbundler jq
     - build-scripts/build-macos.sh --no-build
     - appveyor PushArtifact NXEngine-Evo-${APPVEYOR_REPO_TAG_NAME}-OSX.dmg
+
+  deploy:
+    - provider: GitHub
+      release: $(APPVEYOR_REPO_TAG_NAME)
+      tag: $(APPVEYOR_REPO_TAG_NAME)
+      description: ''
+      auth_token:
+        secure: UNAaCG+KMRMqZqVEHpSgXTXZOJlqEQ/7nySQ6U/LutHjXnuqVNpYDxoqIW1hufI+
+      draft: true
+      force_update: true
+      prerelease: false
+      artifact: osxbuild
+      on:
+        APPVEYOR_REPO_TAG: true
