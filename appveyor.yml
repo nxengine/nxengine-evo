@@ -18,13 +18,13 @@ build:
   verbosity: minimal
 
 artifacts:
-  - path: 'NXEngine-*.zip'
+  - path: NXEngine-*.zip
     name: winbuild
 
-  - path: 'NXEngine-*.dmg'
+  - path: NXEngine-*.dmg
     name: osxbuild
 
-  - path: 'NXEngine-*.AppImage'
+  - path: NXEngine-*.AppImage
     name: appimagebuild
 
 deploy:
