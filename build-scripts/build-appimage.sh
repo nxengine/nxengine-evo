@@ -99,5 +99,5 @@ extern/linuxdeploy.AppImage \
 	--output=appimage
 
 if [ -x "$(command -v appveyor)" ]; then
-	appveyor PushArtifact ${OUTPUT}
+	appveyor PushArtifact ${OUTPUT} -DeploymentName appimagebuild
 fi

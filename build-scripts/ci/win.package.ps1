@@ -47,7 +47,7 @@ if ($env:PLATFORM -eq "x86") {
   $name = "NXEngine-Evo-$env:APPVEYOR_REPO_TAG_NAME-Win64.zip"
   7z a $name .\NXEngine\
 
-  Push-AppveyorArtifact $name
+  Push-AppveyorArtifact $name -DeploymentName winbuild
 
   #upload
   #invoke-webrequest -UseBasicParsing -method put -infile ".\$name" https://transfer.sh/$name
