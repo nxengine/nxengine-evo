@@ -82,4 +82,6 @@ for:
     - ninja -Cbuild
 
   after_build:
+    - export APPVEYOR_VNC_BLOCK=true
+    - curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-vnc.sh' | bash -e -
     - build-scripts/ci/osx.deploy.sh
