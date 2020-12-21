@@ -80,3 +80,6 @@ for:
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -Bbuild -H.
     - ninja -Cbuild
+
+  after_build:
+    - build-scripts/ci/osx.deploy.sh
