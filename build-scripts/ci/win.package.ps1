@@ -34,7 +34,7 @@ if($env:APPVEYOR_REPO_TAG -eq "true") {
     $name = "NXEngine-Evo-$env:APPVEYOR_REPO_TAG_NAME-Win32.zip"
     7z a $name .\NXEngine\
 
-    Push-AppveyorArtifact $name
+    Push-AppveyorArtifact $name -DeploymentName winbuild
 
   } else {
     #bundle libs
