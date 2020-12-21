@@ -20,7 +20,14 @@ then
 fi
 
 # Extract latest release from AppStream data
-VERSION="$(xmllint --xpath 'string(/component/releases/release/@version)' "platform/xdg/${APP_ID}.appdata.xml")"
+VERSION="v$(xmllint --xpath 'string(/component/releases/release/@version)' "platform/xdg/${APP_ID}.appdata.xml")"
+
+# override for CI
+if [ ${APPVEYOR_REPO_TAG} == "true" ]
+then
+    VERSION="${APPVEYOR_REPO_TAG}"
+fi
+
 MACHINE="$(uname -m)"
 
 # Download required dependencies
@@ -79,18 +86,18 @@ export PATH="${PWD}/build/bin${PATH+:}${PATH:-}"
 PLATFORM_SUFFIX=""
 case "${MACHINE}" in
 	i[3456789]86|x86|x86-32|x86_32)
-		PLATFORM_SUFFIX=32
+		PLATFORM_SUFFIX="i386"
 	;;
 	x86-64|x86_64|amd64)
-		PLATFORM_SUFFIX=64
+		PLATFORM_SUFFIX="x86_64"
 	;;
 	*)
-		PLATFORM_SUFFIX="-${MACHINE}"
+		PLATFORM_SUFFIX="${MACHINE}"
 	;;
 esac
 
 export VERSION
-export OUTPUT="NXEngine-v${VERSION}-Linux${PLATFORM_SUFFIX}.AppImage"
+export OUTPUT="NXEngine-Evo-${VERSION}-Linux-${PLATFORM_SUFFIX}.AppImage"
 rm -f "${OUTPUT}"
 extern/linuxdeploy.AppImage \
 	--appdir=build/AppDir \
