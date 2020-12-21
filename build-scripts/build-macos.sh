@@ -40,9 +40,6 @@ fi
 # Download required dependencies
 build-scripts/utils/common.download-extern.sh
 
-# Additionally download disk image generation utility
-test -e "extern/create-dmg/create-dmg" || git clone https://github.com/isage/create-dmg.git extern/create-dmg
-
 # Build NXEngine-Evo
 if ! ${SKIP_BUILD};
 then
@@ -65,7 +62,7 @@ build-scripts/utils/common.install-extern.sh "${BUILD_DEST}/Contents/Resources" 
 dylibbundler -b -x "${BUILD_DEST}/Contents/MacOS/NXEngine" -d "${BUILD_DEST}/Contents/libs-intel" -od -p '@executable_path/../libs-intel'
 
 # Create disk image
-extern/create-dmg/create-dmg \
+create-dmg \
 	--volname "NXEngine" \
 	--window-size 640 480 \
 	--app-drop-link 380 205 \
