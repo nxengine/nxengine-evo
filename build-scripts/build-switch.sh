@@ -27,7 +27,7 @@ rm -rf build
 
 mkdir build
 cd build
-cmake -DPLATFORM=switch -DCMAKE_BUILD_TYPE=Release ..
-make
+cmake -DPLATFORM=switch -GNinja -DCMAKE_BUILD_TYPE=Release ..
+ninja
 cd ..
 rm -rf release/data

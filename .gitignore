@@ -1,5 +1,6 @@
 /.flatpak-builder
 /build
+/bin
 /extern
 /tools
 

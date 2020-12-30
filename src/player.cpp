@@ -1739,6 +1739,8 @@ void DrawPlayer(void)
   scr_x = (player->x / CSFI) - (map.displayed_xscroll / CSFI);
   scr_y = (player->y / CSFI) - (map.displayed_yscroll / CSFI);
 
+  Renderer::getInstance()->drawSpotLight(scr_x, scr_y, player);
+
   // draw his gun
   if (player->curWeapon != WPN_NONE && player->curWeapon != WPN_BLADE)
   {

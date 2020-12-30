@@ -2,6 +2,7 @@
 #define _RENDERER_H
 
 #include "../Singleton.h"
+#include "../object.h"
 #include "Surface.h"
 #include "Font.h"
 #include "Tileset.h"
@@ -94,6 +95,8 @@ class Renderer
 
     void saveScreenshot();
 
+    void drawSpotLight(int x, int y, Object* o, int r = 255, int g = 255, int b = 255);
+
     void tintScreen();
     void flip();
     SDL_Renderer* renderer();
@@ -108,6 +111,7 @@ class Renderer
     int _current_res = -1;
     bool _need_clip = false;
     SDL_Rect _clip_rect;
+    SDL_Texture* _spot_light;
 
   protected:
     friend class Singleton<Renderer>;
@@ -167,6 +171,7 @@ void inline Renderer::setClip(NXRect *rect)
 {
   setClip(rect->x, rect->y, rect->w, rect->h);
 }
+
 
 
 }; // namespace Graphics

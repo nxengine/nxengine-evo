@@ -14,6 +14,7 @@
 #include "../Utils/Logger.h"
 
 #include <SDL.h>
+#include <SDL_image.h>
 #include <cstdlib>
 #include <sstream>
 #include <iomanip>
@@ -130,6 +131,14 @@ bool Renderer::initVideo()
   }
 
   LOG_INFO("Renderer::initVideo: using: {} renderer", info.name);
+
+  std::string spotpath = ResourceManager::getInstance()->getLocalizedPath("spot.png");
+
+  SDL_Surface *image;
+  image = IMG_Load(spotpath.c_str());
+  _spot_light = SDL_CreateTextureFromSurface(_renderer, image);
+  SDL_FreeSurface(image);
+
   return true;
 }
 
@@ -142,6 +151,7 @@ bool Renderer::flushAll()
   map_flush_graphics();
   font.cleanup();
   font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+
   return true;
 }
 
@@ -565,6 +575,29 @@ void Renderer::saveScreenshot()
   LOG_INFO("Saved {}", filename);
   return;
 }
+
+void Renderer::drawSpotLight(int x, int y, Object* o, int r, int g, int b)
+{
+  // TODO: proper offsets
+  SDL_Rect dstrec;
+  int width = o->Width() / CSFI;
+  int height = o->Height() / CSFI;
+
+  int upscale = 6;
+
+  x *= scale;
+  y *= scale;
+
+  dstrec.x = (x - (width * (upscale / 2) * scale) + (width / 2 * scale));
+  dstrec.y = (y - (height * (upscale / 2) * scale) + (height / 2 * scale));
+  dstrec.w = width * upscale * scale;
+  dstrec.h = height * upscale * scale;
+
+  SDL_SetTextureColorMod(_spot_light, r, g, b);
+  SDL_RenderCopy(_renderer, _spot_light, NULL, &dstrec);
+}
+
+
 
 };
 };

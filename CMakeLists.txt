@@ -46,10 +46,13 @@ include(GNUInstallDirs)
 
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
+find_package(SDL2_image REQUIRED)
 find_package(PNG REQUIRED)
+find_package(JPEG REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR})
-include_directories(${SDL_MIXER_INCLUDE_DIR})
+include_directories(${SDL2_MIXER_INCLUDE_DIR})
+include_directories(${SDL2_IMAGE_INCLUDE_DIR})
 include_directories(${PNG_PNG_INCLUDE_DIR})
 include_directories("${nx_SOURCE_DIR}/deps")
 
@@ -109,12 +112,12 @@ add_executable(nx ${SOURCES})
 IF(PLATFORM STREQUAL "pc")
 set_property(TARGET nx PROPERTY OUTPUT_NAME nxengine-evo)
     add_definitions("-std=c++11")
-    target_link_libraries(nx ${SDL2_LIBRARY} ${SDL_MIXER_LIBRARY} ${PNG_LIBRARY})
+    target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY})
 
 ELSEIF(PLATFORM STREQUAL "vita")
     add_definitions("-std=gnu++11")
     add_definitions("-D__VITA__")
-    target_link_libraries(nx ${SDL_MIXER_LIBRARY} ${SDL2_LIBRARY} ${PNG_LIBRARY}
+    target_link_libraries(nx ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY}
       pib
       SceDisplay_stub
       SceCtrl_stub
@@ -163,7 +166,7 @@ ELSEIF(PLATFORM STREQUAL "vita")
 ELSEIF(PLATFORM STREQUAL "switch")
     add_definitions("-std=gnu++11")
     add_definitions("-D__SWITCH__")
-    target_link_libraries(nx SDL2_mixer SDL2 png
+    target_link_libraries(nx SDL2_mixer SDL2_image SDL2 png jpeg webp
       m
       z
       FLAC

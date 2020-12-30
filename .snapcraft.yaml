@@ -41,15 +41,16 @@ parts:
       - build-essential
       - libsdl2-dev
       - libsdl2-mixer-dev
-      - libsdl2-ttf-dev
+      - libsdl2-image-dev
       - libpng-dev
+      - libjpeg-dev
     stage-packages:
       - libgl1-mesa-glx
       - libglew2.1
       - libglu1-mesa
       - libsdl2-2.0-0
       - libsdl2-mixer-2.0-0
-      - libsdl2-ttf-2.0-0
+      - libsdl2-image-2.0-0
       - libpulse0
     override-pull: |
       snapcraftctl pull

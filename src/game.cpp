@@ -361,6 +361,8 @@ void DrawScene(void)
     map_draw(false);
   }
 
+  Renderer::getInstance()->tintScreen();
+
   // draw all objects following their z-order
   nOnscreenObjects = 0;
 
@@ -422,6 +424,134 @@ void DrawScene(void)
         {
           Renderer::getInstance()->sprites.drawSprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
         }
+        switch (o->sprite) {
+            case SPR_RECHARGE:
+            case SPR_FIREPLACE:
+            case SPR_HEART:
+            case SPR_HEART3:
+            case SPR_BIG_SPIKE:
+            case SPR_SPIKE_SMALL:
+            case SPR_TELEPORTER_LIGHTS:
+            case SPR_LIFE_CAPSULE:
+            case SPR_TERMINAL:
+            case SPR_LAVA_DROPLET:
+            case SPR_LAVA_DRIP:
+            case SPR_LAVA_DRIP_SPLASH:
+            case SPR_RED_BAT:
+            case SPR_INTRO_CROWN:
+            case SPR_FORCEFIELD:
+            case SPR_MANNAN_SHOT:
+            case SPR_BALFROG_SHOT:
+            case SPR_OMG_BULLET_NORMAL:
+            case SPR_RED_CRYSTAL:
+            case SPR_DOCTOR_SHOT:
+            case SPR_DOCTOR_BLAST:
+            case SPR_RED_ENERGY:
+            case SPR_DOCTOR_BAT:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 0, 0);
+                break;
+            case SPR_COMPUTER:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 0, 0, 255);
+                break;
+            case SPR_XP_SMALL:
+            case SPR_XP_MED:
+            case SPR_XP_LARGE:
+            case SPR_SHOT_NEMESIS_L1:
+            case SPR_SHOT_NEMESIS_L1_V:
+            case SPR_SHOT_NEMESIS_L3:
+            case SPR_SHOT_NEMESIS_L3_V:
+            case SPR_XP_CAPSULE:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 255, 0);
+                break;
+            case SPR_SHOT_NEMESIS_L2:
+            case SPR_SHOT_NEMESIS_L2_V:
+            case SPR_WHIMSICAL_STAR:
+            case SPR_GIANT_BEETLE_SHOT:
+            case SPR_X_TARGETS:
+            case SPR_X_FISHY_MISSILE:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 0, 255, 55);
+                break;
+            case SPR_MISSILE:
+            case SPR_MISSILE3:
+            case SPR_HIDDEN_SPARKLE:
+            case SPR_IGOR_SHOT:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 155, 155, 255);
+                break;
+
+            case SPR_SHOT_FIREBALL1:
+            case SPR_BOOMFLASH:
+            case SPR_MISSILEHITSMOKE:
+            case SPR_COUNTER_BOMB:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 250, 200, 0);
+                break;
+
+            case SPR_SHOT_POLARSTAR:
+            case SPR_SHOT_POLARSTARV:
+            case SPR_SHOT_POLARSTAR_L3:
+            case SPR_SHOT_POLARSTAR_L3V:
+            case SPR_SHOT_MGUN_L1:
+            case SPR_SHOT_MGUN_L1V:
+            case SPR_SHOT_MGUN_L2:
+            case SPR_SHOT_MGUN_L2V:
+            case SPR_SHOT_MGUN_L3LEAD:
+            case SPR_SHOT_MGUN_L3LEADV:
+            case SPR_SHOT_MGUN_L3TAIL:
+            case SPR_SHOT_MGUN_L3TAILV:
+            case SPR_BUBBLE_BURST:
+            case SPR_LIGHTNING:
+            case SPR_SHOT_BUBBLER_L1:
+            case SPR_SHOT_BUBBLER_L2:
+            case SPR_SHOT_BUBBLER_L3:
+            case SPR_BUBBLER_SHARP:
+            case SPR_TRAIL_SPUR_L1:
+            case SPR_TRAIL_SPUR_L1_V:
+            case SPR_TRAIL_SPUR_L2:
+            case SPR_TRAIL_SPUR_L2_V:
+            case SPR_TRAIL_SPUR_L3:
+            case SPR_GHOST_SPARKLE:
+            case SPR_PUPPY_GHOST:
+            case SPR_MINICORE_SHOT:
+            case SPR_DRAGON_ZOMBIE_SHOT:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 155, 155, 255);
+                break;
+
+            case SPR_SHOT_MISSILE1:
+            case SPR_SHOT_MISSILE1V:
+            case SPR_SHOT_MISSILE2:
+            case SPR_SHOT_MISSILE2V:
+            case SPR_SHOT_MISSILE3:
+            case SPR_SHOT_MISSILE3V:
+            case SPR_SHOT_SUPERMISSILE13:
+            case SPR_SHOT_SUPERMISSILE13_V:
+            case SPR_SHOT_SUPERMISSILE2:
+            case SPR_SHOT_SUPERMISSILE2_V:
+            case SPR_BALROG_MISSILE:
+            case SPR_FIREWHIRR_SHOT:
+            case SPR_ORANGE_BAT_FINAL:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 55, 0);
+                break;
+            case SPR_SHOT_FIREBALL23:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 155, 155, 255);
+                break;
+//            case SPR_FIREBALL_TRAIL2:
+//            case SPR_FIREBALL_TRAIL3:
+            case SPR_SHOT_BLADE_L1:
+            case SPR_SHOT_BLADE_L1_VERT:
+            case SPR_SHOT_BLADE_L2:
+            case SPR_SHOT_BLADE_L2_V:
+            case SPR_SHOT_BLADE_L3:
+            case SPR_SHOT_BLADE_L3_V:
+            case SPR_BLADE_SLASH:
+            case SPR_SHOT_SNAKE_L1:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 155, 155, 255);
+                break;
+            case SPR_CRITTER_SHOT:
+            case SPR_GAUDI_FLYING_SHOT:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 255, 5);
+                break;
+            default:
+                break;
+        }
       }
     }
     else
@@ -433,12 +563,14 @@ void DrawScene(void)
   // draw the player
   DrawPlayer();
 
+
   // draw foreground map tiles
   if (!flipacceltime)
   {
     map_draw(TA_FOREGROUND);
     map_draw_oob();
   }
+
 
   // draw carets (always-on-top effects such as boomflash)
   Carets::DrawAll();

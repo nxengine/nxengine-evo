@@ -21,6 +21,7 @@
 #include "tsc.h"
 
 #include <SDL_mixer.h>
+#include <SDL_image.h>
 using namespace NXE::Graphics;
 #include "ResourceManager.h"
 #include "caret.h"
@@ -328,6 +329,14 @@ int main(int argc, char *argv[])
     LOG_CRITICAL("ack, sdl_init failed: {}.", SDL_GetError());
     return 1;
   }
+
+  int flags=IMG_INIT_PNG;
+int initted=IMG_Init(flags);
+if((initted&flags) != flags) {
+    printf("IMG_Init: Failed to init required jpg and png support!\n");
+    printf("IMG_Init: %s\n", IMG_GetError());
+    // handle error
+}
 
   // start up inputs first thing because settings_load may remap them
   input_init();

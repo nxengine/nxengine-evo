@@ -4,12 +4,12 @@
 #include "../common/misc.h"
 #include "../Utils/Logger.h"
 #include "Renderer.h"
-#include "pngfuncs.h"
 #include "../autogen/sprites.h"
 #include "../config.h"
 #include "../game.h"
 #include "../nx.h"
 
+#include <SDL_image.h>
 #include <json.hpp>
 #include <utf8.h>
 #include <fstream>
@@ -58,7 +58,7 @@ bool Font::load(const std::string &font)
     for (auto atlas : fontdef["pages"])
     {
       std::string atlaspath = ResourceManager::getInstance()->getLocalizedPath(atlas.get<std::string>());
-      SDL_Surface *surf     = png_load_surface(atlaspath);
+      SDL_Surface *surf     = IMG_Load(atlaspath.c_str());
       _atlases.push_back(SDL_CreateTextureFromSurface(Renderer::getInstance()->renderer(), surf));
       SDL_FreeSurface(surf);
     }

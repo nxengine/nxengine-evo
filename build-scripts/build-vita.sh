@@ -19,7 +19,7 @@ cp -v -RpP data "release/"
 rm -rf build
 mkdir build
 cd build
-cmake -DPLATFORM=vita -DCMAKE_BUILD_TYPE=Release ..
-make
+cmake -DPLATFORM=vita -GNinja -DCMAKE_BUILD_TYPE=Release ..
+ninja
 cd ..
 rm -rf release/data

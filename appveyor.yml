@@ -59,7 +59,7 @@ for:
 
   install:
     - sudo apt update
-    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libpng-dev ninja-build
+    - sudo apt install -yqq libsdl2-dev libsdl2-mixer-dev libsdl2-image-dev libjpeg-dev libpng-dev ninja-build
 
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
@@ -75,7 +75,7 @@ for:
 
   install:
     - brew update
-    - brew install sdl2 sdl2_mixer libpng ninja
+    - brew install sdl2 sdl2_mixer sdl2_image libjpeg libpng ninja
 
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -Bbuild -H.
