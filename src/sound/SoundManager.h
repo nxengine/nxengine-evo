@@ -102,12 +102,12 @@ enum class SFX : uint16_t
   SND_CORE_CHARGE      = 116,
   SND_NEMESIS_FIRE     = 117,
   // drums
-  SND_150 = 150,
-  SND_151 = 151,
-  SND_152 = 152,
-  SND_153 = 153,
-  SND_154 = 154,
-  SND_155 = 155
+  SND_DRUM_BASS = 150,
+  SND_DRUM_SNARE = 151,
+  SND_DRUM_HICLOSE = 152,
+  SND_DRUM_HIOPEN = 153,
+  SND_DRUM_TOM = 154,
+  SND_DRUM_PERCUSSION = 155
 };
 
 class SoundManager

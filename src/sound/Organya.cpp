@@ -9,6 +9,7 @@
 #include "../common/glob.h"
 #include "../common/misc.h"
 #include "../Utils/Logger.h"
+#include "../Utils/Common.h"
 #include "../settings.h"
 #include "Pixtone.h"
 #include "SoundManager.h"
@@ -33,7 +34,7 @@ namespace Sound
 {
 
 static int16_t WaveTable[100 * 256] = {0};
-static std::vector<int16_t> DrumSamples[12];
+static std::vector<int16_t> DrumSamples[8];
 
 Organya::Organya()
 {
@@ -76,14 +77,14 @@ bool Organya::_loadWavetable()
 
 bool Organya::_loadDrums()
 {
-  for (uint8_t drumno = 0; drumno < 12; ++drumno)
+  for (uint8_t drumno = 0; drumno < 8; ++drumno)
   {
-    if (!patch[drumno])
+    if (drum_pxt_table[drumno] == SFX::SND_NULL)
       continue; // Leave that non-existed drum file unloaded
 
     // Load the drum parameters
     char fname[256];
-    sprintf(fname, "%sfx%02x.pxt", ResourceManager::getInstance()->getPathForDir("pxt/").c_str(), patch[drumno]);
+    sprintf(fname, "%sfx%02x.pxt", ResourceManager::getInstance()->getPathForDir("pxt/").c_str(), (uint8_t) drum_pxt_table[drumno]);
 
     stPXSound snd;
 
@@ -205,7 +206,8 @@ void Song::Synth()
         i.cur_length   = i.pipi ? 1024 / i.phaseinc : (event.length * samples_per_beat);
         if (&i >= &ins[8]) // Percussion is different
         {
-          const auto &d  = DrumSamples[i.wave % 12];
+          const auto idx = &i - &ins[0];
+          const auto &d  = DrumSamples[idx - 8];
           i.phaseinc     = event.note * (22050 / 32.5) / sampling_rate; // Linear frequency
           i.cur_wave     = &d[0];
           i.cur_wavesize = d.size();
@@ -220,25 +222,50 @@ void Song::Synth()
     }
 
     // Generate wave data. Calculate left & right volumes...
-    auto left  = (i.cur_pan > 6 ? 12 - i.cur_pan : 6) * i.cur_vol;
-    auto right = (i.cur_pan < 6 ? i.cur_pan : 6) * i.cur_vol;
+    static const int panning_table[13] = {0, 43, 86, 129, 172, 215, 256, 297, 340, 383, 426, 469, 512};
+    const double pan = (panning_table[clamp(i.cur_pan, 0, 12)] - 256) * 10;
+    double left = 1.0;
+    double right = 1.0;
+
+    if (pan < 0) {
+      right = pow(10.0, ((double) pan) / 2000.0);
+    } else if (pan > 0) {
+      left = pow(10.0, ((double) -pan) / 2000.0);
+    }
+
+    left *= i.cur_vol * 5;
+    right *= i.cur_vol * 5;
 
     int n = samples_per_beat > i.cur_length ? i.cur_length : samples_per_beat;
     for (int p = 0; p < n; ++p)
     {
-      double pos = i.phaseacc;
+      const double pos = i.phaseacc;
       // Take a sample from the wave data.
       double sample = 0;
 
       // Perform linear interpolation
-      unsigned int position_integral = unsigned(pos);
-      double position_fractional = pos - position_integral;
+      // unsigned int position_integral = unsigned(pos);
+      // const double position_fractional = pos - position_integral;
 
-      double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
-      double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
+      // const double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
+      // const double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
 
-      sample = sample1 + (sample2 - sample1) * position_fractional;
+      // sample = sample1 + (sample2 - sample1) * position_fractional;
 
+      // Perform cubic interpolation
+      const unsigned int position_integral = unsigned(pos) % i.cur_wavesize;
+      const double position_fractional = pos - (double)((int) pos);
+      const float s1 = (float) (i.cur_wave[position_integral]);
+      const float s2 = (float) (i.cur_wave[clamp(position_integral + 1, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
+      const float sp = (float) (i.cur_wave[clamp(position_integral + 2, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
+      const float sn = (float) (i.cur_wave[MAX((int) position_integral - 1, 0)]);
+      const float mu2 = position_fractional * position_fractional;
+      const float a0 = sn - s2 - sp + s1;
+      const float a1 = sp - s1 - a0;
+      const float a2 = s2 - sp;
+      const float a3 = s1;
+      sample = a0 * position_fractional * mu2 + a1 * mu2 + a2 * position_fractional + a3;
+    
       // Perform nearest-neighbour interpolation
 //      sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
 
