@@ -7,6 +7,7 @@
 #define _ORGANYA_H
 
 #include "../Singleton.h"
+#include "SoundManager.h"
 
 #include <cstdint>
 #include <map>
@@ -89,7 +90,16 @@ private:
   bool _loadDrums();
 
   Song song;
-  const uint8_t patch[12] = {0x96, 0, 0x97, 0, 0x9a, 0x98, 0x99, 0, 0x9b, 0, 0, 0};
+  const SFX drum_pxt_table[8] = {
+    SFX::SND_DRUM_BASS, 
+    SFX::SND_DRUM_SNARE, 
+    SFX::SND_DRUM_HICLOSE, 
+    SFX::SND_DRUM_HIOPEN, 
+    SFX::SND_DRUM_TOM, 
+    SFX::SND_DRUM_PERCUSSION,
+    SFX::SND_NULL,
+    SFX::SND_NULL,
+  };
   float volume            = 1.0;
   bool fading             = false;
   uint32_t last_fade_time = 0;
