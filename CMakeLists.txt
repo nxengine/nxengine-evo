@@ -197,7 +197,7 @@ IF(PLATFORM STREQUAL "pc")
     target_link_libraries(extract ${SDL2_LIBRARY})
     set_property(TARGET extract PROPERTY OUTPUT_NAME nxextract)
 
-    install(TARGETS nx extract)
+    install(TARGETS nx extract RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
     install(DIRECTORY data DESTINATION ${CMAKE_INSTALL_DATADIR}/nxengine)
 
     # Install XDG metadata on Desktop Linux like platforms
