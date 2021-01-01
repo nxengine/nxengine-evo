@@ -16,6 +16,8 @@
 #define PXT_NO_CHANNELS 4
 #define PXENV_NUM_VERTICES 3
 
+#define NUM_RESAMPLED_BUFFERS 16
+
 namespace NXE
 {
 namespace Sound
@@ -83,6 +85,7 @@ public:
 
   int play(int32_t chan, int32_t slot, int32_t loop);
   int playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t percent);
+  int prepareResampled(int32_t slot, uint32_t percent);
   void stop(int32_t slot);
 
   void pxtSoundDone(int channel);
@@ -100,10 +103,10 @@ private:
   bool _inited = false;
   struct
   {
-    Mix_Chunk *chunk        = NULL;
-    Mix_Chunk *resampled    = NULL;
-    uint32_t resampled_rate = SAMPLE_RATE;
-    int32_t channel         = -1;
+    Mix_Chunk *chunk         = NULL;
+    Mix_Chunk *resampled[NUM_RESAMPLED_BUFFERS] = {NULL};
+    uint32_t resampled_rate[NUM_RESAMPLED_BUFFERS]  = {SAMPLE_RATE};
+    int32_t channel          = -1;
   } _sound_fx[256];
   int32_t _slots[64];
   const uint32_t NUM_SOUNDS = 0x75;

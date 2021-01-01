@@ -311,11 +311,14 @@ void Pixtone::shutdown()
       Mix_FreeChunk(_sound_fx[i].chunk);
       _sound_fx[i].chunk = nullptr;
     }
-    if (_sound_fx[i].resampled)
+    for (int i = 0; i < NUM_RESAMPLED_BUFFERS; i ++)
     {
-      SDL_free(_sound_fx[i].resampled->abuf);
-      Mix_FreeChunk(_sound_fx[i].resampled);
-      _sound_fx[i].resampled = nullptr;
+      if (_sound_fx[i].resampled[i])
+      {
+        SDL_free(_sound_fx[i].resampled[i]->abuf);
+        Mix_FreeChunk(_sound_fx[i].resampled[i]);
+        _sound_fx[i].resampled[i] = nullptr;
+      }
     }
   }
 }
@@ -347,7 +350,24 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
   {
     uint32_t resampled_rate = SAMPLE_RATE * (percent / 100);
 
-    if (resampled_rate != _sound_fx[slot].resampled_rate)
+    int i;
+    int idx = -1;
+    int rslot = 0;
+
+    for (i = 0; i < NUM_RESAMPLED_BUFFERS; i++)
+    {
+      if (resampled_rate == _sound_fx[slot].resampled_rate[i])
+      {
+        idx = i; // found
+      }
+      if (_sound_fx[slot].resampled[i] == NULL)
+      {
+        if (rslot == 0)
+          rslot = i;
+      }
+    }
+
+    if (idx == -1)
     {
       SDL_AudioCVT cvt;
 
@@ -357,23 +377,30 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
       }
       cvt.len = _sound_fx[slot].chunk->alen;
       cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
-      memcpy(cvt.buf, _sound_fx[slot].chunk->abuf, _sound_fx[slot].chunk->alen);
+      SDL_memcpy(cvt.buf, _sound_fx[slot].chunk->abuf, _sound_fx[slot].chunk->alen);
 
       if (SDL_ConvertAudio(&cvt) == -1)
       {
         LOG_ERROR("SDL_ConvertAudio: {}", SDL_GetError());
       }
 
-      if (_sound_fx[slot].resampled != NULL)
+/*      if (_sound_fx[slot].resampled != NULL)
       {
+        SDL_free(_sound_fx[slot].resampled->abuf);
         SDL_free(_sound_fx[slot].resampled);
         _sound_fx[slot].resampled = NULL;
-      }
-      _sound_fx[slot].resampled = Mix_QuickLoad_RAW((Uint8 *)cvt.buf, cvt.len_cvt);
-      _sound_fx[slot].resampled_rate = resampled_rate;
+      }*/
+
+      Uint8 *sound_buf = (Uint8 *)SDL_malloc(cvt.len_cvt);
+      SDL_memcpy(sound_buf, (Uint8 *)cvt.buf, cvt.len_cvt);
+      SDL_free(cvt.buf);
+
+      _sound_fx[slot].resampled[rslot] = Mix_QuickLoad_RAW(sound_buf, cvt.len_cvt);
+      _sound_fx[slot].resampled_rate[rslot] = resampled_rate;
+      idx = rslot;
     }
 
-    chan                    = Mix_PlayChannel(chan, _sound_fx[slot].resampled, loop);
+    chan                    = Mix_PlayChannel(chan, _sound_fx[slot].resampled[idx], loop);
     _sound_fx[slot].channel = chan;
     _slots[chan]            = slot;
 
@@ -388,6 +415,71 @@ int Pixtone::playResampled(int32_t chan, int32_t slot, int32_t loop, uint32_t pe
     LOG_ERROR("Pixtone::playResampled: sound slot {} not rendered", slot);
     return -1;
   }
+}
+
+int Pixtone::prepareResampled(int32_t slot, uint32_t percent)
+{
+  if (_sound_fx[slot].chunk)
+  {
+    uint32_t resampled_rate = SAMPLE_RATE * (percent / 100);
+
+    int i;
+    int idx = -1;
+    int rslot = 0;
+
+    for (i = 0; i < NUM_RESAMPLED_BUFFERS; i++)
+    {
+      if (resampled_rate == _sound_fx[slot].resampled_rate[i])
+      {
+        idx = i; // found
+      }
+      if (_sound_fx[slot].resampled[i] == NULL)
+      {
+        if (rslot == 0)
+          rslot = i;
+      }
+    }
+
+    if (idx == -1) // not found
+    {
+      SDL_AudioCVT cvt;
+
+      if (SDL_BuildAudioCVT(&cvt, AUDIO_S16, 2, SAMPLE_RATE, AUDIO_S16, 2, resampled_rate) == -1)
+      {
+        LOG_ERROR("SDL_BuildAudioCVT: {}", SDL_GetError());
+      }
+      cvt.len = _sound_fx[slot].chunk->alen;
+      cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
+      SDL_memcpy(cvt.buf, _sound_fx[slot].chunk->abuf, _sound_fx[slot].chunk->alen);
+
+      if (SDL_ConvertAudio(&cvt) == -1)
+      {
+        LOG_ERROR("SDL_ConvertAudio: {}", SDL_GetError());
+      }
+
+/*
+      if (_sound_fx[slot].resampled != NULL)
+      {
+        SDL_free(_sound_fx[slot].resampled->abuf);
+        SDL_free(_sound_fx[slot].resampled);
+        _sound_fx[slot].resampled = NULL;
+      }
+*/
+
+      Uint8 *sound_buf = (Uint8 *)SDL_malloc(cvt.len_cvt);
+      SDL_memcpy(sound_buf, (Uint8 *)cvt.buf, cvt.len_cvt);
+      SDL_free(cvt.buf);
+
+      _sound_fx[slot].resampled[rslot] = Mix_QuickLoad_RAW(sound_buf, cvt.len_cvt);
+      _sound_fx[slot].resampled_rate[rslot] = resampled_rate;
+    }
+  }
+  else
+  {
+    LOG_ERROR("Pixtone::prepareResampled: sound slot {} not rendered", slot);
+    return -1;
+  }
+  return 0;
 }
 
 void Pixtone::stop(int32_t slot)
@@ -421,6 +513,7 @@ void Pixtone::_prepareToPlay(stPXSound *snd, int32_t slot)
   }
 
   cvt.len = snd->final_size;
+
   cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult);
   memcpy(cvt.buf, snd->final_buffer, snd->final_size);
 
@@ -429,7 +522,11 @@ void Pixtone::_prepareToPlay(stPXSound *snd, int32_t slot)
     LOG_ERROR("SDL_ConvertAudio: {}", SDL_GetError());
   }
 
-  _sound_fx[slot].chunk = Mix_QuickLoad_RAW((Uint8 *)cvt.buf, cvt.len_cvt);
+  Uint8 *sound_buf = (Uint8 *)SDL_malloc(cvt.len_cvt);
+  SDL_memcpy(sound_buf, (Uint8 *)cvt.buf, cvt.len_cvt);
+  SDL_free(cvt.buf);
+
+  _sound_fx[slot].chunk = Mix_QuickLoad_RAW(sound_buf, cvt.len_cvt);
 }
 
 } // namespace Sound

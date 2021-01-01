@@ -109,6 +109,12 @@ bool SoundManager::init()
   Pixtone::getInstance()->init();
   Organya::getInstance()->init();
 
+  // prepare resampled stream sounds (Core battle and <SSS in main artery)
+  Pixtone::getInstance()->prepareResampled((int32_t)SFX::SND_STREAM1, 1000);
+  Pixtone::getInstance()->prepareResampled((int32_t)SFX::SND_STREAM2, 1100);
+  Pixtone::getInstance()->prepareResampled((int32_t)SFX::SND_STREAM1, 400);
+  Pixtone::getInstance()->prepareResampled((int32_t)SFX::SND_STREAM2, 500);
+
   updateSfxVolume();
   updateMusicVolume();
   return true;
