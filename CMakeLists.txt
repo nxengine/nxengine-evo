@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 option(LINEAR_INTERPOLATION "Use linear interpolation instead of cubic interpolation." OFF)
-option(LOW_END_HARDWARE "Build for low-end hardware" OFF)
+option(LOW_END_HARDWARE "Build for low-end hardware" ON)
 set(PLATFORM "pc" CACHE STRING "Platform to build for")
 set_property(CACHE PLATFORM PROPERTY STRINGS pc vita switch)
 
