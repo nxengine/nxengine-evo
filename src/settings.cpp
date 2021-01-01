@@ -91,6 +91,7 @@ bool settings_load(Settings *setfile)
     setfile->rumble        = false;
     setfile->sfx_volume = 100;
     setfile->music_volume = 100;
+    setfile->music_interpolation = 0;
     setfile->animated_facepics = true;
     setfile->lights = false;
     setfile->control_scheme = false;

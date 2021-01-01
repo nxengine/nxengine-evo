@@ -46,6 +46,8 @@ void _sfx_volume_change(ODItem *item, int dir);
 void _sfx_volume_get(ODItem *item);
 void _music_volume_change(ODItem *item, int dir);
 void _music_volume_get(ODItem *item);
+void _music_interpolation_change(ODItem *item, int dir);
+void _music_interpolation_get(ODItem *item);
 void _rumble_change(ODItem *item, int dir);
 void _rumble_get(ODItem *item);
 void _strafe_change(ODItem *item, int dir);
@@ -268,6 +270,7 @@ static void EnterSoundMenu(ODItem *item, int dir)
   dlg->AddSeparator();
   dlg->AddItem("SFX volume: ", _sfx_volume_change, _sfx_volume_get, -1, OD_CHOICE);
   dlg->AddItem("Music volume: ", _music_volume_change, _music_volume_get, -1, OD_CHOICE);
+  dlg->AddItem("Music interpolation: ", _music_interpolation_change, _music_interpolation_get, -1, OD_CHOICE);
   dlg->AddSeparator();
   dlg->AddDismissalItem();
 }
@@ -494,6 +497,24 @@ void _music_volume_get(ODItem *item)
   sprintf(str, "%d%%", settings->music_volume);
   strcpy(item->suffix, str);
 }
+
+
+void _music_interpolation_change(ODItem *item, int dir)
+{
+  int result = settings->music_interpolation + dir;
+  if (result < 0)
+    result = 2;
+  if (result > 2)
+    result = 0;
+  settings->music_interpolation = result;
+}
+
+void _music_interpolation_get(ODItem *item)
+{
+  static const char *strs[] = {"Nearest", "Linear", "Cubic"};
+  strcpy(item->suffix, strs[settings->music_interpolation]);
+}
+
 
 /*
 void c------------------------------() {}

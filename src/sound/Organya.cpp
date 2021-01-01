@@ -243,37 +243,41 @@ void Song::Synth()
       // Take a sample from the wave data.
       double sample = 0;
 
-#ifndef _LOW_END_HARDWARE
+      if (settings->music_interpolation == 1)
+      {
+        // Perform linear interpolation
+        unsigned int position_integral = unsigned(pos);
+        const double position_fractional = pos - position_integral;
 
-#ifdef _LINEAR_INTERPOLATION
-      // Perform linear interpolation
-      unsigned int position_integral = unsigned(pos);
-      const double position_fractional = pos - position_integral;
+        const double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
+        const double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
 
-      const double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
-      const double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
+        sample = sample1 + (sample2 - sample1) * position_fractional;
+      }
+      else if (settings->music_interpolation == 2)
+      {
+        // Perform cubic interpolation
+        const unsigned int position_integral = unsigned(pos) % i.cur_wavesize;
+        const double position_fractional = pos - (double)((int) pos);
 
-      sample = sample1 + (sample2 - sample1) * position_fractional;
-#else
-      // Perform cubic interpolation
-      const unsigned int position_integral = unsigned(pos) % i.cur_wavesize;
-      const double position_fractional = pos - (double)((int) pos);
-      const float s1 = (float) (i.cur_wave[position_integral]);
-      const float s2 = (float) (i.cur_wave[clamp(position_integral + 1, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
-      const float sp = (float) (i.cur_wave[clamp(position_integral + 2, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
-      const float sn = (float) (i.cur_wave[MAX((int) position_integral - 1, 0)]);
-      const float mu2 = position_fractional * position_fractional;
-      const float a0 = sn - s2 - sp + s1;
-      const float a1 = sp - s1 - a0;
-      const float a2 = s2 - sp;
-      const float a3 = s1;
-      sample = a0 * position_fractional * mu2 + a1 * mu2 + a2 * position_fractional + a3;
-#endif
+        const float s1 = (float) (i.cur_wave[position_integral]);
+        const float s2 = (float) (i.cur_wave[clamp(position_integral + 1, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
+        const float sp = (float) (i.cur_wave[clamp(position_integral + 2, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
+        const float sn = (float) (i.cur_wave[MAX((int) position_integral - 1, 0)]);
+        const float mu2 = position_fractional * position_fractional;
+        const float a0 = sn - s2 - sp + s1;
+        const float a1 = sp - s1 - a0;
+        const float a2 = s2 - sp;
+        const float a3 = s1;
 
-#else
-      // Perform nearest-neighbour interpolation
-      sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
-#endif
+        sample = a0 * position_fractional * mu2 + a1 * mu2 + a2 * position_fractional + a3;
+      }
+      else
+      {
+        // Perform nearest-neighbour interpolation
+        sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
+      }
+
 
       // Save audio in float32 format:
       samples[p * 2 + 0] += sample * left;

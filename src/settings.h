@@ -24,6 +24,7 @@ struct Settings
   bool control_scheme;
   int16_t sfx_volume;
   int16_t music_volume;
+  int8_t music_interpolation;
 
   in_action input_mappings[INPUT_COUNT];
   char language[256];
