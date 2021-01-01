@@ -170,7 +170,7 @@ void CoreBoss::Run()
   if (!o)
     return;
 
-  LOG_DEBUG("state = {}", o->state);
+//  LOG_DEBUG("state = {}", o->state);
 
   switch (o->state)
   {
