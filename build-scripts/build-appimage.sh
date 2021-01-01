@@ -25,7 +25,7 @@ VERSION="v$(xmllint --xpath 'string(/component/releases/release/@version)' "plat
 # override for CI
 if [ ${APPVEYOR_REPO_TAG} == "true" ]
 then
-    VERSION="${APPVEYOR_REPO_TAG}"
+    VERSION="${APPVEYOR_REPO_TAG_NAME}"
 fi
 
 MACHINE="$(uname -m)"
