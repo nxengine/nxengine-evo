@@ -38,6 +38,8 @@ using namespace NXE::Utils;
 #endif
 
 #if defined(__VITA__)
+// increase default allowed heap size on Vita
+int _newlib_heap_size_user = 100 * 1024 * 1024;
 #include <psp2/kernel/threadmgr.h>
 extern "C"
 {
@@ -330,13 +332,12 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  int flags=IMG_INIT_PNG;
-int initted=IMG_Init(flags);
-if((initted&flags) != flags) {
-    printf("IMG_Init: Failed to init required jpg and png support!\n");
-    printf("IMG_Init: %s\n", IMG_GetError());
-    // handle error
-}
+  int flags = IMG_INIT_PNG;
+  int initted = IMG_Init(flags);
+  if((initted & flags) != flags) {
+    LOG_CRITICAL("IMG_Init: Failed to init required png support: {}", IMG_GetError());
+    return 1;
+  }
 
   // start up inputs first thing because settings_load may remap them
   input_init();
