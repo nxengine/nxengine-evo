@@ -5,6 +5,9 @@ adopt-info: metadata
 grade: stable
 confinement: strict
 
+architectures:
+  - build-on: [amd64]
+
 apps:
   nxengine-evo:
     command: usr/local/bin/nxengine-evo
