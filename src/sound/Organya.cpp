@@ -233,8 +233,8 @@ void Song::Synth()
       left = pow(10.0, ((double) -pan) / 2000.0);
     }
 
-    left *= i.cur_vol * 5;
-    right *= i.cur_vol * 5;
+    left *= i.cur_vol * 8;
+    right *= i.cur_vol * 8;
 
     int n = samples_per_beat > i.cur_length ? i.cur_length : samples_per_beat;
     for (int p = 0; p < n; ++p)
@@ -243,15 +243,18 @@ void Song::Synth()
       // Take a sample from the wave data.
       double sample = 0;
 
+#ifndef _LOW_END_HARDWARE
+
+#ifdef _LINEAR_INTERPOLATION
       // Perform linear interpolation
-      // unsigned int position_integral = unsigned(pos);
-      // const double position_fractional = pos - position_integral;
+      unsigned int position_integral = unsigned(pos);
+      const double position_fractional = pos - position_integral;
 
-      // const double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
-      // const double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
+      const double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
+      const double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
 
-      // sample = sample1 + (sample2 - sample1) * position_fractional;
-
+      sample = sample1 + (sample2 - sample1) * position_fractional;
+#else
       // Perform cubic interpolation
       const unsigned int position_integral = unsigned(pos) % i.cur_wavesize;
       const double position_fractional = pos - (double)((int) pos);
@@ -265,9 +268,12 @@ void Song::Synth()
       const float a2 = s2 - sp;
       const float a3 = s1;
       sample = a0 * position_fractional * mu2 + a1 * mu2 + a2 * position_fractional + a3;
-    
+#endif
+
+#else
       // Perform nearest-neighbour interpolation
-//      sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
+      sample = i.cur_wave[ unsigned(pos) % i.cur_wavesize ];
+#endif
 
       // Save audio in float32 format:
       samples[p * 2 + 0] += sample * left;
