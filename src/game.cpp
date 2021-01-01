@@ -20,6 +20,7 @@
 #include "pause/mods.h"
 #include "player.h"
 #include "profile.h"
+#include "settings.h"
 #include "slope.h"
 #include "sound/SoundManager.h"
 #include "statusbar.h"
@@ -361,7 +362,8 @@ void DrawScene(void)
     map_draw(false);
   }
 
-  Renderer::getInstance()->tintScreen();
+  if (settings->lights)
+    Renderer::getInstance()->tintScreen();
 
   // draw all objects following their z-order
   nOnscreenObjects = 0;
@@ -424,7 +426,10 @@ void DrawScene(void)
         {
           Renderer::getInstance()->sprites.drawSprite(scr_x, scr_y, o->sprite, o->frame, o->dir);
         }
-        switch (o->sprite) {
+        if (settings->lights)
+        {
+          switch (o->sprite)
+          {
             case SPR_RECHARGE:
             case SPR_FIREPLACE:
             case SPR_HEART:
@@ -551,6 +556,7 @@ void DrawScene(void)
                 break;
             default:
                 break;
+          }
         }
       }
     }

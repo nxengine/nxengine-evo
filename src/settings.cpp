@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-const uint32_t SETTINGS_VERSION = (('6' << 24) + ('S' << 16) + ('X' << 8) + 'N'); // serves as both a version and magic
+const uint32_t SETTINGS_VERSION = (('7' << 24) + ('S' << 16) + ('X' << 8) + 'N'); // serves as both a version and magic
 
 Settings normal_settings;
 Settings *settings = &normal_settings;
@@ -92,6 +92,7 @@ bool settings_load(Settings *setfile)
     setfile->sfx_volume = 100;
     setfile->music_volume = 100;
     setfile->animated_facepics = true;
+    setfile->lights = false;
     setfile->control_scheme = false;
     memset(setfile->language, 0, 256);
     strncpy(setfile->language, "english", 255);
