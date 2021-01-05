@@ -576,14 +576,11 @@ void Renderer::saveScreenshot()
   return;
 }
 
-void Renderer::drawSpotLight(int x, int y, Object* o, int r, int g, int b)
+void Renderer::drawSpotLight(int x, int y, Object* o, int r, int g, int b, int upscale)
 {
-  // TODO: proper offsets
   SDL_Rect dstrec;
   int width = o->Width() / CSFI;
   int height = o->Height() / CSFI;
-
-  int upscale = 6;
 
   x *= scale;
   y *= scale;

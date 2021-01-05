@@ -449,11 +449,17 @@ void DrawScene(void)
             case SPR_BALFROG_SHOT:
             case SPR_OMG_BULLET_NORMAL:
             case SPR_RED_CRYSTAL:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 0, 0);
+                break;
             case SPR_DOCTOR_SHOT:
             case SPR_DOCTOR_BLAST:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 0, 0, 2);
+                break;
             case SPR_RED_ENERGY:
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 0, 0, 4);
+                break;
             case SPR_DOCTOR_BAT:
-                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 0, 0);
+                Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 255, 0, 0, 4);
                 break;
             case SPR_COMPUTER:
                 Renderer::getInstance()->drawSpotLight(scr_x, scr_y, o, 0, 0, 255);

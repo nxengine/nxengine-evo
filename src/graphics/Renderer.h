@@ -95,7 +95,7 @@ class Renderer
 
     void saveScreenshot();
 
-    void drawSpotLight(int x, int y, Object* o, int r = 255, int g = 255, int b = 255);
+    void drawSpotLight(int x, int y, Object* o, int r = 255, int g = 255, int b = 255, int upscale = 6);
 
     void tintScreen();
     void flip();
