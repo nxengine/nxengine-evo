@@ -55,7 +55,7 @@ class Renderer
     void setFullscreen(bool enable);
 
     bool setResolution(int factor, bool restoreOnFailure = true);
-    const gres_t *getResolutions();
+    const gres_t *getResolutions(bool full_list = false);
     int getResolutionCount();
 
     bool flushAll();
