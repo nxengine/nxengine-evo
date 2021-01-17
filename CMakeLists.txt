@@ -102,8 +102,9 @@ add_definitions("-Wall")
 add_executable(nx ${SOURCES})
 
 IF(PLATFORM STREQUAL "pc")
-set_property(TARGET nx PROPERTY OUTPUT_NAME nxengine-evo)
+    set_property(TARGET nx PROPERTY OUTPUT_NAME nxengine-evo)
     add_definitions("-std=c++11")
+    add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}/nxengine/data/")
     target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY})
 
 ELSEIF(PLATFORM STREQUAL "vita")
