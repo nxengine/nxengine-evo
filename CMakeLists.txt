@@ -40,7 +40,6 @@ set (nx_APP_ID org.nxengine.nxengine_evo)
 include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
 
-
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -195,10 +194,8 @@ IF(PLATFORM STREQUAL "pc")
 
     # Install XDG metadata on Desktop Linux like platforms
     IF(UNIX AND NOT APPLE AND NOT ANDROID)
-        install(FILES platform/xdg/${nx_APP_ID}.desktop     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
-        install(FILES platform/xdg/${nx_APP_ID}.png         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps)
-        install(FILES platform/xdg/${nx_APP_ID}.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+        install(FILES platform/xdg/${nx_APP_ID}.desktop     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+        install(FILES platform/xdg/${nx_APP_ID}.png         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps)
+        install(FILES platform/xdg/${nx_APP_ID}.appdata.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo)
     ENDIF()
 ENDIF()
-
-
