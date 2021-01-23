@@ -38,7 +38,7 @@ bool Renderer::init(int resolution)
   if (!initVideo())
     return false;
 
-  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+  font.load();
 
   if (!sprites.init())
     return false;
@@ -149,8 +149,7 @@ bool Renderer::flushAll()
   sprites.flushSheets();
   tileset.reload();
   map_flush_graphics();
-  font.cleanup();
-  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+  font.load();
 
   return true;
 }

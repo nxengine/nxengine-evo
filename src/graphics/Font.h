@@ -29,10 +29,8 @@ public:
 
   Font();
   ~Font();
-  bool load(const std::string &font);
+  bool load();
   void cleanup();
-  uint32_t height() const;
-  uint32_t base() const;
   const Font::Glyph &glyph(uint32_t codepoint);
   SDL_Texture *atlas(uint32_t idx);
   uint32_t draw(int x, int y, const std::string &text, uint32_t color = 0xFFFFFF, bool isShaded = false);
@@ -47,6 +45,7 @@ private:
   std::map<uint32_t, Glyph> _glyphs;
   uint32_t _height;
   uint32_t _base;
+  uint32_t _upscale;
   bool _rendering = true;
   const uint8_t _shadowOffset = 1;
 };
