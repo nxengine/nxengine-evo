@@ -359,7 +359,11 @@ void _lang_change(ODItem *item, int dir)
   game.lang->load();
 //  font_reload();
   game.tsc->Init();
-  Renderer::getInstance()->flushAll();
+  if (!Renderer::getInstance()->flushAll())
+  {
+    LOG_CRITICAL("Failed to re-init graphics");
+    exit(-1);
+  }
 }
 
 void _fullscreen_get(ODItem *item)
