@@ -294,15 +294,7 @@ int main(int argc, char *argv[])
   bool error            = false;
   bool freshstart;
 
-#if defined(_WIN32)
-  char *basepath = SDL_GetBasePath();
-  _chdir(basepath);
-  SDL_free(basepath);
-#elif not defined(__VITA__) && not defined(__SWITCH__)
-  char *basepath = SDL_GetBasePath();
-  chdir(basepath);
-  SDL_free(basepath);
-
+#if defined(UNIX_LIKE)
   // On platforms where SDL may use Wayland (Linux and BSD), setting the icon from a surface doesn't work and
   // the request will be ignored. Instead apps submit their app ID using the xdg-shell Wayland protocol and
   // then the desktop looks up the icon based on this.

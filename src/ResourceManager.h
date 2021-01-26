@@ -22,6 +22,24 @@ public:
   static ResourceManager *getInstance();
   static bool fileExists(const std::string &filename);
 
+  /**
+   * Returns the path to the directory where the installed game resources
+   * may be found terminated by a path separator
+   *
+   * This function never returns a `nullptr`.
+   * Returned pointer must be freed using `SDL_free`.
+   */
+  static char* getInstallResourceBasePath();
+
+  /**
+   * Returns the path to the directory where user-defined game resources
+   * may be found terminated by a path separator
+   *
+   * This function may return `nullptr` if no such directory exists.
+   * Returned pointer must be freed using `SDL_free`.
+   */
+  static char* getUserResourceBasePath();
+
   void shutdown();
   std::string getLocalizedPath(const std::string &filename);
   std::string getPrefPath(const std::string &filename);

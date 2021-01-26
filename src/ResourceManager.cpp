@@ -53,6 +53,41 @@ bool ResourceManager::fileExists(const std::string &filename)
   return false;
 }
 
+char* ResourceManager::getInstallResourceBasePath()
+{
+  char* resPath;
+
+  #if defined(__SWITCH__)
+    char resPathValue[] = "romfs:/";
+
+    resPath = SDL_malloc(sizeof(resPathValue));
+    assert(resPath != nullptr);
+
+    SDL_memcpy(resPath, path, sizeof(resPathValue));
+  #else
+    resPath = SDL_GetBasePath();
+    assert(resPath != nullptr);
+  #endif
+
+  return resPath;
+}
+
+char* ResourceManager::getUserResourceBasePath()
+{
+  #if defined(__SWITCH__)
+    // Switch doesn't have any user data directory, but its SDL implementation
+    // is lacking `SDL_GetPrefPath` to tell us that
+    return nullptr;
+  #elif defined(HAVE_UNIX_LIKE)
+    //XXX: Use different parameters on Linux/BSD than elsewhere to match the
+    //     previously generated generated paths (which incorrectly hard-coded
+    //     ~/.local/share/nxengine) in most cases
+    return SDL_GetPrefPath(NULL, "nxengine");
+  #else
+    return SDL_GetPrefPath("nxengine", "nxengine-evo");
+  #endif
+}
+
 ResourceManager::ResourceManager()
 {
   findLanguages();
@@ -72,107 +107,42 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
 {
   std::vector<std::string> _paths;
 
-#if defined(__linux__)
-  char *home = getenv("HOME");
-
-#if defined(DATADIR)
-  std::string _data (DATADIR);
-#endif
-
-  if (home != NULL)
+  char* userResBasePtr = getUserResourceBasePath();
+  if (userResBasePtr != NULL)
   {
+    std::string userResBase(userResBasePtr);
+    SDL_free(userResBasePtr);
+
     if (!_mod.empty())
     {
-      _paths.push_back(std::string(home) + "/.local/share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-      _paths.push_back(std::string(home) + "/.local/share/nxengine/data/mods/" + _mod + "/" + filename);
+      _paths.push_back(userResBase + "data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
+      _paths.push_back(userResBase + "data/mods/" + _mod + "/" + filename);
     }
-    _paths.push_back(std::string(home) + "/.local/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back(std::string(home) + "/.local/share/nxengine/data/" + filename);
+    _paths.push_back(userResBase + "data/lang/" + std::string(settings->language) + "/" + filename);
+    _paths.push_back(userResBase + "data/" + filename);
   }
+
+  #if defined(DATADIR)
+    std::string _data(DATADIR "/");
+  #else
+    char* installResBasePtr = getInstallResourceBasePath();
+    std::string _data(installResBasePtr);
+    SDL_free(installResBasePtr);
+    #if defined(HAVE_UNIX_LIKE)
+      _data += "../share/nxengine/data/";
+    #else
+      _data += "data/";
+    #endif
+  #endif
 
   if (!_mod.empty())
   {
-#if defined(DATADIR)
     _paths.push_back(_data + "mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
     _paths.push_back(_data + "mods/" + _mod + "/" + filename);
-#else
-    _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + filename)
-
-    _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/" + filename);
-
-    _paths.push_back("../share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("../share/nxengine/data/mods/" + _mod + "/" + filename);
-#endif
   }
 
-#if defined(DATADIR)
   _paths.push_back(_data + "lang/" + std::string(settings->language) + "/" + filename);
   _paths.push_back(_data + filename);
-#else
-  _paths.push_back("/usr/local/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("/usr/local/share/nxengine/data/" + filename);
-
-  _paths.push_back("/usr/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("/usr/share/nxengine/data/" + filename);
-
-  _paths.push_back("../share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("../share/nxengine/data/" + filename);
-#endif
-
-#elif defined(__APPLE__)
-  char *home = SDL_GetPrefPath("nxengine", "nxengine-evo");
-
-  if (home != NULL)
-  {
-    if (!_mod.empty())
-    {
-      _paths.push_back(std::string(home) + "/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-      _paths.push_back(std::string(home) + "/data/mods/" + _mod + "/" + filename);
-    }
-    _paths.push_back(std::string(home) + "/data/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back(std::string(home) + "/data/" + filename);
-    SDL_free(home);
-  }
-
-
-#elif defined(__VITA__)
-  if (!_mod.empty())
-  {
-    _paths.push_back("ux0:/data/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("ux0:/data/nxengine/data/mods/" + _mod + "/" + filename);
-    _paths.push_back("app0:/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("app0:/data/mods/" + _mod + "/" + filename);
-  }
-  _paths.push_back("ux0:/data/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("ux0:/data/nxengine/data/" + filename);
-  _paths.push_back("app0:/data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("app0:/data/" + filename);
-
-#elif defined(__SWITCH__)
-  if (!_mod.empty())
-  {
-    _paths.push_back("data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("data/mods/" + _mod + "/" + filename);
-    _paths.push_back("romfs:/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("romfs:/data/mods/" + _mod + "/" + filename);
-  }
-
-  _paths.push_back("data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("data/" + filename);
-  _paths.push_back("romfs:/data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("romfs:/data/" + filename);
-
-#endif
-
-  if (!_mod.empty())
-  {
-    _paths.push_back("data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("data/mods/" + _mod + "/" + filename);
-  }
-  _paths.push_back("data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("data/" + filename);
 
   for (auto &_tryPath: _paths)
   {
