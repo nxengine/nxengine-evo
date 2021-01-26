@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -8,6 +8,11 @@ set_property(CACHE PLATFORM PROPERTY STRINGS pc vita switch)
 set(UNIX_LIKE OFF)
 IF(UNIX AND NOT APPLE AND NOT ANDROID)
     set(UNIX_LIKE ON)
+
+    set(PORTABLE "AUTO" CACHE STRING "Build location-independent binary?")
+    set_property(CACHE PORTABLE PROPERTY STRINGS ON OFF AUTO)
+ELSE()
+    set(PORTABLE "AUTO" CACHE INTERNAL "Build location-independent binary? (Linux/BSD only)")
 ENDIF()
 
 IF(PLATFORM STREQUAL "pc")
@@ -109,9 +114,16 @@ add_executable(nx ${SOURCES})
 IF(PLATFORM STREQUAL "pc")
     set_property(TARGET nx PROPERTY OUTPUT_NAME nxengine-evo)
     add_definitions("-std=c++11")
-    add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}/nxengine/data/")
     IF(UNIX_LIKE)
         add_definitions(-DHAVE_UNIX_LIKE)
+
+        # Use non-portable install, with hard-coded data directory path,
+        # if requested by user or if the assets are not at path “../share/…”
+        # relative to the main binary and user didn't force a portable install
+        string(TOUPPER "${PORTABLE}" _PORTABLE)
+        IF((_PORTABLE STREQUAL "AUTO" AND NOT CMAKE_INSTALL_DATAROOTDIR STREQUAL "share") OR NOT ${_PORTABLE})
+            add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}/nxengine/data/")
+        ENDIF()
     ENDIF()
     target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY})
 
