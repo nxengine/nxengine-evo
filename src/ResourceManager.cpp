@@ -206,12 +206,13 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
 {
   std::vector<std::string> _paths;
 
+#if defined(__linux__)
+  char *home = getenv("HOME");
+
 #if defined(DATADIR)
   std::string _data (DATADIR);
 #endif
 
-#if defined(__linux__)
-  char *home = getenv("HOME");
   if (home != NULL)
   {
     if (!_mod.empty())
