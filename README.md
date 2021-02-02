@@ -1,7 +1,7 @@
 # NXEngine-evo
 A somewhat upgraded/refactored version of [NXEngine](http://nxengine.sourceforge.net/) by Caitlin Shaw.
 
-[![Build Status](https://travis-ci.org/nxengine/nxengine-evo.svg?branch=master)](https://travis-ci.org/nxengine/nxengine-evo) [![Discord chat](https://img.shields.io/discord/804396136252964954?label=Discord)](https://discord.gg/jnwmA7DhQh) [![Matrix chat](https://img.shields.io/matrix/nxengine-evo:ninetailed.ninja?server_fqdn=matrix.ninetailed.ninja&label=Matrix)](https://matrix.to/#/#nxengine-evo:ninetailed.ninja)
+[![Discord chat](https://img.shields.io/discord/804396136252964954?label=Discord)](https://discord.gg/jnwmA7DhQh) [![Matrix chat](https://img.shields.io/matrix/nxengine-evo:ninetailed.ninja?server_fqdn=matrix.ninetailed.ninja&label=Matrix)](https://matrix.to/#/#nxengine-evo:ninetailed.ninja)
 
 ![Screenshot](https://raw.githubusercontent.com/nxengine/nxengine-evo/master/screenshot.png)
 
