@@ -38,7 +38,8 @@ bool Renderer::init(int resolution)
   if (!initVideo())
     return false;
 
-  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+  if (!font.load())
+    return false;
 
   if (!sprites.init())
     return false;
@@ -68,7 +69,7 @@ bool Renderer::initVideo()
 {
   uint32_t window_flags = SDL_WINDOW_SHOWN;
 
-  const NXE::Graphics::gres_t *res = getResolutions();
+  const NXE::Graphics::gres_t *res = getResolutions(true);
 
   uint32_t width  = res[_current_res].width;
   uint32_t height = res[_current_res].height;
@@ -149,8 +150,8 @@ bool Renderer::flushAll()
   sprites.flushSheets();
   tileset.reload();
   map_flush_graphics();
-  font.cleanup();
-  font.load(std::string("font_" + std::to_string(scale) + ".fnt"));
+  if (!font.load())
+    return false;
 
   return true;
 }
@@ -205,7 +206,7 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
   return true;
 }
 
-const Graphics::gres_t *Renderer::getResolutions()
+const Graphics::gres_t *Renderer::getResolutions(bool full_list)
 {
   static NXE::Graphics::gres_t res[]
       = {//      description, screen_w, screen_h, render_w, render_h, scale_factor, widescreen, enabled
@@ -235,20 +236,24 @@ const Graphics::gres_t *Renderer::getResolutions()
 #endif
          {NULL, 0, 0, 0, 0, 0, false, false}};
 
-  SDL_DisplayMode dm;
-  SDL_GetDesktopDisplayMode(0, &dm);
-
-  LOG_DEBUG("DW: {}, DH: {}", dm.w, dm.h);
-  for (int i = 0; res[i].name; i++)
+  if (!full_list)
   {
-    if (res[i].width > (uint32_t)dm.w || res[i].height > (uint32_t)dm.h)
-    {
-      LOG_INFO("Disabling {}", res[i].name);
+      int displayIdx = SDL_GetWindowDisplayIndex(_window);
+      LOG_DEBUG("Display idx: {}",displayIdx);
+      SDL_DisplayMode dm;
+      SDL_GetDesktopDisplayMode(displayIdx, &dm);
 
-      res[i].enabled = false;
-    }
+      LOG_INFO("Display W: {}, Display H: {}", dm.w, dm.h);
+      for (int i = 0; res[i].name; i++)
+      {
+        if (res[i].width > (uint32_t)dm.w || res[i].height > (uint32_t)dm.h)
+        {
+          LOG_INFO("Disabling {}", res[i].name);
+
+          res[i].enabled = false;
+        }
+      }
   }
-
   return res;
 }
 
@@ -576,14 +581,11 @@ void Renderer::saveScreenshot()
   return;
 }
 
-void Renderer::drawSpotLight(int x, int y, Object* o, int r, int g, int b)
+void Renderer::drawSpotLight(int x, int y, Object* o, int r, int g, int b, int upscale)
 {
-  // TODO: proper offsets
   SDL_Rect dstrec;
   int width = o->Width() / CSFI;
   int height = o->Height() / CSFI;
-
-  int upscale = 6;
 
   x *= scale;
   y *= scale;

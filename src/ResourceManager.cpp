@@ -75,6 +75,10 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
 #if defined(__linux__)
   char *home = getenv("HOME");
 
+#if defined(DATADIR)
+  std::string _data (DATADIR);
+#endif
+
   if (home != NULL)
   {
     if (!_mod.empty())
@@ -88,23 +92,34 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
 
   if (!_mod.empty())
   {
+#if defined(DATADIR)
+    _paths.push_back(_data + "mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
+    _paths.push_back(_data + "mods/" + _mod + "/" + filename);
+#else
+    _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
+    _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + filename)
+
     _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
     _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/" + filename);
 
-    _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
-    _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + filename);
-
     _paths.push_back("../share/nxengine/data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
     _paths.push_back("../share/nxengine/data/mods/" + _mod + "/" + filename);
+#endif
   }
-  _paths.push_back("/usr/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
-  _paths.push_back("/usr/share/nxengine/data/" + filename);
 
+#if defined(DATADIR)
+  _paths.push_back(_data + "lang/" + std::string(settings->language) + "/" + filename);
+  _paths.push_back(_data + filename);
+#else
   _paths.push_back("/usr/local/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
   _paths.push_back("/usr/local/share/nxengine/data/" + filename);
 
+  _paths.push_back("/usr/share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
+  _paths.push_back("/usr/share/nxengine/data/" + filename);
+
   _paths.push_back("../share/nxengine/data/lang/" + std::string(settings->language) + "/" + filename);
   _paths.push_back("../share/nxengine/data/" + filename);
+#endif
 
 #elif defined(__APPLE__)
   char *home = SDL_GetPrefPath("nxengine", "nxengine-evo");
@@ -193,6 +208,11 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
 
 #if defined(__linux__)
   char *home = getenv("HOME");
+
+#if defined(DATADIR)
+  std::string _data (DATADIR);
+#endif
+
   if (home != NULL)
   {
     if (!_mod.empty())
@@ -202,14 +222,22 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
 
   if (!_mod.empty())
   {
-    _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/" + dir);
+#if defined(DATADIR)
+    _paths.push_back(_data + "mods/" + _mod + "/" + dir);
+#else
     _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + dir);
+    _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/" + dir);
     _paths.push_back("../share/nxengine/data/mods/" + _mod + "/" + dir);
+#endif
   }
 
-  _paths.push_back("/usr/share/nxengine/data/" + dir);
+#if defined(DATADIR)
+  _paths.push_back(_data + dir);
+#else
   _paths.push_back("/usr/local/share/nxengine/data/" + dir);
+  _paths.push_back("/usr/share/nxengine/data/" + dir);
   _paths.push_back("../share/nxengine/data/" + dir);
+#endif
 
 #elif defined(__APPLE__)
   char *home = SDL_GetPrefPath("nxengine", "nxengine-evo");

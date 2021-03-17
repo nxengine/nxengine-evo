@@ -55,7 +55,7 @@ class Renderer
     void setFullscreen(bool enable);
 
     bool setResolution(int factor, bool restoreOnFailure = true);
-    const gres_t *getResolutions();
+    const gres_t *getResolutions(bool full_list = false);
     int getResolutionCount();
 
     bool flushAll();
@@ -95,7 +95,7 @@ class Renderer
 
     void saveScreenshot();
 
-    void drawSpotLight(int x, int y, Object* o, int r = 255, int g = 255, int b = 255);
+    void drawSpotLight(int x, int y, Object* o, int r = 255, int g = 255, int b = 255, int upscale = 6);
 
     void tintScreen();
     void flip();

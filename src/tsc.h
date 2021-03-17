@@ -82,6 +82,7 @@ private:
   ScriptInstance _curscript;
   int _lastammoinc = 0;
   ScriptPage _script_pages[NUM_SCRIPT_PAGES];
+  bool should_set_tao; // text-at-once flag
 
   static void _NPCDo(int id2, int p1, int p2, void (*action_function)(Object *o, int p1, int p2));
   static void _DoANP(Object *o, int p1, int p2);

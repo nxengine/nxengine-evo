@@ -286,7 +286,6 @@ void ai_boss_igor(Object *o)
         if (o->timer > 132) // fires 6 shots
         {
           o->state = STATE_INIT;
-          o->timer = 0;
         }
       }
     }

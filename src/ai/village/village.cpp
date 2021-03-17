@@ -204,6 +204,12 @@ void ai_mushroom_enemy(Object *o)
     o->state    = SHOT;
     o->yinertia = -0x200;
     o->frame    = 6;
+    //Giant Pignons jump towards the player upon getting hit
+    //Normal Pignons keep their current x velocity
+    if (o->type == OBJ_GIANT_MUSHROOM_ENEMY)
+    {
+      o->xinertia = (player->x > o->x) ? 0x100 : -0x100;
+    }
   }
 
   o->yinertia += 0x40;

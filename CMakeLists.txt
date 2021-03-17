@@ -40,7 +40,6 @@ set (nx_APP_ID org.nxengine.nxengine_evo)
 include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
 
-
 find_package(SDL2 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
@@ -103,8 +102,9 @@ add_definitions("-Wall")
 add_executable(nx ${SOURCES})
 
 IF(PLATFORM STREQUAL "pc")
-set_property(TARGET nx PROPERTY OUTPUT_NAME nxengine-evo)
+    set_property(TARGET nx PROPERTY OUTPUT_NAME nxengine-evo)
     add_definitions("-std=c++11")
+    add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}/nxengine/data/")
     target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY})
 
 ELSEIF(PLATFORM STREQUAL "vita")
@@ -149,12 +149,12 @@ ELSEIF(PLATFORM STREQUAL "vita")
     FILE platform/vita/sce_sys sce_sys
     FILE release/data data
   )
-  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
-    COMMAND cp nx.vpk ${CMAKE_SOURCE_DIR}/release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
+  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/release/NXEngine-Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
+    COMMAND cp nx.vpk ${CMAKE_SOURCE_DIR}/release/NXEngine-Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk
     DEPENDS nx.vpk
     COMMENT "Moving vpk to release"
   )
-  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_SOURCE_DIR}/release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk)
+  add_custom_target(nxbinvpk_ ALL DEPENDS ${CMAKE_SOURCE_DIR}/release/NXEngine-Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.vpk)
 
 ELSEIF(PLATFORM STREQUAL "switch")
     add_definitions("-std=gnu++11")
@@ -177,12 +177,12 @@ ELSEIF(PLATFORM STREQUAL "switch")
     )
 
     add_nro_target(nx "NXEngine-evo" "NXEngine team" "${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}" "${CMAKE_SOURCE_DIR}/platform/switch/icon.jpg" "${CMAKE_SOURCE_DIR}/release")
-    add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
-      COMMAND cp nx.nro ${CMAKE_SOURCE_DIR}/release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
+    add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/release/NXEngine-Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
+      COMMAND cp nx.nro ${CMAKE_SOURCE_DIR}/release/NXEngine-Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro
       DEPENDS nx.nro
       COMMENT "Moving nro to release"
     )
-    add_custom_target(nxbinnro_ ALL DEPENDS ${CMAKE_SOURCE_DIR}/release/NXEngine_Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro)
+    add_custom_target(nxbinnro_ ALL DEPENDS ${CMAKE_SOURCE_DIR}/release/NXEngine-Evo-${nx_VERSION_MAJOR}.${nx_VERSION_MINOR}.${nx_VERSION_RELEASE}.nro)
 ENDIF()
 
 IF(PLATFORM STREQUAL "pc")
@@ -195,10 +195,8 @@ IF(PLATFORM STREQUAL "pc")
 
     # Install XDG metadata on Desktop Linux like platforms
     IF(UNIX AND NOT APPLE AND NOT ANDROID)
-        install(FILES platform/xdg/${nx_APP_ID}.desktop     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
-        install(FILES platform/xdg/${nx_APP_ID}.png         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps)
-        install(FILES platform/xdg/${nx_APP_ID}.appdata.xml DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+        install(FILES platform/xdg/${nx_APP_ID}.desktop     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+        install(FILES platform/xdg/${nx_APP_ID}.png         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/256x256/apps)
+        install(FILES platform/xdg/${nx_APP_ID}.appdata.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo)
     ENDIF()
 ENDIF()
-
-

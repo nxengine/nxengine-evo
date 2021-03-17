@@ -372,6 +372,9 @@ void TSC::RunScripts(void)
 
 void TSC::StopScripts(void)
 {
+  
+  
+
   if (_curscript.running)
     StopScript(&_curscript);
 }
@@ -454,6 +457,8 @@ bool TSC::StartScript(int scriptno, ScriptPages pageno)
   player->hurt_time = 0;
   player->hurt_flash_state = 0;
 
+  should_set_tao = false;
+
   LOG_DEBUG("Started script #{:#04d}", scriptno);
 
   RunScripts();
@@ -464,6 +469,8 @@ void TSC::StopScript(ScriptInstance *s)
 {
   if (!s->running)
     return;
+
+  should_set_tao = false;
 
   s->running = false;
   LOG_DEBUG("Stopped script #{:#04d}", s->scriptno);
@@ -515,9 +522,9 @@ bool TSC::JumpScript(int newscriptno, ScriptPages pageno)
 
     // see entrance to Sacred Grounds when you have the Nikumaru Counter
     // to witness that EVE clears TUR.
-    textbox.SetFlags(TB_LINE_AT_ONCE, false);
-    textbox.SetFlags(TB_VARIABLE_WIDTH_CHARS, false);
-    textbox.SetFlags(TB_CURSOR_NEVER_SHOWN, false);
+//    textbox.SetFlags(TB_LINE_AT_ONCE, false);
+//    textbox.SetFlags(TB_VARIABLE_WIDTH_CHARS, false);
+//    textbox.SetFlags(TB_CURSOR_NEVER_SHOWN, false);
   }
 
   return 0;
@@ -534,6 +541,7 @@ void TSC::ExecScript(ScriptInstance *s)
   const char *mnemonic;
   char *str;
   int cmdip;
+
 
 #define JUMP_IF(cond)                                                                                                  \
   {                                                                                                                    \
@@ -628,6 +636,8 @@ void TSC::ExecScript(ScriptInstance *s)
       return;
     s->wait_standing = false;
   }
+
+
 
   // stat("<> Entering script execution loop at ip = %d", s->ip);
 
@@ -1113,8 +1123,13 @@ void TSC::ExecScript(ScriptInstance *s)
 
       case OP_MSG: // bring up text box
       {
+        LOG_DEBUG("Should set tao: {}", should_set_tao);
         // required for post-Ballos cutscene
-        textbox.SetFlags(TUR_PARAMS, false);
+        if (should_set_tao) {
+            textbox.SetFlags(TUR_PARAMS, true);
+        } else {
+            textbox.SetFlags(TUR_PARAMS, false);
+        }
         textbox.SetVisible(true, TB_DEFAULTS);
         textbox.SetCanSpeedUp(true);
       }
@@ -1123,7 +1138,11 @@ void TSC::ExecScript(ScriptInstance *s)
       case OP_MS2: // bring up text box, at top, with no border
       {
         textbox.SetFace(0); // required for Undead Core intro
-        textbox.SetFlags(TUR_PARAMS, false);
+        if (should_set_tao) {
+            textbox.SetFlags(TUR_PARAMS, true);
+        } else {
+            textbox.SetFlags(TUR_PARAMS, false);
+        }
         textbox.SetVisible(true, TB_DRAW_AT_TOP | TB_NO_BORDER);
         textbox.SetCanSpeedUp(true);
       }
@@ -1131,7 +1150,11 @@ void TSC::ExecScript(ScriptInstance *s)
 
       case OP_MS3: // bring up text box, at top
       {
-        textbox.SetFlags(TUR_PARAMS, false);
+        if (should_set_tao) {
+            textbox.SetFlags(TUR_PARAMS, true);
+        } else {
+            textbox.SetFlags(TUR_PARAMS, false);
+        }
         textbox.SetVisible(true, TB_DRAW_AT_TOP);
         textbox.SetCanSpeedUp(true);
       }
@@ -1199,13 +1222,15 @@ void TSC::ExecScript(ScriptInstance *s)
       case OP_SAT: // disables typing animation
       case OP_CAT: // unused synonym
       {
-        textbox.SetFlags(TB_LINE_AT_ONCE | TB_CURSOR_NEVER_SHOWN, true);
+        should_set_tao = true;
+//        textbox.SetFlags(TB_LINE_AT_ONCE | TB_CURSOR_NEVER_SHOWN, true);
       }
       break;
 
       case OP_TUR: // set text mode to that used for signs
       {
         textbox.SetFlags(TUR_PARAMS, true);
+//        should_set_tao = true;
         textbox.SetCanSpeedUp(false);
       }
       break;

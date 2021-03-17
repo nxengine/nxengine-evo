@@ -28,16 +28,29 @@ Font::Font()
 {
 }
 
-bool Font::load(const std::string &font)
+bool Font::load()
 {
   cleanup();
+  std::string font = std::string("font_" + std::to_string(Renderer::getInstance()->scale) + ".fnt");
   LOG_DEBUG("Loading font file {}", font.c_str());
 
   // special empty glyph
   _glyphs[0] = Font::Glyph{0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   std::string path = ResourceManager::getInstance()->getLocalizedPath(font);
+  if (ResourceManager::getInstance()->fileExists(path))
+  {
+    _upscale = 1;
+  }
+  else
+  {
+    _upscale = Renderer::getInstance()->scale;
+    font = std::string("font_1.fnt");
+    path = ResourceManager::getInstance()->getLocalizedPath(font);
+  }
+
   LOG_DEBUG("Loading font file {}", path.c_str());
+
   std::ifstream fl;
   fl.open(widen(path), std::ifstream::in | std::ifstream::binary);
   if (fl.is_open())
@@ -82,21 +95,12 @@ void Font::cleanup()
     SDL_DestroyTexture(atlas);
   }
   _atlases.clear();
+  _upscale = 1;
 }
 
 Font::~Font()
 {
   cleanup();
-}
-
-uint32_t Font::height() const
-{
-  return _height;
-}
-
-uint32_t Font::base() const
-{
-  return _base;
 }
 
 const Font::Glyph &Font::glyph(uint32_t codepoint)
@@ -148,30 +152,35 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
     {
       if (_rendering)
       {
-        int offset = (int)round(((double)height() / (double)Renderer::getInstance()->scale - 6.) / 2.);
+        int offset = (int)round(((double)_height / (double)Renderer::getInstance()->scale - 6.) / 2.);
         Renderer::getInstance()->sprites.drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
       }
     }
     else if (_rendering && ch != ' ')
     {
-      dstrect.x = x + glyph.xoffset;
-      dstrect.y = y + glyph.yoffset;
-      dstrect.w = glyph.w;
-      dstrect.h = glyph.h;
+      dstrect.x = x + (glyph.xoffset * _upscale);
+      dstrect.y = y + (glyph.yoffset * _upscale);
+      dstrect.w = glyph.w * _upscale;
+      dstrect.h = glyph.h * _upscale;
 
       srcrect.x = glyph.x;
       srcrect.y = glyph.y;
-      srcrect.w = dstrect.w;
-      srcrect.h = dstrect.h;
+      srcrect.w = glyph.w;
+      srcrect.h = glyph.h;
 
       if (Renderer::getInstance()->isClipSet())
-        Renderer::getInstance()->clipScaled(srcrect, dstrect);
+      {
+        if (_upscale > 1)
+          Renderer::getInstance()->clip(srcrect, dstrect);
+        else
+          Renderer::getInstance()->clipScaled(srcrect, dstrect);
+      }
       if (isShaded)
       {
-        shdrect.x = x + glyph.xoffset;
-        shdrect.y = y + glyph.yoffset + _shadowOffset * Renderer::getInstance()->scale;
-        shdrect.w = glyph.w;
-        shdrect.h = glyph.h;
+        shdrect.x = x + (glyph.xoffset * _upscale);
+        shdrect.y = y + (glyph.yoffset * _upscale + _shadowOffset * Renderer::getInstance()->scale);
+        shdrect.w = glyph.w * _upscale;
+        shdrect.h = glyph.h * _upscale;
         SDL_SetTextureColorMod(atlas, 0, 0, 0);
         SDL_RenderCopy(Renderer::getInstance()->renderer(), atlas, &srcrect, &shdrect);
         SDL_SetTextureColorMod(atlas, 255, 255, 255);
@@ -203,8 +212,8 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
     }
     else
     {
-      if (rtl()) x -= glyph.xadvance;
-      else x += glyph.xadvance;
+      if (rtl()) x -= glyph.xadvance * _upscale;
+      else x += glyph.xadvance * _upscale;
     }
     i++;
   }
@@ -243,30 +252,35 @@ uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bo
     {
       if (_rendering)
       {
-        int offset = (int)round(((double)height() / (double)Renderer::getInstance()->scale - 6.) / 2.);
+        int offset = (int)round(((double)_height / (double)Renderer::getInstance()->scale - 6.) / 2.);
         Renderer::getInstance()->sprites.drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
       }
     }
     else if (_rendering && ch != ' ')
     {
-      dstrect.x = x + glyph.xoffset;
-      dstrect.y = y + glyph.yoffset;
-      dstrect.w = glyph.w;
-      dstrect.h = glyph.h;
+      dstrect.x = x + (glyph.xoffset * _upscale);
+      dstrect.y = y + (glyph.yoffset * _upscale);
+      dstrect.w = glyph.w * _upscale;
+      dstrect.h = glyph.h * _upscale;
 
       srcrect.x = glyph.x;
       srcrect.y = glyph.y;
-      srcrect.w = dstrect.w;
-      srcrect.h = dstrect.h;
+      srcrect.w = glyph.w;
+      srcrect.h = glyph.h;
 
       if (Renderer::getInstance()->isClipSet())
-        Renderer::getInstance()->clipScaled(srcrect, dstrect);
+      {
+        if (_upscale > 1)
+          Renderer::getInstance()->clip(srcrect, dstrect);
+        else
+          Renderer::getInstance()->clipScaled(srcrect, dstrect);
+      }
       if (isShaded)
       {
-        shdrect.x = x + glyph.xoffset;
-        shdrect.y = y + glyph.yoffset + _shadowOffset * Renderer::getInstance()->scale;
-        shdrect.w = glyph.w;
-        shdrect.h = glyph.h;
+        shdrect.x = x + (glyph.xoffset * _upscale);
+        shdrect.y = y + glyph.yoffset * _upscale + _shadowOffset * Renderer::getInstance()->scale;
+        shdrect.w = glyph.w * _upscale;
+        shdrect.h = glyph.h * _upscale;
         SDL_SetTextureColorMod(atlas, 0, 0, 0);
         SDL_RenderCopy(Renderer::getInstance()->renderer(), atlas, &srcrect, &shdrect);
         SDL_SetTextureColorMod(atlas, 255, 255, 255);
@@ -288,7 +302,7 @@ uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bo
     }
     else
     {
-      x += glyph.xadvance;
+      x += glyph.xadvance * _upscale;
     }
     i++;
   }
@@ -310,12 +324,12 @@ uint32_t Font::getWidth(const std::string &text)
 
 uint32_t Font::getHeight() const
 {
-  return height() / Renderer::getInstance()->scale;
+  return _height / ((_upscale == 1) ? Renderer::getInstance()->scale : 1);
 }
 
 uint32_t Font::getBase() const
 {
-  return base() / Renderer::getInstance()->scale;
+  return _base / ((_upscale == 1) ? Renderer::getInstance()->scale : 1);
 }
 
 }; // namespace Graphics
