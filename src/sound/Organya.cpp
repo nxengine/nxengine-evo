@@ -136,7 +136,7 @@ bool Song::Load(const std::string &fname)
   // Load each instrument parameters (and initialize them)
   for (auto &i : ins)
   {
-    i = {fgeti(fp), fgetc(fp), fgetc(fp) != 0, fgeti(fp), {}, 0, 0, 0, 0, 0, 0, 0};
+    i = {fgeti(fp), fgetc(fp), 1, 255, false, fgetc(fp) != 0, fgeti(fp), {}, 0, 0, 0, 0, 0, 0, 0};
   }
   // Load events for each instrument
   for (auto &i : ins)
@@ -157,6 +157,12 @@ bool Song::Load(const std::string &fname)
   std::fclose(fp);
   return true;
 }
+
+static const int frequency_table[12] = {262, 277, 294, 311, 330, 349, 370, 392, 415, 440, 466, 494};
+//static const int octave_table[8] = {32, 64, 128, 256, 512, 1024, 2048, 4096};
+static const int octave_table[8] = {32, 64, 64, 128, 128, 128, 128, 128};
+static const int wave_length_table[8] = {256, 256, 128, 128, 64, 32, 16, 8};
+static const int panning_table[13] = {0, 43, 86, 129, 172, 215, 256, 297, 340, 383, 426, 469, 512};
 
 void Song::Synth()
 {
@@ -184,62 +190,73 @@ void Song::Synth()
     if (j != i.events.end())
     {
       auto &event = j->second;
-      if (event.volume != 255)
-        i.cur_vol = event.volume * master_volume;
-      if (event.panning != 255)
-        i.cur_pan = event.panning;
       if (event.note != 255)
       {
-        // Calculate the note's wave data sampling frequency (equal temperament)
-        double freq = std::pow(2.0, (event.note + i.tuning / 1000.0 + 155.376) / 12);
-        // Note: 155.376 comes from:
-        //         12*log(256*440)/log(2) - (4*12-3-1) So that note 4*12-3 plays at 440 Hz.
-        // Note: Optimizes into
-        //         pow(2, (note+155.376 + tuning/1000.0) / 12.0)
-        //         2^(155.376/12) * exp( (note + tuning/1000.0)*log(2)/12 )
-        // i.e.    7901.988*exp(0.057762265*(note + tuning*1e-3))
-        i.phaseinc = freq / sampling_rate;
-        i.phaseacc = 0;
-        // And determine the actual wave data to play
-        i.cur_wave     = &WaveTable[256 * (i.wave % 100)];
-        i.cur_wavesize = 256;
-        i.cur_length   = i.pipi ? 1024 / i.phaseinc : (event.length * samples_per_beat);
-        if (&i >= &ins[8]) // Percussion is different
+        int octave = event.note / 12;
+        int key = event.note % 12;
+        double freq = frequency_table[key] * octave_table[octave] + (i.tuning - 1000);
+
+        if (&i >= &ins[8])
         {
           const auto idx = &i - &ins[0];
           const auto &d  = DrumSamples[idx - 8];
-          i.phaseinc     = event.note * (22050 / 32.5) / sampling_rate; // Linear frequency
-          i.cur_wave     = &d[0];
+          i.wave_step = 1;
+          i.phaseinc = (event.note * 800 + 100) / (double) sampling_rate;
+          i.phaseacc = 0;
+          i.cur_wave = &d[0];
           i.cur_wavesize = d.size();
-          i.cur_length   = d.size() / i.phaseinc;
+          i.cur_length = d.size() / i.phaseinc;
+        } else {
+          i.wave_step = (256 / wave_length_table[octave]);
+          i.phaseinc = (freq / sampling_rate);
+          i.phaseacc = fmod(i.phaseacc, wave_length_table[octave]);
+          i.cur_wave     = &WaveTable[256 * (i.wave % 100)];
+          i.cur_wavesize = 256;
+          if (i.pipi && i.last_note == 255) {
+            i.cur_length = int((octave + 1) * 4 * wave_length_table[octave] /*/ i.phaseinc*/);
+          } else {
+            i.cur_length = (event.length * samples_per_beat);
+          }
         }
-        // Ignore missing drum samples
+
+        i.last_note = event.note;
+
         if (i.cur_wavesize <= 0)
         {
           i.cur_length = 0;
         }
       }
+
+      if (i.last_note != 255) {
+        if (event.volume != 255) {
+          //i.cur_vol = event.volume * master_volume;
+          i.cur_vol = powf(10.0, ((event.volume - 255) * 8) / 2000.0) / 128.0;
+        }
+
+        if (event.panning != 255) {
+          i.cur_pan = event.panning;
+        }
+      }
     }
 
     // Generate wave data. Calculate left & right volumes...
-    static const int panning_table[13] = {0, 43, 86, 129, 172, 215, 256, 297, 340, 383, 426, 469, 512};
-    const double pan = (panning_table[clamp(i.cur_pan, 0, 12)] - 256) * 10;
+    const double pan = (panning_table[clamp(i.cur_pan, 0, 12)] - 256) * 10.0;
     double left = 1.0;
     double right = 1.0;
 
     if (pan < 0) {
-      right = pow(10.0, ((double) pan) / 2000.0);
+      right = pow(10.0, pan / 2000.0);
     } else if (pan > 0) {
-      left = pow(10.0, ((double) -pan) / 2000.0);
+      left = pow(10.0, -pan / 2000.0);
     }
 
-    left *= i.cur_vol * 8;
-    right *= i.cur_vol * 8;
+    left *= i.cur_vol;
+    right *= i.cur_vol;
 
     int n = samples_per_beat > i.cur_length ? i.cur_length : samples_per_beat;
     for (int p = 0; p < n; ++p)
     {
-      const double pos = i.phaseacc;
+      const double pos = i.phaseacc * i.wave_step;
       // Take a sample from the wave data.
       double sample = 0;
 
@@ -247,7 +264,7 @@ void Song::Synth()
       {
         // Perform linear interpolation
         unsigned int position_integral = unsigned(pos);
-        const double position_fractional = pos - position_integral;
+        const double position_fractional = (pos - position_integral);
 
         const double sample1 = i.cur_wave[position_integral % i.cur_wavesize];
         const double sample2 = i.cur_wave[(position_integral + 1) % i.cur_wavesize];
@@ -258,12 +275,12 @@ void Song::Synth()
       {
         // Perform cubic interpolation
         const unsigned int position_integral = unsigned(pos) % i.cur_wavesize;
-        const double position_fractional = pos - (double)((int) pos);
+        const double position_fractional = (pos - (double)((int) pos));
 
         const float s1 = (float) (i.cur_wave[position_integral]);
-        const float s2 = (float) (i.cur_wave[clamp(position_integral + 1, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
-        const float sp = (float) (i.cur_wave[clamp(position_integral + 2, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
-        const float sn = (float) (i.cur_wave[MAX((int) position_integral - 1, 0)]);
+        const float s2 = (float) (i.cur_wave[clamp(position_integral + 1, (unsigned int) 0, (unsigned int) (i.cur_wavesize - 1))]);
+        const float sn = (float) (i.cur_wave[clamp(position_integral + 2, (unsigned int) 0, (unsigned int) (i.cur_wavesize - 1))]);
+        const float sp = (float) (i.cur_wave[MAX(((int) position_integral) - 1, 0)]);
         const float mu2 = position_fractional * position_fractional;
         const float a0 = sn - s2 - sp + s1;
         const float a1 = sp - s1 - a0;

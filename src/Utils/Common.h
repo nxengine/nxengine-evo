@@ -4,7 +4,7 @@
 template<class T>
 constexpr const T& clamp(const T& val, const T& min, const T& max)
 {
-  return (val < min) ? min : (max < val) ? max : val;
+  return (val <= min) ? min : (max <= val) ? max : val;
 }
 
 #endif
