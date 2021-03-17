@@ -22,8 +22,9 @@ namespace Sound
 
 struct Instrument
 {
-  int32_t tuning, wave;
-  bool pipi; // true=all notes play for exactly 1024 samples.
+  int32_t tuning, wave, wave_step, last_note;
+  bool playing;
+  bool pipi;
   std::size_t n_events;
 
   struct Event
