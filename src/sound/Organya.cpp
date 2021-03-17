@@ -208,7 +208,7 @@ void Song::Synth()
         {
           const auto idx = &i - &ins[0];
           const auto &d  = DrumSamples[idx - 8];
-          i.phaseinc     = event.note * (22050 / 32.5) / sampling_rate; // Linear frequency
+          i.phaseinc     = (event.note * 800 + 100) / (double) sampling_rate; // Linear frequency
           i.cur_wave     = &d[0];
           i.cur_wavesize = d.size();
           i.cur_length   = d.size() / i.phaseinc;
@@ -233,8 +233,8 @@ void Song::Synth()
       left = pow(10.0, ((double) -pan) / 2000.0);
     }
 
-    left *= i.cur_vol * 8;
-    right *= i.cur_vol * 8;
+    left *= i.cur_vol * 7;
+    right *= i.cur_vol * 7;
 
     int n = samples_per_beat > i.cur_length ? i.cur_length : samples_per_beat;
     for (int p = 0; p < n; ++p)
@@ -261,9 +261,9 @@ void Song::Synth()
         const double position_fractional = pos - (double)((int) pos);
 
         const float s1 = (float) (i.cur_wave[position_integral]);
-        const float s2 = (float) (i.cur_wave[clamp(position_integral + 1, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
-        const float sp = (float) (i.cur_wave[clamp(position_integral + 2, (unsigned int) 0, (unsigned int) i.cur_wavesize - 1)]);
-        const float sn = (float) (i.cur_wave[MAX((int) position_integral - 1, 0)]);
+        const float s2 = (float) (i.cur_wave[clamp(position_integral + 1, (unsigned int) 0, (unsigned int) (i.cur_wavesize - 1))]);
+        const float sn = (float) (i.cur_wave[clamp(position_integral + 2, (unsigned int) 0, (unsigned int) (i.cur_wavesize - 1))]);
+        const float sp = (float) (i.cur_wave[MAX(((int) position_integral) - 1, 0)]);
         const float mu2 = position_fractional * position_fractional;
         const float a0 = sn - s2 - sp + s1;
         const float a1 = sp - s1 - a0;
