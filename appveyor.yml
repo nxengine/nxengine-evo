@@ -55,7 +55,7 @@ for:
 -
   matrix:
     only:
-      - image: Ubuntu1804
+      - image: Ubuntu2004
 
   install:
     - sudo apt update
