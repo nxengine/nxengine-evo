@@ -1,6 +1,6 @@
 image:
   - macos-mojave
-  - Ubuntu1804
+  - Ubuntu2004
   - Visual Studio 2017
 
 version: 2.6.5.{build}
