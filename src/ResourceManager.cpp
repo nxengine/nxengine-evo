@@ -12,7 +12,8 @@
 #endif
 
 #if defined(__VITA__)
-#include <psp2/kernel/iofilemgr.h>
+#include <psp2/io/stat.h>
+#include <psp2/io/fcntl.h>
 #endif
 
 #include "ResourceManager.h"

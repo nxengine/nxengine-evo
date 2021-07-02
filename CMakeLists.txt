@@ -17,16 +17,15 @@ ENDIF()
 
 IF(PLATFORM STREQUAL "pc")
 ELSEIF(PLATFORM STREQUAL "vita")
-    IF(DEFINED ENV{DOLCESDK})
-        include("$ENV{DOLCESDK}/share/dolce.toolchain.cmake" REQUIRED)
-        include("$ENV{DOLCESDK}/share/dolce.cmake" REQUIRED)
-        set(DOLCE_APP_NAME "NXENGINE-EVO")
-        set(DOLCE_TITLEID  "NXEV00001")
-        set(DOLCE_VERSION  "02.64")
-        set(DOLCE_MKSFOEX_FLAGS "${DOLCE_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
-        set(DOLCE_ELF_CREATE_FLAGS "${DOLCE_ELF_CREATE_FLAGS} -h 4194304")
+    IF(DEFINED ENV{VITASDK})
+        include("$ENV{VITASDK}/share/vita.toolchain.cmake" REQUIRED)
+        include("$ENV{VITASDK}/share/vita.cmake" REQUIRED)
+        set(VITA_APP_NAME "NXENGINE-EVO")
+        set(VITA_TITLEID  "NXEV00001")
+        set(VITA_VERSION  "01.00")
+        set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d PARENTAL_LEVEL=1")
     ELSE()
-        message(FATAL_ERROR "Please define DOLCESDK to point to your SDK path!")
+        message(FATAL_ERROR "Please define VITASDK to point to your SDK path!")
     ENDIF()
 ELSEIF(PLATFORM STREQUAL "switch")
     IF(DEFINED ENV{DEVKITPRO})
@@ -50,7 +49,7 @@ set (nx_APP_ID org.nxengine.nxengine_evo)
 include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
 
-find_package(SDL2 REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(PNG REQUIRED)
@@ -125,34 +124,14 @@ IF(PLATFORM STREQUAL "pc")
             add_definitions(-DDATADIR="${CMAKE_INSTALL_FULL_DATADIR}/nxengine/data/")
         ENDIF()
     ENDIF()
-    target_link_libraries(nx ${SDL2_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY})
+    target_link_libraries(nx SDL2::SDL2 ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY})
 
 ELSEIF(PLATFORM STREQUAL "vita")
     add_definitions("-std=gnu++11")
     add_definitions("-D__VITA__")
-    target_link_libraries(nx ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_LIBRARY} ${PNG_LIBRARY} ${JPEG_LIBRARY}
-      pib
-      SceDisplay_stub
-      SceCtrl_stub
-      SceAppMgr_stub
-      SceAudio_stub
-      SceSysmodule_stub
-      SceSharedFb_stub
-      SceDisplay_stub
-      SceDisplayUser_stub
-      SceCtrl_stub
-      SceAppMgr_stub
-      SceAppMgrUser_stub
-      SceAudio_stub
-      SceIofilemgr_stub
-      SceSysmodule_stub
-      SceGxm_stub
-      SceGxmInternalForVsh_stub
-      SceCommonDialog_stub
-      SceTouch_stub
-      SceHid_stub
-      SceMotion_stub
-      m
+    target_link_libraries(nx ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} SDL2::SDL2-static ${PNG_LIBRARY} ${JPEG_LIBRARY}
+      webp
+      pthread
       z
       FLAC
       vorbisfile
@@ -162,10 +141,10 @@ ELSEIF(PLATFORM STREQUAL "vita")
       mpg123
     )
 
-  dolce_create_self(${PROJECT_NAME}.self nx UNSAFE)
-  dolce_create_vpk(${PROJECT_NAME}.vpk ${DOLCE_TITLEID} ${PROJECT_NAME}.self
-    VERSION ${DOLCE_VERSION}
-    NAME ${DOLCE_APP_NAME}
+  vita_create_self(${PROJECT_NAME}.self nx UNSAFE)
+  vita_create_vpk(${PROJECT_NAME}.vpk ${VITA_TITLEID} ${PROJECT_NAME}.self
+    VERSION ${VITA_VERSION}
+    NAME ${VITA_APP_NAME}
     FILE platform/vita/sce_sys sce_sys
     FILE release/data data
   )
