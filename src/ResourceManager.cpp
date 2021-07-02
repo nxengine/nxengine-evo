@@ -54,39 +54,33 @@ bool ResourceManager::fileExists(const std::string &filename)
   return false;
 }
 
-char* ResourceManager::getInstallResourceBasePath()
+std::string ResourceManager::getInstallResourceBasePath()
 {
-  char* resPath;
-
   #if defined(__SWITCH__)
-    char resPathValue[] = "romfs:/";
-
-    resPath = SDL_malloc(sizeof(resPathValue));
-    assert(resPath != nullptr);
-
-    SDL_memcpy(resPath, path, sizeof(resPathValue));
+    return std::string("romfs:/");
   #else
-    resPath = SDL_GetBasePath();
-    assert(resPath != nullptr);
+    char* resPath = SDL_GetBasePath();
+    if (NULL != resPath)
+    {
+        std::string strpath(resPath);
+        SDL_free(resPath);
+        return strpath;
+    }
+    return std::string("");
   #endif
-
-  return resPath;
 }
 
-char* ResourceManager::getUserResourceBasePath()
+std::string ResourceManager::getUserResourceBasePath()
 {
-  #if defined(__SWITCH__)
-    // Switch doesn't have any user data directory, but its SDL implementation
-    // is lacking `SDL_GetPrefPath` to tell us that
-    return nullptr;
-  #elif defined(HAVE_UNIX_LIKE)
-    //XXX: Use different parameters on Linux/BSD than elsewhere to match the
-    //     previously generated generated paths (which incorrectly hard-coded
-    //     ~/.local/share/nxengine) in most cases
-    return SDL_GetPrefPath(NULL, "nxengine");
-  #else
-    return SDL_GetPrefPath("nxengine", "nxengine-evo");
-  #endif
+  char *path = SDL_GetPrefPath(NULL, "nxengine");
+  if (NULL != path)
+  {
+    std::string strpath(path);
+    SDL_free(path);
+    return strpath;
+  }
+
+  return std::string("");
 }
 
 ResourceManager::ResourceManager()
@@ -108,12 +102,10 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
 {
   std::vector<std::string> _paths;
 
-  char* userResBasePtr = getUserResourceBasePath();
-  if (userResBasePtr != NULL)
-  {
-    std::string userResBase(userResBasePtr);
-    SDL_free(userResBasePtr);
+  std::string userResBase = getUserResourceBasePath();
 
+  if (!userResBase.empty())
+  {
     if (!_mod.empty())
     {
       _paths.push_back(userResBase + "data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
@@ -126,9 +118,8 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
   #if defined(DATADIR)
     std::string _data(DATADIR "/");
   #else
-    char* installResBasePtr = getInstallResourceBasePath();
-    std::string _data(installResBasePtr);
-    SDL_free(installResBasePtr);
+    std::string _data = getInstallResourceBasePath();
+
     #if defined(HAVE_UNIX_LIKE)
       _data += "../share/nxengine/data/";
     #else
@@ -158,16 +149,11 @@ std::string ResourceManager::getPrefPath(const std::string &filename)
 {
   std::string _tryPath;
 
-#if defined(__VITA__)
-  sceIoMkdir("ux0:/data/nxengine/", 0700);
-  _tryPath = std::string("ux0:/data/nxengine/") + std::string(filename);
-#elif defined(__SWITCH__)
+#if defined(__SWITCH__)
 //  mkdir("nxengine/", 0700);
   _tryPath = std::string(filename);
 #else
-  char *prefpath      = SDL_GetPrefPath("nxengine", "nxengine-evo");
-  _tryPath = std::string(prefpath) + std::string(filename);
-  SDL_free(prefpath);
+  _tryPath = std::string(getUserResourceBasePath()) + std::string(filename);
 #endif
 
   return _tryPath;
