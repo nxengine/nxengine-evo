@@ -75,7 +75,7 @@ for:
 
   install:
     - brew update
-    - brew install sdl2 sdl2_mixer sdl2_image libjpeg libpng ninja coretools
+    - brew install sdl2 sdl2_mixer sdl2_image libjpeg libpng ninja coreutils
 
   build_script:
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release -Bbuild -H.
