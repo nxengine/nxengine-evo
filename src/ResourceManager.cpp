@@ -116,7 +116,7 @@ std::string ResourceManager::getPath(const std::string &filename, bool localized
   }
 
   #if defined(DATADIR)
-    std::string _data(DATADIR "/");
+    std::string _data(DATADIR);
   #else
     std::string _data = getBasePath();
 
