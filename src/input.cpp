@@ -71,10 +71,10 @@ bool input_init(void)
   mappings[RIGHTKEY].jbut     = 18;
   mappings[DOWNKEY].jbut      = 19;
 
-  mappings[FIREKEY].jbut      = 0;  // A
-  mappings[JUMPKEY].jbut      = 1;  // B
-  mappings[MAPSYSTEMKEY].jbut = 2;  // X
-  mappings[INVENTORYKEY].jbut = 3;  // Y
+  mappings[FIREKEY].jbut      = 1;  // A
+  mappings[JUMPKEY].jbut      = 0;  // B
+  mappings[MAPSYSTEMKEY].jbut = 3;  // X
+  mappings[INVENTORYKEY].jbut = 2;  // Y
 
   mappings[PREVWPNKEY].jbut   = 6;  // L
   mappings[NEXTWPNKEY].jbut   = 7;  // R
