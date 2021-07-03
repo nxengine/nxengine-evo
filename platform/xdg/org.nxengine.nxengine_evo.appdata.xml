@@ -30,7 +30,7 @@
 		<id>org.nxengine.nxengine_evo.desktop</id>
 	</provides>
 	<releases>
-		<release version="2.6.5" date="2020-10-19"></release>
+		<release version="2.6.5" date="2021-07-04"></release>
 		<release version="2.6.4" date="2019-08-08"></release>
 	</releases>
 </component>

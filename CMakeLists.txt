@@ -43,7 +43,7 @@ project(nx CXX)
 
 set (nx_VERSION_MAJOR 2)
 set (nx_VERSION_MINOR 6)
-set (nx_VERSION_RELEASE 4)
+set (nx_VERSION_RELEASE 5)
 set (nx_APP_ID org.nxengine.nxengine_evo)
 
 include(CheckCXXCompilerFlag)
