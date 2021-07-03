@@ -21,7 +21,7 @@ else
 	echo 'Neither of commands `wget` and `curl` (HTTPS downloader) found, aborting!' >&2 && exit 1
 fi
 type jq        >/dev/null 2>&1 || ( echo 'Required command `jq` (JSON query) not found, aborting!'        >&2 && exit 1 )
-type sha256sum >/dev/null 2>&1 || ( echo 'Required command `sha25sum` (file hasher) not found, aborting!' >&2 && exit 1 )
+type sha256sum >/dev/null 2>&1 || ( echo 'Required command `sha256sum` (file hasher) not found, aborting!' >&2 && exit 1 )
 type unzip     >/dev/null 2>&1 || ( echo 'Required command `unzip` (ZIP extractor) not found, aborting!'  >&2 && exit 1 )
 
 
