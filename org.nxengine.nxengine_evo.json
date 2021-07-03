@@ -30,7 +30,7 @@
 				{
 					"type": "archive",
 					"url": "https://github.com/nxengine/translations/releases/download/v1.14/all.zip",
-					"sha256": "37dcc941c47a091055b938c41d5600d4b2b41fae2e42695c2307fda19ff8760e",
+					"sha256": "1dd85a8c230c5ebf23c6fd6283fe168d9bf4044339d1e93e324bd336165a4422",
 					"strip-components": 2,
 					"dest": "extern/Translations"
 				},
