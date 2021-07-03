@@ -132,6 +132,7 @@ IF(PLATFORM STREQUAL "pc")
 
 ELSEIF(PLATFORM STREQUAL "vita")
     add_definitions("-std=gnu++11")
+    add_definitions("-march=armv7-a+simd")
     add_definitions("-D__VITA__")
     target_link_libraries(nx ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} SDL2::SDL2-static ${PNG_LIBRARY} ${JPEG_LIBRARY}
       webp
