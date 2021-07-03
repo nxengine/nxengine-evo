@@ -133,7 +133,7 @@ bool Renderer::initVideo()
 
   LOG_INFO("Renderer::initVideo: using: {} renderer", info.name);
 
-  std::string spotpath = ResourceManager::getInstance()->getLocalizedPath("spot.png");
+  std::string spotpath = ResourceManager::getInstance()->getPath("spot.png");
 
   SDL_Surface *image;
   image = IMG_Load(spotpath.c_str());
@@ -271,7 +271,7 @@ void Renderer::showLoadingScreen()
 {
   Surface loading;
 
-  if (!loading.loadImage(ResourceManager::getInstance()->getLocalizedPath("Loading.pbm")))
+  if (!loading.loadImage(ResourceManager::getInstance()->getPath("Loading.pbm")))
     return;
 
   int x = (screenWidth / 2) - (loading.width() / 2);

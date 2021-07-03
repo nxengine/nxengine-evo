@@ -54,7 +54,7 @@ bool ResourceManager::fileExists(const std::string &filename)
   return false;
 }
 
-std::string ResourceManager::getInstallResourceBasePath()
+std::string ResourceManager::getBasePath()
 {
   #if defined(__SWITCH__)
     return std::string("romfs:/");
@@ -70,7 +70,7 @@ std::string ResourceManager::getInstallResourceBasePath()
   #endif
 }
 
-std::string ResourceManager::getUserResourceBasePath()
+std::string ResourceManager::getUserPrefPath()
 {
   char *path = SDL_GetPrefPath(NULL, "nxengine");
   if (NULL != path)
@@ -98,29 +98,29 @@ ResourceManager *ResourceManager::getInstance()
 
 void ResourceManager::shutdown() {}
 
-std::string ResourceManager::getLocalizedPath(const std::string &filename)
+std::string ResourceManager::getPath(const std::string &filename, bool localized)
 {
   std::vector<std::string> _paths;
 
-  std::string userResBase = getUserResourceBasePath();
+  std::string userResBase = getUserPrefPath();
 
   if (!userResBase.empty())
   {
     if (!_mod.empty())
     {
-      _paths.push_back(userResBase + "data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
+      if (localized) _paths.push_back(userResBase + "data/mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
       _paths.push_back(userResBase + "data/mods/" + _mod + "/" + filename);
     }
-    _paths.push_back(userResBase + "data/lang/" + std::string(settings->language) + "/" + filename);
+    if (localized) _paths.push_back(userResBase + "data/lang/" + std::string(settings->language) + "/" + filename);
     _paths.push_back(userResBase + "data/" + filename);
   }
 
   #if defined(DATADIR)
     std::string _data(DATADIR "/");
   #else
-    std::string _data = getInstallResourceBasePath();
+    std::string _data = getBasePath();
 
-    #if defined(HAVE_UNIX_LIKE)
+    #if defined(HAVE_UNIX_LIKE) and !defined(PORTABLE)
       _data += "../share/nxengine/data/";
     #else
       _data += "data/";
@@ -129,11 +129,11 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
 
   if (!_mod.empty())
   {
-    _paths.push_back(_data + "mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
+    if (localized) _paths.push_back(_data + "mods/" + _mod + "/lang/" + std::string(settings->language) + "/" + filename);
     _paths.push_back(_data + "mods/" + _mod + "/" + filename);
   }
 
-  _paths.push_back(_data + "lang/" + std::string(settings->language) + "/" + filename);
+  if (localized) _paths.push_back(_data + "lang/" + std::string(settings->language) + "/" + filename);
   _paths.push_back(_data + filename);
 
   for (auto &_tryPath: _paths)
@@ -147,100 +147,12 @@ std::string ResourceManager::getLocalizedPath(const std::string &filename)
 
 std::string ResourceManager::getPrefPath(const std::string &filename)
 {
-  std::string _tryPath;
-
-#if defined(__SWITCH__)
-//  mkdir("nxengine/", 0700);
-  _tryPath = std::string(filename);
-#else
-  _tryPath = std::string(getUserResourceBasePath()) + std::string(filename);
-#endif
-
-  return _tryPath;
+  return std::string(getUserPrefPath()) + std::string(filename);
 }
 
 std::string ResourceManager::getPathForDir(const std::string &dir)
 {
-  std::vector<std::string> _paths;
-
-#if defined(__linux__)
-  char *home = getenv("HOME");
-
-#if defined(DATADIR)
-  std::string _data(DATADIR "/");
-#else
-  std::string _data = getInstallResourceBasePath();
-#endif
-
-  if (home != NULL)
-  {
-    if (!_mod.empty())
-      _paths.push_back(std::string(home) + "/.local/share/nxengine/data/mods/" + _mod + "/" + dir);
-    _paths.push_back(std::string(home) + "/.local/share/nxengine/data/" + dir);
-  }
-
-  if (!_mod.empty())
-  {
-#if defined(DATADIR)
-    _paths.push_back(_data + "mods/" + _mod + "/" + dir);
-#else
-    _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + dir);
-    _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/" + dir);
-    _paths.push_back(_data + "../share/nxengine/data/mods/" + _mod + "/" + dir);
-#endif
-  }
-
-#if defined(DATADIR)
-  _paths.push_back(_data + dir);
-#else
-  _paths.push_back("/usr/local/share/nxengine/data/" + dir);
-  _paths.push_back("/usr/share/nxengine/data/" + dir);
-  _paths.push_back(_data + "../share/nxengine/data/" + dir);
-#endif
-
-#elif defined(__APPLE__)
-  char *home = SDL_GetPrefPath(NULL, "nxengine-evo");
-  if (home != NULL)
-  {
-    if (!_mod.empty())
-      _paths.push_back(std::string(home) + "/data/mods/" + _mod + "/" + dir);
-    _paths.push_back(std::string(home) + "/data/" + dir);
-    SDL_free(home);
-  }
-
-#elif defined(__VITA__)
-  if (!_mod.empty())
-  {
-    _paths.push_back("ux0:/data/nxengine/data/mods/" + _mod + "/" + dir);
-    _paths.push_back("app0:/data/mods/" + _mod + "/" + dir);
-  }
-  _paths.push_back("ux0:/data/nxengine/data/" + dir);
-  _paths.push_back("app0:/data/" + dir);
-
-#elif defined(__SWITCH__)
-  if (!_mod.empty())
-  {
-    _paths.push_back("data/mods/" + _mod + "/" + dir);
-    _paths.push_back("romfs:/data/mods/" + _mod + "/" + dir);
-  }
-  _paths.push_back("data/" + dir);
-  _paths.push_back("romfs:/data/" + dir);
-
-#endif
-
-#if !defined(__VITA__) and !defined(__SWITCH__)
-  if (!_mod.empty())
-    _paths.push_back("data/mods/" + _mod + "/" + dir);
-  _paths.push_back("data/" + dir);
-#endif
-
-  for (auto &_tryPath: _paths)
-  {
-    if (fileExists(_tryPath))
-      return _tryPath;
-  }
-
-  return _paths.back();
+  return getPath(dir, false);
 }
 
 inline std::vector<std::string> glob(const std::string &pat)

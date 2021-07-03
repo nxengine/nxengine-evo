@@ -281,9 +281,9 @@ bool BigImage::Init()
       sprintf(fname, "endpic/credit%02dm.bmp", i);
     else
       sprintf(fname, "endpic/credit%02d.bmp", i);
-    if (ResourceManager::fileExists(ResourceManager::getInstance()->getLocalizedPath(fname)))
+    if (ResourceManager::fileExists(ResourceManager::getInstance()->getPath(fname)))
     {
-      images[i] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), false);
+      images[i] = Surface::fromFile(ResourceManager::getInstance()->getPath(fname), false);
       if (!images[i])
       {
         LOG_ERROR("BigImage::Init: image '{}' exists but seems corrupt!", fname);

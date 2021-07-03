@@ -54,7 +54,7 @@ bool SoundManager::init()
 #endif
   Mix_AllocateChannels(64);
 
-  std::string path = ResourceManager::getInstance()->getLocalizedPath("music_dirs.json");
+  std::string path = ResourceManager::getInstance()->getPath("music_dirs.json", false);
 
   _music_dirs.clear();
   _music_dir_names.clear();
@@ -381,7 +381,7 @@ void SoundManager::_start_org_track(int songno, bool resume)
   }
 
   if (Organya::getInstance()->load(
-          ResourceManager::getInstance()->getLocalizedPath(_music_dirs.at(0) + _music_names[songno] + ".org")))
+          ResourceManager::getInstance()->getPath(_music_dirs.at(0) + _music_names[songno] + ".org", false)))
   {
     Organya::getInstance()->start(resume ? _lastSongPos : 0);
   }
@@ -407,7 +407,7 @@ std::vector<std::string> &SoundManager::music_dir_names()
 
 void SoundManager::_reloadTrackList()
 {
-  std::string path = ResourceManager::getInstance()->getLocalizedPath(_music_playlists.at(settings->new_music));
+  std::string path = ResourceManager::getInstance()->getPath(_music_playlists.at(settings->new_music), false);
 
   std::ifstream fl;
 

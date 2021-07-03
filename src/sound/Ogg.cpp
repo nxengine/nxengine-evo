@@ -30,13 +30,13 @@ Ogg::~Ogg() {}
 
 bool Ogg::load(const std::string &fname, const std::string &dir, bool doloop)
 {
-  std::string filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + "_intro.ogg");
+  std::string filename = ResourceManager::getInstance()->getPath(dir + fname + "_intro.ogg", false);
   if (!ResourceManager::fileExists(filename))
   {
-    filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + "_loop.ogg");
+    filename = ResourceManager::getInstance()->getPath(dir + fname + "_loop.ogg", false);
     if (!ResourceManager::fileExists(filename))
     {
-      filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + ".ogg");
+      filename = ResourceManager::getInstance()->getPath(dir + fname + ".ogg", false);
     }
   }
   _song.intro = NULL;
@@ -47,10 +47,10 @@ bool Ogg::load(const std::string &fname, const std::string &dir, bool doloop)
     return false;
   }
 
-  filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + "_loop.ogg");
+  filename = ResourceManager::getInstance()->getPath(dir + fname + "_loop.ogg", false);
   if (!ResourceManager::fileExists(filename))
   {
-    filename = ResourceManager::getInstance()->getLocalizedPath(dir + fname + ".ogg");
+    filename = ResourceManager::getInstance()->getPath(dir + fname + ".ogg", false);
   }
 
   _song.loop = NULL;

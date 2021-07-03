@@ -119,15 +119,15 @@ bool TSC::Init(void)
   _curscript.running = false;
 
   // load the "common" TSC scripts available to all maps
-  if (!Load(ResourceManager::getInstance()->getLocalizedPath("Head.tsc"), ScriptPages::SP_HEAD))
+  if (!Load(ResourceManager::getInstance()->getPath("Head.tsc"), ScriptPages::SP_HEAD))
     return false;
 
   // load the inventory screen scripts
-  if (!Load(ResourceManager::getInstance()->getLocalizedPath("ArmsItem.tsc"), ScriptPages::SP_ARMSITEM))
+  if (!Load(ResourceManager::getInstance()->getPath("ArmsItem.tsc"), ScriptPages::SP_ARMSITEM))
     return false;
 
   // load stage select/teleporter scripts
-  if (!Load(ResourceManager::getInstance()->getLocalizedPath("StageSelect.tsc"), ScriptPages::SP_STAGESELECT))
+  if (!Load(ResourceManager::getInstance()->getPath("StageSelect.tsc"), ScriptPages::SP_STAGESELECT))
     return false;
 
   return true;

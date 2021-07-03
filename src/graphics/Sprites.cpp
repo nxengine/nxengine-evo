@@ -164,7 +164,7 @@ bool Sprites::init()
   memset(_spritesheets, 0, sizeof(_spritesheets));
 
   // load sprites info--sheet positions, bounding boxes etc
-  if (!_load_sif(ResourceManager::getInstance()->getLocalizedPath("sprites.sif")))
+  if (!_load_sif(ResourceManager::getInstance()->getPath("sprites.sif")))
     return false;
 
   _num_spritesheets = _sheetfiles.size();
@@ -195,7 +195,7 @@ void Sprites::_loadSheetIfNeeded(int sheetno)
   if (!_spritesheets[sheetno])
   {
     _spritesheets[sheetno] = new Surface;
-    _spritesheets[sheetno]->loadImage(ResourceManager::getInstance()->getLocalizedPath(_sheetfiles.at(sheetno)), true);
+    _spritesheets[sheetno]->loadImage(ResourceManager::getInstance()->getPath(_sheetfiles.at(sheetno)), true);
   }
 }
 

@@ -18,7 +18,7 @@ I18N::~I18N() {}
 
 bool I18N::load()
 {
-  std::string path = ResourceManager::getInstance()->getLocalizedPath("system.json");
+  std::string path = ResourceManager::getInstance()->getPath("system.json");
   std::ifstream fl;
   _strings.clear();
   fl.open(widen(path), std::ifstream::in | std::ifstream::binary);

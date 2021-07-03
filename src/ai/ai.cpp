@@ -49,7 +49,7 @@ bool load_npc_tbl(void)
   const int smoke_amounts[] = {0, 3, 7, 12};
   const int nEntries        = 361;
   int i;
-  FILE *fp = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("npc.tbl")).c_str(), widen("rb").c_str());
+  FILE *fp = myfopen(widen(ResourceManager::getInstance()->getPath("npc.tbl")).c_str(), widen("rb").c_str());
   if (!fp)
   {
     LOG_ERROR("load_npc_tbl: data/npc.tbl is missing");

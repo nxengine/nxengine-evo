@@ -37,7 +37,7 @@ bool Font::load()
   // special empty glyph
   _glyphs[0] = Font::Glyph{0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  std::string path = ResourceManager::getInstance()->getLocalizedPath(font);
+  std::string path = ResourceManager::getInstance()->getPath(font);
   if (ResourceManager::getInstance()->fileExists(path))
   {
     _upscale = 1;
@@ -46,7 +46,7 @@ bool Font::load()
   {
     _upscale = Renderer::getInstance()->scale;
     font = std::string("font_1.fnt");
-    path = ResourceManager::getInstance()->getLocalizedPath(font);
+    path = ResourceManager::getInstance()->getPath(font);
   }
 
   LOG_DEBUG("Loading font file {}", path.c_str());
@@ -70,7 +70,7 @@ bool Font::load()
 
     for (auto atlas : fontdef["pages"])
     {
-      std::string atlaspath = ResourceManager::getInstance()->getLocalizedPath(atlas.get<std::string>());
+      std::string atlaspath = ResourceManager::getInstance()->getPath(atlas.get<std::string>());
       SDL_Surface *surf     = IMG_Load(atlaspath.c_str());
       _atlases.push_back(SDL_CreateTextureFromSurface(Renderer::getInstance()->renderer(), surf));
       SDL_FreeSurface(surf);

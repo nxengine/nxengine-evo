@@ -60,19 +60,19 @@ bool load_stage(int stage_no)
     mapname = "Lounge";
 
   sprintf(fname, "Stage/%s.pxm", mapname);
-  if (load_map(ResourceManager::getInstance()->getLocalizedPath(fname)))
+  if (load_map(ResourceManager::getInstance()->getPath(fname, false)))
     return 1;
 
   sprintf(fname, "Stage/%s.pxa", tileset_names[stages[stage_no].tileset]);
-  if (load_tileattr(ResourceManager::getInstance()->getLocalizedPath(fname)))
+  if (load_tileattr(ResourceManager::getInstance()->getPath(fname, false)))
     return 1;
 
   sprintf(fname, "Stage/%s.pxe", mapname);
-  if (load_entities(ResourceManager::getInstance()->getLocalizedPath(fname)))
+  if (load_entities(ResourceManager::getInstance()->getPath(fname, false)))
     return 1;
 
   sprintf(fname, "Stage/%s.tsc", mapname);
-  if (!game.tsc->Load(ResourceManager::getInstance()->getLocalizedPath(fname), TSC::ScriptPages::SP_MAP))
+  if (!game.tsc->Load(ResourceManager::getInstance()->getPath(fname), TSC::ScriptPages::SP_MAP))
     return 1;
   map_set_backdrop(stages[stage_no].bg_no);
   map.scrolltype = stages[stage_no].scroll_type;
@@ -80,7 +80,7 @@ bool load_stage(int stage_no)
 
   // optional metadata
   sprintf(fname, "StageMeta/%s.json", mapname);
-  load_meta(ResourceManager::getInstance()->getLocalizedPath(fname));
+  load_meta(ResourceManager::getInstance()->getPath(fname, false));
 
   return 0;
 }
@@ -492,7 +492,7 @@ bool load_stages(void)
 {
   FILE *fp;
 
-  fp = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("stage.dat")).c_str(), widen("rb").c_str());
+  fp = myfopen(widen(ResourceManager::getInstance()->getPath("stage.dat")).c_str(), widen("rb").c_str());
   if (!fp)
   {
     LOG_ERROR("failed to open data/stage.dat");
@@ -521,7 +521,7 @@ bool initmapfirsttime(void)
 
   LOG_INFO("Loading tilekey.dat.");
   if (!(fp
-        = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("tilekey.dat")).c_str(), widen("rb").c_str())))
+        = myfopen(widen(ResourceManager::getInstance()->getPath("tilekey.dat")).c_str(), widen("rb").c_str())))
   {
     LOG_ERROR("tilekey.dat is missing!");
     return 1;
@@ -564,7 +564,7 @@ static bool LoadBackdropIfNeeded(int backdrop_no)
       fname = std::string(backdrop_names[backdrop_no]) + ".pbm";
     }
 
-    backdrop[backdrop_no] = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), use_chromakey);
+    backdrop[backdrop_no] = Surface::fromFile(ResourceManager::getInstance()->getPath(fname, false), use_chromakey);
     if (!backdrop[backdrop_no])
     {
       LOG_ERROR("Failed to load backdrop '{}'", fname.c_str());

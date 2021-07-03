@@ -60,7 +60,7 @@ void Organya::shutdown() {}
 bool Organya::_loadWavetable()
 {
   FILE *fp
-      = myfopen(widen(ResourceManager::getInstance()->getLocalizedPath("wavetable.dat")).c_str(), widen("rb").c_str());
+      = myfopen(widen(ResourceManager::getInstance()->getPath("wavetable.dat", false)).c_str(), widen("rb").c_str());
   if (!fp)
   {
     LOG_ERROR("Unable to open wavetable.dat");

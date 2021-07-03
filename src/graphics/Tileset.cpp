@@ -39,7 +39,7 @@ bool Tileset::load(int new_tileset)
 
     sprintf(fname, "Stage/Prt%s.pbm", tileset_names[new_tileset]);
 
-    _tileset = Surface::fromFile(ResourceManager::getInstance()->getLocalizedPath(fname), true);
+    _tileset = Surface::fromFile(ResourceManager::getInstance()->getPath(fname), true);
     if (!_tileset)
     {
       return false;
