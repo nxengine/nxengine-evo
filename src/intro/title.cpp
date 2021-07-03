@@ -200,7 +200,7 @@ static void handle_input()
         {
           if (ProfileExists(i))
           {
-            LOG_WARN("Last save file %d missing. Defaulting to %d instead.", settings->last_save_slot, i);
+            LOG_WARN("Last save file {} missing. Defaulting to {} instead.", settings->last_save_slot, i);
             settings->last_save_slot = i;
             foundslot                = true;
           }
