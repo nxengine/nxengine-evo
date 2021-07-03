@@ -167,7 +167,9 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
   char *home = getenv("HOME");
 
 #if defined(DATADIR)
-  std::string _data (DATADIR);
+  std::string _data(DATADIR "/");
+#else
+  std::string _data = getInstallResourceBasePath();
 #endif
 
   if (home != NULL)
@@ -184,7 +186,7 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
 #else
     _paths.push_back("/usr/local/share/nxengine/data/mods/" + _mod + "/" + dir);
     _paths.push_back("/usr/share/nxengine/data/mods/" + _mod + "/" + dir);
-    _paths.push_back("../share/nxengine/data/mods/" + _mod + "/" + dir);
+    _paths.push_back(_data + "../share/nxengine/data/mods/" + _mod + "/" + dir);
 #endif
   }
 
@@ -193,11 +195,11 @@ std::string ResourceManager::getPathForDir(const std::string &dir)
 #else
   _paths.push_back("/usr/local/share/nxengine/data/" + dir);
   _paths.push_back("/usr/share/nxengine/data/" + dir);
-  _paths.push_back("../share/nxengine/data/" + dir);
+  _paths.push_back(_data + "../share/nxengine/data/" + dir);
 #endif
 
 #elif defined(__APPLE__)
-  char *home = SDL_GetPrefPath("nxengine", "nxengine-evo");
+  char *home = SDL_GetPrefPath(NULL, "nxengine-evo");
   if (home != NULL)
   {
     if (!_mod.empty())

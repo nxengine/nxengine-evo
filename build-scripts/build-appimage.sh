@@ -23,7 +23,7 @@ fi
 VERSION="v$(xmllint --xpath 'string(/component/releases/release/@version)' "platform/xdg/${APP_ID}.appdata.xml")"
 
 # override for CI
-if [ ${APPVEYOR_REPO_TAG} == "true" ]
+if [ ${APPVEYOR_REPO_TAG:-} == "true" ]
 then
     VERSION="${APPVEYOR_REPO_TAG_NAME}"
 fi
@@ -41,7 +41,7 @@ chmod +x extern/linuxdeploy.AppImage
 if ! ${SKIP_BUILD};
 then
 	rm -rf build
-	cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
+	cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DPORTABLE=ON -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
 	ninja -Cbuild
 fi
 
