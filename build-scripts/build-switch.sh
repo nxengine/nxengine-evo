@@ -13,7 +13,7 @@ cd release
 wget https://github.com/nxengine/translations/releases/download/v1.14/all.zip
 unzip all.zip
 rm all.zip
-wget http://www.cavestory.org/downloads/cavestoryen.zip
+wget https://sarcasticat.com/cavestoryen.zip
 unzip cavestoryen.zip
 rm cavestoryen.zip
 cd CaveStory

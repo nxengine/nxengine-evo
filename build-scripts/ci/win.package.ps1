@@ -5,7 +5,7 @@ if($env:APPVEYOR_REPO_TAG -eq "true") {
 
   mkdir release
   cd release
-  wget http://www.cavestory.org/downloads/cavestoryen.zip -outfile cavestoryen.zip
+  wget https://sarcasticat.com/cavestoryen.zip -outfile cavestoryen.zip
   7z x .\cavestoryen.zip
   rm .\cavestoryen.zip
   mkdir NXEngine
