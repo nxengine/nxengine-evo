@@ -72,6 +72,9 @@ std::string ResourceManager::getBasePath()
 
 std::string ResourceManager::getUserPrefPath()
 {
+#if defined(__SWITCH__)
+  return std::string("/switch/nxengine/");
+#else
   char *path = SDL_GetPrefPath(NULL, "nxengine");
   if (NULL != path)
   {
@@ -81,6 +84,7 @@ std::string ResourceManager::getUserPrefPath()
   }
 
   return std::string("");
+#endif
 }
 
 ResourceManager::ResourceManager()
