@@ -61,7 +61,6 @@ extern bool inputs[INPUT_COUNT];
 extern bool lastinputs[INPUT_COUNT];
 extern in_action last_sdl_action;
 extern SDL_Joystick *joy;
-extern SDL_Haptic *haptic;
 extern int ACCEPT_BUTTON;
 extern int DECLINE_BUTTON;
 

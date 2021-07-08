@@ -16,7 +16,6 @@ bool inputs[INPUT_COUNT];
 bool lastinputs[INPUT_COUNT];
 in_action last_sdl_action;
 SDL_Joystick *joy;
-SDL_Haptic *haptic;
 
 int ACCEPT_BUTTON = JUMPKEY;
 int DECLINE_BUTTON = FIREKEY;
@@ -106,7 +105,7 @@ bool input_init(void)
 #endif
   mappings[ENTERKEY].key = SDLK_RETURN;
 
-  SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
+  SDL_InitSubSystem(SDL_INIT_JOYSTICK);
   if (SDL_NumJoysticks() > 0)
   {
     // Open joystick
@@ -119,16 +118,6 @@ bool input_init(void)
       LOG_INFO("Number of Axes: {}", SDL_JoystickNumAxes(joy));
       LOG_INFO("Number of Buttons: {}", SDL_JoystickNumButtons(joy));
       LOG_INFO("Number of Balls: {}", SDL_JoystickNumBalls(joy));
-      haptic = SDL_HapticOpenFromJoystick(joy);
-      if (haptic == NULL)
-      {
-        LOG_INFO("No force feedback support");
-      }
-      else
-      {
-        if (SDL_HapticRumbleInit(haptic) != 0)
-          LOG_WARN("Coiuldn't init simple rumble");
-      }
     }
     else
     {
@@ -140,8 +129,8 @@ bool input_init(void)
 
 void rumble(float str, uint32_t len)
 {
-  if (haptic != NULL && settings->rumble)
-    SDL_HapticRumblePlay(haptic, str, len);
+  if (settings->rumble)
+    SDL_JoystickRumble(joy, 0xFFFF * str, 0xFFFF * str, len);
 }
 
 // set the SDL key that triggers an input
