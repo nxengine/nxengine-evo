@@ -25,6 +25,9 @@ using namespace NXE::Graphics;
 #include <vector>
 #include <SDL.h>
 
+#include "sound/SoundManager.h"
+#include "player.h"
+
 #define Respond console.Print
 
 #if defined(_WIN32)
@@ -101,9 +104,20 @@ static void __sound(std::vector<std::string> *args, int num)
   console.SetVisible(true); // keep console up
 }
 
+std::vector<std::string> org_names =
+{{
+    "",
+    "egg", "safety", "gameover", "gravity", "grasstown", "meltdown2", "eyesofflame",
+    "gestation", "town", "fanfale1", "balrog", "cemetary", "plant", "pulse", "fanfale2",
+    "fanfale3", "tyrant", "run", "jenka1", "labyrinth", "access", "oppression", "geothermal",
+    "theme", "oside", "heroend", "scorching", "quiet", "lastcave", "balcony", "charge",
+    "lastbattle", "credits", "zombie", "breakdown", "hell", "jenka2", "waterway", "seal",
+    "toroko", "white", "azarashi", ""
+}};
+
 static void __music(std::vector<std::string> *args, int num)
 {
-  /*  extern std::vector<std::string> org_names;
+    extern std::vector<std::string> org_names;
     bool ok = true;
     std::vector<std::string>::size_type i;
 
@@ -134,17 +148,17 @@ static void __music(std::vector<std::string> *args, int num)
     if (!ok)
     {
       Respond("track out of range");
-      music(0);
+      ::NXE::Sound::SoundManager::getInstance()->music(0);
     }
     else
     {
-      music(0);
-      music(num);
+      ::NXE::Sound::SoundManager::getInstance()->music(0);
+      ::NXE::Sound::SoundManager::getInstance()->music(num);
       if (num > 0)
         Respond("%s started", org_names[num].c_str());
       else
         Respond("ZERO MUZAK");
-    }*/
+    }
 }
 
 static void __giveweapon(std::vector<std::string> *args, int num)
@@ -235,7 +249,7 @@ static void __xp(std::vector<std::string> *args, int num)
   player->weapons[player->curWeapon].xp = num;
 }
 
-/*
+
 static void __spawn(std::vector<std::string> *args, int num)
 {
   unsigned int i = 0;
@@ -332,7 +346,7 @@ static void __animate(std::vector<std::string> *args, int num)
   if (!found)
     Respond("No objects found.");
 }
-*/
+
 static void __infinitedamage(std::vector<std::string> *args, int num)
 {
   game.debug.infinite_damage = !game.debug.infinite_damage;
@@ -368,7 +382,7 @@ static void __clearflags(std::vector<std::string> *args, int num)
   memset(game.flags, 0, sizeof(game.flags));
   Respond("Warning- all game flags cleared");
 }
-/*
+
 static void __equip(std::vector<std::string> *args, int num)
 {
   static const char *equiplist[] = {"booster08", "map",        "armsbarrier", "turbocharge", "airtank",
@@ -401,7 +415,7 @@ static void __equip(std::vector<std::string> *args, int num)
 
   Respond("Unknown item");
 }
-*/
+
 static void __giveitem(std::vector<std::string> *args, int num)
 {
   if (FindInventory(num) == -1)
@@ -427,7 +441,7 @@ static void __takeitem(std::vector<std::string> *args, int num)
     Respond("You don't have item {} in your inventory.", num);
   }
 }
-/*
+
 static void __quake(std::vector<std::string> *args, int num)
 {
   if (args->size() > 0)
@@ -440,7 +454,7 @@ static void __boa(std::vector<std::string> *args, int num)
 {
   game.stageboss.SetState(num);
 }
-*/
+
 // skip to normal ending sequence
 static void __ending_normal(std::vector<std::string> *args, int num)
 {
@@ -499,12 +513,12 @@ static void __cre_good(std::vector<std::string> *args, int num)
   game.switchstage.playery      = 16;
   game.switchstage.eventonentry = 100;
 }
-/*
+
 static void __reset(std::vector<std::string> *args, int num)
 {
   game.reset();
 }
-*/
+
 static void __fps(std::vector<std::string> *args, int num)
 {
   extern int fps;
@@ -548,7 +562,7 @@ static void __quit(std::vector<std::string> *args, int num)
 /*
 void c------------------------------() {}
 */
-/*
+
 static void __hide_player(std::vector<std::string> *args, int num)
 {
   player->hide = num;
@@ -568,10 +582,17 @@ static void __show_textbox(std::vector<std::string> *args, int num)
 {
   textbox.SetVisible(num);
 }
-*/
+
 DebugConsole::DebugConsole()
 {
-    commands = {{"god",            __god,            0, 0,   "Toggle god-mode" },
+    commands = {
+                {"hide_player",   __hide_player,    1, 1,   "Hide player <0 or 1> (default: 1)"},
+                {"lock_inputs", __lock_inputs, 1, 1, "Lock inputs <0 or 1> (default: 1)"},
+                {"freeze_game",    __freeze_game,    1, 1,   "Freeze game <0 or 1> (default: 1)"},
+                {"show_textbox", __show_textbox, 1, 1, "Show textbox <0 or 1> (default: 1)"},
+                {"reset",          __reset,          0, 0,   "Reset game"},
+                {"equip",          __equip,          0, 2,   "Equip item <item> <0 or 1> (default: 1)"},
+                {"god",            __god,            0, 0,   "Toggle god-mode" },
                 {"script",         __script,         1, 1,   "Execute script <num>" },
                 {"warp",           __warp,           1, 999, "Warp to level <name|num>" },
                 {"sound",          __sound,          1, 1,   "Make a sound <num>" },
@@ -585,8 +606,8 @@ DebugConsole::DebugConsole()
                 {"hp",             __hp,             1, 1,   "Give HP <num>" },
                 {"maxhp",          __maxhp,          1, 1,   "Set maximum HP to <num>" },
                 {"xp",             __xp,             1, 1,   "Give XP <num>" },
-//                {"spawn",          __spawn,          1, 999, "Spawn object <num>" },
-//                {"animate",        __animate,        1, 2,   "Set object <id> state to <num>" },
+                {"spawn",          __spawn,          1, 999, "Spawn object <num>" },
+                {"animate",        __animate,        1, 2,   "Set object <id> state to <num>" },
                 {"infinitedamage", __infinitedamage, 0, 0,   "Infinite damage" },
                 {"killall",        __killall,        0, 0,   "Kill all on-screen objects" },
                 {"movemode",       __movemode,       1, 1,   "Set move mode <num>. 0 - normal, 1 - waterway, 2 - no-clip" },
@@ -595,7 +616,8 @@ DebugConsole::DebugConsole()
 
                 {"giveitem",       __giveitem,       1, 1,   "Give item <num>" },
                 {"takeitem",       __takeitem,       1, 1,   "Remove item <num>" },
-//                {"boss_state",     __boa,            1, 1,   "Set stageboss state to <num>" },
+                {"boss_state",     __boa,            1, 1,   "Set stageboss state to <num>" },
+                {"quake",          __quake,          0, 1,   "Shake the screen. Pass in an argument for a megaquake"},
                 {"ending_normal",  __ending_normal,  0, 0,   "Run normal ending" },
                 {"ending_good",    __ending_good,    0, 0,   "Run good ending" },
                 {"credits_normal", __cre,            0, 0,   "Run credits(normal)" },
