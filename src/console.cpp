@@ -106,14 +106,14 @@ static void __sound(std::vector<std::string> *args, int num)
 
 std::vector<std::string> org_names =
 {{
-    "", // NULL
+    "",
     "egg", "safety", "gameover", "gravity", "grasstown", "meltdown2", "eyesofflame",
     "gestation", "town", "fanfale1", "balrog", "cemetary", "plant", "pulse", "fanfale2",
     "fanfale3", "tyrant", "run", "jenka1", "labyrinth", "access", "oppression", "geothermal",
     "theme", "oside", "heroend", "scorching", "quiet", "lastcave", "balcony", "charge",
-    "lastbattle", "credits", "zombie", "breakdow+n", "hell", "jenka2", "waterway", "seal",
-    "toroko", "white", "azarashi", "" // NULL
-}}; // this used to be in src/sound/sound.cpp
+    "lastbattle", "credits", "zombie", "breakdown", "hell", "jenka2", "waterway", "seal",
+    "toroko", "white", "azarashi", ""
+}};
 
 static void __music(std::vector<std::string> *args, int num)
 {
@@ -586,10 +586,10 @@ static void __show_textbox(std::vector<std::string> *args, int num)
 DebugConsole::DebugConsole()
 {
     commands = {
-                {"player->hide",   __hide_player,    1, 1,   "Hide player <0 or 1> (default: 1)"},
-                {"player->inputs_locked", __lock_inputs, 1, 1, "Lock inputs <0 or 1> (default: 1)"},
-                {"game.frozen",    __freeze_game,    1, 1,   "Freeze game <0 or 1> (default: 1)"},
-                {"textbox.SetVisible", __show_textbox, 1, 1, "Show textbox <0 or 1> (default: 1)"},
+                {"hide_player",   __hide_player,    1, 1,   "Hide player <0 or 1> (default: 1)"},
+                {"lock_inputs", __lock_inputs, 1, 1, "Lock inputs <0 or 1> (default: 1)"},
+                {"freeze_game",    __freeze_game,    1, 1,   "Freeze game <0 or 1> (default: 1)"},
+                {"show_textbox", __show_textbox, 1, 1, "Show textbox <0 or 1> (default: 1)"},
                 {"reset",          __reset,          0, 0,   "Reset game"},
                 {"equip",          __equip,          0, 2,   "Equip item <item> <0 or 1> (default: 1)"},
                 {"god",            __god,            0, 0,   "Toggle god-mode" },
