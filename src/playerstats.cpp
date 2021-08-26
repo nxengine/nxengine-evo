@@ -25,7 +25,7 @@ void AddXP(int xp, bool quiet)
   weapon->xp += xp;
 
   // leveling up...
-  while (weapon->xp > weapon->max_xp[weapon->level])
+  while (weapon->xp >= weapon->max_xp[weapon->level])
   {
     if (weapon->level < 2)
     {
