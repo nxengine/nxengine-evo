@@ -88,14 +88,9 @@ BulletInfo bullet_table[] = {
 
     {0, 0, 0, 0, 0, 0, 0, 0, NXE::Sound::SFX::SND_NULL}};
 
-// resets anything like charging states etc on player re-init (Player::Init)
+// resets weapons on player re-init (Player::Init)
 void PResetWeapons()
 {
-  Weapon *spur      = &player->weapons[WPN_SPUR];
-  spur->chargetimer = 0;
-  spur->level       = 0;
-  spur->xp          = 0;
-
   init_whimstar(&player->whimstar);
 }
 
