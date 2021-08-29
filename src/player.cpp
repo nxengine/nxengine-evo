@@ -55,7 +55,7 @@ void PInitFirstTime()
   InitWeapon(WPN_SUPER_MISSILE, 30, 60, 10, 10);
   InitWeapon(WPN_SNAKE, 30, 40, 16);
   InitWeapon(WPN_SPUR, 40, 60, 200);
-  InitWeapon(WPN_NEMESIS, 1, 1, 0);
+  InitWeapon(WPN_NEMESIS, 1, 1, 1);
 
   player->weapons[WPN_MGUN].SetFireRate(6, 6, 6);
   player->weapons[WPN_MGUN].SetRechargeRate(5, 5, 5);
