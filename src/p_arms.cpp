@@ -216,11 +216,7 @@ static void PHandleSpur(void)
   Weapon *spur                = &player->weapons[WPN_SPUR];
 
   if (player->curWeapon != WPN_SPUR)
-  {
-    spur->level = 0;
-    spur->xp    = 0;
     return;
-  }
 
   if (pinputs[FIREKEY])
   {
@@ -279,9 +275,17 @@ void PDoWeapons(void)
     return; // should prevent from firing in cutscenes
 
   if (justpushed(PREVWPNKEY))
+  {
+    player->weapons[WPN_SPUR].level = 0;
+    player->weapons[WPN_SPUR].xp    = 0;
     stat_PrevWeapon();
+  }
   if (justpushed(NEXTWPNKEY))
+  {
+    player->weapons[WPN_SPUR].level = 0;
+    player->weapons[WPN_SPUR].xp    = 0;
     stat_NextWeapon();
+  }
 
   // firing weapon
   if (pinputs[FIREKEY])
