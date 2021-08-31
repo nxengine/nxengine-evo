@@ -41,12 +41,12 @@ chmod +x extern/linuxdeploy.AppImage
 if ! ${SKIP_BUILD};
 then
 	rm -rf build
-	cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DPORTABLE=ON -DCMAKE_INSTALL_PREFIX=build/AppDir/usr -Bbuild -H.
+	cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DPORTABLE=ON -DCMAKE_INSTALL_PREFIX=/usr -Bbuild -H.
 	ninja -Cbuild
 fi
 
 # Generate AppImage filesystem image directory
-ninja -Cbuild install
+DESTDIR=AppDir ninja -Cbuild install
 build-scripts/utils/common.install-extern.sh build/AppDir/usr/share/nxengine build/nxextract
 
 # Work around GH/AppImage/AppImageKit#856
