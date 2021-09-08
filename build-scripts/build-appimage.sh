@@ -23,7 +23,7 @@ fi
 VERSION="v$(xmllint --xpath 'string(/component/releases/release/@version)' "platform/xdg/${APP_ID}.appdata.xml")"
 
 # override for CI
-if [ ${APPVEYOR_REPO_TAG:-} == "true" ]
+if [ "${APPVEYOR_REPO_TAG:-}" == "true" ]
 then
     VERSION="${APPVEYOR_REPO_TAG_NAME}"
 fi
@@ -49,38 +49,6 @@ fi
 DESTDIR=AppDir ninja -Cbuild install
 build-scripts/utils/common.install-extern.sh build/AppDir/usr/share/nxengine build/nxextract
 
-# Work around GH/AppImage/AppImageKit#856
-mkdir -p build/bin
-for toolname in appstreamcli appstream-util;
-do
-	# START OF INLINE WORKAROUND SCRIPT #
-	cat >"build/bin/${toolname}" <<'EOF'
-#!/bin/bash
-set -eu -o pipefail
-SCRIPTDIR="${0%/*}"
-
-# Remove current directory of script from search path
-OLDIFS="${IFS}"
-OLDPATH="${PATH}"
-IFS=":"
-PATH=""
-for path in ${OLDPATH};
-do
-	if [[ ${path} != ${SCRIPTDIR} ]];
-	then
-		PATH+="${PATH+:}${path}"
-	fi
-done
-IFS="${OLDIFS}"
-export PATH
-
-# Re-exec to real tool without any LD_LIBRARY_PATH set (works around GH/AppImage/AppImageKit#856)
-unset LD_LIBRARY_PATH
-exec "${0##*/}" "$@"
-EOF
-	# END OF INLINE WORKAROUND SCRIPT #
-	chmod +x "build/bin/${toolname}"
-done
 export PATH="${PWD}/build/bin${PATH+:}${PATH:-}"
 
 PLATFORM_SUFFIX=""
