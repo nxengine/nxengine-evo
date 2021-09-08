@@ -94,15 +94,9 @@ bool input_init(void)
   mappings[F10KEY].key = SDLK_F10;
   mappings[F11KEY].key = SDLK_F11;
   mappings[F12KEY].key = SDLK_F12;
-#if defined(DEBUG)
   mappings[FREEZE_FRAME_KEY].key  = SDLK_SPACE;
   mappings[FRAME_ADVANCE_KEY].key = SDLK_b;
   mappings[DEBUG_FLY_KEY].key     = SDLK_v;
-#else
-  mappings[FREEZE_FRAME_KEY].key  = 0;
-  mappings[FRAME_ADVANCE_KEY].key = 0;
-  mappings[DEBUG_FLY_KEY].key     = 0;
-#endif
   mappings[ENTERKEY].key = SDLK_RETURN;
 
   SDL_InitSubSystem(SDL_INIT_JOYSTICK);
@@ -224,9 +218,10 @@ const std::string input_get_name(int index)
 
 void input_set_mappings(in_action *array)
 {
-  memset(mappings, 0xff, sizeof(mappings));
-  for (int i = 0; i < INPUT_COUNT; i++)
-    mappings[i] = array[i];
+  for (int i = 0; i < INPUT_COUNT; i++) {
+    if (array[i].key > 0 || array[i].jbut != -1 || array[i].jaxis != -1 || array[i].jhat != -1)
+      mappings[i] = array[i];
+  }
 }
 
 /*
