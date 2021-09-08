@@ -790,7 +790,7 @@ void ai_press(Object *o)
         SmokeSide(o, 4, DOWN);
         quake(10);
 
-        o->state  = 11;
+        o->state  = 0;
         o->frame  = 0;
         o->damage = 0;
         o->flags |= FLAG_SOLID_BRICK;

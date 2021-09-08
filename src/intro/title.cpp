@@ -27,7 +27,7 @@ static struct
 } titlescreens[] = {
     {(3 * 3000), SPR_SUE, {2,3,4,5}, 2, 14},     // 3 mins	- Sue & Safety
     {(4 * 3000), SPR_KING, {4,5,6,7}, 41, 13},   // 4 mins	- King & White
-    {(5 * 3000), SPR_TOROKO, {1,2,3,4}, 40, 12}, // 5 mins	- Toroko & Toroko's Theme
+    {(5 * 3000), SPR_TOROKO_SHACK, {1,2,3,2}, 40, 12}, // 5 mins	- Toroko & Toroko's Theme
     {(6 * 3000), SPR_CURLY, {0,1,2,3}, 36, 10},  // 6 mins	- Curly & Running Hell
     {0xFFFFFFFF, SPR_MYCHAR, {0,1,0,2}, 24, 9}   // default
 };

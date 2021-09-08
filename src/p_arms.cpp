@@ -88,14 +88,9 @@ BulletInfo bullet_table[] = {
 
     {0, 0, 0, 0, 0, 0, 0, 0, NXE::Sound::SFX::SND_NULL}};
 
-// resets anything like charging states etc on player re-init (Player::Init)
+// resets weapons on player re-init (Player::Init)
 void PResetWeapons()
 {
-  Weapon *spur      = &player->weapons[WPN_SPUR];
-  spur->chargetimer = 0;
-  spur->level       = 0;
-  spur->xp          = 0;
-
   init_whimstar(&player->whimstar);
 }
 
@@ -221,11 +216,7 @@ static void PHandleSpur(void)
   Weapon *spur                = &player->weapons[WPN_SPUR];
 
   if (player->curWeapon != WPN_SPUR)
-  {
-    spur->level = 0;
-    spur->xp    = 0;
     return;
-  }
 
   if (pinputs[FIREKEY])
   {
@@ -284,9 +275,17 @@ void PDoWeapons(void)
     return; // should prevent from firing in cutscenes
 
   if (justpushed(PREVWPNKEY))
+  {
+    player->weapons[WPN_SPUR].level = 0;
+    player->weapons[WPN_SPUR].xp    = 0;
     stat_PrevWeapon();
+  }
   if (justpushed(NEXTWPNKEY))
+  {
+    player->weapons[WPN_SPUR].level = 0;
+    player->weapons[WPN_SPUR].xp    = 0;
     stat_NextWeapon();
+  }
 
   // firing weapon
   if (pinputs[FIREKEY])
