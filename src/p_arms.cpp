@@ -274,17 +274,21 @@ void PDoWeapons(void)
   if (player->inputs_locked)
     return; // should prevent from firing in cutscenes
 
-  if (justpushed(PREVWPNKEY))
-  {
-    player->weapons[WPN_SPUR].level = 0;
-    player->weapons[WPN_SPUR].xp    = 0;
+  int wpn = player->curWeapon;
+  bool prev = justpushed(PREVWPNKEY), next = justpushed(NEXTWPNKEY);
+  if (prev)
     stat_PrevWeapon();
-  }
-  if (justpushed(NEXTWPNKEY))
+  if (next)
+    stat_NextWeapon();
+
+  // 1. Spur level should *never* be reset when using item screen.
+  // 2. Spur level should be reset when switching from it to another weapon
+  // 3. ... or when switching to it when fire button is not pressed.
+  //  (     1.     )     (      2.     )    (                        3.                        )
+  if ((prev || next) && (wpn == WPN_SPUR || (player->curWeapon == WPN_SPUR && !pinputs[FIREKEY])))
   {
     player->weapons[WPN_SPUR].level = 0;
     player->weapons[WPN_SPUR].xp    = 0;
-    stat_NextWeapon();
   }
 
   // firing weapon
