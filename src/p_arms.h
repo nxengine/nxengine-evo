@@ -39,6 +39,7 @@ struct Weapon
 
   // for charged-shot weapons (Spur)
   int chargetimer;
+  bool resetSpur;
 
   void SetFireRate(int l1, int l2, int l3)
   {
