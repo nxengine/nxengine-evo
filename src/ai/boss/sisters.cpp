@@ -30,7 +30,7 @@ using namespace NXE::Graphics;
 #define STATE_HEAD_FIRE 30       // actually firing
 #define STATE_HEAD_MEGAFIRE 40   // firing a whole lot during low-hp
 #define STATE_HEAD_BIT_TONGUE 50 // bit tongue after got shot
-#define STATE_HEAD_DEFEATED 100  // defeated, eyes closed
+#define STATE_HEAD_DEFEATED 100  // defeated, bit tongue
 
 // body states
 #define STATE_BODY_NOMOVE 10      // do nothing but animate
@@ -529,7 +529,7 @@ void SistersBoss::run_head(int index)
     break;
 
     case STATE_HEAD_DEFEATED:
-      o->frame = 4; // eyes closed
+      o->frame = 3; // bit tongue
       break;
   }
 
