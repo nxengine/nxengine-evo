@@ -461,7 +461,7 @@ bool UDCoreBoss::RunDefeated()
       o->yinertia = 0;
 
       face->state  = FC_Closed;
-      front->frame = 0; // front closed
+      front->frame = 2; // front closed
       back->frame  = 0; // not flashing
       SetRotatorStates(RT_Spin_Slow_Closed);
 
