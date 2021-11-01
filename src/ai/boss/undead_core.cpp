@@ -31,6 +31,7 @@ static struct
 
 enum CORE_STATES
 {
+  CR_LastBox    = 15, // scripted
   CR_FightBegin = 20, // scripted
   CR_FaceClosed = 200,
   CR_FaceSkull  = 210,
@@ -171,6 +172,16 @@ void UDCoreBoss::Run(void)
 
   switch (o->state)
   {
+    // last text box (scripted)
+    case CR_LastBox:
+    {
+      // set to invalid state so we don't run this again
+      o->state = 0;
+      face->state = FC_Skull;
+      SpawnFaceSmoke();
+    }
+    break;
+
     // fight begin (scripted)
     case CR_FightBegin:
     {
