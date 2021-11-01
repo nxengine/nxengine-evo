@@ -31,6 +31,7 @@ static struct
 
 enum CORE_STATES
 {
+  CR_LastBox    = 15, // scripted
   CR_FightBegin = 20, // scripted
   CR_FaceClosed = 200,
   CR_FaceSkull  = 210,
@@ -96,6 +97,9 @@ void c------------------------------() {}
 
 void UDCoreBoss::OnMapEntry()
 {
+  // Return if we already defeated UDCore
+  if (game.switchstage.eventonentry == 600) return;
+
   Object *o;
 
   // main object
@@ -168,6 +172,16 @@ void UDCoreBoss::Run(void)
 
   switch (o->state)
   {
+    // last text box (scripted)
+    case CR_LastBox:
+    {
+      // set to invalid state so we don't run this again
+      o->state = 0;
+      face->state = FC_Skull;
+      SpawnFaceSmoke();
+    }
+    break;
+
     // fight begin (scripted)
     case CR_FightBegin:
     {
@@ -461,7 +475,7 @@ bool UDCoreBoss::RunDefeated()
       o->yinertia = 0;
 
       face->state  = FC_Closed;
-      front->frame = 0; // front closed
+      front->frame = 2; // front closed
       back->frame  = 0; // not flashing
       SetRotatorStates(RT_Spin_Slow_Closed);
 
