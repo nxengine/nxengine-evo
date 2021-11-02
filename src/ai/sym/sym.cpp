@@ -488,12 +488,12 @@ void ai_hidden_powerup(Object *o)
     SmokeClouds(o, 8, 8, 8, NULL);
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_EXPL_SMALL);
 
-    o->ChangeType((o->dir == LEFT) ? OBJ_HEART : OBJ_MISSILE);
-    if (o->type == OBJ_HEART)
-    {
-      o->x += (3 * CSFI);
-      o->y += (4 * CSFI);
-    }
+    int x = o->x;
+    int y = o->y;
+    int type = (o->dir == LEFT) ? OBJ_HEART : OBJ_MISSILE;
+
+    o->Delete();
+    CreateObject(x, y, type);
   }
 }
 
