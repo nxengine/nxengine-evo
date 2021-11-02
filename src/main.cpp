@@ -40,21 +40,6 @@ using namespace NXE::Utils;
 #if defined(__VITA__)
 // increase default allowed heap size on Vita
 int _newlib_heap_size_user = 100 * 1024 * 1024;
-#include <psp2/kernel/threadmgr.h>
-extern "C"
-{
-    unsigned int sleep(unsigned int seconds)
-    {
-        sceKernelDelayThread(seconds*1000*1000);
-        return 0;
-    }
-
-    int usleep(useconds_t usec)
-    {
-        sceKernelDelayThread(usec);
-        return 0;
-    }
-}
 #endif
 
 using namespace NXE::Sound;
