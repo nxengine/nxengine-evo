@@ -55,7 +55,18 @@ void ai_firewhirr(Object *o)
     case 10:
       o->frame ^= 1;
 
-      o->yinertia += (o->y < o->ymark) ? 0x10 : -0x10;
+      if (o->y <= o->ymark - CSFI * 12)
+      {
+        o->yinertia = 0x10;
+      }
+      else if (o->y > o->ymark + CSFI * 12)
+      {
+        o->yinertia = -0x10;
+      }
+      else
+      {
+        o->yinertia += (o->y < o->ymark) ? 0x10 : -0x10;
+      }
       LIMITY(0x200);
 
       // inc time-to-fire while player near
