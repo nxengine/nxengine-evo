@@ -192,7 +192,7 @@ void ai_fuzz(Object *o)
   {
     case 0:
     {
-      o->angle += 4;
+      o->angle -= 4;
 
       if (!o->linkedobject)
       {
