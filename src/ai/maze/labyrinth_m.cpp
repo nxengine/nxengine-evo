@@ -41,13 +41,12 @@ void ai_firewhirr(Object *o)
       o->state = 1;
       o->timer = random(0, 50);
       o->ymark = o->y;
-      // o->yinertia = -0x200;
     case 1:
 
       if (!o->timer)
       {
         o->state    = 10;
-        o->yinertia = -0x200;
+        o->yinertia = 0x200;
       }
       else
         o->timer--;
