@@ -254,7 +254,9 @@ void c------------------------------() {}
 
 void ai_sandcroc(Object *o)
 {
-  int pbottom, crocbottom;
+  int pbottom, crocbottom, xdist;
+  xdist = (o->type == OBJ_SANDCROC_OSIDE) ? 12 : 8;
+
 
   switch (o->state)
   {
@@ -267,7 +269,7 @@ void ai_sandcroc(Object *o)
       // track player invisibly underground
       o->xinertia = (o->CenterX() < player->CenterX()) ? 0x400 : -0x400;
 
-      if (pdistlx(19 * CSFI))
+      if (pdistlx(xdist * CSFI))
       {
         // check if bottoms of player and croc are near
         pbottom    = player->y + (Renderer::getInstance()->sprites.sprites[player->sprite].bbox[player->dir].y2 * CSFI);
