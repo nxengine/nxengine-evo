@@ -40,7 +40,7 @@ bool SoundManager::init()
   }
 
 #if SDL_MIXER_PATCHLEVEL >= 2
-  if (Mix_OpenAudioDevice(SAMPLE_RATE, AUDIO_S16, 2, 2048, NULL, 0) == -1)
+  if (Mix_OpenAudioDevice(SAMPLE_RATE, AUDIO_S16, 2, 4096, NULL, 0) == -1)
   {
     LOG_ERROR("Unable to open audio device.");
     return false;
