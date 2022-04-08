@@ -42,6 +42,13 @@ bool StageBossManager::SetType(int newtype)
   fBossType = newtype;
   fBoss     = NULL;
 
+  // Do not create Undead Core if we defeated it
+  if (game.switchstage.eventonentry == 600)
+  {
+    fBossType = BOSS_NONE;
+    return 0;
+  }
+
   switch (newtype)
   {
     case BOSS_NONE:

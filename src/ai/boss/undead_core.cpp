@@ -97,9 +97,6 @@ void c------------------------------() {}
 
 void UDCoreBoss::OnMapEntry()
 {
-  // Return if we already defeated UDCore
-  if (game.switchstage.eventonentry == 600) return;
-
   Object *o;
 
   // main object
