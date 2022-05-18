@@ -9,6 +9,7 @@
 #include "sound/SoundManager.h"
 
 #include <array>
+#include <vector>
 
 in_action mappings[INPUT_COUNT];
 
@@ -168,16 +169,19 @@ int input_get_action_but(int32_t jbut)
   return -1;
 }
 
-int input_get_action_hat(int32_t jhat, int32_t jvalue)
+std::vector<int> input_get_action_hat(int32_t jhat, int32_t jvalue)
 {
+  // We need to collect each of the mapped inputs affected by jvalue;
+  // ie. SDL_RIGHTUP affects inputs mapped to SDL_RIGHT and SDL_UP
+  std::vector<int> inos;
   for (int i = 0; i < INPUT_COUNT; i++)
   {
     if ((mappings[i].jhat == jhat) && (jvalue & mappings[i].jhat_value))
     {
-      return i;
+      inos.push_back(i);
     }
   }
-  return -1;
+  return inos;
 }
 
 int input_get_action_axis(int32_t jaxis, int32_t jvalue)
@@ -358,7 +362,7 @@ void input_poll(void)
           last_sdl_action.jhat       = evt.jhat.hat;
           last_sdl_action.jhat_value = evt.jhat.value;
         }
-        ino = input_get_action_hat(evt.jhat.hat, evt.jhat.value); // mappings[key];
+        auto inos = input_get_action_hat(evt.jhat.hat, evt.jhat.value); // mappings[key];
         // cleanup all hat-binded states
         for (int i = 0; i < INPUT_COUNT; i++)
         {
@@ -366,8 +370,7 @@ void input_poll(void)
             inputs[i] = false;
         }
 
-        if (ino != -1)
-          inputs[ino] = true;
+        for (int i: inos) inputs[i] = true;
       }
       break;
 
