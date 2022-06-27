@@ -806,7 +806,7 @@ bool DebugConsole::Execute(std::string& line)
 
   // record command in backbuffer
   if (!fBackBuffer.empty())
-    fBackBuffer.erase(fBackBuffer.end());
+    fBackBuffer.erase(fBackBuffer.end() - 1);
   if (fBackBuffer.size() >= CONSOLE_MAX_BACK)
     fBackBuffer.erase(fBackBuffer.begin());
 
