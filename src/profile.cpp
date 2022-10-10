@@ -69,7 +69,7 @@ bool profile_load(const char *pfname, Profile *file)
     int type = fgetl(fp);
     if (!type)
       break;
-    if (type < 0 || type >= MAX_WPN_SLOTS)
+    if (type < 0 || type >= WPN_COUNT)
     {
       LOG_ERROR("profile_load: invalid weapon type {} in slot {}", type, i);
       fclose(fp);
