@@ -688,7 +688,7 @@ void DrawFastLeftLayered(void)
   int i, x;
 
   if ((game.mode == GM_NORMAL || game.mode == GM_TITLE) && !game.frozen && !game.paused)
-    if (--map.parscroll_x <= -(480 * Renderer::getInstance()->scale * 2))
+    if (--map.parscroll_x <= -(480 * 2))
       map.parscroll_x = 0;
 
   y1 = x = 0;

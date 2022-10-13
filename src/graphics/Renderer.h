@@ -24,18 +24,6 @@ const NXColor GREEN2(0x0,0x98,0x0);
 const NXColor GREEN3(0x0,0x4E,0x0);
 const NXColor GREEN4(0x0,0x19,0x0);
 
-typedef struct
-{
-  char *name;
-  uint32_t width;
-  uint32_t height;
-  uint32_t base_width;
-  uint32_t base_height;
-  uint32_t scale;
-  bool widescreen;
-  bool enabled;
-} gres_t;
-
 class Renderer
 {
   public:
@@ -46,16 +34,15 @@ class Renderer
     bool widescreen = false;
     int scale = 1;
 
-    bool init(int resolution);
+    bool init(int scale, bool newWidescreen);
     void close();
 
     bool isWindowVisible();
 
     bool initVideo();
-    void setFullscreen(bool enable);
+    bool setFullscreen(bool enable);
 
     bool setResolution(int factor, bool restoreOnFailure = true);
-    const gres_t *getResolutions(bool full_list = false);
     int getResolutionCount();
 
     bool flushAll();

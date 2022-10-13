@@ -32,9 +32,10 @@ Renderer *Renderer::getInstance()
   return Singleton<Renderer>::get();
 }
 
-bool Renderer::init(int resolution)
+bool Renderer::init(int newScale, bool newWidescreen)
 {
-  _current_res = resolution;
+  scale = newScale;
+  widescreen = newWidescreen;
   if (!initVideo())
     return false;
 
@@ -69,14 +70,13 @@ bool Renderer::initVideo()
 {
   uint32_t window_flags = SDL_WINDOW_SHOWN;
 
-  const NXE::Graphics::gres_t *res = getResolutions(true);
-
-  uint32_t width  = res[_current_res].width;
-  uint32_t height = res[_current_res].height;
-  scale        = res[_current_res].scale;
-  screenHeight = res[_current_res].base_height;
-  screenWidth  = res[_current_res].base_width;
-  widescreen   = res[_current_res].widescreen;
+  if (widescreen) {
+    screenWidth  = 432;
+    screenHeight = 243;
+  } else {
+    screenWidth  = 320;
+    screenHeight = 240;
+  }
 
   if (_window)
   {
@@ -84,8 +84,8 @@ bool Renderer::initVideo()
     return false;
   }
 
-  LOG_DEBUG("SDL_CreateWindow: {}x{}", width, height);
-  _window = SDL_CreateWindow(NXVERSION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, window_flags);
+  LOG_DEBUG("SDL_CreateWindow: {}x{}", screenWidth, screenHeight);
+  _window = SDL_CreateWindow(NXVERSION, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth * scale, screenHeight * scale, window_flags);
 
   if (!_window)
   {
@@ -133,6 +133,12 @@ bool Renderer::initVideo()
 
   LOG_INFO("Renderer::initVideo: using: {} renderer", info.name);
 
+  if (SDL_RenderSetLogicalSize(_renderer, screenWidth, screenHeight))
+  {
+    LOG_ERROR("Renderer::initVideo: SDL_RenderSetLogicalSize failed: {}", SDL_GetError());
+    return false;
+  }
+
   std::string spotpath = ResourceManager::getInstance()->getPath("spot.png");
 
   SDL_Surface *image;
@@ -156,53 +162,57 @@ bool Renderer::flushAll()
   return true;
 }
 
-void Renderer::setFullscreen(bool enable)
+bool Renderer::setFullscreen(bool enable)
 {
   _fullscreen = enable;
   SDL_ShowCursor(!enable);
-  SDL_SetWindowFullscreen(_window, (enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+  if (SDL_SetWindowFullscreen(_window, (enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0))) {
+    LOG_ERROR("Renderer::setFullscreen: SDL_SetWindowFullscreen failed: {}", SDL_GetError());
+    return false;
+  }
+  if (SDL_RenderSetLogicalSize(_renderer, screenWidth, screenHeight)) {
+    LOG_ERROR("Renderer::setFullscreen: SDL_RenderSetLogicalSize failed: {}", SDL_GetError());
+    return false;
+  }
 
-  const NXE::Graphics::gres_t *res = getResolutions();
-  SDL_RenderSetLogicalSize(_renderer, res[_current_res].width, res[_current_res].height);
+  return true;
 }
 
-bool Renderer::setResolution(int r, bool restoreOnFailure)
+bool Renderer::setResolution(int newScale, bool newWidescreen)
 {
-#if defined(__VITA__) || defined(__SWITCH__)
-  r = 1; // one fixed resolution
+  int newWidth, newHeight;
+#if defined(__VITA__)
+  newWidth = 480;
+  newHeight = 272;
+  newWidescreen = true;
+  newScale = 1;
+#elif defined(__SWITCH__)
+  newWidth = 480;
+  newHeight = 270;
+  newWidescreen = true;
+  newScale = 1;
+#else
+  if (newWidescreen) {
+    newWidth  = 432;
+    newHeight = 243;
+  } else {
+    newWidth  = 320;
+    newHeight = 240;
+  }
 #endif
 
-  LOG_INFO("Renderer::setResolution({})", r);
-  if (r == _current_res)
-    return 0;
+  LOG_INFO("Renderer logical resolution: {}x{}", newWidth, newHeight);
 
-  uint32_t width  = screenWidth;
-  uint32_t height = screenHeight;
-
-  if (r == 0)
-  {
-    scale = 1;
-    widescreen = false;
-  }
-  else
-  {
-    const NXE::Graphics::gres_t *res = getResolutions();
-    scale        = res[r].scale;
-    screenHeight = res[r].base_height;
-    screenWidth  = res[r].base_width;
-    widescreen   = res[r].widescreen;
-    width        = res[r].width;
-    height       = res[r].height;
+  SDL_SetWindowSize(_window, newWidth * newScale, newHeight * newScale);
+  if (SDL_RenderSetLogicalSize(_renderer, newWidth, newHeight)) {
+    LOG_ERROR("Renderer::setResolution: SDL_RenderSetLogicalSize failed: {}", SDL_GetError());
+    return false;
   }
 
-  LOG_INFO("Setting scaling {}", scale);
-
-  SDL_SetWindowSize(_window, width, height);
-  if (_fullscreen) {
-    SDL_RenderSetLogicalSize(_renderer, width, height);
-  }
-
-  _current_res = r;
+  screenWidth = newWidth;
+  screenHeight = newHeight;
+  widescreen = newWidescreen;
+  scale = newScale;
 
   if (!flushAll())
     return false;
@@ -213,69 +223,13 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
   return true;
 }
 
-const Graphics::gres_t *Renderer::getResolutions(bool full_list)
-{
-  static NXE::Graphics::gres_t res[]
-      = {//      description, screen_w, screen_h, render_w, render_h, scale_factor, widescreen, enabled
-         // 4:3
-         {(char *)"---", 0, 0, 0, 0, 1, false, true},
-#if defined(__VITA__)
-         {(char *)"960x544", 960, 544, 480, 272, 2, true, true},
-#elif defined(__SWITCH__)
-         {(char *)"1920x1080", 1920, 1080, 480, 270, 4, true, true},
-#else
-         {(char *)"320x240", 320, 240, 320, 240, 1, false, true},
-         {(char *)"640x480", 640, 480, 320, 240, 2, false, true},
-         //        {(char*)"800x600",   800,      600,      320,      240,      2.5,          false,      true },
-         //        //requires float scalefactor
-         {(char *)"1024x768", 1024, 768, 341, 256, 3, false, true},
-         {(char *)"1280x1024", 1280, 1024, 320, 256, 4, false, true},
-         {(char *)"1600x1200", 1600, 1200, 320, 240, 5, false, true},
-         // widescreen
-         {(char *)"480x272", 480, 272, 480, 272, 1, true, true},
-         {(char *)"800x480", 800, 480, 400, 240, 2, true, true},
-         {(char *)"1024x600", 1024, 600, 512, 300, 2, true, true},
-         {(char *)"1280x720", 1280, 720, 427, 240, 3, true, true},
-         {(char *)"1280x800", 1280, 800, 427, 267, 3, true, true},
-         {(char *)"1360x768", 1360, 768, 454, 256, 3, true, true},
-         {(char *)"1366x768", 1366, 768, 455, 256, 3, true, true},
-         {(char *)"1440x900", 1440, 900, 480, 300, 3, true, true},
-         {(char *)"1600x900", 1600, 900, 533, 300, 3, true, true},
-         {(char *)"1920x1080", 1920, 1080, 480, 270, 4, true, true},
-         {(char *)"2560x1440", 2560, 1440, 512, 288, 5, true, true},
-         {(char *)"3840x2160", 3840, 2160, 480, 270, 8, true, true},
-#endif
-         {NULL, 0, 0, 0, 0, 0, false, false}};
-
-  if (!full_list)
-  {
-      int displayIdx = SDL_GetWindowDisplayIndex(_window);
-      LOG_DEBUG("Display idx: {}",displayIdx);
-      SDL_DisplayMode dm;
-      SDL_GetDesktopDisplayMode(displayIdx, &dm);
-
-      LOG_INFO("Display W: {}, Display H: {}", dm.w, dm.h);
-      for (int i = 0; res[i].name; i++)
-      {
-        if (res[i].width > (uint32_t)dm.w || res[i].height > (uint32_t)dm.h)
-        {
-          LOG_INFO("Disabling {}", res[i].name);
-
-          res[i].enabled = false;
-        }
-      }
-  }
-  return res;
-}
-
 int Renderer::getResolutionCount()
 {
-  int i;
-  const gres_t *res = getResolutions();
-
-  for (i = 0; res[i].name; i++)
-    ;
-  return i;
+#if defined(__VITA__) || defined(__SWITCH__)
+  return 1;
+#else
+  return 4;
+#endif
 }
 
 void Renderer::showLoadingScreen()
@@ -318,13 +272,13 @@ void Renderer::drawSurface(Surface *src, int dstx, int dsty, int srcx, int srcy,
 
   SDL_Rect srcrect, dstrect;
 
-  srcrect.x = srcx * scale;
-  srcrect.y = srcy * scale;
-  srcrect.w = wd * scale;
-  srcrect.h = ht * scale;
+  srcrect.x = srcx;
+  srcrect.y = srcy;
+  srcrect.w = wd;
+  srcrect.h = ht;
 
-  dstrect.x = dstx * scale;
-  dstrect.y = dsty * scale;
+  dstrect.x = dstx;
+  dstrect.y = dsty;
   dstrect.w = srcrect.w;
   dstrect.h = srcrect.h;
 
@@ -346,13 +300,13 @@ void Renderer::drawSurfaceMirrored(Surface *src, int dstx, int dsty, int srcx, i
 
   SDL_Rect srcrect, dstrect;
 
-  srcrect.x = srcx * scale;
-  srcrect.y = srcy * scale;
-  srcrect.w = wd * scale;
-  srcrect.h = ht * scale;
+  srcrect.x = srcx;
+  srcrect.y = srcy;
+  srcrect.w = wd;
+  srcrect.h = ht;
 
-  dstrect.x = dstx * scale;
-  dstrect.y = dsty * scale;
+  dstrect.x = dstx;
+  dstrect.y = dsty;
   dstrect.w = srcrect.w;
   dstrect.h = srcrect.h;
 
@@ -372,16 +326,16 @@ void Renderer::blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, 
   SDL_Rect srcrect, dstrect;
 
   srcrect.x = 0;
-  srcrect.w = sfc->width() * scale;
-  srcrect.y = (y_src * scale);
-  srcrect.h = (height * scale);
+  srcrect.w = sfc->width();
+  srcrect.y = (y_src);
+  srcrect.h = (height);
 
   dstrect.w = srcrect.w;
   dstrect.h = srcrect.h;
 
-  int x      = (x_dst * scale);
-  int y      = (y_dst * scale);
-  int destwd = screenWidth * scale;
+  int x      = (x_dst);
+  int y      = (y_dst);
+  int destwd = screenWidth;
 
   assert(!_need_clip && "clip for blitpattern is not implemented");
 
@@ -390,22 +344,22 @@ void Renderer::blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, 
     dstrect.x = x;
     dstrect.y = y;
     SDL_RenderCopy(_renderer, sfc->texture(), &srcrect, &dstrect);
-    x += sfc->width()  * scale;
+    x += sfc->width();
   } while (x < destwd);
 }
 
 void Renderer::drawLine(int x1, int y1, int x2, int y2, NXColor color)
 {
   SDL_SetRenderDrawColor(_renderer, color.r, color.g, color.b, SDL_ALPHA_OPAQUE);
-  SDL_RenderDrawLine(_renderer, x1 * scale, y1 * scale, x2 * scale, y2 * scale);
+  SDL_RenderDrawLine(_renderer, x1, y1, x2, y2);
 }
 
 void Renderer::drawRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, uint8_t b)
 {
-  SDL_Rect rects[4] = {{x1 * scale, y1 * scale, ((x2 - x1) + 1) * scale, scale},
-  {x1 * scale, y2 * scale, ((x2 - x1) + 1) * scale, scale},
-  {x1 * scale, y1 * scale, scale, ((y2 - y1) + 1) * scale},
-  {x2 * scale, y1 * scale, scale, ((y2 - y1) + 1) * scale}};
+  SDL_Rect rects[4] = {{x1, y1, ((x2 - x1) + 1), 1},
+  {x1, y2, ((x2 - x1) + 1), 1},
+  {x1, y1, 1, ((y2 - y1) + 1)},
+  {x2, y1, 1, ((y2 - y1) + 1)}};
 
   SDL_SetRenderDrawColor(_renderer, r, g, b, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRects(_renderer, rects, 4);
@@ -415,10 +369,10 @@ void Renderer::fillRect(int x1, int y1, int x2, int y2, uint8_t r, uint8_t g, ui
 {
   SDL_Rect rect;
 
-  rect.x = x1 * scale;
-  rect.y = y1 * scale;
-  rect.w = ((x2 - x1) + 1) * scale;
-  rect.h = ((y2 - y1) + 1) * scale;
+  rect.x = x1;
+  rect.y = y1;
+  rect.w = ((x2 - x1) + 1);
+  rect.h = ((y2 - y1) + 1);
 
   SDL_SetRenderDrawColor(_renderer, r, g, b, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(_renderer, &rect);}
@@ -445,10 +399,10 @@ void Renderer::setClip(int x, int y, int w, int h)
 {
   _need_clip = true;
 
-  _clip_rect.x = x * scale;
-  _clip_rect.y = y * scale;
-  _clip_rect.w = w * scale;
-  _clip_rect.h = h * scale;
+  _clip_rect.x = x;
+  _clip_rect.y = y;
+  _clip_rect.w = w;
+  _clip_rect.h = h;
 }
 
 void Renderer::clearClip()
@@ -474,7 +428,7 @@ void Renderer::clip(SDL_Rect &srcrect, SDL_Rect &dstrect)
   {
     w -= dx;
     dstrect.x += dx;
-    srcrect.x += dx / scale;
+    srcrect.x += dx;
   }
   dx = dstrect.x + w - _clip_rect.x - _clip_rect.w;
   if (dx > 0)
@@ -485,7 +439,7 @@ void Renderer::clip(SDL_Rect &srcrect, SDL_Rect &dstrect)
   {
     h -= dy;
     dstrect.y += dy;
-    srcrect.y += dy / scale;
+    srcrect.y += dy;
   }
   dy = dstrect.y + h - _clip_rect.y - _clip_rect.h;
   if (dy > 0)
@@ -493,8 +447,8 @@ void Renderer::clip(SDL_Rect &srcrect, SDL_Rect &dstrect)
 
   dstrect.w = w;
   dstrect.h = h;
-  srcrect.w = w / scale;
-  srcrect.h = h / scale;
+  srcrect.w = w;
+  srcrect.h = h;
 }
 
 void Renderer::clipScaled(SDL_Rect &srcrect, SDL_Rect &dstrect)
@@ -598,13 +552,10 @@ void Renderer::drawSpotLight(int x, int y, Object* o, int r, int g, int b, int u
   int width = o->Width() / CSFI;
   int height = o->Height() / CSFI;
 
-  x *= scale;
-  y *= scale;
-
-  dstrec.x = (x - (width * (upscale / 2) * scale) + (width / 2 * scale));
-  dstrec.y = (y - (height * (upscale / 2) * scale) + (height / 2 * scale));
-  dstrec.w = width * upscale * scale;
-  dstrec.h = height * upscale * scale;
+  dstrec.x = (x - (width * (upscale / 2)) + (width / 2));
+  dstrec.y = (y - (height * (upscale / 2)) + (height / 2));
+  dstrec.w = width * upscale;
+  dstrec.h = height * upscale;
 
   SDL_SetTextureColorMod(_spot_light, r, g, b);
   SDL_RenderCopy(_renderer, _spot_light, NULL, &dstrec);
