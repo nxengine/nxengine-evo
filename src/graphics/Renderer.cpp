@@ -68,7 +68,7 @@ bool Renderer::isWindowVisible()
 
 bool Renderer::initVideo()
 {
-  uint32_t window_flags = SDL_WINDOW_SHOWN;
+  uint32_t window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 
   if (widescreen) {
     screenWidth  = 432;
