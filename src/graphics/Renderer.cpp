@@ -161,6 +161,9 @@ void Renderer::setFullscreen(bool enable)
   _fullscreen = enable;
   SDL_ShowCursor(!enable);
   SDL_SetWindowFullscreen(_window, (enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+
+  const NXE::Graphics::gres_t *res = getResolutions();
+  SDL_RenderSetLogicalSize(_renderer, res[_current_res].width, res[_current_res].height);
 }
 
 bool Renderer::setResolution(int r, bool restoreOnFailure)
@@ -196,10 +199,7 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
 
   SDL_SetWindowSize(_window, width, height);
   if (_fullscreen) {
-    LOG_INFO("Setting renderer logical size {} {}", width, height);
-    if (SDL_RenderSetLogicalSize(_renderer, width, height)) {
-      LOG_ERROR("Renderer::setResolution: SDL_RenderSetLocicalSize failed: {}", SDL_GetError());
-    }
+    SDL_RenderSetLogicalSize(_renderer, width, height);
   }
 
   _current_res = r;
