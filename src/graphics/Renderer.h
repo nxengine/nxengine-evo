@@ -112,6 +112,7 @@ class Renderer
     bool _need_clip = false;
     SDL_Rect _clip_rect;
     SDL_Texture* _spot_light;
+    bool _fullscreen = false;
 
   protected:
     friend class Singleton<Renderer>;

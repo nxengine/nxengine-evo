@@ -158,8 +158,9 @@ bool Renderer::flushAll()
 
 void Renderer::setFullscreen(bool enable)
 {
+  _fullscreen = enable;
   SDL_ShowCursor(!enable);
-  SDL_SetWindowFullscreen(_window, (enable ? SDL_WINDOW_FULLSCREEN : 0));
+  SDL_SetWindowFullscreen(_window, (enable ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
 }
 
 bool Renderer::setResolution(int r, bool restoreOnFailure)
@@ -194,6 +195,12 @@ bool Renderer::setResolution(int r, bool restoreOnFailure)
   LOG_INFO("Setting scaling {}", scale);
 
   SDL_SetWindowSize(_window, width, height);
+  if (_fullscreen) {
+    LOG_INFO("Setting renderer logical size {} {}", width, height);
+    if (SDL_RenderSetLogicalSize(_renderer, width, height)) {
+      LOG_ERROR("Renderer::setResolution: SDL_RenderSetLocicalSize failed: {}", SDL_GetError());
+    }
+  }
 
   _current_res = r;
 
