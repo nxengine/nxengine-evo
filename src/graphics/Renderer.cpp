@@ -327,14 +327,14 @@ void Renderer::blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, 
 
   srcrect.x = 0;
   srcrect.w = sfc->width();
-  srcrect.y = (y_src);
-  srcrect.h = (height);
+  srcrect.y = y_src;
+  srcrect.h = height;
 
   dstrect.w = srcrect.w;
   dstrect.h = srcrect.h;
 
-  int x      = (x_dst);
-  int y      = (y_dst);
+  int x      = x_dst;
+  int y      = y_dst;
   int destwd = screenWidth;
 
   assert(!_need_clip && "clip for blitpattern is not implemented");
