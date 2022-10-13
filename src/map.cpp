@@ -676,11 +676,7 @@ void map_draw_backdrop(void)
 // blit OSide's BK_FASTLEFT_LAYERS
 void DrawFastLeftLayered(void)
 {
-  int layer_ys[] = {87, 122, 145, 176, 240};
-  if (Renderer::getInstance()->widescreen)
-  {
-    layer_ys[4] = 272;
-  }
+  int layer_ys[] = {87, 122, 145, 176, Renderer::getInstance()->screenHeight};
 
   static const int move_spd[] = {0, 1, 2, 4, 8};
   int nlayers                 = 5;
@@ -688,7 +684,7 @@ void DrawFastLeftLayered(void)
   int i, x;
 
   if ((game.mode == GM_NORMAL || game.mode == GM_TITLE) && !game.frozen && !game.paused)
-    if (--map.parscroll_x <= -(480 * 2))
+    if (--map.parscroll_x <= -480 * 2)
       map.parscroll_x = 0;
 
   y1 = x = 0;
