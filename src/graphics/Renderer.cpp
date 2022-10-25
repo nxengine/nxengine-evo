@@ -32,11 +32,10 @@ Renderer *Renderer::getInstance()
   return Singleton<Renderer>::get();
 }
 
-bool Renderer::init(int newScale, bool newWidescreen)
+bool Renderer::init(int scale, bool newWidescreen)
 {
-  scale = newScale;
   widescreen = newWidescreen;
-  if (!initVideo())
+  if (!initVideo(scale))
     return false;
 
   if (!font.load())
@@ -66,7 +65,7 @@ bool Renderer::isWindowVisible()
          && (flags & SDL_WINDOW_INPUT_FOCUS);                          // SDL_APPINPUTFOCUS
 }
 
-bool Renderer::initVideo()
+bool Renderer::initVideo(int scale)
 {
   uint32_t window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 
@@ -178,19 +177,17 @@ bool Renderer::setFullscreen(bool enable)
   return true;
 }
 
-bool Renderer::setResolution(int newScale, bool newWidescreen)
+bool Renderer::setResolution(int scale, bool newWidescreen)
 {
   int newWidth, newHeight;
 #if defined(__VITA__)
   newWidth = 480;
   newHeight = 272;
   newWidescreen = true;
-  newScale = 1;
 #elif defined(__SWITCH__)
   newWidth = 480;
   newHeight = 270;
   newWidescreen = true;
-  newScale = 1;
 #else
   if (newWidescreen) {
     newWidth  = 432;
@@ -203,7 +200,7 @@ bool Renderer::setResolution(int newScale, bool newWidescreen)
 
   LOG_INFO("Renderer logical resolution: {}x{}", newWidth, newHeight);
 
-  SDL_SetWindowSize(_window, newWidth * newScale, newHeight * newScale);
+  SDL_SetWindowSize(_window, newWidth * scale, newHeight * scale);
   if (SDL_RenderSetLogicalSize(_renderer, newWidth, newHeight)) {
     LOG_ERROR("Renderer::setResolution: SDL_RenderSetLogicalSize failed: {}", SDL_GetError());
     return false;
@@ -212,7 +209,6 @@ bool Renderer::setResolution(int newScale, bool newWidescreen)
   screenWidth = newWidth;
   screenHeight = newHeight;
   widescreen = newWidescreen;
-  scale = newScale;
 
   if (!flushAll())
     return false;

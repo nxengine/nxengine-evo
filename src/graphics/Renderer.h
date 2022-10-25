@@ -32,14 +32,13 @@ class Renderer
     int screenWidth = 320;
     int screenHeight = 240;
     bool widescreen = false;
-    int scale = 1;
 
     bool init(int scale, bool newWidescreen);
     void close();
 
     bool isWindowVisible();
 
-    bool initVideo();
+    bool initVideo(int scale);
     bool setFullscreen(bool enable);
 
     bool setResolution(int factor, bool restoreOnFailure = true);
