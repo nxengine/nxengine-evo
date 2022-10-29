@@ -41,7 +41,7 @@ void SE_FlashScreen::Draw(void)
   }
 
   if (flashstate)
-    Renderer::getInstance()->clearScreen(0xff, 0xff, 0xff);
+    Renderer::getInstance()->fillScreen(0xff, 0xff, 0xff);
 }
 
 /*
@@ -170,7 +170,7 @@ void SE_Fade::Draw(void)
   }
   else if (state == FS_FADED_OUT)
   {
-    Renderer::getInstance()->clearScreen(DK_BLUE);
+    Renderer::getInstance()->fillScreen(DK_BLUE);
     return;
   }
 

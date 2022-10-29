@@ -113,7 +113,7 @@ void options_tick()
   unsigned int i;
   FocusHolder *fh;
 
-  Renderer::getInstance()->clearScreen(BLACK);
+  Renderer::getInstance()->fillScreen(BLACK);
   Options::run_and_draw_objects();
 
   fh = (FocusHolder *)optionstack.at(optionstack.size() - 1);

@@ -220,7 +220,7 @@ bool Game::pause(int pausemode, int param)
 
 void Game::tick(void)
 {
-  Renderer::getInstance()->clearScreen(BLACK);
+  Renderer::getInstance()->clearScreen();
   debug_clear();
 
   if (game.paused)
@@ -353,7 +353,7 @@ void DrawScene(void)
 {
   int scr_x, scr_y;
   extern int flipacceltime;
-  Renderer::getInstance()->clearScreen(BLACK);
+  Renderer::getInstance()->fillScreen(BLACK);
 
   // draw background map tiles
   if (!flipacceltime)

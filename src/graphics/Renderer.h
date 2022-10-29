@@ -48,14 +48,16 @@ class Renderer
 
     void showLoadingScreen();
 
+    void clearScreen();
+
     void drawSurface(Surface *src, int x, int y);
     void drawSurface(Surface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
     void drawSurfaceMirrored(Surface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
 
     void blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, int height);
 
-    void clearScreen(NXColor color);
-    void clearScreen(uint8_t r, uint8_t g, uint8_t b);
+    void fillScreen(NXColor color);
+    void fillScreen(uint8_t r, uint8_t g, uint8_t b);
 
     void drawLine(int x1, int y1, int x2, int y2, NXColor color);
 
@@ -149,9 +151,9 @@ void inline Renderer::drawPixel(int x, int y, NXColor color)
   drawPixel(x, y, color.r, color.g, color.b);
 }
 
-void inline Renderer::clearScreen(NXColor color)
+void inline Renderer::fillScreen(NXColor color)
 {
-  clearScreen(color.r, color.g, color.b);
+  fillScreen(color.r, color.g, color.b);
 }
 
 void inline Renderer::setClip(NXRect *rect)

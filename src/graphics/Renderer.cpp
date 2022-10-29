@@ -238,7 +238,7 @@ void Renderer::showLoadingScreen()
   int x = (screenWidth / 2) - (loading.width() / 2);
   int y = (screenHeight / 2) - loading.height();
 
-  clearScreen(BLACK);
+  fillScreen(BLACK);
   drawSurface(&loading, x, y);
   flip();
 }
@@ -251,6 +251,12 @@ SDL_Renderer* Renderer::renderer()
 SDL_Window* Renderer::window()
 {
   return _window;
+}
+
+void Renderer::clearScreen()
+{
+  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  SDL_RenderClear(_renderer);
 }
 
 void Renderer::flip()
@@ -385,7 +391,7 @@ void Renderer::drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
   fillRect(x, y, x, y, r, g, b);
 }
 
-void Renderer::clearScreen(uint8_t r, uint8_t g, uint8_t b)
+void Renderer::fillScreen(uint8_t r, uint8_t g, uint8_t b)
 {
   SDL_SetRenderDrawColor(_renderer, r, g, b, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(_renderer, NULL);
