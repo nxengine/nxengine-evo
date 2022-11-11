@@ -148,32 +148,21 @@ void recalc_map_offsets()
 {
   if (Renderer::getInstance()->widescreen)
   {
-    if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth && map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
+    if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
-    }
-    else if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
-    {
-      if (map.xsize == 25)
-      { // MazeI
-        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 48)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-      }
-      else
-      { // Others
-        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-      }
-    }
-    else if (map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
-    {
-      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
+      map.maxxscroll = ((((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) / 2) - 8) * CSFI;
     }
     else
     {
       map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+    }
+
+    if (map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
+    {
+      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
+    }
+    else
+    {
       map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
     }
   }
