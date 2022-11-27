@@ -150,7 +150,7 @@ void recalc_map_offsets()
   {
     if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
     {
-      map.maxxscroll = ((((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) / 2) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) / 2) * CSFI;
     }
     else
     {
