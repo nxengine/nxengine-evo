@@ -184,11 +184,10 @@ bool Renderer::setResolution(int scale, bool newWidescreen)
   newWidth = 480;
   newHeight = 272;
   newWidescreen = true;
-#elif defined(__SWITCH__)
-  newWidth = 480;
-  newHeight = 270;
-  newWidescreen = true;
 #else
+#if defined(__SWITCH__)
+  newWidescreen = true;
+#endif
   if (newWidescreen) {
     newWidth  = 432;
     newHeight = 243;
