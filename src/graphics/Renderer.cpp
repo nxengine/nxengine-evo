@@ -69,15 +69,6 @@ bool Renderer::initVideo(int scale)
 {
   uint32_t window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 
-  //TODO: sync this with setResolution
-  if (widescreen) {
-    screenWidth  = 432;
-    screenHeight = 243;
-  } else {
-    screenWidth  = 320;
-    screenHeight = 240;
-  }
-
   if (_window)
   {
     LOG_WARN("second call to Renderer::InitVideo()");
@@ -133,13 +124,7 @@ bool Renderer::initVideo(int scale)
 
   LOG_INFO("Renderer::initVideo: using: {} renderer", info.name);
 
-  if (SDL_RenderSetLogicalSize(_renderer, screenWidth, screenHeight))
-  {
-    LOG_ERROR("Renderer::initVideo: SDL_RenderSetLogicalSize failed: {}", SDL_GetError());
-    return false;
-  }
-
-  if (!createRenderTarget(screenWidth, screenHeight))
+  if (!setResolution(scale, widescreen))
     return false;
 
   std::string spotpath = ResourceManager::getInstance()->getPath("spot.png");
@@ -148,24 +133,6 @@ bool Renderer::initVideo(int scale)
   image = IMG_Load(spotpath.c_str());
   _spot_light = SDL_CreateTextureFromSurface(_renderer, image);
   SDL_FreeSurface(image);
-
-  return true;
-}
-
-bool Renderer::createRenderTarget(int width, int height)
-{
-  SDL_RendererInfo info;
-  SDL_GetRendererInfo(_renderer, &info);
-
-  _texture = SDL_CreateTexture(_renderer,
-      info.texture_formats[0],
-      SDL_TEXTUREACCESS_TARGET,
-      width, height);
-  if (SDL_SetRenderTarget(_renderer, _texture)) {
-    LOG_ERROR("Renderer::createRenderTarget: SDL_SetRenderTarget failed: {}", SDL_GetError());
-    return false;
-  }
-  SDL_RenderClear(_renderer);
 
   return true;
 }
@@ -253,6 +220,24 @@ int Renderer::getResolutionCount()
 #else
   return 4;
 #endif
+}
+
+bool Renderer::createRenderTarget(int width, int height)
+{
+  SDL_RendererInfo info;
+  SDL_GetRendererInfo(_renderer, &info);
+
+  _texture = SDL_CreateTexture(_renderer,
+      info.texture_formats[0],
+      SDL_TEXTUREACCESS_TARGET,
+      width, height);
+  if (SDL_SetRenderTarget(_renderer, _texture)) {
+    LOG_ERROR("Renderer::createRenderTarget: SDL_SetRenderTarget failed: {}", SDL_GetError());
+    return false;
+  }
+  SDL_RenderClear(_renderer);
+
+  return true;
 }
 
 void Renderer::showLoadingScreen()
