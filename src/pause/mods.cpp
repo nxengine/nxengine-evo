@@ -72,7 +72,7 @@ bool mods_init(int param)
 void mods_tick()
 {
    if (moddlg != NULL) {
-       Renderer::getInstance()->fillScreen(BLACK);
+       Renderer::getInstance()->clearScreen(BLACK);
        moddlg->Draw();
        moddlg->RunInput();
    }

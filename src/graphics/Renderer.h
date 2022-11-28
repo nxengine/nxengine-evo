@@ -48,16 +48,14 @@ class Renderer
 
     void showLoadingScreen();
 
-    void clearScreen();
-
     void drawSurface(Surface *src, int x, int y);
     void drawSurface(Surface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
     void drawSurfaceMirrored(Surface *src, int dstx, int dsty, int srcx, int srcy, int wd, int ht);
 
     void blitPatternAcross(Surface *sfc, int x_dst, int y_dst, int y_src, int height);
 
-    void fillScreen(NXColor color);
-    void fillScreen(uint8_t r, uint8_t g, uint8_t b);
+    void clearScreen(NXColor color);
+    void clearScreen(uint8_t r, uint8_t g, uint8_t b);
 
     void drawLine(int x1, int y1, int x2, int y2, NXColor color);
 
@@ -96,11 +94,14 @@ class Renderer
   private:
     SDL_Window *_window = nullptr;
     SDL_Renderer *_renderer = nullptr;
+    SDL_Texture *_texture = nullptr;
     int _current_res = -1;
     bool _need_clip = false;
     SDL_Rect _clip_rect;
     SDL_Texture* _spot_light;
     bool _fullscreen = false;
+
+    bool createRenderTarget(int width, int height);
 
   protected:
     friend class Singleton<Renderer>;
@@ -151,9 +152,9 @@ void inline Renderer::drawPixel(int x, int y, NXColor color)
   drawPixel(x, y, color.r, color.g, color.b);
 }
 
-void inline Renderer::fillScreen(NXColor color)
+void inline Renderer::clearScreen(NXColor color)
 {
-  fillScreen(color.r, color.g, color.b);
+  clearScreen(color.r, color.g, color.b);
 }
 
 void inline Renderer::setClip(NXRect *rect)

@@ -43,7 +43,7 @@ void intro_tick()
   }
   if (blanktimer > 0)
   {
-    Renderer::getInstance()->fillScreen(BLACK);
+    Renderer::getInstance()->clearScreen(BLACK);
 
     if (--blanktimer == 0)
       game.setmode(GM_TITLE);

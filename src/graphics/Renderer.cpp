@@ -69,6 +69,7 @@ bool Renderer::initVideo(int scale)
 {
   uint32_t window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 
+  //TODO: sync this with setResolution
   if (widescreen) {
     screenWidth  = 432;
     screenHeight = 243;
@@ -138,12 +139,33 @@ bool Renderer::initVideo(int scale)
     return false;
   }
 
+  if (!createRenderTarget(screenWidth, screenHeight))
+    return false;
+
   std::string spotpath = ResourceManager::getInstance()->getPath("spot.png");
 
   SDL_Surface *image;
   image = IMG_Load(spotpath.c_str());
   _spot_light = SDL_CreateTextureFromSurface(_renderer, image);
   SDL_FreeSurface(image);
+
+  return true;
+}
+
+bool Renderer::createRenderTarget(int width, int height)
+{
+  SDL_RendererInfo info;
+  SDL_GetRendererInfo(_renderer, &info);
+
+  _texture = SDL_CreateTexture(_renderer,
+      info.texture_formats[0],
+      SDL_TEXTUREACCESS_TARGET,
+      width, height);
+  if (SDL_SetRenderTarget(_renderer, _texture)) {
+    LOG_ERROR("Renderer::createRenderTarget: SDL_SetRenderTarget failed: {}", SDL_GetError());
+    return false;
+  }
+  SDL_RenderClear(_renderer);
 
   return true;
 }
@@ -200,17 +222,23 @@ bool Renderer::setResolution(int scale, bool newWidescreen)
   LOG_INFO("Renderer logical resolution: {}x{}", newWidth, newHeight);
 
   SDL_SetWindowSize(_window, newWidth * scale, newHeight * scale);
+
+  SDL_SetRenderTarget(_renderer, NULL);
+  SDL_DestroyTexture(_texture);
   if (SDL_RenderSetLogicalSize(_renderer, newWidth, newHeight)) {
     LOG_ERROR("Renderer::setResolution: SDL_RenderSetLogicalSize failed: {}", SDL_GetError());
     return false;
   }
 
+  if (!flushAll())
+    return false;
+
+  if (!createRenderTarget(newWidth, newHeight))
+    return false;
+
   screenWidth = newWidth;
   screenHeight = newHeight;
   widescreen = newWidescreen;
-
-  if (!flushAll())
-    return false;
 
   recalc_map_offsets();
   textbox.RecalculateOffsets();
@@ -237,7 +265,7 @@ void Renderer::showLoadingScreen()
   int x = (screenWidth / 2) - (loading.width() / 2);
   int y = (screenHeight / 2) - loading.height();
 
-  fillScreen(BLACK);
+  clearScreen(BLACK);
   drawSurface(&loading, x, y);
   flip();
 }
@@ -252,16 +280,15 @@ SDL_Window* Renderer::window()
   return _window;
 }
 
-void Renderer::clearScreen()
-{
-  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  SDL_RenderClear(_renderer);
-}
-
 void Renderer::flip()
 {
 //  LOG_INFO("===FLIPPING===\n");
+  SDL_SetRenderTarget(_renderer, NULL);
+  SDL_SetRenderDrawColor(_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  SDL_RenderClear(_renderer);
+  SDL_RenderCopy(_renderer, _texture, NULL, NULL);
   SDL_RenderPresent(_renderer);
+  SDL_SetRenderTarget(_renderer, _texture);
 //  LOG_INFO("===FLIPPED===\n");
 }
 
@@ -390,7 +417,7 @@ void Renderer::drawPixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
   fillRect(x, y, x, y, r, g, b);
 }
 
-void Renderer::fillScreen(uint8_t r, uint8_t g, uint8_t b)
+void Renderer::clearScreen(uint8_t r, uint8_t g, uint8_t b)
 {
   SDL_SetRenderDrawColor(_renderer, r, g, b, SDL_ALPHA_OPAQUE);
   SDL_RenderFillRect(_renderer, NULL);

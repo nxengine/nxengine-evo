@@ -62,7 +62,7 @@ std::vector<menuitem> _menuitems;
 static void draw_title()
 {
   // background is dk grey, not pure black
-  Renderer::getInstance()->fillScreen(0x20, 0x20, 0x20);
+  Renderer::getInstance()->clearScreen(0x20, 0x20, 0x20);
   map_draw_backdrop();
   //	DrawFastLeftLayered();
 
@@ -343,7 +343,7 @@ void title_tick()
   {
     if (title.seldelay > 0)
     {
-      Renderer::getInstance()->fillScreen(BLACK);
+      Renderer::getInstance()->clearScreen(BLACK);
 
       title.seldelay--;
       if (!title.seldelay)
@@ -357,7 +357,7 @@ void title_tick()
   }
   else
   {
-    Renderer::getInstance()->fillScreen(BLACK);
+    Renderer::getInstance()->clearScreen(BLACK);
 
     if (!textbox.SaveSelect.IsVisible())
     { // selection was made, and settings.last_save_slot is now set appropriately

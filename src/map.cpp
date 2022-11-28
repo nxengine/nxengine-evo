@@ -588,9 +588,9 @@ void map_draw_backdrop(void)
     case BK_HIDE3:
     {
       if (game.curmap == STAGE_KINGS) // intro cutscene
-        Renderer::getInstance()->fillScreen(BLACK);
+        Renderer::getInstance()->clearScreen(BLACK);
       else
-        Renderer::getInstance()->fillScreen(DK_BLUE);
+        Renderer::getInstance()->clearScreen(DK_BLUE);
     }
       return;
 
@@ -644,15 +644,15 @@ void DrawFastLeftLayered(void)
   y1 = x = 0;
   // fix for extra height
   if (map.backdrop == 9)
-    Renderer::getInstance()->fillScreen(111, 156, 214);
+    Renderer::getInstance()->clearScreen(111, 156, 214);
   else if (map.backdrop == 10 && game.curmap != 64)
-    Renderer::getInstance()->fillScreen(107, 105, 82);
+    Renderer::getInstance()->clearScreen(107, 105, 82);
   else if (map.backdrop == 12)
-    Renderer::getInstance()->fillScreen(179, 190, 210);
+    Renderer::getInstance()->clearScreen(179, 190, 210);
   else if (map.backdrop == 13)
-    Renderer::getInstance()->fillScreen(170, 101, 0);
+    Renderer::getInstance()->clearScreen(170, 101, 0);
   else if (map.backdrop == 14)
-    Renderer::getInstance()->fillScreen(202, 97, 97);
+    Renderer::getInstance()->clearScreen(202, 97, 97);
 
   for (i = 0; i < nlayers; i++)
   {

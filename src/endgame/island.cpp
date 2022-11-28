@@ -80,7 +80,7 @@ void island_draw()
 {
 
   // draw the scene
-  Renderer::getInstance()->fillScreen(BLACK);
+  Renderer::getInstance()->clearScreen(BLACK);
 
   Renderer::getInstance()->setClip(island.scene_x, island.scene_y, Renderer::getInstance()->sprites.sprites[SPR_ISLAND_SCENE].w, Renderer::getInstance()->sprites.sprites[SPR_ISLAND_SCENE].h);
 
