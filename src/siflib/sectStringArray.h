@@ -1,6 +1,7 @@
 
 #ifndef _SECT_STRINGARRAY_H
 #define _SECT_STRINGARRAY_H
+#include <cstdint>
 #include <string>
 #include <vector>
 
