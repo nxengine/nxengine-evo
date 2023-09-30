@@ -35,13 +35,13 @@ Renderer *Renderer::getInstance()
 bool Renderer::init(int scale, bool newWidescreen)
 {
   widescreen = newWidescreen;
-  if (!initVideo(scale))
-    return false;
-
   if (!font.load())
     return false;
 
   if (!sprites.init())
+    return false;
+
+  if (!initVideo(scale))
     return false;
 
   return true;
