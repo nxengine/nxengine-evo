@@ -34,7 +34,7 @@ MACHINE="$(uname -m)"
 build-scripts/utils/common.download-extern.sh
 
 # Additionally download recent version of the appimage-builder AppImage utility (no checksum verification since file regularily changes when updated to newer versions)
-test -e "extern/appimage-builder.AppImage" || wget "https://github.com/AppImageCrafters/appimage-builder/releases/download/v0.9.2/appimage-builder-0.9.2-35e3eab-x86_64.AppImage" -O "extern/appimage-builder.AppImage"
+test -e "extern/appimage-builder.AppImage" || wget "https://github.com/AppImageCrafters/appimage-builder/releases/download/v1.1.0/appimage-builder-1.1.0-x86_64.AppImage" -O "extern/appimage-builder.AppImage"
 chmod +x extern/appimage-builder.AppImage
 
 # Build NXEngine-Evo
@@ -48,7 +48,8 @@ fi
 # Generate AppImage filesystem image directory
 rm -rf AppDir
 DESTDIR=AppDir ninja -Cbuild install
-build-scripts/utils/common.install-extern.sh build/AppDir/usr/share/nxengine build/nxextract
+build-scripts/utils/common.install-extern.sh build/AppDir/usr/bin/ build/nxextract
+cp -r build/AppDir/usr/share/nxengine/data/ build/AppDir/usr/bin/
 
 export PATH="${PWD}/build/bin${PATH+:}${PATH:-}"
 
@@ -70,4 +71,4 @@ export PLATFORM_SUFFIX
 export OUTPUT="NXEngine-Evo-${APP_VERSION}-Linux-${PLATFORM_SUFFIX}.AppImage"
 rm -f "${OUTPUT}"
 
-extern/appimage-builder.AppImage
+extern/appimage-builder.AppImage --appdir build/AppDir/
