@@ -407,6 +407,9 @@ std::vector<std::string> &SoundManager::music_dir_names()
 
 void SoundManager::_reloadTrackList()
 {
+  if (_music_playlists.size() <= settings->new_music)
+    settings->new_music = 0;
+
   std::string path = ResourceManager::getInstance()->getPath(_music_playlists.at(settings->new_music), false);
 
   std::ifstream fl;
