@@ -14,8 +14,9 @@
         to decrypt each instance, for a total of 20 bytes.
 */
 
-// load the contents of 290.rec and store in value_out. Returns 0 on success.
-// If there is no such file or an error occurs, writes 0 to value_out.
+// Return the contents of 290.rec.
+// On success: 0 < value < 0xFFFFFFFF
+// Return 0xFFFFFFFF if there is an error or no time has been set yet.
 uint32_t niku_load()
 {
   FILE *fp;
@@ -60,12 +61,16 @@ uint32_t niku_load()
     LOG_ERROR("niku_load: value mismatch; '{}' corrupt", fname);
     return 0xFFFFFFFF;
   }
+  else if (*result == 0)
+  {
+    LOG_DEBUG("niku_load: niku time not set: loaded value 0 from {}", fname);
+    return 0xFFFFFFFF;
+  }
   else
   {
     LOG_DEBUG("niku_load: loaded value {:#08x} from {}", *result, fname);
     return *result;
   }
-  return 0xFFFFFFFF;
 }
 
 // save the timestamp in value to 290.rec.
