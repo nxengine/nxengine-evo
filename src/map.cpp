@@ -138,42 +138,7 @@ bool load_map(const std::string &fname)
 
   fclose(fp);
 
-  if (Renderer::getInstance()->widescreen)
-  {
-    if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth && map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
-    {
-      map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
-    }
-    else if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
-    {
-      if (map.xsize == 25)
-      { // MazeI
-        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 48)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-      }
-      else
-      { // Others
-        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-      }
-    }
-    else if (map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
-    {
-      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
-    }
-    else
-    {
-      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-    }
-  }
-  else
-  {
-    map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
-    map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-  }
+  recalc_map_offsets();
 
   LOG_DEBUG("load_map: '{}' loaded OK! - {}x{}", fname, map.xsize, map.ysize);
   return 0;
@@ -183,32 +148,21 @@ void recalc_map_offsets()
 {
   if (Renderer::getInstance()->widescreen)
   {
-    if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth && map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
+    if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
     {
-      map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
-    }
-    else if (map.xsize * TILE_W < Renderer::getInstance()->screenWidth)
-    {
-      if (map.xsize == 25)
-      { // MazeI
-        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 48)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-      }
-      else
-      { // Others
-        map.maxxscroll = (((map.xsize * TILE_W) - (Renderer::getInstance()->screenWidth - 80)) - 8) * CSFI;
-        map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
-      }
-    }
-    else if (map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
-    {
-      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
-      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
+      map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) / 2) * CSFI;
     }
     else
     {
       map.maxxscroll = (((map.xsize * TILE_W) - Renderer::getInstance()->screenWidth) - 8) * CSFI;
+    }
+
+    if (map.ysize * TILE_W < Renderer::getInstance()->screenHeight)
+    {
+      map.maxyscroll = (((map.ysize * TILE_H) - (Renderer::getInstance()->screenHeight - 16)) - 8) * CSFI;
+    }
+    else
+    {
       map.maxyscroll = (((map.ysize * TILE_H) - Renderer::getInstance()->screenHeight) - 8) * CSFI;
     }
   }
@@ -676,11 +630,7 @@ void map_draw_backdrop(void)
 // blit OSide's BK_FASTLEFT_LAYERS
 void DrawFastLeftLayered(void)
 {
-  int layer_ys[] = {87, 122, 145, 176, 240};
-  if (Renderer::getInstance()->widescreen)
-  {
-    layer_ys[4] = 272;
-  }
+  int layer_ys[] = {87, 122, 145, 176, Renderer::getInstance()->screenHeight};
 
   static const int move_spd[] = {0, 1, 2, 4, 8};
   int nlayers                 = 5;
@@ -688,7 +638,7 @@ void DrawFastLeftLayered(void)
   int i, x;
 
   if ((game.mode == GM_NORMAL || game.mode == GM_TITLE) && !game.frozen && !game.paused)
-    if (--map.parscroll_x <= -(480 * Renderer::getInstance()->scale * 2))
+    if (--map.parscroll_x <= -480 * 2)
       map.parscroll_x = 0;
 
   y1 = x = 0;

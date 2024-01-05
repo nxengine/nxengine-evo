@@ -41,11 +41,6 @@ int RefreshInventoryScreen(void)
 
   inv.w = 244;
   inv.h = 152;
-  inv.x = (Renderer::getInstance()->screenWidth / 2) - (inv.w / 2);
-  if (Renderer::getInstance()->widescreen)
-    inv.y = 30;
-  else
-    inv.y = 8;
 
   // find current weapon and count # items for armssel selector
   inv.armssel.items[0] = 0; // show "no weapon" in case of no weapon
@@ -132,14 +127,16 @@ static void DrawSelector(stSelector *selector, int x, int y)
 
 void DrawInventory(void)
 {
+  int inv_x = (Renderer::getInstance()->screenWidth / 2) - (inv.w / 2);
+  int inv_y = 8;
   int x, y, i, c;
 
   // draw the box
-  TextBox::DrawFrame(inv.x, inv.y, inv.w, inv.h);
+  TextBox::DrawFrame(inv_x, inv_y, inv.w, inv.h);
 
   // - draw the weapons ----
-  x = inv.x + ARMS_X;
-  y = inv.y + ARMS_Y;
+  x = inv_x + ARMS_X;
+  y = inv_y + ARMS_Y;
   Renderer::getInstance()->sprites.drawSprite(x, y, SPR_TEXT_ARMS, 0, 0);
   y += Renderer::getInstance()->sprites.sprites[SPR_TEXT_ARMS].h;
 
@@ -159,8 +156,8 @@ void DrawInventory(void)
   }
 
   // - draw the items ----
-  x = inv.x + ITEMS_X;
-  y = inv.y + ITEMS_Y;
+  x = inv_x + ITEMS_X;
+  y = inv_y + ITEMS_Y;
   Renderer::getInstance()->sprites.drawSprite(x, y, SPR_TEXT_ITEMS, 0, 0);
   y += Renderer::getInstance()->sprites.sprites[SPR_TEXT_ITEMS].h;
 
@@ -175,7 +172,7 @@ void DrawInventory(void)
 
     if (++c >= inv.itemsel.rowlen)
     {
-      x = inv.x + ITEMS_X;
+      x = inv_x + ITEMS_X;
       y += inv.itemsel.spacing_y;
       c = 0;
     }
