@@ -71,16 +71,8 @@ void TB_SaveSelect::SetVisible(bool enable, bool saving)
 
   fCoords.w = 244;
   fCoords.h = 152;
-  if (Renderer::getInstance()->widescreen)
-  {
-    fCoords.x = (Renderer::getInstance()->screenWidth / 2) - (fCoords.w / 2);
-    fCoords.y = 30;
-  }
-  else
-  {
-    fCoords.x = 38;
-    fCoords.y = 8;
-  }
+  fCoords.x = (Renderer::getInstance()->screenWidth / 2) - (fCoords.w / 2);
+  fCoords.y = 8;
 
   fNumFiles = MAX_SAVE_SLOTS;
   fSaving   = saving;

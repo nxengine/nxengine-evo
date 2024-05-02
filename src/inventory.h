@@ -23,7 +23,7 @@ struct stSelector
 
 struct stInventory
 {
-  int x, y, w, h;
+  int w, h;
 
   stSelector armssel;
   stSelector itemsel;
