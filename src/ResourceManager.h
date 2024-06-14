@@ -45,6 +45,10 @@ public:
   Mod& mod();
   bool isMod();
   std::map<std::string, Mod> &mods();
+
+  SDL_Texture* loadTexture(SDL_Renderer* renderer, const std::string& path);
+
+
 protected:
   friend class Singleton<ResourceManager>;
 
