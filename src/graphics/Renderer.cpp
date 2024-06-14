@@ -53,8 +53,10 @@ void Renderer::close()
   font.cleanup();
   sprites.close();
   SDL_ShowCursor(true);
+  SDL_DestroyRenderer(_renderer);
   SDL_DestroyWindow(_window);
-  _window = NULL;
+  _renderer = nullptr;
+  _window = nullptr;
 }
 
 bool Renderer::isWindowVisible()
@@ -67,7 +69,7 @@ bool Renderer::isWindowVisible()
 
 bool Renderer::initVideo()
 {
-  uint32_t window_flags = SDL_WINDOW_SHOWN;
+  uint32_t window_flags = SDL_WINDOW_SHOWN | SDL_WINDOW_ALLOW_HIGHDPI;
 
   const NXE::Graphics::gres_t *res = getResolutions(true);
 
@@ -114,10 +116,7 @@ bool Renderer::initVideo()
   SDL_FreeSurface(icon);
 #endif
 
-  if (!_renderer)
-  {
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-  }
+  _renderer = createRenderer(_window);
   if (!_renderer)
   {
     LOG_ERROR("Renderer::initVideo: error setting video mode (SDL_CreateRenderer: {})", SDL_GetError());
@@ -141,6 +140,16 @@ bool Renderer::initVideo()
   SDL_FreeSurface(image);
 
   return true;
+}
+
+SDL_Renderer* createRenderer(SDL_Window* window) {
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    SDL_RenderSetLogicalSize(renderer, 800, 600);  // Logische Auflösung für Skalierung
+    if (!renderer) {
+        std::cerr << "Fehler beim Erstellen des SDL-Renderers: " << SDL_GetError() << std::endl;
+        exit(-1);
+    }
+    return renderer;
 }
 
 bool Renderer::flushAll()
