@@ -1,0 +1,14 @@
+{
+    "keyboard": {
+        "up": "W",
+        "down": "S",
+        "left": "A",
+        "right": "D"
+    },
+    "gamepad": {
+        "up": "BUTTON_DPAD_UP",
+        "down": "BUTTON_DPAD_DOWN",
+        "left": "BUTTON_DPAD_LEFT",
+        "right": "BUTTON_DPAD_RIGHT"
+    }
+}
