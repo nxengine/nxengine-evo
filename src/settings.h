@@ -1,8 +1,17 @@
 
-#ifndef _SETTINGS_H
-#define _SETTINGS_H
 
+#ifndef SETTINGS_H
+#define SETTINGS_H
+
+#include <map>
+#include <string>
 #include "input.h"
+
+extern std::map<std::string, std::string> keyboardBindings;
+extern std::map<std::string, std::string> gamepadBindings;
+
+void loadSettings();
+void saveSettings();
 
 struct Settings
 {
@@ -36,4 +45,4 @@ bool settings_save(Settings *settings = NULL);
 extern Settings *settings;
 extern Settings normal_settings;
 
-#endif
+#endif // SETTINGS_H
