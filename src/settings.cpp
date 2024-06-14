@@ -1,5 +1,37 @@
 
 #include "settings.h"
+#include "json.hpp" // Für die Handhabung von JSON in C++
+#include <fstream>
+#include <iostream>
+
+using json = nlohmann::json;
+
+std::map<std::string, std::string> keyboardBindings;
+std::map<std::string, std::string> gamepadBindings;
+
+void loadSettings() {
+    std::ifstream i("config.json");
+    if (!i.is_open()) {
+        std::cerr << "Fehler: Konnte config.json nicht öffnen" << std::endl;
+        return;
+    }
+    json config;
+    i >> config;
+    keyboardBindings = config["keyboard"].get<std::map<std::string, std::string>>();
+    gamepadBindings = config["gamepad"].get<std::map<std::string, std::string>>();
+}
+
+void saveSettings() {
+    json config;
+    config["keyboard"] = keyboardBindings;
+    config["gamepad"] = gamepadBindings;
+    std::ofstream o("config.json");
+    if (!o.is_open()) {
+        std::cerr << "Fehler: Konnte config.json nicht zum Schreiben öffnen" << std::endl;
+        return;
+    }
+    o << config.dump(4);
+}
 
 #include "ResourceManager.h"
 #include "common/misc.h"
@@ -149,3 +181,4 @@ bool settings_save(Settings *setfile)
   fclose(fp);
   return 0;
 }
+
