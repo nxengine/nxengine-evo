@@ -144,6 +144,7 @@ ELSEIF(PLATFORM STREQUAL "vita")
       opusfile
       opus
       webp
+      webpdemux
       pthread
       z
       FLAC
