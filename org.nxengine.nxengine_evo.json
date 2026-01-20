@@ -1,7 +1,7 @@
 {
 	"app-id": "org.nxengine.nxengine_evo",
 	"runtime": "org.freedesktop.Platform",
-	"runtime-version": "23.08",
+	"runtime-version": "25.08",
 	"sdk": "org.freedesktop.Sdk",
 	"command": "nxengine-evo",
 	"finish-args": [
@@ -14,6 +14,19 @@
 	],
 	
 	"modules": [
+		{
+			"name": "sdl2-image",
+			"buildsystem": "cmake-ninja",
+			"builddir": true,
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.8/SDL2_image-2.8.8.tar.gz",
+					"sha512": "5c521ae6a053e1eb6b42dce3ccccdbdb353eb7e9d1bd89392b1913bfc9fbb6b8a9d5506c80e5b7924b51637bb95cd270657ca87dafe60edd5534e333524bc901"
+				}
+			]
+		},
+		
 		{
 			"name": "nxengine-evo",
 			"buildsystem": "cmake-ninja",
