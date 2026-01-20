@@ -260,12 +260,45 @@ SPDLOG_INLINE int utc_minutes_offset(const std::tm &tm) {
     auto offset_seconds = utc_time_t - local_time_t;
     return static_cast<int>(offset_seconds / 60);
 }
+#elif defined(__VITA__) || defined(__SWITCH__)
+// 'tm_gmtoff' still isn’t available on woky console SDKs
+SPDLOG_INLINE int utc_minutes_offset(const std::tm &tm) {
+    struct helper
+    {
+        static long int calculate_gmt_offset(const std::tm &localtm = details::os::localtime(), const std::tm &gmtm = details::os::gmtime())
+        {
+            int local_year = localtm.tm_year + (1900 - 1);
+            int gmt_year = gmtm.tm_year + (1900 - 1);
+
+            long int days = (
+                // difference in day of year
+                localtm.tm_yday -
+                gmtm.tm_yday
+
+                // + intervening leap days
+                + ((local_year >> 2) - (gmt_year >> 2)) - (local_year / 100 - gmt_year / 100) +
+                ((local_year / 100 >> 2) - (gmt_year / 100 >> 2))
+
+                // + difference in years * 365 */
+                + (long int)(local_year - gmt_year) * 365);
+
+            long int hours = (24 * days) + (localtm.tm_hour - gmtm.tm_hour);
+            long int mins = (60 * hours) + (localtm.tm_min - gmtm.tm_min);
+            long int secs = (60 * mins) + (localtm.tm_sec - gmtm.tm_sec);
+
+            return secs;
+        }
+    };
+
+    auto offset_seconds = helper::calculate_gmt_offset(tm);
+    return static_cast<int>(offset_seconds / 60);
+}
 #else
 // On unix simply use tm_gmtoff
 SPDLOG_INLINE int utc_minutes_offset(const std::tm &tm) {
     return static_cast<int>(tm.tm_gmtoff / 60);
 }
-#endif  // _WIN32
+#endif  // _WIN32 || __VITA__ || __SWITCH__
 #endif  // SPDLOG_NO_TZ_OFFSET
 
 // Return current thread id as size_t
