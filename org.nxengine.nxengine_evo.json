@@ -43,14 +43,14 @@
 				{
 					"type": "archive",
 					"url": "https://github.com/nxengine/translations/releases/download/v1.14/all.zip",
-					"sha256": "1dd85a8c230c5ebf23c6fd6283fe168d9bf4044339d1e93e324bd336165a4422",
+					"sha512": "095d04f374b73b711eb32309d7dbd1c16a098dbe421866e0c422be126b84659ad7791e580b65c299d48412b58fa0c61ce0f670218b08b68b899aae9d17d3161a",
 					"strip-components": 2,
 					"dest": "extern/Translations"
 				},
 				{
 					"type": "archive",
 					"url": "https://sarcasticat.com/cavestoryen.zip",
-					"sha256": "aa87fa30bee9b4980640c7e104791354e0f1f6411ee0d45a70af70046aa0685f",
+					"sha512": "9c7c2c6c8114974df14b1dce379b86da48caf299716e1de3d743e47c3ac6a8c13c4a0ada85778e69f11c2428f991dcbfcb0020212279f9c1787260102988cbc3",
 					"dest": "extern/CaveStory"
 				}
 			],
