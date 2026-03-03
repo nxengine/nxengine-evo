@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -139,7 +139,12 @@ ELSEIF(PLATFORM STREQUAL "vita")
     add_definitions("-march=armv7-a+simd")
     add_definitions("-D__VITA__")
     target_link_libraries(nx ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} SDL2::SDL2-static ${PNG_LIBRARY} ${JPEG_LIBRARY}
+      xmp
+      modplug
+      opusfile
+      opus
       webp
+      webpdemux
       pthread
       z
       FLAC
