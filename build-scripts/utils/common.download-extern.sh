@@ -21,21 +21,21 @@ else
 	echo 'Neither of commands `wget` and `curl` (HTTPS downloader) found, aborting!' >&2 && exit 1
 fi
 type jq        >/dev/null 2>&1 || ( echo 'Required command `jq` (JSON query) not found, aborting!'        >&2 && exit 1 )
-type sha256sum >/dev/null 2>&1 || ( echo 'Required command `sha256sum` (file hasher) not found, aborting!' >&2 && exit 1 )
+type sha512sum >/dev/null 2>&1 || ( echo 'Required command `sha512sum` (file hasher) not found, aborting!' >&2 && exit 1 )
 type unzip     >/dev/null 2>&1 || ( echo 'Required command `unzip` (ZIP extractor) not found, aborting!'  >&2 && exit 1 )
 
 
 # Download, verify and extract external resources mentioned in the Flatpak builder manifest
 mkdir -p extern
-jq -r '.modules[0].sources[] | select(.type=="archive") | (.sha256 + " " + .url + " " + .dest)' "${APP_ID}.json" | while read sha256 url dest;
+jq -r '.modules[].sources[] | select(.type=="archive") | (.sha512 + " " + .url + " " + .dest)' "${APP_ID}.json" | while read sha512 url dest;
 do
 	origname="${url##*/}"
-	filepath="extern/${sha256}.${origname#*.}"
+	filepath="extern/${sha512}.${origname#*.}"
 	
 	# Download and verify archive file
 	test -e "${filepath}" || ${DOWNLOAD_CMD} "${filepath}" "${url}"
 	
-	echo "${sha256}  ${filepath}" | sha256sum -c
+	echo "${sha512}  ${filepath}" | sha512sum -c
 	
 	# Extract archive and move it to the same location that it would end up in the Flatpak build
 	case "${dest}" in
