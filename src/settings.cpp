@@ -79,11 +79,13 @@ bool settings_load(Settings *setfile)
     memset(setfile, 0, sizeof(Settings));
 #if defined(__VITA__) || defined(__SWITCH__)
     setfile->resolution     = 1;
+    setfile->widescreen     = true;
 #else
-    setfile->resolution     = 2; // 640x480 Windowed, should be safe value
+    // 640x480 Windowed, should be safe value
+    setfile->resolution     = 2;
+    setfile->widescreen     = false;
 #endif
     setfile->last_save_slot = 0;
-    setfile->fullscreen     = false;
 
     setfile->sound_enabled = true;
     setfile->music_enabled = 1; // both Boss and Regular music

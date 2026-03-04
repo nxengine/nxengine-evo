@@ -26,8 +26,8 @@ static void EnterRebindMenu(ODItem *item, int dir);
 void LeavingMainMenu();
 void _res_get(ODItem *item);
 void _res_change(ODItem *item, int dir);
-void _fullscreen_get(ODItem *item);
-void _fullscreen_change(ODItem *item, int dir);
+void _widescreen_get(ODItem *item);
+void _widescreen_change(ODItem *item, int dir);
 void _facepics_get(ODItem *item);
 void _facepics_change(ODItem *item, int dir);
 void _lights_get(ODItem *item);
@@ -251,7 +251,7 @@ static void EnterGraphicsMenu(ODItem *item, int dir)
   dlg->Clear();
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_MOVE);
   dlg->AddItem("Resolution: ", _res_change, _res_get, -1, OD_CHOICE);
-  dlg->AddItem("Fullscreen: ", _fullscreen_change, _fullscreen_get, -1, OD_CHOICE);
+  dlg->AddItem("Widescreen: ", _widescreen_change, _widescreen_get, -1, OD_CHOICE);
   dlg->AddItem("Animated facepics: ", _facepics_change, _facepics_get, -1, OD_CHOICE);
   dlg->AddItem("Lights: ", _lights_change, _lights_get, -1, OD_CHOICE);
   dlg->AddSeparator();
@@ -278,48 +278,53 @@ static void EnterSoundMenu(ODItem *item, int dir)
 
 void _res_get(ODItem *item)
 {
-  const gres_t *reslist = Renderer::getInstance()->getResolutions();
-
   if (settings->resolution < 0 || settings->resolution >= Renderer::getInstance()->getResolutionCount())
   {
     item->suffix[0] = 0;
   }
   else
   {
-    strcpy(item->suffix, reslist[settings->resolution].name);
+    if (settings->resolution == 0) {
+      strcpy(item->suffix, "fullscreen");
+    } else {
+      strcpy(item->suffix, (std::to_string(settings->resolution) + "x").c_str());
+    }
   }
 }
 
 void _res_change(ODItem *item, int dir)
 {
   int numres = Renderer::getInstance()->getResolutionCount();
+  int oldres = settings->resolution;
   int newres;
 
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_DOOR);
 
-  newres = (settings->resolution + dir);
+  newres = (oldres + dir);
   if (newres >= numres)
-    newres = 1;
-  if (newres < 1)
+    newres = 0;
+  if (newres < 0)
     newres = (numres - 1);
-  const gres_t *res = Renderer::getInstance()->getResolutions();
-  while (!res[newres].enabled)
-  {
-    newres += dir;
-    if (newres >= numres)
-      newres = 1;
-    if (newres < 1)
-      newres = (numres - 1);
-  }
 
-  if (Renderer::getInstance()->setResolution(newres, true))
-  {
-    settings->resolution = newres;
-  }
-  else
-  {
+  if (!Renderer::getInstance()->setResolution(newres == 0 ? 1 : newres, settings->widescreen)) {
     new Message("Resolution change failed");
     NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
+    return;
+  }
+
+  settings->resolution = newres;
+
+  if (newres == 0) {
+    if (!Renderer::getInstance()->setFullscreen(true)) {
+      new Message("Fullscreen mode change failed");
+      NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
+      return;
+    }
+  } else if (oldres == 0) {
+    if (!Renderer::getInstance()->setFullscreen(false)) {
+      new Message("Fullscreen mode change failed");
+      NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
+    }
   }
 }
 
@@ -366,17 +371,20 @@ void _lang_change(ODItem *item, int dir)
   }
 }
 
-void _fullscreen_get(ODItem *item)
+void _widescreen_get(ODItem *item)
 {
   static const char *strs[] = {"Off", "On"};
-  strcpy(item->suffix, strs[settings->fullscreen]);
+  strcpy(item->suffix, strs[settings->widescreen]);
 }
 
-void _fullscreen_change(ODItem *item, int dir)
+void _widescreen_change(ODItem *item, int dir)
 {
-  settings->fullscreen ^= 1;
+  settings->widescreen ^= 1;
   NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_MENU_SELECT);
-  Renderer::getInstance()->setFullscreen(settings->fullscreen);
+  if (!Renderer::getInstance()->setResolution(settings->resolution, settings->widescreen)) {
+    new Message("Resolution change failed");
+    NXE::Sound::SoundManager::getInstance()->playSfx(NXE::Sound::SFX::SND_GUN_CLICK);
+  }
 }
 
 void _facepics_get(ODItem *item)
