@@ -35,7 +35,7 @@ do
 	# Download and verify archive file
 	test -e "${filepath}" || ${DOWNLOAD_CMD} "${filepath}" "${url}"
 	
-	echo "${sha512}  ${filepath}" | sha512sum -c
+	echo "${sha512}  ${filepath}" | sha512sum -c -
 	
 	# Extract archive and move it to the same location that it would end up in the Flatpak build
 	case "${dest}" in
