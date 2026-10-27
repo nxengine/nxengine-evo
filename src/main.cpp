@@ -323,12 +323,13 @@ int main(int argc, char *argv[])
   // so we know the initial screen resolution.
   settings_load();
 
-  if (!Renderer::getInstance()->init(settings->resolution))
+  if (!Renderer::getInstance()->init(settings->resolution, settings->widescreen))
   {
     fatal("Failed to initialize graphics.");
     return 1;
   }
-  Renderer::getInstance()->setFullscreen(settings->fullscreen);
+  if (settings->resolution == 0)
+    Renderer::getInstance()->setFullscreen(true);
 
   //	if (check_data_exists())
   //	{

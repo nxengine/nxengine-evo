@@ -31,23 +31,14 @@ Font::Font()
 bool Font::load()
 {
   cleanup();
-  std::string font = std::string("font_" + std::to_string(Renderer::getInstance()->scale) + ".fnt");
+  std::string font = std::string("font_1.fnt");
   LOG_DEBUG("Loading font file {}", font.c_str());
 
   // special empty glyph
   _glyphs[0] = Font::Glyph{0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   std::string path = ResourceManager::getInstance()->getPath(font);
-  if (ResourceManager::getInstance()->fileExists(path))
-  {
-    _upscale = 1;
-  }
-  else
-  {
-    _upscale = Renderer::getInstance()->scale;
-    font = std::string("font_1.fnt");
-    path = ResourceManager::getInstance()->getPath(font);
-  }
+  ResourceManager::getInstance()->fileExists(path);
 
   LOG_DEBUG("Loading font file {}", path.c_str());
 
@@ -123,9 +114,6 @@ SDL_Texture *Font::atlas(uint32_t idx)
 
 uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool isShaded)
 {
-  x *= Renderer::getInstance()->scale;
-  y *= Renderer::getInstance()->scale;
-
   int orgx = x;
   int i    = 0;
   SDL_Rect dstrect;
@@ -152,8 +140,8 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
     {
       if (_rendering)
       {
-        int offset = (int)round(((double)_height / (double)Renderer::getInstance()->scale - 6.) / 2.);
-        Renderer::getInstance()->sprites.drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
+        int offset = (int)round(((double)_height - 6.) / 2.);
+        Renderer::getInstance()->sprites.drawSprite(x, y + offset, SPR_TEXTBULLET);
       }
     }
     else if (_rendering && ch != ' ')
@@ -178,7 +166,7 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
       if (isShaded)
       {
         shdrect.x = x + (glyph.xoffset * _upscale);
-        shdrect.y = y + (glyph.yoffset * _upscale + _shadowOffset * Renderer::getInstance()->scale);
+        shdrect.y = y + (glyph.yoffset * _upscale + _shadowOffset);
         shdrect.w = glyph.w * _upscale;
         shdrect.h = glyph.h * _upscale;
         SDL_SetTextureColorMod(atlas, 0, 0, 0);
@@ -194,21 +182,21 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
     { // 10.5 px for spaces - make smaller than they really are - the default
       if (rtl())
       {
-        x -= (Renderer::getInstance()->scale == 1) ? 5 : 10;
+        x -= 5;
         if (i & 1)
           x--;
       }
       else
       {
-        x += (Renderer::getInstance()->scale == 1) ? 5 : 10;
+        x += 5;
         if (i & 1)
           x++;
       }
     }
     else if (ch == '=' && game.mode != GM_CREDITS)
     {
-      if (rtl()) x -= 7 * Renderer::getInstance()->scale;
-      else x += 7 * Renderer::getInstance()->scale;
+      if (rtl()) x -= 7;
+      else x += 7;
     }
     else
     {
@@ -219,14 +207,11 @@ uint32_t Font::draw(int x, int y, const std::string &text, uint32_t color, bool 
   }
 
   // return the final width of the text drawn
-  return abs((x - orgx) / Renderer::getInstance()->scale);
+  return abs(x - orgx);
 }
 
 uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bool isShaded)
 {
-  x *= Renderer::getInstance()->scale;
-  y *= Renderer::getInstance()->scale;
-
   int orgx = x;
   int i    = 0;
   SDL_Rect dstrect;
@@ -252,8 +237,8 @@ uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bo
     {
       if (_rendering)
       {
-        int offset = (int)round(((double)_height / (double)Renderer::getInstance()->scale - 6.) / 2.);
-        Renderer::getInstance()->sprites.drawSprite((x / Renderer::getInstance()->scale), (y / Renderer::getInstance()->scale) + offset, SPR_TEXTBULLET);
+        int offset = (int)round(((double)_height - 6.) / 2.);
+        Renderer::getInstance()->sprites.drawSprite(x, y + offset, SPR_TEXTBULLET);
       }
     }
     else if (_rendering && ch != ' ')
@@ -278,7 +263,7 @@ uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bo
       if (isShaded)
       {
         shdrect.x = x + (glyph.xoffset * _upscale);
-        shdrect.y = y + glyph.yoffset * _upscale + _shadowOffset * Renderer::getInstance()->scale;
+        shdrect.y = y + glyph.yoffset * _upscale + _shadowOffset;
         shdrect.w = glyph.w * _upscale;
         shdrect.h = glyph.h * _upscale;
         SDL_SetTextureColorMod(atlas, 0, 0, 0);
@@ -292,13 +277,13 @@ uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bo
 
     if (ch == ' ')
     { // 10.5 px for spaces - make smaller than they really are - the default
-      x += (Renderer::getInstance()->scale == 1) ? 5 : 10;
+      x += 5;
       if (i & 1)
         x++;
     }
     else if (ch == '=' && game.mode != GM_CREDITS)
     {
-      x += 7 * Renderer::getInstance()->scale;
+      x += 7;
     }
     else
     {
@@ -308,7 +293,7 @@ uint32_t Font::drawLTR(int x, int y, const std::string &text, uint32_t color, bo
   }
 
   // return the final width of the text drawn
-  return abs((x - orgx) / Renderer::getInstance()->scale);
+  return abs(x - orgx);
 }
 
 uint32_t Font::getWidth(const std::string &text)
@@ -324,12 +309,12 @@ uint32_t Font::getWidth(const std::string &text)
 
 uint32_t Font::getHeight() const
 {
-  return _height / ((_upscale == 1) ? Renderer::getInstance()->scale : 1);
+  return _height;
 }
 
 uint32_t Font::getBase() const
 {
-  return _base / ((_upscale == 1) ? Renderer::getInstance()->scale : 1);
+  return _base;
 }
 
 }; // namespace Graphics

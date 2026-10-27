@@ -10,7 +10,7 @@ struct Settings
   int resolution;
   int last_save_slot;
   bool show_fps;
-  bool fullscreen;
+  bool widescreen;
 
   bool sound_enabled;
   int music_enabled;
